@@ -13,7 +13,7 @@
     "preview": "vp preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:css": "stylelint \"src/**/*.css\" \".storybook/**/*.css\"",
     "theme:generate": "node scripts/generate-theme.ts",
     "motion:generate": "node scripts/generate-motion.ts",
     "prepare": "vp config"

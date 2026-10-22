@@ -41,6 +41,27 @@ const groups: { title: string; swatches: Swatch[] }[] = [
     ],
   },
   {
+    title: "Extended: Green",
+    swatches: [
+      { bg: "green", fg: "on-green" },
+      { bg: "green-container", fg: "on-green-container" },
+    ],
+  },
+  {
+    title: "Extended: Yellow",
+    swatches: [
+      { bg: "yellow", fg: "on-yellow" },
+      { bg: "yellow-container", fg: "on-yellow-container" },
+    ],
+  },
+  {
+    title: "Extended: Teal",
+    swatches: [
+      { bg: "teal", fg: "on-teal" },
+      { bg: "teal-container", fg: "on-teal-container" },
+    ],
+  },
+  {
     title: "Surface",
     swatches: [
       { bg: "surface", fg: "on-surface" },

@@ -87,6 +87,18 @@ These are the 49 roles. Each one is available as `--md-sys-color-<role>`, for ex
 | `error` / `on-error`                     | Error messages and destructive actions, such as a delete button or invalid field outline. |
 | `error-container` / `on-error-container` | Softer error backgrounds, such as an error banner.                                        |
 
+### Extended colors (green, yellow, teal)
+
+The scheme has no green, yellow or cyan, so the generator adds three extra colors based on Material palette hues: `green` (#4CAF50), `yellow` (#FFEB3B) and `teal` (#009688). Each hue is shifted a little toward primary so it blends in with the theme. Each color then gets the same four roles as primary, at the same tones, for every scheme and contrast level. So `green` on `surface` has the same contrast as `primary` on `surface`.
+
+| Token                                                              | Use                                                                               |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `green` / `on-green`, `green-container` / `on-green-container`     | Success and positive states, such as a "saved" message. Functions in code blocks. |
+| `yellow` / `on-yellow`, `yellow-container` / `on-yellow-container` | Warnings and caution states. Strings in code blocks.                              |
+| `teal` / `on-teal`, `teal-container` / `on-teal-container`         | Informational accents. Types and class names in code blocks.                      |
+
+To add another, add its hex value to `extendedColors` in `scripts/generate-theme.ts` and run `vp run theme:generate`. Only the hue and chroma of the hex value are used.
+
 ### Surfaces (backgrounds of the UI)
 
 | Token                                                                           | Use                                                                                                                                                                                    |
@@ -152,7 +164,7 @@ The export doesn't include state-layer tokens. Instead, mix the content color ov
 
 ## Linting
 
-`vp run lint:css` runs [Stylelint](https://stylelint.io/) on `src/**/*.css` and warns about colors that don't come from the theme. It checks every property ending in `color`, plus `background`, `border` (and its sides), `outline`, `text-decoration`, `fill` and `stroke`. These are allowed:
+`vp run lint:css` runs [Stylelint](https://stylelint.io/) on `src/**/*.css` and `.storybook/**/*.css`. It warns about colors that don't come from the theme. It checks every property ending in `color`, plus `background`, `border` (and its sides), `outline`, `text-decoration`, `fill` and `stroke`. These are allowed:
 
 - `var()`
 - `color-mix()`, but only if both colors are `var(--md-sys-color-*)`, `transparent` or `currentcolor`. Any color space, hue method and percentages are fine.
@@ -162,6 +174,51 @@ The export doesn't include state-layer tokens. Instead, mix the content color ov
 Everything else gets a warning: hex, `rgb()`, named colors such as `red`, and a `color-mix()` or relative color with a literal color in it. The files in `theme/` are exempt, because they define the tokens. The same rule checks fonts (see Foundations / Typography). It's configured in `stylelint.config.js`.
 
 The rule doesn't look inside `box-shadow`, `text-shadow` or gradients, and it doesn't check inline styles in components.
+
+## Syntax highlighting
+
+`syntax.css` is a [Prism](https://prismjs.com/) theme built from the color roles. It's part of the shared styles, so it applies to any Prism-highlighted code on the site as well as Storybook's code blocks. It colors `.token` elements inside `pre` or `code`, and gives `pre[class*="language-"]` blocks a background, padding and rounded corners. The token rules start with `:root` so they override other Prism themes and Storybook's own syntax colors. Storybook's code blocks have no `language-` class, so `.storybook/syntax.css` sets their background.
+
+Code follows the **Contrast** toolbar. Storybook's docs code blocks use Storybook's light or dark theme, like the rest of the docs page. That theme follows your system setting rather than the **Theme** toolbar. On the site, code follows the page's theme.
+
+The color assignments follow [Dracula](https://draculatheme.com/), using the closest role for each Dracula color.
+
+| Dracula color | Role                 | Prism tokens                                                    |
+| ------------- | -------------------- | --------------------------------------------------------------- |
+| Foreground    | `on-surface`         | Plain text, `punctuation`, `variable`, `property`               |
+| Comment       | `on-surface-variant` | `comment`                                                       |
+| Pink          | `primary`            | `keyword`, `operator`, `atrule`, `tag`, `selector`, `important` |
+| Yellow        | `yellow`             | `string`, `char`, `attr-value`, `url`, `inserted`               |
+| Green         | `green`              | `function`, `attr-name` (italic)                                |
+| Purple        | `secondary`          | `number`, `boolean`, `constant`, `symbol`                       |
+| Cyan          | `teal`               | `class-name`, `builtin` (italic); `property` in JSON            |
+| Orange        | `error`              | `parameter` (italic), `regex`                                   |
+| Red           | `error`              | `deleted`                                                       |
+
+Code blocks use `surface-container-low` as their background. Each of these roles has at least 4.5:1 contrast against it.
+
+```tsx
+import { useState } from "react";
+
+// Toggles the saved state.
+export function SaveButton({ label = "Save" }: { label?: string }) {
+  const [saved, setSaved] = useState(false);
+  return (
+    <button type="button" className="button" onClick={() => setSaved(true)}>
+      {saved ? "Saved" : label} {42}
+    </button>
+  );
+}
+```
+
+```css
+@media (prefers-contrast: more) {
+  .button:hover {
+    color: var(--md-sys-color-on-primary);
+    padding: 0.5rem 1rem;
+  }
+}
+```
 
 ## Swatches
 

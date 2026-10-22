@@ -6,10 +6,22 @@
  *   each token's light and dark values combined via light-dark().
  * - .storybook/palette.gen.ts: the standard-contrast roles as literal hex values for
  *   Storybook's own UI, plus an accent for its colorSecondary that meets WCAG AA.
+ *
+ * The exports only contain the scheme's own roles, so extended colours (Material palette
+ * hues the scheme lacks, e.g. green) are generated here: each is harmonised towards the
+ * scheme's primary, then given primary-style roles by a tonal-spot scheme at each
+ * contrast level, the same way the Theme Builder derives the exported roles.
  */
 import { readFileSync } from "node:fs";
 
-import { argbFromHex, Hct, TonalPalette } from "@material/material-color-utilities";
+import {
+  argbFromHex,
+  Blend,
+  Hct,
+  MaterialDynamicColors,
+  SchemeTonalSpot,
+  TonalPalette,
+} from "@material/material-color-utilities";
 
 import { writeFormatted } from "./write-formatted.ts";
 
@@ -17,7 +29,18 @@ type Rgb = [number, number, number];
 type Scheme = "light" | "dark";
 
 const themeDir = new URL("../src/shared/styles/theme/", import.meta.url);
-const levels = { standard: "", medium: "-mc", high: "-hc" } as const;
+const levels = {
+  standard: { suffix: "", contrast: 0 },
+  medium: { suffix: "-mc", contrast: 0.5 },
+  high: { suffix: "-hc", contrast: 1 },
+} as const;
+
+/** Material 2 palette 500s; only their hue and chroma are used. */
+const extendedColors = {
+  green: "#4caf50",
+  yellow: "#ffeb3b",
+  teal: "#009688",
+} as const;
 
 function readTokens(file: string): Map<string, string> {
   const css = readFileSync(new URL(`export/${file}.css`, themeDir), "utf8");
@@ -43,8 +66,42 @@ function readLevel(suffix: string): Map<string, [string, string]> {
   return roles;
 }
 
+function parseRgb(value: string): Rgb {
+  const m = /^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/.exec(value);
+  if (!m) throw new Error(`Expected rgb(r g b), got ${value}`);
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+const hex = (c: Rgb) => `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+const toRgb = (argb: number) => `rgb(${(argb >> 16) & 255} ${(argb >> 8) & 255} ${argb & 255})`;
+
+function addExtendedColors(roles: Map<string, [string, string]>, contrastLevel: number) {
+  const primary = roles.get("primary");
+  if (!primary) throw new Error("The export has no primary role");
+  const source = argbFromHex(hex(parseRgb(primary[0])));
+  for (const [name, value] of Object.entries(extendedColors)) {
+    const hct = Hct.fromInt(Blend.harmonize(argbFromHex(value), source));
+    const [light, dark] = [false, true].map(
+      (isDark) => new SchemeTonalSpot(hct, isDark, contrastLevel),
+    );
+    const colors = {
+      [name]: MaterialDynamicColors.primary,
+      [`on-${name}`]: MaterialDynamicColors.onPrimary,
+      [`${name}-container`]: MaterialDynamicColors.primaryContainer,
+      [`on-${name}-container`]: MaterialDynamicColors.onPrimaryContainer,
+    };
+    for (const [role, color] of Object.entries(colors)) {
+      roles.set(role, [toRgb(color.getArgb(light)), toRgb(color.getArgb(dark))]);
+    }
+  }
+  return roles;
+}
+
 const palettes = Object.fromEntries(
-  Object.entries(levels).map(([level, suffix]) => [level, readLevel(suffix)]),
+  Object.entries(levels).map(([level, { suffix, contrast: contrastLevel }]) => [
+    level,
+    addExtendedColors(readLevel(suffix), contrastLevel),
+  ]),
 );
 
 // palettes.gen.css
@@ -66,12 +123,6 @@ await writeFormatted(
 const minContrast = 4.5;
 const white: Rgb = [255, 255, 255];
 
-function parseRgb(value: string): Rgb {
-  const m = /^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/.exec(value);
-  if (!m) throw new Error(`Expected rgb(r g b), got ${value}`);
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
-}
-
 const roles: Record<Scheme, Record<string, Rgb>> = { light: {}, dark: {} };
 for (const [name, [l, d]] of palettes.standard) {
   const key = name.replace(/-(\w)/g, (_, c: string) => c.toUpperCase());
@@ -79,7 +130,6 @@ for (const [name, [l, d]] of palettes.standard) {
   roles.dark[key] = parseRgb(d);
 }
 
-const hex = (c: Rgb) => `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 const fromArgb = (argb: number): Rgb => [(argb >> 16) & 255, (argb >> 8) & 255, argb & 255];
 
 function luminance(c: Rgb) {

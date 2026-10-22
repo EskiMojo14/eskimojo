@@ -1,0 +1,143 @@
+/*
+ * Prism syntax theme built from the M3 colour roles, so code follows the theme and
+ * contrast settings. Every foreground role meets 4.5:1 on surface-container-low.
+ *
+ * Colours are assigned the way Dracula assigns its palette.
+ *
+ * The :root prefix lifts the token selectors to (0,3,1) specificity, so they beat
+ * Prism themes and Storybook's built-in colours (.css-hash * .token.keyword, at
+ * (0,3,0)) without depending on either.
+ *
+ * Prism nests tokens (.tag > .attr-value > .punctuation), but react-syntax-highlighter,
+ * which Storybook uses, flattens them onto one element (.tag.attr-value.punctuation).
+ * Selectors for nested tokens cover both forms.
+ */
+pre[class*="language-"] {
+  padding: 1rem;
+  overflow: auto;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+}
+
+:root :is(pre, code) {
+  & .token {
+    font-style: normal;
+    font-weight: inherit;
+    color: inherit;
+    background: none;
+  }
+
+  /* Dracula comment */
+  & .token.comment,
+  & .token.prolog,
+  & .token.doctype,
+  & .token.cdata {
+    font-style: normal;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Dracula foreground. JSX expressions ({…}) sit inside .tag, so reset them here. */
+  & .token.punctuation,
+  & .token.variable,
+  & .token.property,
+  & .token.namespace,
+  & .token.script {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Dracula pink. :where() keeps .tag at the same specificity as the rules below. */
+  & .token.keyword,
+  & .token.operator,
+  & .token.atrule,
+  & .token.rule,
+  & .token.important,
+  & .token.selector,
+  & .token.tag:not(:where(.script)) {
+    color: var(--md-sys-color-primary);
+  }
+
+  /* Dracula yellow */
+  & .token.string,
+  & .token.char,
+  & .token.attr-value,
+  & .token.url,
+  & .token.inserted {
+    color: var(--md-sys-color-yellow);
+  }
+
+  /* Dracula green */
+  & .token.function,
+  & .token.function-variable,
+  & .token.attr-name {
+    color: var(--md-sys-color-green);
+  }
+
+  & .token.attr-name {
+    font-style: italic;
+  }
+
+  /* Dracula purple */
+  & .token.number,
+  & .token.boolean,
+  & .token.constant,
+  & .token.symbol {
+    color: var(--md-sys-color-secondary);
+  }
+
+  /* Dracula cyan */
+  & .token.class-name,
+  & .token.builtin {
+    font-style: italic;
+    color: var(--md-sys-color-teal);
+  }
+
+  /* JSON keys are the main content, so they get a colour rather than the foreground. */
+  & .language-json .token.property,
+  &.language-json .token.property {
+    color: var(--md-sys-color-teal);
+  }
+
+  /* Dracula orange */
+  & .token.parameter,
+  & .token.regex {
+    color: var(--md-sys-color-error);
+  }
+
+  & .token.parameter {
+    font-style: italic;
+  }
+
+  /* Dracula red */
+  & .token.deleted {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Tag brackets (< </ > />) are foreground, attribute quotes match the value, and
+   * the = before a value or {…} is pink. Each rule outranks the one before it. */
+  & .token.tag.punctuation,
+  & .token.tag .token.punctuation {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  & .token.attr-value.punctuation,
+  & .token.attr-value .token.punctuation {
+    color: var(--md-sys-color-yellow);
+  }
+
+  & .token.tag.punctuation.attr-equals,
+  & .token.tag .token.punctuation.attr-equals,
+  & .token.tag.punctuation.script-punctuation,
+  & .token.tag .token.punctuation.script-punctuation {
+    color: var(--md-sys-color-primary);
+  }
+
+  & .token.important,
+  & .token.bold {
+    font-weight: var(--typo-weight-bold);
+  }
+
+  & .token.italic {
+    font-style: italic;
+  }
+}
