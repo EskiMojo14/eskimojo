@@ -1,6 +1,7 @@
 @import "normalize.css";
 @import "./theme/index.css";
 @import "./typography";
+@import "./shape.css";
 
 * {
   box-sizing: border-box;

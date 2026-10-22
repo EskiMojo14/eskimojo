@@ -1,0 +1,70 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as ShapeStories from "./shape.stories";
+
+<Meta of={ShapeStories} />
+
+# Shape
+
+`src/shared/styles/shape.css` defines the Material 3 corner radius scale as 10 `--md-sys-shape-corner-*` tokens, and makes every corner bevelled. `src/shared/styles/index.css` imports it, so the tokens are available globally.
+
+```css
+.card {
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+```
+
+## Corner scale
+
+| Token                                         | Size           | Typical use                                            |
+| --------------------------------------------- | -------------- | ------------------------------------------------------ |
+| `--md-sys-shape-corner-none`                  | 0              | Full-screen surfaces, such as full-screen dialogs.     |
+| `--md-sys-shape-corner-extra-small`           | 0.25rem (4px)  | Text fields, menus, snackbars, plain tooltips.         |
+| `--md-sys-shape-corner-small`                 | 0.5rem (8px)   | Chips, rich tooltips.                                  |
+| `--md-sys-shape-corner-medium`                | 0.75rem (12px) | Cards, small FABs.                                     |
+| `--md-sys-shape-corner-large`                 | 1rem (16px)    | FABs, navigation drawers, side sheets.                 |
+| `--md-sys-shape-corner-large-increased`       | 1.25rem (20px) | Larger components that need a little more rounding.    |
+| `--md-sys-shape-corner-extra-large`           | 1.75rem (28px) | Dialogs, bottom sheets, large FABs.                    |
+| `--md-sys-shape-corner-extra-large-increased` | 2rem (32px)    | Larger containers.                                     |
+| `--md-sys-shape-corner-extra-extra-large`     | 3rem (48px)    | The largest containers and expressive surfaces.        |
+| `--md-sys-shape-corner-full`                  | 9999px (full)  | Pills and circles: buttons, badges, switches, avatars. |
+
+Sizes are in `rem`, so corners scale with the user's browser font size like the type scale does. The pixel values assume the default 16px.
+
+`full` is a very large length rather than `50%`. The browser shrinks it to half the element's shorter side, so a wide element gets straight sides with fully shaped ends, instead of becoming an ellipse.
+
+M3 also has partial shapes such as `extra-large-top` (only the top corners shaped, for bottom sheets). There are no tokens for these. Use the logical longhands instead, so they flip correctly in right-to-left layouts:
+
+```css
+.bottom-sheet {
+  border-start-start-radius: var(--md-sys-shape-corner-extra-large);
+  border-start-end-radius: var(--md-sys-shape-corner-extra-large);
+}
+```
+
+<Canvas of={ShapeStories.CornerScale} />
+
+## Corner shape
+
+`shape.css` sets `corner-shape: bevel` on every element (and `::before` / `::after`, because `corner-shape` isn't inherited). The radius then sets the size of a straight diagonal cut, instead of a curve. `full` gives pills pointed ends and turns squares into diamonds.
+
+To use a different shape on one element, override it:
+
+```css
+.avatar {
+  border-radius: var(--md-sys-shape-corner-full);
+  corner-shape: round;
+}
+```
+
+`corner-shape` is new and first shipped in Chrome and Edge 139; check [Can I use](https://caniuse.com/mdn-css_properties_corner-shape) for other browsers. Browsers without it ignore the property and show ordinary rounded corners of the same size, so nothing breaks.
+
+<Canvas of={ShapeStories.CornerShape} />
+
+## Linting
+
+`vp run lint:css` warns when `border-radius` or one of its longhands is set to anything other than a `var()`, `0` or a global keyword such as `inherit`. `shape.css` is exempt, because it defines the tokens. The same rule checks fonts and colors (see Foundations / Typography and Foundations / Theme), and it's configured in `stylelint.config.js`.
+
+## Changing the scale
+
+Edit the tokens in `shape.css`. If you add or remove a token, update the `corners` list in `shape.stories.tsx` and the table on this page.

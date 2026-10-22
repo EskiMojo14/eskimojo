@@ -109,7 +109,7 @@ function SwatchTile({ bg, fg, border }: Swatch) {
           alignItems: "center",
           height: "4.5rem",
           padding: "0 1rem",
-          borderRadius: "0.75rem",
+          borderRadius: "var(--md-sys-shape-corner-medium)",
           background: token(bg),
           color: fg && token(fg),
           border: `${border ? "3px" : "1px"} solid ${token(border ?? "outline-variant")}`,

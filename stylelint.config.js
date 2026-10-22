@@ -26,6 +26,8 @@ const shorthandWords = {
   ],
 };
 
+const radiusProperties = ["/^border(-[a-z]+)*-radius$/"];
+
 const fontProperties = ["font", "font-family", "font-weight"];
 const colorProperties = [
   "/color$/",
@@ -42,13 +44,14 @@ export default {
   plugins: ["stylelint-declaration-strict-value"],
   rules: {
     "scale-unlimited/declaration-strict-value": [
-      [...fontProperties, ...colorProperties],
+      [...fontProperties, ...colorProperties, ...radiusProperties],
       {
         ignoreFunctions: false,
         expandShorthand: true,
         // Keys must match a property entry exactly, and replace "" rather than adding to it.
         ignoreValues: {
           "": globalKeywords,
+          [radiusProperties[0]]: [...globalKeywords, "0"],
           ...Object.fromEntries(
             colorProperties.map((property) => [
               property,
@@ -59,14 +62,18 @@ export default {
         severity: "warning",
         disableFix: true,
         message:
-          'Use a design token for "${property}", not "${value}": var(--typo-*) for fonts, var(--md-sys-color-*) or color-mix() of them for colours. See Foundations in Storybook.',
+          'Use a design token for "${property}", not "${value}": var(--typo-*) for fonts, var(--md-sys-color-*) or color-mix() of them for colours, var(--md-sys-shape-corner-*) for radii. See Foundations in Storybook.',
       },
     ],
   },
   overrides: [
     {
       // These define the tokens, so they need literal values.
-      files: ["src/shared/styles/typography.css", "src/shared/styles/theme/**/*.css"],
+      files: [
+        "src/shared/styles/typography.css",
+        "src/shared/styles/shape.css",
+        "src/shared/styles/theme/**/*.css",
+      ],
       rules: { "scale-unlimited/declaration-strict-value": null },
     },
   ],
