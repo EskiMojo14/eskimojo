@@ -124,6 +124,12 @@ Storybook serves `src/public` as well, and `.storybook/manager-head.html` loads 
 
 Paper Mono is licensed under the SIL Open Font License 1.1. Keep `src/public/fonts/OFL.txt` alongside the font files.
 
+## Linting
+
+`vp run lint:css` runs [Stylelint](https://stylelint.io/) on `src/**/*.css`. It warns when `font`, `font-family` or `font-weight` is set to anything other than a `var()` or a global keyword such as `inherit`. A plain number, `bold` or `calc()` all get a warning. `typography.css` is exempt, because it defines the tokens. The same rule checks colors (see Foundations / Theme). It's configured in `stylelint.config.js`.
+
+Stylelint only checks `.css` files, not inline styles in components. Oxlint, which `vp check` uses, can't lint CSS yet.
+
 ## Changing the scale
 
 Edit the tokens in `typography.css`. Use a `--typo-weight-*` token for each weight, not a number, or that token won't get lighter in dark themes. If you add or remove a token, update the `scale` list in `typography.stories.tsx` and the table on this page.

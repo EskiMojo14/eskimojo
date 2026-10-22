@@ -12,6 +12,7 @@
     "preview": "vp preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "lint:css": "stylelint \"src/**/*.css\"",
     "theme:generate": "node scripts/generate-theme.ts",
     "prepare": "vp config"
   },
@@ -49,6 +50,8 @@
     "postcss-extend-rule": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "storybook": "^10.6.3",
+    "stylelint": "^17.16.0",
+    "stylelint-declaration-strict-value": "^1.12.1",
     "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:",
