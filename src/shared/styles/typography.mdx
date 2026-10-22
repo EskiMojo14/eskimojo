@@ -1,0 +1,129 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as TypographyStories from "./typography.stories";
+
+<Meta of={TypographyStories} />
+
+# Typography
+
+All text uses [Paper Mono](https://github.com/paper-design/paper-mono), a variable monospace font. `src/shared/styles/typography.css` defines the font, a Material 3 type scale as 15 `--typo-*` tokens, eight weight tokens and three font-feature tokens. `src/shared/styles/index.css` imports it, so the tokens are available globally.
+
+Each scale token is a complete `font` shorthand (weight, size, line height and family). Always set `font-feature-settings` straight after it:
+
+```css
+.card-title {
+  font: var(--typo-title-medium);
+  font-feature-settings: var(--typo-features-heading);
+}
+```
+
+The `font` shorthand resets `font-feature-settings` to `normal`. That includes a value inherited from a parent and a value set earlier in the same rule. If you set `font` and leave out `font-feature-settings`, the text loses its features.
+
+## Type scale
+
+The scale has five roles, each in three sizes. Pick a role by what the text does, not by which HTML element it's in. An `<h2>` can be a `title-large` and a `<p>` can be a `label-medium`.
+
+| Role         | Use                                                                                                              | Features  |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- | --------- |
+| **Display**  | The largest text on the screen: short, important text or numbers, such as a hero heading. Best on large screens. | `heading` |
+| **Headline** | Short, high-emphasis text, such as page headings and headings on smaller screens.                                | `heading` |
+| **Title**    | Medium-emphasis, fairly short text, such as section headings, dialog titles and the main line of a list item.    | `heading` |
+| **Body**     | Longer passages of text. `body-medium` is the default for the page.                                              | `body`    |
+| **Label**    | Small text inside components, such as buttons, tabs, chips, form labels and captions.                            | `body`    |
+
+| Token                    | Size             | Line height    | Weight    |
+| ------------------------ | ---------------- | -------------- | --------- |
+| `--typo-display-large`   | 3.5625rem (57px) | 4rem (64px)    | `regular` |
+| `--typo-display-medium`  | 2.8125rem (45px) | 3.25rem (52px) | `regular` |
+| `--typo-display-small`   | 2.25rem (36px)   | 2.75rem (44px) | `regular` |
+| `--typo-headline-large`  | 2rem (32px)      | 2.5rem (40px)  | `regular` |
+| `--typo-headline-medium` | 1.75rem (28px)   | 2.25rem (36px) | `regular` |
+| `--typo-headline-small`  | 1.5rem (24px)    | 2rem (32px)    | `regular` |
+| `--typo-title-large`     | 1.375rem (22px)  | 1.75rem (28px) | `regular` |
+| `--typo-title-medium`    | 1rem (16px)      | 1.5rem (24px)  | `medium`  |
+| `--typo-title-small`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
+| `--typo-body-large`      | 1rem (16px)      | 1.5rem (24px)  | `regular` |
+| `--typo-body-medium`     | 0.875rem (14px)  | 1.25rem (20px) | `regular` |
+| `--typo-body-small`      | 0.75rem (12px)   | 1rem (16px)    | `regular` |
+| `--typo-label-large`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
+| `--typo-label-medium`    | 0.75rem (12px)   | 1rem (16px)    | `medium`  |
+| `--typo-label-small`     | 0.6875rem (11px) | 1rem (16px)    | `medium`  |
+
+Sizes are in `rem`, so the whole scale follows the user's browser font size. The pixel values assume the default 16px.
+
+<Canvas of={TypographyStories.TypeScale} />
+
+## Weights
+
+Each weight has a named token. The scale tokens are built from them, and anything else that needs a weight should use them too, rather than a number. For example, to make a selected item bold:
+
+```css
+.tab[aria-selected="true"] {
+  font-weight: var(--typo-weight-bold);
+}
+```
+
+| Token                       | Light | Dark |
+| --------------------------- | ----- | ---- |
+| `--typo-weight-thin`        | 100   | 100  |
+| `--typo-weight-extra-light` | 200   | 150  |
+| `--typo-weight-light`       | 300   | 250  |
+| `--typo-weight-regular`     | 400   | 350  |
+| `--typo-weight-medium`      | 500   | 450  |
+| `--typo-weight-semibold`    | 600   | 550  |
+| `--typo-weight-bold`        | 700   | 650  |
+| `--typo-weight-extra-bold`  | 800   | 750  |
+
+Light text on a dark background looks heavier than dark text on a light one, so every weight is 50 lighter in dark themes. The exception is `thin`, which stays at 100, the lightest weight the font has. There's no `black` (900), because the font only goes up to 800.
+
+The dark weights apply:
+
+- with `data-theme="dark"`, or
+- with no `data-theme` on `<html>` while the system prefers dark.
+
+This follows the same `data-theme` rules as the colors (see Foundations / Theme), including nested sections. The light and dark values are declared once each, in the `%typo-weights-light` and `%typo-weights-dark` placeholders, and the theme selectors `@extend` them.
+
+A custom property resolves `var()` on the element where it's declared, so `typography.css` redeclares the scale on every element with `data-theme`. You don't need to do anything to get the right weight inside a nested section. The same applies to your own custom properties: if you write `--my-font: var(--typo-weight-bold) …` on `:root`, it keeps the root's weight inside a nested theme. Use the weight tokens in normal properties such as `font-weight`, or redeclare your property on `[data-theme]` as well.
+
+<Canvas of={TypographyStories.Weights} />
+
+## Font features
+
+Paper Mono has optional OpenType features that change how some characters look. Three tokens group them for different kinds of text:
+
+| Token                     | Features                       | Use                                                                                   |
+| ------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| `--typo-features-heading` | `ss02`, `ss03`, `ss04`, `cv01` | Display, headline and title text.                                                     |
+| `--typo-features-body`    | `ss02`, `ss04`, `cv01`         | Body and label text. Same as heading, but keeps full-width spaces for easier reading. |
+| `--typo-features-code`    | `ss01`, `zero`                 | Code. Keeps every character the same width, so columns and indentation line up.       |
+
+| Feature | Effect                                                                                                                                           |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ss01`  | Coding ligatures: joins sequences such as `=>` and `!=` into single symbols.                                                                     |
+| `ss02`  | Duospace glyphs: wide letters such as `m` and `w` get more room, narrow ones such as `i` and `l` less. The text is no longer strictly monospace. |
+| `ss03`  | Narrow space: a narrower space character, which also breaks strict monospace.                                                                    |
+| `ss04`  | Small arrows: smaller arrow glyphs (`← → ↑ ↓`).                                                                                                  |
+| `cv01`  | Single-storey `a`.                                                                                                                               |
+| `zero`  | Slashed zero, so `0` and `O` can't be confused.                                                                                                  |
+
+`typography.css` already applies these to plain HTML:
+
+- `body` gets `--typo-body-medium` with the body features, and the rest of the page inherits them.
+- `h1` to `h6` get the heading features. They keep the browser's default heading sizes, so set a `--typo-*` font on headings yourself.
+- `code` and `pre` get the code features.
+
+If you write your own token list, separate the features with commas, for example `"ss01", "zero"`. A space-separated list is invalid, and the browser ignores the whole declaration.
+
+<Canvas of={TypographyStories.FontFeatures} />
+
+## The font file
+
+The font is `src/public/fonts/PaperMono[wght].woff2`: a single variable file with a weight axis from 100 to 800, so any weight in between works with no extra download. It uses `font-display: swap`, so text shows in the fallback `monospace` font until Paper Mono has loaded.
+
+Storybook serves `src/public` as well, and `.storybook/manager-head.html` loads the same file for Storybook's own interface.
+
+Paper Mono is licensed under the SIL Open Font License 1.1. Keep `src/public/fonts/OFL.txt` alongside the font files.
+
+## Changing the scale
+
+Edit the tokens in `typography.css`. Use a `--typo-weight-*` token for each weight, not a number, or that token won't get lighter in dark themes. If you add or remove a token, update the `scale` list in `typography.stories.tsx` and the table on this page.

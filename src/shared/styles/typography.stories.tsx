@@ -1,58 +1,139 @@
-import "./typography.css";
+import type { CSSProperties } from "react";
 
-const typographyTokens = [
-  { name: "Display / Large", token: "--typo-display-large" },
-  { name: "Display / Medium", token: "--typo-display-medium" },
-  { name: "Display / Small", token: "--typo-display-small" },
-  { name: "Headline / Large", token: "--typo-headline-large" },
-  { name: "Headline / Medium", token: "--typo-headline-medium" },
-  { name: "Headline / Small", token: "--typo-headline-small" },
-  { name: "Title / Large", token: "--typo-title-large" },
-  { name: "Title / Medium", token: "--typo-title-medium" },
-  { name: "Title / Small", token: "--typo-title-small" },
-  { name: "Body / Large", token: "--typo-body-large" },
-  { name: "Body / Medium", token: "--typo-body-medium" },
-  { name: "Body / Small", token: "--typo-body-small" },
-  { name: "Label / Large", token: "--typo-label-large" },
-  { name: "Label / Medium", token: "--typo-label-medium" },
-  { name: "Label / Small", token: "--typo-label-small" },
+type Features = "heading" | "body" | "code";
+
+const scale: { role: string; features: Features; sizes: string[] }[] = [
+  { role: "display", features: "heading", sizes: ["large", "medium", "small"] },
+  { role: "headline", features: "heading", sizes: ["large", "medium", "small"] },
+  { role: "title", features: "heading", sizes: ["large", "medium", "small"] },
+  { role: "body", features: "body", sizes: ["large", "medium", "small"] },
+  { role: "label", features: "body", sizes: ["large", "medium", "small"] },
+];
+
+const weights = [
+  "thin",
+  "extra-light",
+  "light",
+  "regular",
+  "medium",
+  "semibold",
+  "bold",
+  "extra-bold",
 ] as const;
 
-export default {
-  title: "Typography/Type Scale",
+const featureSamples = [
+  { tag: "ss01", name: "Coding ligatures", sample: "=> -> != === <= >= ::" },
+  { tag: "ss02", name: "Duospace glyphs", sample: "mmm www iii lll" },
+  { tag: "ss03", name: "Narrow space", sample: "a b c d e f" },
+  { tag: "ss04", name: "Small arrows", sample: "← → ↑ ↓" },
+  { tag: "cv01", name: "Single-storey a", sample: "banana" },
+  { tag: "zero", name: "Slashed zero", sample: "0O 1000" },
+] as const;
+
+const text = (font: string, featureSettings: string): CSSProperties => ({
+  font: `var(${font})`,
+  // Must come after font: the shorthand resets font-feature-settings.
+  fontFeatureSettings: featureSettings,
+  margin: 0,
+});
+
+const label = text("--typo-label-medium", "var(--typo-features-code)");
+
+const page: CSSProperties = {
+  display: "grid",
+  gap: "1.5rem",
+  padding: "1.5rem",
+  color: "var(--md-sys-color-on-surface)",
+  background: "var(--md-sys-color-surface)",
 };
 
-export const AllTokens = {
+const row: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "14rem minmax(0, 1fr)",
+  alignItems: "baseline",
+  gap: "1rem",
+  borderBottom: "1px solid var(--md-sys-color-outline-variant)",
+  paddingBottom: "1rem",
+};
+
+export default {
+  title: "Foundations/Typography",
+};
+
+export const TypeScale = {
   render: () => (
-    <main
-      style={{
-        display: "grid",
-        gap: "1.5rem",
-        padding: "1.5rem",
-        color: "var(--md-sys-color-on-surface)",
-        background: "var(--md-sys-color-surface)",
-      }}
-    >
-      {typographyTokens.map(({ name, token }) => (
+    <main style={page}>
+      {scale.flatMap(({ role, features, sizes }) =>
+        sizes.map((size) => {
+          const token = `--typo-${role}-${size}`;
+          const featuresToken = `--typo-features-${features}`;
+          return (
+            <section key={token} style={row}>
+              <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+                {token}
+                <br />
+                {featuresToken}
+              </code>
+              <p style={text(token, `var(${featuresToken})`)}>
+                The quick brown fox jumps over the lazy dog. 0123456789
+              </p>
+            </section>
+          );
+        }),
+      )}
+    </main>
+  ),
+};
+
+export const Weights = {
+  render: () => (
+    <main style={page}>
+      {weights.map((weight) => {
+        const token = `--typo-weight-${weight}`;
+        return (
+          <section key={token} style={row}>
+            <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+              {token}
+            </code>
+            <p
+              style={{
+                ...text("--typo-headline-small", "var(--typo-features-heading)"),
+                fontWeight: `var(${token})`,
+              }}
+            >
+              The quick brown fox jumps over the lazy dog.
+            </p>
+          </section>
+        );
+      })}
+    </main>
+  ),
+};
+
+export const FontFeatures = {
+  render: () => (
+    <main style={page}>
+      {featureSamples.map(({ tag, name, sample }) => (
         <section
-          key={token}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "12rem minmax(0, 1fr)",
-            alignItems: "baseline",
-            gap: "1rem",
-            borderBottom: "1px solid var(--md-sys-color-outline-variant)",
-            paddingBottom: "1rem",
-          }}
+          key={tag}
+          style={{ ...row, gridTemplateColumns: "14rem repeat(2, minmax(0, 1fr))" }}
         >
-          <code style={{ font: "var(--typo-label-medium)" }}>
-            {name}
+          <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+            {tag}
             <br />
-            {token}
+            {name}
           </code>
-          <p style={{ font: `var(${token})`, margin: 0 }}>
-            The quick brown fox jumps over the lazy dog. 0123456789
-          </p>
+          {[
+            { state: "off", settings: "normal" },
+            { state: "on", settings: `"${tag}"` },
+          ].map(({ state, settings }) => (
+            <figure key={state} style={{ margin: 0, display: "grid", gap: "0.25rem" }}>
+              <figcaption style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+                {state}
+              </figcaption>
+              <p style={text("--typo-headline-small", settings)}>{sample}</p>
+            </figure>
+          ))}
         </section>
       ))}
     </main>

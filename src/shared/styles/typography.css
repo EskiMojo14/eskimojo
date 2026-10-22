@@ -5,39 +5,88 @@
   font-display: swap;
 }
 
-:root {
-  --typo-display-large: 400 3.5625rem/4rem "Paper Mono", monospace;
-  --typo-display-medium: 400 2.8125rem/3.25rem "Paper Mono", monospace;
-  --typo-display-small: 400 2.25rem/2.75rem "Paper Mono", monospace;
+/*
+ * Named weights. Light text on a dark background looks heavier, so dark themes use
+ * weights 50 lighter (thin stays at 100, the font's minimum). Use these instead of
+ * numeric weights, e.g. `font-weight: var(--typo-weight-bold)` for a selected state.
+ * The selectors mirror the color-scheme rules in theme/index.css.
+ */
+%typo-weights-light {
+  --typo-weight-thin: 100;
+  --typo-weight-extra-light: 200;
+  --typo-weight-light: 300;
+  --typo-weight-regular: 400;
+  --typo-weight-medium: 500;
+  --typo-weight-semibold: 600;
+  --typo-weight-bold: 700;
+  --typo-weight-extra-bold: 800;
+}
 
-  --typo-headline-large: 400 2rem/2.5rem "Paper Mono", monospace;
-  --typo-headline-medium: 400 1.75rem/2.25rem "Paper Mono", monospace;
-  --typo-headline-small: 400 1.5rem/2rem "Paper Mono", monospace;
+%typo-weights-dark {
+  --typo-weight-thin: 100;
+  --typo-weight-extra-light: 150;
+  --typo-weight-light: 250;
+  --typo-weight-regular: 350;
+  --typo-weight-medium: 450;
+  --typo-weight-semibold: 550;
+  --typo-weight-bold: 650;
+  --typo-weight-extra-bold: 750;
+}
 
-  --typo-title-large: 400 1.375rem/1.75rem "Paper Mono", monospace;
-  --typo-title-medium: 500 1rem/1.5rem "Paper Mono", monospace;
-  --typo-title-small: 500 0.875rem/1.25rem "Paper Mono", monospace;
+:root,
+[data-theme="light"] {
+  @extend %typo-weights-light;
+}
 
-  --typo-body-large: 400 1rem/1.5rem "Paper Mono", monospace;
-  --typo-body-medium: 400 0.875rem/1.25rem "Paper Mono", monospace;
-  --typo-body-small: 400 0.75rem/1rem "Paper Mono", monospace;
+[data-theme="dark"] {
+  @extend %typo-weights-dark;
+}
 
-  --typo-label-large: 500 0.875rem/1.25rem "Paper Mono", monospace;
-  --typo-label-medium: 500 0.75rem/1rem "Paper Mono", monospace;
-  --typo-label-small: 500 0.6875rem/1rem "Paper Mono", monospace;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @extend %typo-weights-dark;
+  }
+}
+
+/*
+ * A custom property resolves var() where it's declared, so the scale is redeclared on
+ * every [data-theme] element for nested themes to pick up their own weights.
+ */
+:root,
+[data-theme] {
+  --typo-display-large: var(--typo-weight-regular) 3.5625rem/4rem "Paper Mono", monospace;
+  --typo-display-medium: var(--typo-weight-regular) 2.8125rem/3.25rem "Paper Mono", monospace;
+  --typo-display-small: var(--typo-weight-regular) 2.25rem/2.75rem "Paper Mono", monospace;
+
+  --typo-headline-large: var(--typo-weight-regular) 2rem/2.5rem "Paper Mono", monospace;
+  --typo-headline-medium: var(--typo-weight-regular) 1.75rem/2.25rem "Paper Mono", monospace;
+  --typo-headline-small: var(--typo-weight-regular) 1.5rem/2rem "Paper Mono", monospace;
+
+  --typo-title-large: var(--typo-weight-regular) 1.375rem/1.75rem "Paper Mono", monospace;
+  --typo-title-medium: var(--typo-weight-medium) 1rem/1.5rem "Paper Mono", monospace;
+  --typo-title-small: var(--typo-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
+
+  --typo-body-large: var(--typo-weight-regular) 1rem/1.5rem "Paper Mono", monospace;
+  --typo-body-medium: var(--typo-weight-regular) 0.875rem/1.25rem "Paper Mono", monospace;
+  --typo-body-small: var(--typo-weight-regular) 0.75rem/1rem "Paper Mono", monospace;
+
+  --typo-label-large: var(--typo-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
+  --typo-label-medium: var(--typo-weight-medium) 0.75rem/1rem "Paper Mono", monospace;
+  --typo-label-small: var(--typo-weight-medium) 0.6875rem/1rem "Paper Mono", monospace;
 
   /*
-  font features: 
-    ss01: coding ligatures 
-    ss02: duospace characters (not monospace)
-    ss03: narrow spaces (not monospace)
+  font features (comma-separated, as font-feature-settings requires):
+    ss01: coding ligatures
+    ss02: duospace glyphs (not monospace)
+    ss03: narrow space (not monospace)
     ss04: small arrows
-    cv01: single-story a
+    cv01: single-storey a
     zero: slashed zero
+  The font shorthand resets font-feature-settings, so set these after every font.
   */
-  --typo-features-heading: "sso2" "ss03" "ss04" "cv01";
-  --typo-features-body: "sso2" "ss04" "cv01";
-  --typo-features-code: "ss01" "zero";
+  --typo-features-heading: "ss02", "ss03", "ss04", "cv01";
+  --typo-features-body: "ss02", "ss04", "cv01";
+  --typo-features-code: "ss01", "zero";
 }
 
 body {
