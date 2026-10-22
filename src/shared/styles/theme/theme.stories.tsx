@@ -1,3 +1,5 @@
+import preview from "#.storybook/preview";
+
 type Swatch = {
   /** Role used as the background. */
   bg: string;
@@ -137,11 +139,11 @@ function SwatchTile({ bg, fg, border }: Swatch) {
   );
 }
 
-export default {
+const meta = preview.meta({
   title: "Foundations/Theme",
-};
+});
 
-export const Swatches = {
+export const Swatches = meta.story({
   render: () => (
     <div
       style={{
@@ -170,4 +172,4 @@ export const Swatches = {
       ))}
     </div>
   ),
-};
+});

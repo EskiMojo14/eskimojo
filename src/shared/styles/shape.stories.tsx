@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import preview from "#.storybook/preview";
 
 const corners = [
   { name: "none", dp: "0" },
@@ -36,11 +37,11 @@ const tile = (radius: string, extra?: CSSProperties): CSSProperties => ({
   ...extra,
 });
 
-export default {
+const meta = preview.meta({
   title: "Foundations/Shape",
-};
+});
 
-export const CornerScale = {
+export const CornerScale = meta.story({
   render: () => (
     <main style={page}>
       {corners.map(({ name, dp }) => {
@@ -58,9 +59,9 @@ export const CornerScale = {
       })}
     </main>
   ),
-};
+});
 
-export const CornerShape = {
+export const CornerShape = meta.story({
   render: () => (
     <main style={page}>
       {(["bevel", "round"] as const).map((shape) => (
@@ -81,4 +82,4 @@ export const CornerShape = {
       ))}
     </main>
   ),
-};
+});

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import preview from "#.storybook/preview";
 
 type Features = "heading" | "body" | "code";
 
@@ -56,11 +57,11 @@ const row: CSSProperties = {
   paddingBottom: "1rem",
 };
 
-export default {
+const meta = preview.meta({
   title: "Foundations/Typography",
-};
+});
 
-export const TypeScale = {
+export const TypeScale = meta.story({
   render: () => (
     <main style={page}>
       {scale.flatMap(({ role, features, sizes }) =>
@@ -83,9 +84,9 @@ export const TypeScale = {
       )}
     </main>
   ),
-};
+});
 
-export const Weights = {
+export const Weights = meta.story({
   render: () => (
     <main style={page}>
       {weights.map((weight) => {
@@ -108,9 +109,9 @@ export const Weights = {
       })}
     </main>
   ),
-};
+});
 
-export const FontFeatures = {
+export const FontFeatures = meta.story({
   render: () => (
     <main style={page}>
       {featureSamples.map(({ tag, name, sample }) => (
@@ -138,4 +139,4 @@ export const FontFeatures = {
       ))}
     </main>
   ),
-};
+});

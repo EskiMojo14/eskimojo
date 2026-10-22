@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#/*": "./src/*"
+    "#/*": "./src/*",
+    "#.storybook/preview": "./.storybook/preview.tsx"
   },
   "scripts": {
     "dev": "vp dev --port 3000",

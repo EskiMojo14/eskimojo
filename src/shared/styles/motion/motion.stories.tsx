@@ -1,4 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
+import preview from "#.storybook/preview";
 
 const easings = [
   "emphasized",
@@ -100,11 +101,11 @@ function Demo({ children }: { children: (played: boolean) => ReactNode }) {
   );
 }
 
-export default {
+const meta = preview.meta({
   title: "Foundations/Motion",
-};
+});
 
-export const Easing = {
+export const Easing = meta.story({
   render: () => (
     <Demo>
       {(played) =>
@@ -123,9 +124,9 @@ export const Easing = {
       }
     </Demo>
   ),
-};
+});
 
-export const Duration = {
+export const Duration = meta.story({
   render: () => (
     <Demo>
       {(played) =>
@@ -144,9 +145,9 @@ export const Duration = {
       }
     </Demo>
   ),
-};
+});
 
-export const Springs = {
+export const Springs = meta.story({
   render: () => (
     <Demo>
       {(played) => [
@@ -185,4 +186,4 @@ export const Springs = {
       ]}
     </Demo>
   ),
-};
+});
