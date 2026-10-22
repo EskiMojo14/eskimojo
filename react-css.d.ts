@@ -1,9 +1,8 @@
 import "react";
 
-// csstype doesn't include corner-shape yet.
+// Lets style={{ "--name": value }} pass values to CSS custom properties.
 declare module "react" {
   interface CSSProperties {
-    /** https://developer.mozilla.org/docs/Web/CSS/corner-shape */
-    cornerShape?: "round" | "scoop" | "bevel" | "notch" | "square" | "squircle" | (string & {});
+    [property: `--${string}`]: string | number | undefined;
   }
 }

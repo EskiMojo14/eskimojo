@@ -1,0 +1,68 @@
+.motion-page {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.motion-play {
+  justify-self: start;
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  font: var(--typo-label-large);
+  font-feature-settings: var(--typo-features-body);
+  cursor: pointer;
+}
+
+.motion-row {
+  display: grid;
+  grid-template-columns: 22rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.motion-label {
+  font: var(--typo-label-medium);
+  font-feature-settings: var(--typo-features-code);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --track-duration and --track-easing are set per track. */
+.motion-track {
+  --dot-size: 1.5rem;
+
+  container-type: inline-size;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface-container);
+}
+
+.motion-dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  transition: translate var(--track-duration) var(--track-easing);
+}
+
+.motion-page[data-played] .motion-dot {
+  translate: calc(100cqi - var(--dot-size));
+}
+
+/* Effects tracks fade and change color instead of moving. */
+.motion-track--effects .motion-dot {
+  width: 100%;
+  opacity: 0.2;
+  transition:
+    opacity var(--track-duration) var(--track-easing),
+    background-color var(--track-duration) var(--track-easing);
+}
+
+.motion-page[data-played] .motion-track--effects .motion-dot {
+  translate: none;
+  opacity: 1;
+  background: var(--md-sys-color-tertiary);
+}

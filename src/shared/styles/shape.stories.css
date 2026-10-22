@@ -1,0 +1,36 @@
+.shape-page {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.shape-figure {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.shape-tile {
+  height: 6rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--tile-radius, var(--md-sys-shape-corner-extra-large));
+  background: var(--md-sys-color-primary-container);
+}
+
+.shape-tile--pill {
+  height: 3rem;
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+.shape-tile--round {
+  corner-shape: round;
+}
+
+.shape-caption {
+  font: var(--typo-label-medium);
+  font-feature-settings: var(--typo-features-code);
+  color: var(--md-sys-color-on-surface-variant);
+}

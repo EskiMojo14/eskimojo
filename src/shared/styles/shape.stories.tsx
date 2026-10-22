@@ -1,6 +1,6 @@
-import type { CSSProperties } from "react";
-
 import preview from "#.storybook/preview";
+
+import "./shape.stories.css";
 
 const corners = [
   { name: "none", dp: "0" },
@@ -15,42 +15,19 @@ const corners = [
   { name: "full", dp: "full" },
 ] as const;
 
-const page: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(17rem, 1fr))",
-  gap: "1.5rem",
-  padding: "1.5rem",
-  color: "var(--md-sys-color-on-surface)",
-  background: "var(--md-sys-color-surface)",
-};
-
-const caption: CSSProperties = {
-  font: "var(--typo-label-medium)",
-  fontFeatureSettings: "var(--typo-features-code)",
-  color: "var(--md-sys-color-on-surface-variant)",
-};
-
-const tile = (radius: string, extra?: CSSProperties): CSSProperties => ({
-  height: "6rem",
-  borderRadius: radius,
-  background: "var(--md-sys-color-primary-container)",
-  border: "1px solid var(--md-sys-color-outline-variant)",
-  ...extra,
-});
-
 const meta = preview.meta({
   title: "Foundations/Shape",
 });
 
 export const CornerScale = meta.story({
   render: () => (
-    <main style={page}>
+    <main className="shape-page">
       {corners.map(({ name, dp }) => {
         const token = `--md-sys-shape-corner-${name}`;
         return (
-          <figure key={name} style={{ margin: 0, display: "grid", gap: "0.5rem" }}>
-            <div style={tile(`var(${token})`)} />
-            <figcaption style={caption}>
+          <figure key={name} className="shape-figure">
+            <div className="shape-tile" style={{ "--tile-radius": `var(${token})` }} />
+            <figcaption className="shape-caption">
               {token}
               <br />
               {dp === "full" ? "full" : `${dp}dp`}
@@ -64,23 +41,17 @@ export const CornerScale = meta.story({
 
 export const CornerShape = meta.story({
   render: () => (
-    <main style={page}>
-      {(["bevel", "round"] as const).map((shape) => (
-        <figure key={shape} style={{ margin: 0, display: "grid", gap: "0.5rem" }}>
-          <div
-            style={tile("var(--md-sys-shape-corner-extra-large)", {
-              cornerShape: shape,
-            })}
-          />
-          <div
-            style={tile("var(--md-sys-shape-corner-full)", {
-              height: "3rem",
-              cornerShape: shape,
-            })}
-          />
-          <figcaption style={caption}>corner-shape: {shape}</figcaption>
-        </figure>
-      ))}
+    <main className="shape-page">
+      {(["bevel", "round"] as const).map((shape) => {
+        const shapeClass = shape === "round" ? " shape-tile--round" : "";
+        return (
+          <figure key={shape} className="shape-figure">
+            <div className={`shape-tile${shapeClass}`} />
+            <div className={`shape-tile shape-tile--pill${shapeClass}`} />
+            <figcaption className="shape-caption">corner-shape: {shape}</figcaption>
+          </figure>
+        );
+      })}
     </main>
   ),
 });

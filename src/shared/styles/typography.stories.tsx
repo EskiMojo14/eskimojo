@@ -1,6 +1,6 @@
-import type { CSSProperties } from "react";
-
 import preview from "#.storybook/preview";
+
+import "./typography.stories.css";
 
 type Features = "heading" | "body" | "code";
 
@@ -32,51 +32,31 @@ const featureSamples = [
   { tag: "zero", name: "Slashed zero", sample: "0O 1000" },
 ] as const;
 
-const text = (font: string, featureSettings: string): CSSProperties => ({
-  font: `var(${font})`,
-  // Must come after font: the shorthand resets font-feature-settings.
-  fontFeatureSettings: featureSettings,
-  margin: 0,
-});
-
-const label = text("--typo-label-medium", "var(--typo-features-code)");
-
-const page: CSSProperties = {
-  display: "grid",
-  gap: "1.5rem",
-  padding: "1.5rem",
-  color: "var(--md-sys-color-on-surface)",
-  background: "var(--md-sys-color-surface)",
-};
-
-const row: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "14rem minmax(0, 1fr)",
-  alignItems: "baseline",
-  gap: "1rem",
-  borderBottom: "1px solid var(--md-sys-color-outline-variant)",
-  paddingBottom: "1rem",
-};
-
 const meta = preview.meta({
   title: "Foundations/Typography",
 });
 
 export const TypeScale = meta.story({
   render: () => (
-    <main style={page}>
+    <main className="typography-page">
       {scale.flatMap(({ role, features, sizes }) =>
         sizes.map((size) => {
           const token = `--typo-${role}-${size}`;
           const featuresToken = `--typo-features-${features}`;
           return (
-            <section key={token} style={row}>
-              <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+            <section key={token} className="typography-row">
+              <code className="typography-label">
                 {token}
                 <br />
                 {featuresToken}
               </code>
-              <p style={text(token, `var(${featuresToken})`)}>
+              <p
+                className="typography-sample"
+                style={{
+                  "--sample-font": `var(${token})`,
+                  "--sample-features": `var(${featuresToken})`,
+                }}
+              >
                 The quick brown fox jumps over the lazy dog. 0123456789
               </p>
             </section>
@@ -89,19 +69,15 @@ export const TypeScale = meta.story({
 
 export const Weights = meta.story({
   render: () => (
-    <main style={page}>
+    <main className="typography-page">
       {weights.map((weight) => {
         const token = `--typo-weight-${weight}`;
         return (
-          <section key={token} style={row}>
-            <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
-              {token}
-            </code>
+          <section key={token} className="typography-row">
+            <code className="typography-label">{token}</code>
             <p
-              style={{
-                ...text("--typo-headline-small", "var(--typo-features-heading)"),
-                fontWeight: `var(${token})`,
-              }}
+              className="typography-sample typography-sample--weight"
+              style={{ "--sample-weight": `var(${token})` }}
             >
               The quick brown fox jumps over the lazy dog.
             </p>
@@ -114,13 +90,10 @@ export const Weights = meta.story({
 
 export const FontFeatures = meta.story({
   render: () => (
-    <main style={page}>
+    <main className="typography-page">
       {featureSamples.map(({ tag, name, sample }) => (
-        <section
-          key={tag}
-          style={{ ...row, gridTemplateColumns: "14rem repeat(2, minmax(0, 1fr))" }}
-        >
-          <code style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
+        <section key={tag} className="typography-row typography-row--features">
+          <code className="typography-label">
             {tag}
             <br />
             {name}
@@ -129,11 +102,11 @@ export const FontFeatures = meta.story({
             { state: "off", settings: "normal" },
             { state: "on", settings: `"${tag}"` },
           ].map(({ state, settings }) => (
-            <figure key={state} style={{ margin: 0, display: "grid", gap: "0.25rem" }}>
-              <figcaption style={{ ...label, color: "var(--md-sys-color-on-surface-variant)" }}>
-                {state}
-              </figcaption>
-              <p style={text("--typo-headline-small", settings)}>{sample}</p>
+            <figure key={state} className="typography-figure">
+              <figcaption className="typography-label">{state}</figcaption>
+              <p className="typography-sample" style={{ "--sample-features": settings }}>
+                {sample}
+              </p>
             </figure>
           ))}
         </section>

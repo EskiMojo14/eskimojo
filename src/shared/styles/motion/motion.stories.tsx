@@ -1,6 +1,8 @@
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import preview from "#.storybook/preview";
+
+import "./motion.stories.css";
 
 const easings = [
   "emphasized",
@@ -21,84 +23,43 @@ const durations = (["short", "medium", "long", "extra-long"] as const).flatMap((
 
 const speeds = ["fast", "default", "slow"] as const;
 
-const page: CSSProperties = {
-  display: "grid",
-  gap: "1rem",
-  padding: "1.5rem",
-  color: "var(--md-sys-color-on-surface)",
-  background: "var(--md-sys-color-surface)",
-};
-
-const label: CSSProperties = {
-  font: "var(--typo-label-medium)",
-  fontFeatureSettings: "var(--typo-features-code)",
-  color: "var(--md-sys-color-on-surface-variant)",
-};
-
-const row: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "22rem minmax(0, 1fr)",
-  alignItems: "center",
-  gap: "1rem",
-};
-
-const dotSize = "1.5rem";
-
 function Track({
-  played,
-  transition,
-  style,
+  duration,
+  easing,
+  effects = false,
 }: {
-  played: boolean;
-  transition: string;
-  style?: CSSProperties;
+  duration: string;
+  easing: string;
+  effects?: boolean;
 }) {
   return (
     <div
-      style={{
-        containerType: "inline-size",
-        background: "var(--md-sys-color-surface-container)",
-        borderRadius: "var(--md-sys-shape-corner-full)",
-      }}
+      className={effects ? "motion-track motion-track--effects" : "motion-track"}
+      style={{ "--track-duration": duration, "--track-easing": easing }}
     >
-      <div
-        style={{
-          width: dotSize,
-          height: dotSize,
-          borderRadius: "var(--md-sys-shape-corner-full)",
-          background: "var(--md-sys-color-primary)",
-          translate: played ? `calc(100cqi - ${dotSize})` : "0",
-          transition,
-          ...style,
-        }}
-      />
+      <div className="motion-dot" />
     </div>
   );
 }
 
-function Demo({ children }: { children: (played: boolean) => ReactNode }) {
+function Demo({ children }: { children: ReactNode }) {
   const [played, setPlayed] = useState(false);
   return (
-    <main style={page}>
-      <button
-        type="button"
-        onClick={() => setPlayed((p) => !p)}
-        style={{
-          justifySelf: "start",
-          padding: "0.625rem 1.5rem",
-          border: "none",
-          borderRadius: "var(--md-sys-shape-corner-full)",
-          background: "var(--md-sys-color-primary)",
-          color: "var(--md-sys-color-on-primary)",
-          font: "var(--typo-label-large)",
-          fontFeatureSettings: "var(--typo-features-body)",
-          cursor: "pointer",
-        }}
-      >
+    <main className="motion-page" data-played={played || undefined}>
+      <button type="button" className="motion-play" onClick={() => setPlayed((p) => !p)}>
         {played ? "Play back" : "Play"}
       </button>
-      {children(played)}
+      {children}
     </main>
+  );
+}
+
+function Row({ token, children }: { token: string; children: ReactNode }) {
+  return (
+    <section className="motion-row">
+      <code className="motion-label">{token}</code>
+      {children}
+    </section>
   );
 }
 
@@ -109,20 +70,14 @@ const meta = preview.meta({
 export const Easing = meta.story({
   render: () => (
     <Demo>
-      {(played) =>
-        easings.map((easing) => {
-          const token = `--md-sys-motion-easing-${easing}`;
-          return (
-            <section key={easing} style={row}>
-              <code style={label}>{token}</code>
-              <Track
-                played={played}
-                transition={`translate var(--md-sys-motion-duration-long2) var(${token})`}
-              />
-            </section>
-          );
-        })
-      }
+      {easings.map((easing) => {
+        const token = `--md-sys-motion-easing-${easing}`;
+        return (
+          <Row key={token} token={token}>
+            <Track duration="var(--md-sys-motion-duration-long2)" easing={`var(${token})`} />
+          </Row>
+        );
+      })}
     </Demo>
   ),
 });
@@ -130,20 +85,14 @@ export const Easing = meta.story({
 export const Duration = meta.story({
   render: () => (
     <Demo>
-      {(played) =>
-        durations.map((duration) => {
-          const token = `--md-sys-motion-duration-${duration}`;
-          return (
-            <section key={duration} style={row}>
-              <code style={label}>{token}</code>
-              <Track
-                played={played}
-                transition={`translate var(${token}) var(--md-sys-motion-easing-standard)`}
-              />
-            </section>
-          );
-        })
-      }
+      {durations.map((duration) => {
+        const token = `--md-sys-motion-duration-${duration}`;
+        return (
+          <Row key={token} token={token}>
+            <Track duration={`var(${token})`} easing="var(--md-sys-motion-easing-standard)" />
+          </Row>
+        );
+      })}
     </Demo>
   ),
 });
@@ -151,40 +100,20 @@ export const Duration = meta.story({
 export const Springs = meta.story({
   render: () => (
     <Demo>
-      {(played) => [
-        ...speeds.map((speed) => {
-          const token = `--md-sys-motion-spring-${speed}-spatial`;
+      {(["spatial", "effects"] as const).flatMap((type) =>
+        speeds.map((speed) => {
+          const token = `--md-sys-motion-spring-${speed}-${type}`;
           return (
-            <section key={token} style={row}>
-              <code style={label}>{token}</code>
+            <Row key={token} token={token}>
               <Track
-                played={played}
-                transition={`translate var(${token}-duration) var(${token})`}
+                duration={`var(${token}-duration)`}
+                easing={`var(${token})`}
+                effects={type === "effects"}
               />
-            </section>
+            </Row>
           );
         }),
-        ...speeds.map((speed) => {
-          const token = `--md-sys-motion-spring-${speed}-effects`;
-          return (
-            <section key={token} style={row}>
-              <code style={label}>{token}</code>
-              <Track
-                played={played}
-                transition={`opacity var(${token}-duration) var(${token}), background-color var(${token}-duration) var(${token})`}
-                style={{
-                  translate: "0",
-                  width: "100%",
-                  opacity: played ? 1 : 0.2,
-                  background: played
-                    ? "var(--md-sys-color-tertiary)"
-                    : "var(--md-sys-color-primary)",
-                }}
-              />
-            </section>
-          );
-        }),
-      ]}
+      )}
     </Demo>
   ),
 });

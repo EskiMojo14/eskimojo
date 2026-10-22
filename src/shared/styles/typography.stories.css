@@ -1,0 +1,44 @@
+.typography-page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.typography-row {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.typography-row--features {
+  grid-template-columns: 14rem repeat(2, minmax(0, 1fr));
+}
+
+.typography-label {
+  margin: 0;
+  font: var(--typo-label-medium);
+  font-feature-settings: var(--typo-features-code);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.typography-figure {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+/* font-feature-settings must come after font, which resets it. */
+.typography-sample {
+  margin: 0;
+  font: var(--sample-font, var(--typo-headline-small));
+  font-feature-settings: var(--sample-features, var(--typo-features-heading));
+}
+
+.typography-sample--weight {
+  font-weight: var(--sample-weight);
+}

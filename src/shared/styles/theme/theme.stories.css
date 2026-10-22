@@ -1,0 +1,58 @@
+.theme-page {
+  display: grid;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.theme-group {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.theme-group__title {
+  margin: 0;
+  font: var(--typo-title-small);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.theme-group__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.theme-swatch {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+/* --swatch-bg, --swatch-fg and --swatch-border are set per swatch. */
+.theme-swatch__tile {
+  display: flex;
+  align-items: center;
+  height: 4.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--swatch-border, var(--md-sys-color-outline-variant));
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--swatch-bg);
+  color: var(--swatch-fg);
+  font: var(--typo-title-medium);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.theme-swatch__tile--border {
+  border-width: 3px;
+}
+
+.theme-swatch__caption {
+  font: var(--typo-label-medium);
+  font-feature-settings: var(--typo-features-code);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.theme-swatch__name {
+  color: var(--md-sys-color-on-surface);
+}

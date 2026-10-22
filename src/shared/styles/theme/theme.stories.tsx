@@ -1,5 +1,7 @@
 import preview from "#.storybook/preview";
 
+import "./theme.stories.css";
+
 type Swatch = {
   /** Role used as the background. */
   bg: string;
@@ -102,26 +104,20 @@ const groups: { title: string; swatches: Swatch[] }[] = [
 const token = (role: string) => `var(--md-sys-color-${role})`;
 
 function SwatchTile({ bg, fg, border }: Swatch) {
-  const label = border ?? bg;
   return (
-    <figure style={{ margin: 0, display: "grid", gap: "0.5rem" }}>
+    <figure className="theme-swatch">
       <div
+        className={border ? "theme-swatch__tile theme-swatch__tile--border" : "theme-swatch__tile"}
         style={{
-          display: "flex",
-          alignItems: "center",
-          height: "4.5rem",
-          padding: "0 1rem",
-          borderRadius: "var(--md-sys-shape-corner-medium)",
-          background: token(bg),
-          color: fg && token(fg),
-          border: `${border ? "3px" : "1px"} solid ${token(border ?? "outline-variant")}`,
-          font: "var(--typo-title-medium)",
+          "--swatch-bg": token(bg),
+          "--swatch-fg": fg && token(fg),
+          "--swatch-border": border && token(border),
         }}
       >
         {fg && "Aa"}
       </div>
-      <figcaption style={{ font: "var(--typo-label-medium)", color: token("on-surface-variant") }}>
-        <strong style={{ color: token("on-surface") }}>{label}</strong>
+      <figcaption className="theme-swatch__caption">
+        <strong className="theme-swatch__name">{border ?? bg}</strong>
         {fg && !border && (
           <>
             <br />
@@ -145,25 +141,11 @@ const meta = preview.meta({
 
 export const Swatches = meta.story({
   render: () => (
-    <div
-      style={{
-        display: "grid",
-        gap: "2rem",
-        padding: "1.5rem",
-        background: token("surface"),
-        color: token("on-surface"),
-      }}
-    >
+    <div className="theme-page">
       {groups.map(({ title, swatches }) => (
-        <section key={title} style={{ display: "grid", gap: "0.75rem" }}>
-          <h3 style={{ font: "var(--typo-title-small)", margin: 0 }}>{title}</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(11rem, 1fr))",
-              gap: "1rem",
-            }}
-          >
+        <section key={title} className="theme-group">
+          <h3 className="theme-group__title">{title}</h3>
+          <div className="theme-group__swatches">
             {swatches.map((swatch) => (
               <SwatchTile key={`${swatch.bg}-${swatch.fg}-${swatch.border}`} {...swatch} />
             ))}
