@@ -1,4 +1,5 @@
 @import "normalize.css";
+@import "./typography";
 
 * {
   box-sizing: border-box;

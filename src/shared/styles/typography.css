@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "Paper Mono";
+  src: url("/fonts/PaperMono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-display: swap;
+}
+
+body {
+  font-family: "Paper Mono", sans-serif;
+}

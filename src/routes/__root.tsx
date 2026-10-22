@@ -3,7 +3,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 
-import appCss from "../styles.css?url";
+import appCss from "#/shared/styles/index.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 
