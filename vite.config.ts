@@ -7,6 +7,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "vite-plus/test/browser-playwright";
+import postcssExtendRule from "postcss-extend-rule";
+import { Features } from "lightningcss";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,7 +17,9 @@ const config = defineConfig({
   staged: {
     "*": "vp check --fix",
   },
-  fmt: {},
+  fmt: {
+    ignorePatterns: ["**/*.gen.ts"],
+  },
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
@@ -24,9 +28,18 @@ const config = defineConfig({
       correctness: "error",
       suspicious: "warn",
     },
+    ignorePatterns: ["**/*.gen.ts"],
   },
   resolve: {
     tsconfigPaths: true,
+  },
+  css: {
+    postcss: {
+      plugins: [postcssExtendRule({ onUnusedExtend: "throw" })],
+    },
+    // Theme tokens rely on native light-dark() resolving where they're used, so that
+    // nested [data-theme] sections work. The downlevelled fallback resolves at :root.
+    lightningcss: { exclude: Features.LightDark },
   },
   plugins: lazyPlugins(() => [devtools(), netlify(), tanstackStart(), viteReact()]),
   test: {

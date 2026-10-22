@@ -29,8 +29,8 @@ export const AllTokens = {
         display: "grid",
         gap: "1.5rem",
         padding: "1.5rem",
-        color: "#222",
-        background: "#fff",
+        color: "var(--md-sys-color-on-surface)",
+        background: "var(--md-sys-color-surface)",
       }}
     >
       {typographyTokens.map(({ name, token }) => (
@@ -41,11 +41,11 @@ export const AllTokens = {
             gridTemplateColumns: "12rem minmax(0, 1fr)",
             alignItems: "baseline",
             gap: "1rem",
-            borderBottom: "1px solid #ddd",
+            borderBottom: "1px solid var(--md-sys-color-outline-variant)",
             paddingBottom: "1rem",
           }}
         >
-          <code style={{ font: "0.75rem/1rem monospace" }}>
+          <code style={{ font: "var(--typo-label-medium)" }}>
             {name}
             <br />
             {token}

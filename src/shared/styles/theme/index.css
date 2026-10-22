@@ -1,0 +1,40 @@
+/*
+ * Token values live in ./palettes.css as %standard, %medium and %high placeholders
+ * (generated from ./export by `vp run theme:generate`). Each value is light-dark(),
+ * so the theme is chosen by color-scheme and the contrast level by which
+ * placeholder is extended. @extend is provided by postcss-extend-rule.
+ */
+@import "./palettes.css";
+
+/* Theme: no data-theme follows the system. */
+:root {
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Contrast: no data-contrast follows prefers-contrast. */
+:root,
+[data-contrast="standard"] {
+  @extend %standard;
+}
+
+[data-contrast="medium"] {
+  @extend %medium;
+}
+
+[data-contrast="high"] {
+  @extend %high;
+}
+
+@media (prefers-contrast: more) {
+  :root:not([data-contrast]) {
+    @extend %high;
+  }
+}

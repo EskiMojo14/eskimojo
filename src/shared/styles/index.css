@@ -1,6 +1,12 @@
 @import "normalize.css";
+@import "./theme/index.css";
 @import "./typography";
 
 * {
   box-sizing: border-box;
+}
+
+body {
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
 }
