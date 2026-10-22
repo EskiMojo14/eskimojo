@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+
 import preview from "#.storybook/preview";
 
 type Features = "heading" | "body" | "code";

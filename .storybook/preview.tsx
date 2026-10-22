@@ -1,5 +1,6 @@
 import addonDocs from "@storybook/addon-docs";
 import { definePreview } from "@storybook/tanstack-react";
+
 import "#/shared/styles/index.css";
 
 import { theme } from "./theme";

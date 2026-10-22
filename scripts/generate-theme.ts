@@ -8,6 +8,7 @@
  *   Storybook's own UI, plus an accent for its colorSecondary that meets WCAG AA.
  */
 import { readFileSync } from "node:fs";
+
 import { argbFromHex, Hct, TonalPalette } from "@material/material-color-utilities";
 
 import { writeFormatted } from "./write-formatted.ts";

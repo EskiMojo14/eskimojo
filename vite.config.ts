@@ -1,14 +1,16 @@
-import { defineConfig, lazyPlugins } from "vite-plus";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import netlify from "@netlify/vite-plugin-tanstack-start";
+import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import netlify from "@netlify/vite-plugin-tanstack-start";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
-import { playwright } from "vite-plus/test/browser-playwright";
-import postcssExtendRule from "postcss-extend-rule";
 import { Features } from "lightningcss";
+import postcssExtendRule from "postcss-extend-rule";
+import { defineConfig, lazyPlugins } from "vite-plus";
+import { playwright } from "vite-plus/test/browser-playwright";
+
 import fmtConfig from "./fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));

@@ -5,6 +5,7 @@ import type { OxfmtConfig } from "vite-plus/fmt";
 const config: OxfmtConfig = {
   // Generated files are formatted by the script that writes them.
   ignorePatterns: ["**/*.gen.*"],
+  sortImports: true,
 };
 
 export default config;

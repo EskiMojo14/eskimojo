@@ -1,11 +1,10 @@
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 
 import appCss from "#/shared/styles/index.css?url";
-
-import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
   queryClient: QueryClient;
