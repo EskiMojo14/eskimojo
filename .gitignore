@@ -1,0 +1,26 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+.env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json
+
+*storybook.log
+storybook-static
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+.env.*
+!.env.example
+
+# Local Netlify folder
+.netlify
