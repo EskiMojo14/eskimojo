@@ -14,6 +14,7 @@
     "build-storybook": "storybook build",
     "lint:css": "stylelint \"src/**/*.css\"",
     "theme:generate": "node scripts/generate-theme.ts",
+    "motion:generate": "node scripts/generate-motion.ts",
     "prepare": "vp config"
   },
   "dependencies": {

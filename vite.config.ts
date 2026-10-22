@@ -9,6 +9,7 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "vite-plus/test/browser-playwright";
 import postcssExtendRule from "postcss-extend-rule";
 import { Features } from "lightningcss";
+import fmtConfig from "./fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,9 +18,7 @@ const config = defineConfig({
   staged: {
     "*": "vp check --fix",
   },
-  fmt: {
-    ignorePatterns: ["**/*.gen.ts"],
-  },
+  fmt: fmtConfig,
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
@@ -28,7 +27,7 @@ const config = defineConfig({
       correctness: "error",
       suspicious: "warn",
     },
-    ignorePatterns: ["**/*.gen.ts"],
+    ignorePatterns: ["**/*.gen.*"],
   },
   resolve: {
     tsconfigPaths: true,

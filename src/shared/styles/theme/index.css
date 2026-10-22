@@ -1,10 +1,10 @@
 /*
- * Token values live in ./palettes.css as %standard, %medium and %high placeholders
+ * Token values live in ./palettes.gen.css as %standard, %medium and %high placeholders
  * (generated from ./export by `vp run theme:generate`). Each value is light-dark(),
  * so the theme is chosen by color-scheme and the contrast level by which
  * placeholder is extended. @extend is provided by postcss-extend-rule.
  */
-@import "./palettes.css";
+@import "./palettes.gen.css";
 
 /* Theme: no data-theme follows the system. */
 :root {

@@ -1,0 +1,117 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as MotionStories from "./motion.stories";
+
+<Meta of={MotionStories} />
+
+# Motion
+
+`src/shared/styles/motion/` defines Material 3's motion tokens. There are two sets:
+
+- **Springs**: the current Material 3 (Expressive) system. Each spring is an easing curve plus the duration it takes to settle. Use these for new work.
+- **Easing and duration**: the original Material 3 tokens, kept because many component specs still refer to them.
+
+`src/shared/styles/index.css` imports them, so the tokens are available globally.
+
+## Springs
+
+A spring's speed and bounce come from its physical stiffness and damping, not a fixed curve and time. CSS has no springs, so each one is turned into a `linear()` easing curve and a matching duration. Always use the two together:
+
+```css
+.sheet {
+  transition: translate var(--md-sys-motion-spring-default-spatial-duration)
+    var(--md-sys-motion-spring-default-spatial);
+}
+```
+
+There are two kinds, each in three speeds:
+
+- **Spatial**, for anything that moves or changes size: position, scale, rotation, width and height. In the expressive scheme they overshoot a little.
+- **Effects**, for color and opacity. These never overshoot, because a color or opacity going past its target looks like a glitch.
+
+| Speed     | Use                                                                |
+| --------- | ------------------------------------------------------------------ |
+| `fast`    | Small components and quick feedback, such as switches and buttons. |
+| `default` | Most transitions, such as sheets, menus and navigation rails.      |
+| `slow`    | Large or full-screen transitions.                                  |
+
+| Token                                    | Standard                           | Expressive                        |
+| ---------------------------------------- | ---------------------------------- | --------------------------------- |
+| `--md-sys-motion-spring-fast-spatial`    | damping 0.9, stiffness 1400, 224ms | damping 0.6, stiffness 800, 360ms |
+| `--md-sys-motion-spring-default-spatial` | damping 0.9, stiffness 700, 317ms  | damping 0.8, stiffness 380, 435ms |
+| `--md-sys-motion-spring-slow-spatial`    | damping 0.9, stiffness 300, 484ms  | damping 0.8, stiffness 200, 599ms |
+| `--md-sys-motion-spring-fast-effects`    | damping 1, stiffness 3800, 150ms   | same                              |
+| `--md-sys-motion-spring-default-effects` | damping 1, stiffness 1600, 231ms   | same                              |
+| `--md-sys-motion-spring-slow-effects`    | damping 1, stiffness 800, 327ms    | same                              |
+
+Each token has a `-duration` partner, such as `--md-sys-motion-spring-fast-spatial-duration`.
+
+### Standard and expressive
+
+The standard scheme is calm, with almost no bounce. The expressive scheme is livelier, and its spatial springs overshoot slightly. Standard is the default. Set `data-motion="expressive"` on any element to switch it and everything inside it, and `data-motion="standard"` to switch a section back. The **Motion** toolbar control in Storybook does this for the whole page.
+
+<Canvas of={MotionStories.Springs} />
+
+### Reduced motion
+
+When the user has turned on reduced motion (`prefers-reduced-motion: reduce`), the spatial springs have no bounce and a 0.01ms duration, so things jump straight to their end position. That applies in both schemes. It's 0.01ms rather than 0 so that `transitionend` and `animationend` still fire.
+
+Effects springs aren't changed, because fades and color changes don't cause the problems that movement can. That's another reason to use the right kind of spring.
+
+The easing and duration tokens are not changed by reduced motion. If you use them for movement, handle reduced motion yourself:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .drawer {
+    transition: none;
+  }
+}
+```
+
+## Easing and duration
+
+Pick an easing for how the motion should feel, and a duration for how far it travels: small changes are short, large or full-screen ones long.
+
+| Token                                          | Value                             | Use                                                  |
+| ---------------------------------------------- | --------------------------------- | ---------------------------------------------------- |
+| `--md-sys-motion-easing-emphasized`            | `cubic-bezier(0.2, 0, 0, 1)`      | Most transitions that start and end on screen.       |
+| `--md-sys-motion-easing-emphasized-decelerate` | `cubic-bezier(0.05, 0.7, 0.1, 1)` | Elements entering the screen.                        |
+| `--md-sys-motion-easing-emphasized-accelerate` | `cubic-bezier(0.3, 0, 0.8, 0.15)` | Elements leaving the screen.                         |
+| `--md-sys-motion-easing-standard`              | `cubic-bezier(0.2, 0, 0, 1)`      | Small, simple transitions, such as utility controls. |
+| `--md-sys-motion-easing-standard-decelerate`   | `cubic-bezier(0, 0, 0, 1)`        | Small elements entering.                             |
+| `--md-sys-motion-easing-standard-accelerate`   | `cubic-bezier(0.3, 0, 1, 1)`      | Small elements leaving.                              |
+| `--md-sys-motion-easing-legacy`                | `cubic-bezier(0.4, 0, 0.2, 1)`    | Matching older Material 2 motion.                    |
+| `--md-sys-motion-easing-legacy-decelerate`     | `cubic-bezier(0, 0, 0.2, 1)`      | Material 2 entering.                                 |
+| `--md-sys-motion-easing-legacy-accelerate`     | `cubic-bezier(0.4, 0, 1, 1)`      | Material 2 leaving.                                  |
+| `--md-sys-motion-easing-linear`                | `cubic-bezier(0, 0, 1, 1)`        | Continuous changes, such as progress indicators.     |
+
+The Material spec defines `emphasized` as a two-part curve. CSS can't express that in a single `cubic-bezier()`, so it has the same value as `standard`, as in Google's own web components.
+
+Material suggests these pairings:
+
+| Easing                  | Duration          |
+| ----------------------- | ----------------- |
+| `emphasized`            | `long2` (500ms)   |
+| `emphasized-decelerate` | `medium4` (400ms) |
+| `emphasized-accelerate` | `short4` (200ms)  |
+| `standard`              | `medium2` (300ms) |
+| `standard-decelerate`   | `medium1` (250ms) |
+| `standard-accelerate`   | `short4` (200ms)  |
+
+<Canvas of={MotionStories.Easing} />
+
+The durations go up in four steps per group: `short1`–`short4` (50–200ms), `medium1`–`medium4` (250–400ms), `long1`–`long4` (450–600ms) and `extra-long1`–`extra-long4` (700–1000ms). For example, `--md-sys-motion-duration-medium2` is 300ms.
+
+<Canvas of={MotionStories.Duration} />
+
+## Files
+
+| File                         | Contents                                                                                      |
+| ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `motion/index.css`           | Easing and duration tokens, the reduced-motion values, and the `data-motion` selectors.       |
+| `motion/springs.gen.css`     | The spring tokens. Generated, so don't edit it.                                               |
+| `scripts/generate-motion.ts` | The spring stiffness and damping values, and the code that turns them into `linear()` curves. |
+
+To change a spring, edit its values in `scripts/generate-motion.ts`, then run `vp run motion:generate`. The values are copied from Compose Material 3 (`StandardMotionTokens` and `ExpressiveMotionTokens`). A spring counts as settled once it stays within 0.1% of its target, which sets the durations above.
+
+`linear()` needs Chrome 113, Safari 17.2 or Firefox 112. Older browsers ignore any `transition` that uses it.

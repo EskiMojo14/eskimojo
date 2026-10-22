@@ -41,6 +41,7 @@ const colorProperties = [
 
 /** @type {import("stylelint").Config} */
 export default {
+  ignoreFiles: ["**/*.gen.*"],
   plugins: ["stylelint-declaration-strict-value"],
   rules: {
     "scale-unlimited/declaration-strict-value": [

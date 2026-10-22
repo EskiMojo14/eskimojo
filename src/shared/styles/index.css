@@ -2,6 +2,7 @@
 @import "./theme/index.css";
 @import "./typography";
 @import "./shape.css";
+@import "./motion/index.css";
 
 * {
   box-sizing: border-box;

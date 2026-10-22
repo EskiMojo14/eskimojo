@@ -4,7 +4,11 @@ import "#/shared/styles/index.css";
 
 import { theme } from "./theme";
 
-function setRootAttribute(name: "theme" | "contrast", value: unknown, allowed: string[]) {
+function setRootAttribute(
+  name: "theme" | "contrast" | "motion",
+  value: unknown,
+  allowed: string[],
+) {
   const { dataset } = document.documentElement;
   if (typeof value === "string" && allowed.includes(value)) {
     dataset[name] = value;
@@ -44,8 +48,20 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    motion: {
+      description: "Material 3 spring scheme",
+      toolbar: {
+        title: "Motion",
+        icon: "lightning",
+        items: [
+          { value: "standard", title: "Standard motion" },
+          { value: "expressive", title: "Expressive motion" },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
-  initialGlobals: { theme: "system", contrast: "system" },
+  initialGlobals: { theme: "system", contrast: "system", motion: "standard" },
 
   decorators: [
     (Story, { globals }) => {
@@ -53,6 +69,7 @@ export default definePreview({
       // an attribute, the theme follows prefers-color-scheme / prefers-contrast.
       setRootAttribute("theme", globals.theme, ["light", "dark"]);
       setRootAttribute("contrast", globals.contrast, ["standard", "medium", "high"]);
+      setRootAttribute("motion", globals.motion, ["expressive"]);
       return <Story />;
     },
   ],
