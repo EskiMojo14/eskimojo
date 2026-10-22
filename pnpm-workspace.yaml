@@ -18,3 +18,11 @@ peerDependencyRules:
   allowedVersions:
     vite: "*"
     vitest: "*"
+permissions:
+  "@tanstack/devtools-vite":
+    skills: true
+  "@tanstack/react-start":
+    skills: true
+skills:
+  dirs:
+    - skills
