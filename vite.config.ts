@@ -16,6 +16,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import fmtConfig from "./fmt.config.ts";
+import materialSymbols from "./vite/symbols.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -95,7 +96,14 @@ const config = defineConfig({
     // nested [data-theme] sections work. The downlevelled fallback resolves at :root.
     lightningcss: { exclude: Features.LightDark },
   },
-  plugins: lazyPlugins(() => [devtools(), netlify(), tanstackStart(), viteReact(), msw()]),
+  plugins: lazyPlugins(() => [
+    devtools(),
+    netlify(),
+    tanstackStart(),
+    viteReact(),
+    materialSymbols({ knownSymbols: [] }),
+    msw(),
+  ]),
   test: {
     coverage: {
       provider: "v8",

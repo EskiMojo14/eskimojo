@@ -1,0 +1,51 @@
+# Material Symbols
+
+The icon-font approach is adapted from
+[Schema Benchmarks](https://github.com/open-circle/schema-benchmarks).
+The component is in [symbol/index.tsx](../src/shared/components/symbol/index.tsx)
+and the build plugin is in [vite/symbols.ts](../vite/symbols.ts).
+
+## Usage
+
+Import `MdSymbol` from `#/shared/components/symbol`:
+
+```tsx
+import { MdSymbol } from "#/shared/components/symbol";
+
+<MdSymbol>search</MdSymbol>
+<MdSymbol fill size={32} aria-label="Favourite">favorite</MdSymbol>
+```
+
+Icons are decorative by default. Label an informative icon with `aria-label` or
+`aria-labelledby`; it will be exposed as an image to assistive technology. Label
+an icon-only button on the button itself.
+
+Use `fill`, `weight`, `grade`, `opticalSize`, `size`, and `flipRtl` props, or the
+corresponding `--icon-fill`, `--icon-weight`, `--icon-grade`,
+`--icon-optical-size`, and `--icon-size` CSS variables. CSS sizes are unitless
+pixel values. Explicit `style` values override convenience props. Set `flipRtl`
+only for directional symbols that should mirror in an RTL context.
+
+The default grade follows the nearest light/dark theme, or the system preference
+when there is no explicit theme. Variation transitions respect reduced motion.
+Examples are available in Storybook under **Components/MdSymbol**.
+The global **Direction** toolbar sets the preview's text direction to LTR or RTL.
+The **RightToLeft** story defaults to RTL through that global.
+
+## Font loading and production subsets
+
+The app and Storybook load Material Symbols Sharp from Google Fonts, so rendering
+requires access to `fonts.googleapis.com` and `fonts.gstatic.com`. Development
+loads the full font.
+
+Production builds extract literal `<MdSymbol>` children and request only those
+symbols, deduplicated and alphabetically sorted. The plugin updates JavaScript
+chunks for TanStack Start and the preview HTML for Storybook.
+
+For dynamic children such as `<MdSymbol>{icon}</MdSymbol>`, register every
+possible name in `materialSymbols({ knownSymbols: [...] })` in
+[vite.config.ts](../vite.config.ts). The plugin warns when it encounters dynamic
+children; it does not evaluate expressions. Keep the component's imported name
+as `MdSymbol` so the extractor can recognize it.
+
+If no symbols are found or registered, the font URL is left unchanged.

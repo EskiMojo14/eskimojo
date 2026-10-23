@@ -1,6 +1,8 @@
 import type { StorybookConfig } from "@storybook/tanstack-react";
 import remarkGfm from "remark-gfm";
 
+import { symbolsUrl } from "../src/shared/lib/symbols.ts";
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   staticDirs: ["../src/public"],
@@ -15,5 +17,7 @@ const config: StorybookConfig = {
     "@storybook/addon-mcp",
   ],
   framework: "@storybook/tanstack-react",
+  previewHead: (head) =>
+    `${head}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="stylesheet" href="${symbolsUrl}" crossorigin="anonymous">`,
 };
 export default config;

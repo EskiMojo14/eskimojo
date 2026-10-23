@@ -23,6 +23,18 @@ export default definePreview({
   addons: [addonDocs()],
 
   globalTypes: {
+    direction: {
+      description: "Text direction",
+      toolbar: {
+        title: "Direction",
+        icon: "transfer",
+        items: [
+          { value: "ltr", title: "Left to right" },
+          { value: "rtl", title: "Right to left" },
+        ],
+        dynamicTitle: true,
+      },
+    },
     theme: {
       description: "Light or dark theme",
       toolbar: {
@@ -63,10 +75,11 @@ export default definePreview({
       },
     },
   },
-  initialGlobals: { theme: "system", contrast: "system", motion: "standard" },
+  initialGlobals: { direction: "ltr", theme: "system", contrast: "system", motion: "standard" },
 
   decorators: [
     (Story, { globals }) => {
+      document.documentElement.dir = globals.direction === "rtl" ? "rtl" : "ltr";
       // Set on <html> so the tokens also reach the body background. Without
       // an attribute, the theme follows prefers-color-scheme / prefers-contrast.
       setRootAttribute("theme", globals.theme, ["light", "dark"]);
@@ -92,5 +105,7 @@ export default definePreview({
       // 'off' - skip a11y checks entirely
       test: "todo",
     },
+
+    layout: "centered",
   },
 });

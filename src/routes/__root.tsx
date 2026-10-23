@@ -4,6 +4,8 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { symbolsUrl } from "#/shared/lib/symbols";
+
 import appCss from "#/shared/styles/index.css?url";
 
 interface MyRouterContext {
@@ -25,6 +27,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
     links: [
+      {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: symbolsUrl,
+        crossOrigin: "anonymous",
+      },
       {
         rel: "stylesheet",
         href: appCss,

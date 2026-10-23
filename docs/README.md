@@ -13,3 +13,8 @@ website so it can be implemented without relying on chat history.
 Items explicitly marked **Open** still need a decision or user-provided
 content. These documents record the design; they do not indicate that the
 features have been implemented.
+
+## Implementation notes
+
+- [Material Symbols](./material-symbols.md) — icon component usage, accessibility,
+  font loading, and production symbol extraction.
