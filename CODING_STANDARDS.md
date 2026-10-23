@@ -59,6 +59,8 @@ contributor guidance.
   and exercise UI states; a story is not a substitute for a logic test.
 - Cover meaningful edge cases and user-visible behavior without coupling tests
   to implementation details.
+- Test observable behavior and outcomes. Unless explicitly requested, do not
+  assert on computed styles or class names.
 - Register test cleanup with `onTestFinished` immediately after acquiring the
   resource, or use `using` / `await using` when the resource supports disposal.
   Never leave cleanup after assertions where a failure could skip it.
