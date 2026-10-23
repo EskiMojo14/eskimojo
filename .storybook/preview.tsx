@@ -1,5 +1,7 @@
+import addonA11y from "@storybook/addon-a11y";
 import addonDocs from "@storybook/addon-docs";
 import { definePreview } from "@storybook/tanstack-react";
+import addonMsw from "msw-storybook-addon";
 
 import "#/shared/styles/index.css";
 import "./syntax.css";
@@ -20,7 +22,7 @@ function setRootAttribute(
 }
 
 export default definePreview({
-  addons: [addonDocs()],
+  addons: [addonDocs(), addonA11y(), addonMsw()],
 
   globalTypes: {
     direction: {

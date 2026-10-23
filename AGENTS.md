@@ -25,3 +25,7 @@ release. Add a tool name to select part of the graph. For example, run
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
 <!--VITE PLUS END-->
+
+## Storybook MCP
+
+For UI work, use the `storybook` MCP server when it is available and Storybook is running. Use its docs tools to discover documented components and their APIs before creating or changing UI, and its development and testing tools to preview and validate story changes.

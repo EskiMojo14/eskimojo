@@ -7,7 +7,6 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   staticDirs: ["../public"],
   addons: [
-    "@chromatic-com/storybook",
     "@storybook/addon-vitest",
     "@storybook/addon-a11y",
     {
@@ -15,7 +14,11 @@ const config: StorybookConfig = {
       options: { mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } } },
     },
     "@storybook/addon-mcp",
+    "msw-storybook-addon",
   ],
+  features: {
+    componentsManifest: true,
+  },
   framework: "@storybook/tanstack-react",
   previewHead: (head) =>
     `${head}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="stylesheet" href="${symbolsUrl}" crossorigin="anonymous">`,
