@@ -1,3 +1,8 @@
 {
-  "recommendations": ["VoidZero.vite-plus-extension-pack"]
+  "recommendations": [
+    "VoidZero.vite-plus-extension-pack",
+    "stylelint.vscode-stylelint",
+    "ms-playwright.playwright",
+    "storybook.storybook-vscode"
+  ]
 }
