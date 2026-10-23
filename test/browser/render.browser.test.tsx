@@ -18,17 +18,18 @@ function ContextProbe() {
   );
 }
 
-test("renders with isolated query and memory-router providers", async () => {
+test("renders with isolated query and memory-router providers", async ({ onTestFinished }) => {
   const result = await page.renderWithProviders(<ContextProbe />);
+  onTestFinished(() => result.queryClient.clear());
 
   await expect.element(result.getByText("Shared client")).toBeVisible();
   expect(result.router.options.context.queryClient).toBe(result.queryClient);
   expect(result.router.history).toBe(result.history);
-  result.queryClient.clear();
 });
 
-test("reuses an existing router's providers", async () => {
+test("reuses an existing router's providers", async ({ onTestFinished }) => {
   const queryClient = createQueryClient();
+  onTestFinished(() => queryClient.clear());
   const history = createMemoryHistory({ initialEntries: ["/"] });
   const router = getRouter({ queryClient, history });
   const result = await page.renderWithProviders(<ContextProbe />, { router });
@@ -37,7 +38,6 @@ test("reuses an existing router's providers", async () => {
   expect(result.queryClient).toBe(queryClient);
   expect(result.history).toBe(history);
   expect(result.router).toBe(router);
-  queryClient.clear();
 });
 
 test("mocks browser requests with the shared network setup", async () => {
