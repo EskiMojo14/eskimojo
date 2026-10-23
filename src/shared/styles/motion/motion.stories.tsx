@@ -65,6 +65,9 @@ function Row({ token, children }: { token: string; children: ReactNode }) {
 
 const meta = preview.meta({
   title: "Foundations/Motion",
+  parameters: {
+    layout: "fullscreen",
+  },
 });
 
 export const Easing = meta.story({

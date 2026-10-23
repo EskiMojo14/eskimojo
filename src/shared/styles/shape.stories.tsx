@@ -17,6 +17,9 @@ const corners = [
 
 const meta = preview.meta({
   title: "Foundations/Shape",
+  parameters: {
+    layout: "fullscreen",
+  },
 });
 
 export const CornerScale = meta.story({

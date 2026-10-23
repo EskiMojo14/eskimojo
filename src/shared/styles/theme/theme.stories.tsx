@@ -158,6 +158,9 @@ function SwatchTile({ bg, fg, border }: Swatch) {
 
 const meta = preview.meta({
   title: "Foundations/Theme",
+  parameters: {
+    layout: "fullscreen",
+  },
 });
 
 export const Swatches = meta.story({

@@ -36,6 +36,9 @@ const featureSamples = [
 
 const meta = preview.meta({
   title: "Foundations/Typography",
+  parameters: {
+    layout: "fullscreen",
+  },
 });
 
 function WeightTransitionDemo() {
