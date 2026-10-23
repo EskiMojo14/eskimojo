@@ -1,0 +1,64 @@
+.state-page {
+  padding: 1.5rem;
+}
+
+.state-page h1 {
+  font: var(--typo-headline-large);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.state-page h2 {
+  font: var(--typo-title-large);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.state-section {
+  margin-block: 2rem;
+}
+
+.state-samples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.5rem;
+}
+
+.state-sample {
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.state-sample__surface {
+  --state-sample-layer: rgb(
+    from var(--md-sys-color-on-surface) r g b / var(--state-sample-opacity)
+  );
+  position: relative;
+  isolation: isolate;
+  padding: 1.25rem;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font: var(--typo-label-large);
+  font-feature-settings: var(--typo-features-body);
+}
+
+.state-sample__surface--selected {
+  --state-sample-layer: rgb(
+    from var(--md-sys-color-on-secondary-container) r g b / var(--state-sample-opacity)
+  );
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.state-sample__surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--state-sample-layer);
+}
+
+.state-sample figcaption {
+  margin-block-start: 0.75rem;
+  overflow-wrap: anywhere;
+}

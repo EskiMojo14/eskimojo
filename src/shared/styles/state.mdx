@@ -1,0 +1,44 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as StateStories from "./state.stories";
+
+<Meta of={StateStories} />
+
+# State layers
+
+`state.css`, imported globally by `index.css`, defines Material 3's shared
+interaction-state opacity tokens.
+
+| Token                                        | Opacity |
+| -------------------------------------------- | ------- |
+| `--md-sys-state-hover-state-layer-opacity`   | 0.08    |
+| `--md-sys-state-focus-state-layer-opacity`   | 0.10    |
+| `--md-sys-state-pressed-state-layer-opacity` | 0.10    |
+| `--md-sys-state-dragged-state-layer-opacity` | 0.16    |
+
+Values follow Google's [Material 3 state tokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/StateTokens.kt).
+
+Apply these values to a state layer over the component's existing surface, not
+to the opacity of the entire component. Keep text, icons, and the selected
+container fully opaque. Choose the layer colour using the component's Material
+colour roles: navigation uses `on-surface` for unselected destinations and
+`on-secondary-container` for the selected destination.
+
+```css
+.control::before {
+  background: rgb(
+    from var(--md-sys-color-on-surface) r g b / var(--md-sys-state-hover-state-layer-opacity)
+  );
+}
+```
+
+Use relative colours for alpha adjustments. States replace one another rather
+than accumulating: navigation gives press priority over focus, and focus over
+hover. A visible focus outline remains necessary; the state layer alone is not
+the focus indicator.
+
+These are interaction-state tokens, not universal alpha values. Scrims,
+elevation shadows, and disabled content have separate component-specific
+opacity rules and should not reuse the hover or pressed values.
+
+<Canvas of={StateStories.StateLayers} />
