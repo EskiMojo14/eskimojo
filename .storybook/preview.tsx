@@ -92,7 +92,7 @@ export default definePreview({
     palette: "goat",
     theme: "system",
     contrast: "system",
-    motion: "standard",
+    motion: "expressive",
   },
 
   decorators: [
@@ -103,7 +103,7 @@ export default definePreview({
       setRootAttribute("theme", globals.theme, ["light", "dark"]);
       setRootAttribute("palette", globals.palette, ["goat", "arctic"]);
       setRootAttribute("contrast", globals.contrast, ["standard", "medium", "high"]);
-      setRootAttribute("motion", globals.motion, ["expressive"]);
+      setRootAttribute("motion", globals.motion, ["standard", "expressive"]);
       return <Story />;
     },
   ],

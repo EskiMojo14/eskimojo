@@ -49,14 +49,14 @@
   --md-sys-motion-spring-slow-spatial-duration: 0.01ms;
 }
 
-/* Spring scheme: standard unless an ancestor has data-motion="expressive". */
+/* Spring scheme: expressive unless an ancestor has data-motion="standard". */
 :root,
-[data-motion="standard"] {
-  @extend %motion-standard;
-}
-
 [data-motion="expressive"] {
   @extend %motion-expressive;
+}
+
+[data-motion="standard"] {
+  @extend %motion-standard;
 }
 
 /* Same specificity and later in the file, so it overrides both schemes. */
