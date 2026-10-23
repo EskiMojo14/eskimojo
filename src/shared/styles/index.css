@@ -5,6 +5,9 @@
 @import "./state.css";
 @import "./motion/index.css";
 @import "./syntax.css";
+@import "../components/footer/index.css";
+@import "../components/sidebar/index.css";
+@import "../components/symbol/index.css";
 
 * {
   box-sizing: border-box;

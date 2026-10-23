@@ -1,7 +1,5 @@
 import type { ComponentPropsWithRef } from "react";
 
-import "./index.css";
-
 export interface MdSymbolProps extends ComponentPropsWithRef<"span"> {
   children: string;
   flipRtl?: boolean;

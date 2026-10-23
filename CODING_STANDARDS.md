@@ -89,6 +89,14 @@ contributor guidance.
 
 ## CSS and design tokens
 
+- Load stylesheets through `<link rel="stylesheet">` URLs in the document head,
+  or through CSS `@import` chains rooted in a head-linked stylesheet. In
+  JavaScript/TypeScript, import CSS only as a URL (for example,
+  `import stylesUrl from "./index.css?url"`) and register it in the route's
+  head links. Never use side-effect CSS imports such as `import "./index.css"`;
+  they cause a flash of unstyled content (FOUC) with TanStack SSR. Direct CSS
+  imports are allowed in browser tests and Storybook (including story and
+  preview styles), where SSR FOUC is not a concern.
 - Use BEM-like class names: a component block such as `.music-list`, an element
   such as `.music-list__item`, and a modifier such as
   `.music-list--compact`.
