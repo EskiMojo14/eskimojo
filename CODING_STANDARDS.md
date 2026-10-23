@@ -19,6 +19,8 @@ contributor guidance.
   type-only imports.
 - Use the `#/` alias for imports from `src/`; keep relative imports for files
   colocated in the same local module.
+- Linting rejects parent-relative imports within `src/`, while allowing `./`
+  imports. Use `#/` instead of paths such as `../../shared/lib/query`.
 - Preserve existing public interfaces and user-visible behavior unless the
   change explicitly requires otherwise.
 
@@ -89,9 +91,14 @@ contributor guidance.
 - Use the repository's Oxfmt configuration through Vite+; imports are sorted
   automatically. Do not introduce a separate formatter configuration.
 - Resolve TypeScript and lint diagnostics rather than disabling checks without
-  a specific justification.
-- Run `vp check` and `vp test` for code changes. Run `vp run lint:css` when
-  changing CSS, and `vp run build` when changes could affect production
-  compilation or routing.
+  a specific justification. Keep any necessary lint-disable directive narrow
+  and ensure it is still needed.
+- Use the TanStack Router and Query recommended lint rules for application
+  code, with Query's exhaustive-deps rule disabled to match schema-benchmarks.
+  The dependency plugin also checks for packages with native or simpler
+  alternatives.
+- Run `vp check` and `vp test` for code changes. Run `vp run lint` to include
+  both JavaScript/TypeScript and CSS linting; run `vp run build` when changes
+  could affect production compilation or routing.
 - Use `vp run <script>` for project scripts declared in `package.json`;
   `vp <command>` may invoke a Vite+ built-in instead.

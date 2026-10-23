@@ -4,8 +4,11 @@ import { fileURLToPath } from "node:url";
 import netlify from "@netlify/vite-plugin-tanstack-start";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { devtools } from "@tanstack/devtools-vite";
+import eslintPluginQuery from "@tanstack/eslint-plugin-query";
+import eslintPluginRouter from "@tanstack/eslint-plugin-router";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
 import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
@@ -22,14 +25,48 @@ const config = defineConfig({
   },
   fmt: fmtConfig,
   lint: {
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
-    options: { typeAware: true, typeCheck: true },
+    plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y"],
+    jsPlugins: [
+      { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
+      { name: "depend", specifier: "eslint-plugin-depend" },
+      { name: "@tanstack/router", specifier: "@tanstack/eslint-plugin-router" },
+      { name: "@tanstack/query", specifier: "@tanstack/eslint-plugin-query" },
+      { name: "no-relative", specifier: "eslint-plugin-no-relative-import-paths" },
+    ],
+    rules: {
+      ...eslintDependConfigs["flat/recommended"].rules,
+      "vite-plus/prefer-vite-plus-imports": "error",
+      "typescript/array-type": ["error", { default: "generic" }],
+      "typescript/consistent-type-imports": "error",
+      "typescript/no-deprecated": "error",
+      "react/react-in-jsx-scope": "off",
+      "react/rules-of-hooks": "error",
+      "jsx-a11y/label-has-associated-control": "warn",
+    },
+    options: {
+      typeAware: true,
+      typeCheck: true,
+      reportUnusedDisableDirectives: "error",
+    },
     categories: {
       correctness: "error",
       suspicious: "warn",
     },
     ignorePatterns: ["**/*.gen.*"],
+    overrides: [
+      {
+        files: ["src/**/*.{ts,tsx}"],
+        rules: {
+          ...eslintPluginRouter.configs.recommended.rules,
+          ...eslintPluginQuery.configs.recommended.rules,
+          "@tanstack/query/exhaustive-deps": "off",
+          "no-relative/no-relative-import-paths": [
+            "error",
+            { allowSameFolder: true, rootDir: "src", prefix: "#" },
+          ],
+        },
+      },
+    ],
   },
   resolve: {
     tsconfigPaths: true,

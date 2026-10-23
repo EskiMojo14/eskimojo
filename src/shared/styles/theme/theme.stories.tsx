@@ -11,7 +11,7 @@ type Swatch = {
   border?: string;
 };
 
-const groups: { title: string; swatches: Swatch[] }[] = [
+const groups: Array<{ title: string; swatches: Array<Swatch> }> = [
   {
     title: "Primary",
     swatches: [

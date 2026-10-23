@@ -61,7 +61,7 @@ function settleTime(spring: Spring): number {
 type Point = [x: number, y: number];
 
 /** Ramer–Douglas–Peucker: drop points that linear interpolation reproduces within tolerance. */
-function simplify(points: Point[]): Point[] {
+function simplify(points: Array<Point>): Array<Point> {
   if (points.length < 3) return points;
   const [x0, y0] = points[0];
   const [x1, y1] = points[points.length - 1];
@@ -83,7 +83,7 @@ const round = (n: number, digits: number) => Number(n.toFixed(digits));
 
 function toCss(spring: Spring): { easing: string; duration: string } {
   const duration = settleTime(spring);
-  const points: Point[] = Array.from({ length: samples + 1 }, (_, i) => {
+  const points: Array<Point> = Array.from({ length: samples + 1 }, (_, i) => {
     const x = i / samples;
     return [x, i === samples ? 1 : position(spring, x * duration)];
   });

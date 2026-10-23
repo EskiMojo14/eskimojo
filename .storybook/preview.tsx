@@ -9,7 +9,7 @@ import { theme } from "./theme";
 function setRootAttribute(
   name: "theme" | "contrast" | "motion",
   value: unknown,
-  allowed: string[],
+  allowed: Array<string>,
 ) {
   const { dataset } = document.documentElement;
   if (typeof value === "string" && allowed.includes(value)) {

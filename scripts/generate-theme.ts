@@ -79,16 +79,17 @@ function addExtendedColors(roles: Map<string, [string, string]>, contrastLevel: 
   const primary = roles.get("primary");
   if (!primary) throw new Error("The export has no primary role");
   const source = argbFromHex(hex(parseRgb(primary[0])));
+  const materialColors = new MaterialDynamicColors();
   for (const [name, value] of Object.entries(extendedColors)) {
     const hct = Hct.fromInt(Blend.harmonize(argbFromHex(value), source));
     const [light, dark] = [false, true].map(
       (isDark) => new SchemeTonalSpot(hct, isDark, contrastLevel),
     );
     const colors = {
-      [name]: MaterialDynamicColors.primary,
-      [`on-${name}`]: MaterialDynamicColors.onPrimary,
-      [`${name}-container`]: MaterialDynamicColors.primaryContainer,
-      [`on-${name}-container`]: MaterialDynamicColors.onPrimaryContainer,
+      [name]: materialColors.primary(),
+      [`on-${name}`]: materialColors.onPrimary(),
+      [`${name}-container`]: materialColors.primaryContainer(),
+      [`on-${name}-container`]: materialColors.onPrimaryContainer(),
     };
     for (const [role, color] of Object.entries(colors)) {
       roles.set(role, [toRgb(color.getArgb(light)), toRgb(color.getArgb(dark))]);

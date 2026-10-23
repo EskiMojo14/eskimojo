@@ -4,7 +4,7 @@ import "./typography.stories.css";
 
 type Features = "heading" | "body" | "code";
 
-const scale: { role: string; features: Features; sizes: string[] }[] = [
+const scale: Array<{ role: string; features: Features; sizes: Array<string> }> = [
   { role: "display", features: "heading", sizes: ["large", "medium", "small"] },
   { role: "headline", features: "heading", sizes: ["large", "medium", "small"] },
   { role: "title", features: "heading", sizes: ["large", "medium", "small"] },
