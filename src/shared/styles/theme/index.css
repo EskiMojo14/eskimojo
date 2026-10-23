@@ -10,6 +10,11 @@
 /* Theme: no data-theme follows the system. */
 :root {
   color-scheme: light dark;
+  --palette-artwork-background: #382656;
+}
+
+:root:where([data-palette="arctic"]) {
+  --palette-artwork-background: #11223c;
 }
 
 [data-theme="light"] {

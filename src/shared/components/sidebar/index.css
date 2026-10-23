@@ -1,0 +1,27 @@
+.site-sidebar {
+  position: relative;
+  isolation: isolate;
+  inline-size: min(100%, 22.5rem);
+  min-block-size: 100svh;
+  flex-shrink: 0;
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+}
+
+.site-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--palette-artwork-background);
+  background-image: url("/Goat.JPG");
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+[data-palette="arctic"] .site-sidebar::before {
+  background-image: url("/OC.PNG");
+}
