@@ -1,10 +1,11 @@
 /*
- * Token values live in ./palettes.gen.css as %standard, %medium and %high placeholders
- * (generated from ./export by `vp run theme:generate`). Each value is light-dark(),
+ * Token values live in ./palettes/*.gen.css as %<palette>-<contrast> placeholders
+ * (generated from ./exports by `vp run theme:generate`). Each value is light-dark(),
  * so the theme is chosen by color-scheme and the contrast level by which
  * placeholder is extended. @extend is provided by postcss-extend-rule.
  */
-@import "./palettes.gen.css";
+@import "./palettes/goat.gen.css";
+@import "./palettes/arctic.gen.css";
 
 /* Theme: no data-theme follows the system. */
 :root {
@@ -22,19 +23,42 @@
 /* Contrast: no data-contrast follows prefers-contrast. */
 :root,
 [data-contrast="standard"] {
-  @extend %standard;
+  @extend %goat-standard;
 }
 
 [data-contrast="medium"] {
-  @extend %medium;
+  @extend %goat-medium;
 }
 
 [data-contrast="high"] {
-  @extend %high;
+  @extend %goat-high;
+}
+
+/* Palette is selected on <html>; goat is the default. */
+:root:where([data-palette="arctic"]),
+:root:where([data-palette="arctic"]) [data-contrast="standard"] {
+  @extend %arctic-standard;
+}
+
+:root:where([data-palette="arctic"])[data-contrast="medium"],
+:root:where([data-palette="arctic"]) [data-contrast="medium"] {
+  @extend %arctic-medium;
+}
+
+:root:where([data-palette="arctic"])[data-contrast="high"],
+:root:where([data-palette="arctic"]) [data-contrast="high"] {
+  @extend %arctic-high;
+}
+
+/* Keep separate media blocks: postcss-extend-rule clones the enclosing at-rule. */
+@media (prefers-contrast: more) {
+  :root:not([data-contrast]) {
+    @extend %goat-high;
+  }
 }
 
 @media (prefers-contrast: more) {
-  :root:not([data-contrast]) {
-    @extend %high;
+  :root:where([data-palette="arctic"]):not([data-contrast]) {
+    @extend %arctic-high;
   }
 }

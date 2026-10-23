@@ -5,7 +5,7 @@ import { symbolsUrl } from "../src/shared/lib/symbols.ts";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  staticDirs: ["../src/public"],
+  staticDirs: ["../public"],
   addons: [
     "@chromatic-com/storybook",
     "@storybook/addon-vitest",

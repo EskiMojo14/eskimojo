@@ -7,7 +7,7 @@ import "./syntax.css";
 import { theme } from "./theme";
 
 function setRootAttribute(
-  name: "theme" | "contrast" | "motion",
+  name: "theme" | "contrast" | "motion" | "palette",
   value: unknown,
   allowed: Array<string>,
 ) {
@@ -31,6 +31,18 @@ export default definePreview({
         items: [
           { value: "ltr", title: "Left to right" },
           { value: "rtl", title: "Right to left" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+    palette: {
+      description: "Color palette",
+      toolbar: {
+        title: "Palette",
+        icon: "paintbrush",
+        items: [
+          { value: "goat", title: "Goat" },
+          { value: "arctic", title: "Arctic" },
         ],
         dynamicTitle: true,
       },
@@ -75,7 +87,13 @@ export default definePreview({
       },
     },
   },
-  initialGlobals: { direction: "ltr", theme: "system", contrast: "system", motion: "standard" },
+  initialGlobals: {
+    direction: "ltr",
+    palette: "goat",
+    theme: "system",
+    contrast: "system",
+    motion: "standard",
+  },
 
   decorators: [
     (Story, { globals }) => {
@@ -83,6 +101,7 @@ export default definePreview({
       // Set on <html> so the tokens also reach the body background. Without
       // an attribute, the theme follows prefers-color-scheme / prefers-contrast.
       setRootAttribute("theme", globals.theme, ["light", "dark"]);
+      setRootAttribute("palette", globals.palette, ["goat", "arctic"]);
       setRootAttribute("contrast", globals.contrast, ["standard", "medium", "high"]);
       setRootAttribute("motion", globals.motion, ["expressive"]);
       return <Story />;
