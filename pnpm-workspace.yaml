@@ -25,6 +25,8 @@ permissions:
     skills: true
   "@tanstack/react-start":
     skills: true
+  modern-web-guidance:
+    skills: true
 skills:
   dirs:
-    - skills
+    - .agents/skills
