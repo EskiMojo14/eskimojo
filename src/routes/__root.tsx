@@ -5,7 +5,15 @@ import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { Footer } from "#/shared/components/footer";
+import {
+  ThemeProvider,
+  ContrastProvider,
+  PaletteProvider,
+} from "#/shared/components/prefs/provider";
+import { Providers } from "#/shared/components/providers.tsx";
+import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
 import { symbolsUrl } from "#/shared/lib/symbols";
+import { promiseAllKeyed } from "#/utils/index.ts";
 
 import appCss from "#/shared/styles/index.css?url";
 
@@ -14,6 +22,12 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  loader: () =>
+    promiseAllKeyed({
+      theme: getThemeFn(),
+      contrast: getContrastFn(),
+      palette: getPaletteFn(),
+    }),
   head: () => ({
     meta: [
       {
@@ -52,16 +66,25 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { theme, contrast, palette } = Route.useLoaderData();
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <div className="app-shell">
-          <div className="app-shell__content">{children}</div>
-          <Footer />
-        </div>
+        <Providers
+          providers={[
+            [ThemeProvider, { theme }],
+            [ContrastProvider, { contrast }],
+            [PaletteProvider, { palette }],
+          ]}
+        >
+          <div className="app-shell">
+            <div className="app-shell__content">{children}</div>
+            <Footer />
+          </div>
+        </Providers>
         <TanStackDevtools
           config={{
             position: "bottom-right",

@@ -23,7 +23,7 @@ As a quick rule: build pages on `surface` and the container tones with `on-surfa
 
 ## How the theme is chosen
 
-Three independent attributes control the colors: `data-palette` picks goat or arctic, `data-theme` picks light or dark, and `data-contrast` picks the contrast level. Without them, the palette defaults to goat, while theme and contrast follow the operating system.
+Three independent attributes control the colors: `data-palette` picks goat or arctic, `data-theme` picks light or dark, and `data-contrast` picks the contrast level. Without them, the palette defaults to goat, while theme and contrast follow the operating system. On `<html>`, setting `data-theme="system"` or `data-contrast="system"` has the same effect as omitting that attribute.
 
 | File                      | Contents                                                                                                                                                                                      |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ The palette applies to the whole document and combines with all light/dark and c
 
 Each token uses `light-dark()`, which picks a value from the `color-scheme` of the element where the token is used. `index.css` sets `color-scheme: light dark` on `:root`, so the theme follows `prefers-color-scheme` by default. Browser UI such as form controls and scrollbars switches with it.
 
-To choose a theme explicitly, set `data-theme` to `light` or `dark`. Remove it to follow the system again:
+To choose a theme explicitly, set `data-theme` to `light` or `dark`. On `<html>`, remove it or set it to `system` to follow the system again:
 
 ```ts
 document.documentElement.dataset.theme = "dark";
@@ -63,7 +63,7 @@ delete document.documentElement.dataset.theme;
 
 By default, contrast follows the operating system. If the user has turned on increased contrast (`prefers-contrast: more`), the high-contrast colors apply; otherwise standard contrast applies.
 
-To choose a level explicitly, set `data-contrast` to `standard`, `medium` or `high`. An explicit value always wins over the system setting. Remove it to follow the system again:
+To choose a level explicitly, set `data-contrast` to `standard`, `medium` or `high`. An explicit value always wins over the system setting. On `<html>`, remove it or set it to `system` to follow the system again:
 
 ```ts
 document.documentElement.dataset.contrast = "high";

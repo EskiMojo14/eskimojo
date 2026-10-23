@@ -7,7 +7,7 @@
 @import "./palettes/goat.gen.css";
 @import "./palettes/arctic.gen.css";
 
-/* Theme: no data-theme follows the system. */
+/* Theme: absent or system data-theme follows the system. */
 :root {
   color-scheme: light dark;
   --palette-artwork-background: #382656;
@@ -25,7 +25,7 @@
   color-scheme: dark;
 }
 
-/* Contrast: no data-contrast follows prefers-contrast. */
+/* Contrast: absent or system data-contrast follows prefers-contrast. */
 :root,
 [data-contrast="standard"] {
   @extend %goat-standard;
@@ -57,13 +57,13 @@
 
 /* Keep separate media blocks: postcss-extend-rule clones the enclosing at-rule. */
 @media (prefers-contrast: more) {
-  :root:not([data-contrast]) {
+  :root:is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %goat-high;
   }
 }
 
 @media (prefers-contrast: more) {
-  :root:where([data-palette="arctic"]):not([data-contrast]) {
+  :root:where([data-palette="arctic"]):is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %arctic-high;
   }
 }

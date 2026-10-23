@@ -15,8 +15,11 @@ import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
+import { themeLabels, paletteLabels } from "#/shared/constants/prefs";
+
 import fmtConfig from "./config/fmt.config.ts";
 import materialSymbols from "./vite/symbols.ts";
+
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -102,7 +105,11 @@ const config = defineConfig({
     netlify(),
     tanstackStart(),
     viteReact(),
-    materialSymbols({ knownSymbols: [] }),
+    materialSymbols({
+      knownSymbols: [themeLabels, paletteLabels].flatMap((labels) =>
+        Object.values(labels).map(({ icon }) => icon),
+      ),
+    }),
     msw(),
   ]),
   test: {

@@ -221,6 +221,12 @@ importers:
       react-dom:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)
+      required-react-context:
+        specifier: ^1.4.1
+        version: 1.4.1(react@19.3.1)
+      valibot:
+        specifier: ^1.5.0
+        version: 1.5.0(typescript@7.0.2)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: latest
@@ -5628,6 +5634,11 @@ packages:
 
   require-package-name@2.0.1:
     resolution: {integrity: sha512-uuoJ1hU/k6M0779t3VMVIYpb2VMJk05cehCaABFhXaibcbvfgR8wKiozLjVFSzJPmQMRqIcO0HMyTFqfV09V6Q==}
+
+  required-react-context@1.4.1:
+    resolution: {integrity: sha512-u721N45Nyc+QB4HSkHa1NL6a41G6a+yx8fXthOHo0fiI63bKEszvFa3fd25CMdd5oUfXeQbO7f+LGvobpkXNsg==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -12068,6 +12079,10 @@ snapshots:
       - supports-color
 
   require-package-name@2.0.1: {}
+
+  required-react-context@1.4.1(react@19.3.1):
+    dependencies:
+      react: 19.3.1
 
   resolve-from@4.0.0: {}
 

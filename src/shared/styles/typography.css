@@ -43,7 +43,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
+  :root:is(:not([data-theme]), [data-theme="system"]) {
     @extend %typo-weights-dark;
   }
 }
