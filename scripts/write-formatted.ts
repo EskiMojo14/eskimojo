@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { format } from "vite-plus/fmt";
 
-import fmtConfig from "../fmt.config.ts";
+import fmtConfig from "../config/fmt.config.ts";
 
 // format() takes only formatting options; these keys choose which files to format.
 const { ignorePatterns: _, overrides: __, associations: ___, ...options } = fmtConfig;

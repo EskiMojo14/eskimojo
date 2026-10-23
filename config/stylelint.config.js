@@ -1,3 +1,52 @@
+import valueParser from "postcss-value-parser";
+import stylelint from "stylelint";
+
+const pathRuleName = "local/no-parent-relative-paths";
+
+/** @type {import("stylelint").Rule} */
+const noParentRelativePaths = (primary) => (root, result) => {
+  if (
+    !stylelint.utils.validateOptions(result, pathRuleName, {
+      actual: primary,
+      possible: [true],
+    })
+  )
+    return;
+
+  root.walk((node) => {
+    const isImport = node.type === "atrule" && node.name.toLowerCase() === "import";
+    if (node.type !== "decl" && !isImport) return;
+
+    const value = node.type === "decl" ? node.value : node.params;
+    const parsed = valueParser(value);
+    const importPath = isImport
+      ? parsed.nodes.find((part) => part.type !== "space" && part.type !== "comment")
+      : undefined;
+
+    parsed.walk((part) => {
+      const isUrl = part.type === "function" && part.value.toLowerCase() === "url";
+      if (!isUrl && (part !== importPath || part.type !== "string")) return true;
+
+      const path = isUrl
+        ? valueParser
+            .stringify(part.nodes)
+            .trim()
+            .replace(/^(["'])(.*)\1$/, "$2")
+        : part.value;
+      if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(path) || !path.split("/").includes(".."))
+        return false;
+
+      stylelint.utils.report({
+        ruleName: pathRuleName,
+        result,
+        node,
+        message: `Use a #/ import or a root-absolute URL instead of parent-relative path "${path}".`,
+      });
+      return false;
+    });
+  });
+};
+
 const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
 const colorMixArg = String.raw`(?:${colorToken}|transparent|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
 const colorMix = String.raw`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|longer|increasing|decreasing)\s+hue)?\s*,\s*${colorMixArg}\s*,\s*${colorMixArg}\s*\)$/i`;
@@ -41,9 +90,13 @@ const colorProperties = [
 
 /** @type {import("stylelint").Config} */
 export default {
-  ignoreFiles: ["**/*.gen.*"],
-  plugins: ["stylelint-declaration-strict-value"],
+  ignoreFiles: ["../**/*.gen.*"],
+  plugins: [
+    "stylelint-declaration-strict-value",
+    stylelint.createPlugin(pathRuleName, noParentRelativePaths),
+  ],
   rules: {
+    [pathRuleName]: true,
     "scale-unlimited/declaration-strict-value": [
       [...fontProperties, ...colorProperties, ...radiusProperties],
       {
@@ -71,9 +124,9 @@ export default {
     {
       // These define the tokens, so they need literal values.
       files: [
-        "src/shared/styles/typography.css",
-        "src/shared/styles/shape.css",
-        "src/shared/styles/theme/**/*.css",
+        "../src/shared/styles/typography.css",
+        "../src/shared/styles/shape.css",
+        "../src/shared/styles/theme/**/*.css",
       ],
       rules: { "scale-unlimited/declaration-strict-value": null },
     },

@@ -15,7 +15,8 @@ async function fixture() {
   const dir = await mkdtemp(join(tmpdir(), "generate-theme-"));
   onTestFinished(() => rm(dir, { recursive: true, force: true }));
   await cp(new URL("scripts/", root), join(dir, "scripts"), { recursive: true });
-  await cp(new URL("fmt.config.ts", root), join(dir, "fmt.config.ts"));
+  await mkdir(join(dir, "config"));
+  await cp(new URL("config/fmt.config.ts", root), join(dir, "config/fmt.config.ts"));
   await cp(new URL("package.json", root), join(dir, "package.json"));
   await cp(new URL(`${themePath}/exports/`, root), join(dir, themePath, "exports"), {
     recursive: true,

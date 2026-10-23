@@ -36,6 +36,11 @@ contributor guidance.
 
 ## Source organization
 
+- Keep relocatable tool configuration and its tests in `config/`, and ambient
+  type declarations in `types/`. Keep `vite.config.ts`, `tsconfig.json`,
+  `tsr.config.json`, and `netlify.toml` at the root for tool and editor discovery.
+  The CSS lint script selects `config/stylelint.config.js` with `--config`;
+  VS Code uses the same file through `stylelint.configFile`.
 - Keep route definitions in `src/routes`, following TanStack Router's
   file-based routing conventions.
 - Put route-specific components, hooks, data, styles, tests, and stories in
@@ -89,6 +94,11 @@ contributor guidance.
 
 ## CSS and design tokens
 
+- Use `#/` for CSS `@import` paths into `src/` that would otherwise traverse a
+  parent directory. For asset `url(...)` references, use root-absolute paths
+  instead of parent-relative paths: Vite treats leading `#` URLs as fragments,
+  not aliases. Stylelint rejects parent-relative paths in both. Same-folder `./`
+  paths, package imports, public-root paths, and external URLs remain allowed.
 - Load stylesheets through `<link rel="stylesheet">` URLs in the document head,
   or through CSS `@import` chains rooted in a head-linked stylesheet. In
   JavaScript/TypeScript, import CSS only as a URL (for example,
