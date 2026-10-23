@@ -54,6 +54,9 @@ Provide a Contact destination with these selected public profiles:
 Do not add a public email address. Link to Last.fm from Music, not from the
 general Contact group.
 
+The shared site footer also links to GitHub, Twitter/X, and Bluesky, with the
+transparent Mitzi illustration centered behind the profile links as decoration.
+
 ## Music
 
 Keep the three listening views:

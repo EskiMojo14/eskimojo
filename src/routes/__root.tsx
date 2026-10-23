@@ -4,6 +4,7 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { Footer } from "#/shared/components/footer";
 import { symbolsUrl } from "#/shared/lib/symbols";
 
 import appCss from "#/shared/styles/index.css?url";
@@ -57,7 +58,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <div className="app-shell">
+          <div className="app-shell__content">{children}</div>
+          <Footer />
+        </div>
         <TanStackDevtools
           config={{
             position: "bottom-right",
