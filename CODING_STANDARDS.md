@@ -24,6 +24,16 @@ contributor guidance.
 - Preserve existing public interfaces and user-visible behavior unless the
   change explicitly requires otherwise.
 
+## TanStack Query options
+
+- Define query and mutation options in named options-creator functions using
+  `queryOptions` and `mutationOptions` from `@tanstack/react-query`.
+- Pass the creator's result to hooks and QueryClient APIs, for example
+  `useQuery(getFoo(arg))` or `useMutation(updateFoo(arg))`. Never construct
+  query or mutation options ad hoc at the call site.
+- Spreading a creator's result to override or add options is allowed, for
+  example `useQuery({ ...getFoo(arg), enabled: true })`.
+
 ## Source organization
 
 - Keep route definitions in `src/routes`, following TanStack Router's
