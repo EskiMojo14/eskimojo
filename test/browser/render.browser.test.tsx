@@ -33,9 +33,8 @@ function PreferenceProbe() {
   );
 }
 
-test("provides schema defaults and stateful preference setters", async ({ onTestFinished }) => {
+test("provides schema defaults and stateful preference setters", async () => {
   const result = await page.renderWithProviders(<PreferenceProbe />);
-  onTestFinished(() => result.queryClient.clear());
 
   await expect.element(result.getByText("system/system/goat")).toBeVisible();
   await result.getByRole("button", { name: "Set dark theme" }).click();
@@ -46,26 +45,23 @@ test("provides schema defaults and stateful preference setters", async ({ onTest
   await expect.element(result.getByText("dark/high/arctic")).toBeVisible();
 });
 
-test("supports initial preferences and isolates separate renders", async ({ onTestFinished }) => {
+test("supports initial preferences and isolates separate renders", async () => {
   const first = await page.renderWithProviders(<PreferenceProbe />, {
     preferences: { theme: "light", contrast: "medium", palette: "arctic" },
   });
-  onTestFinished(() => first.queryClient.clear());
   await expect.element(first.getByText("light/medium/arctic")).toBeVisible();
   await first.getByRole("button", { name: "Set dark theme" }).click();
   await expect.element(first.getByText("dark/medium/arctic")).toBeVisible();
   await first.unmount();
 
   const second = await page.renderWithProviders(<PreferenceProbe />);
-  onTestFinished(() => second.queryClient.clear());
   await expect.element(second.getByText("system/system/goat")).toBeVisible();
 });
 
-test("leaves document preferences unchanged by default", async ({ onTestFinished }) => {
+test("leaves document preferences unchanged by default", async () => {
   const { dataset } = document.documentElement;
   const before = Object.entries(dataset);
   const result = await page.renderWithProviders(<PreferenceProbe />);
-  onTestFinished(() => result.queryClient.clear());
   await result.getByRole("button", { name: "Set dark theme" }).click();
   await expect.element(result.getByText("dark/system/goat")).toBeVisible();
   expect(Object.entries(dataset)).toEqual(before);
@@ -90,7 +86,6 @@ test("optionally syncs document preferences and restores attributes on unmount",
   const result = await page.renderWithProviders(<PreferenceProbe />, {
     syncPreferencesToDocument: true,
   });
-  onTestFinished(() => result.queryClient.clear());
   expect(root.dataset.theme).toBe("system");
   expect(root.dataset.contrast).toBe("system");
   expect(root.dataset.palette).toBe("goat");
@@ -106,31 +101,26 @@ test("optionally syncs document preferences and restores attributes on unmount",
   expect(root.dataset.palette).toBe("arctic");
 });
 
-test("allows explicit preference providers without in-memory providers", async ({
-  onTestFinished,
-}) => {
+test("allows explicit preference providers without in-memory providers", async () => {
   const result = await page.renderWithProviders(
     <ThemeContext value={{ theme: "light", setTheme: () => {} }}>
       <PreferenceProbe />
     </ThemeContext>,
     { preferences: false },
   );
-  onTestFinished(() => result.queryClient.clear());
   await expect.element(result.getByText("light/system/goat")).toBeVisible();
 });
 
-test("renders with isolated query and memory-router providers", async ({ onTestFinished }) => {
+test("renders with isolated query and memory-router providers", async () => {
   const result = await page.renderWithProviders(<ContextProbe />);
-  onTestFinished(() => result.queryClient.clear());
 
   await expect.element(result.getByText("Shared client")).toBeVisible();
   expect(result.router.options.context.queryClient).toBe(result.queryClient);
   expect(result.router.history).toBe(result.history);
 });
 
-test("reuses an existing router's providers", async ({ onTestFinished }) => {
+test("reuses an existing router's providers", async () => {
   const queryClient = createQueryClient();
-  onTestFinished(() => queryClient.clear());
   const history = createMemoryHistory({ initialEntries: ["/"] });
   const router = getRouter({ queryClient, history });
   const result = await page.renderWithProviders(<ContextProbe />, { router });

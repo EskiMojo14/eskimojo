@@ -8,6 +8,7 @@
 @import "#/shared/components/footer/index.css";
 @import "#/shared/components/sidebar/index.css";
 @import "#/shared/components/symbol/index.css";
+@import "#/shared/components/dialog/index.css";
 
 * {
   box-sizing: border-box;
