@@ -10,6 +10,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
+import { msw } from "msw/vite";
 import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
@@ -53,7 +54,22 @@ const config = defineConfig({
       suspicious: "warn",
     },
     ignorePatterns: ["**/*.gen.*"],
+    settings: {
+      vitest: { typecheck: true },
+    },
     overrides: [
+      {
+        files: ["**/*.{browser,node}.test.{ts,tsx}"],
+        plugins: ["vitest"],
+        rules: {
+          "vitest/no-standalone-expect": [
+            "error",
+            { additionalTestBlockFunctions: ["it", "test"] },
+          ],
+          "vitest/no-focused-tests": "error",
+          "vitest/no-disabled-tests": "warn",
+        },
+      },
       {
         files: ["src/**/*.{ts,tsx}"],
         rules: {
@@ -79,9 +95,51 @@ const config = defineConfig({
     // nested [data-theme] sections work. The downlevelled fallback resolves at :root.
     lightningcss: { exclude: Features.LightDark },
   },
-  plugins: lazyPlugins(() => [devtools(), netlify(), tanstackStart(), viteReact()]),
+  plugins: lazyPlugins(() => [devtools(), netlify(), tanstackStart(), viteReact(), msw()]),
   test: {
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "./coverage",
+      include: ["src/**/*.ts", "src/**/*.tsx"],
+      exclude: ["**/*.test.{ts,tsx}", "**/*.test-d.ts", "**/*.stories.tsx", "**/*.gen.*"],
+    },
     projects: [
+      {
+        test: {
+          name: "node",
+          environment: "node",
+          include: ["**/*.node.test.ts"],
+          setupFiles: ["./test/common/setup.ts", "./test/node/setup.ts"],
+        },
+      },
+      {
+        test: {
+          name: "browser",
+          retry: 3,
+          include: ["**/*.browser.test.ts", "**/*.browser.test.tsx"],
+          setupFiles: ["./test/common/setup.ts", "./test/browser/setup.ts"],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({
+              launchOptions: { channel: "chromium" },
+              contextOptions: { permissions: ["clipboard-read", "clipboard-write"] },
+            }),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
+      {
+        test: {
+          name: "types",
+          typecheck: {
+            enabled: true,
+            only: true,
+            include: ["**/*.test-d.ts"],
+          },
+        },
+      },
       {
         extends: true,
         plugins: [

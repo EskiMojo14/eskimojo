@@ -41,7 +41,7 @@ contributor guidance.
 ## Tests and stories
 
 - Put tests and stories beside the file they cover:
-  - `foo.node.test.ts` or `foo.node.test.tsx` for Node-side tests;
+  - `foo.node.test.ts` for Node-side tests (test React/DOM behavior in the browser);
   - `foo.browser.test.ts` or `foo.browser.test.tsx` for browser tests;
   - `foo.test-d.ts` for complex TypeScript type behavior;
   - `foo.stories.tsx` for Storybook stories.
@@ -49,6 +49,16 @@ contributor guidance.
   and exercise UI states; a story is not a substitute for a logic test.
 - Cover meaningful edge cases and user-visible behavior without coupling tests
   to implementation details.
+- Run `vp test` for Node, Chromium browser, type, and Storybook tests. Select
+  a project with `--project node`, `--project browser`, `--project types`, or
+  `--project storybook`. Use `vp run coverage` for V8 text, HTML, and LCOV reports.
+- Import test APIs from `vite-plus/test` and browser APIs from
+  `vite-plus/test/browser`. Shared setup registers `mix-n-matchers` and
+  `expect.ref` for polling React refs.
+- Use `page.renderWithProviders` in browser tests for isolated QueryClient and
+  memory-router providers. Test helpers are available through `#test/`.
+- Mock network requests with `network` from `virtual:msw` and handlers from
+  `msw`. Setup enables mocking and resets handlers after each test.
 
 ## Errors and external data
 
