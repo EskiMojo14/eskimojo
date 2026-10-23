@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import preview from "#.storybook/preview";
 
 import "./typography.stories.css";
@@ -35,6 +37,30 @@ const featureSamples = [
 const meta = preview.meta({
   title: "Foundations/Typography",
 });
+
+function WeightTransitionDemo() {
+  const [heavy, setHeavy] = useState(false);
+  return (
+    <main className="typography-page">
+      <section className="typography-row typography-weight-demo" data-heavy={heavy || undefined}>
+        <code className="typography-label">--typo-weight-regular → --typo-weight-bold</code>
+        <div className="typography-weight-demo__content">
+          <button
+            type="button"
+            className="typography-weight-demo__toggle"
+            aria-pressed={heavy}
+            onClick={() => setHeavy((current) => !current)}
+          >
+            {heavy ? "Make lighter" : "Make heavier"}
+          </button>
+          <p className="typography-sample typography-weight-demo__sample">
+            The quick brown fox jumps over the lazy dog.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
 
 export const TypeScale = meta.story({
   render: () => (
@@ -86,6 +112,10 @@ export const Weights = meta.story({
       })}
     </main>
   ),
+});
+
+export const WeightTransition = meta.story({
+  render: () => <WeightTransitionDemo />,
 });
 
 export const FontFeatures = meta.story({

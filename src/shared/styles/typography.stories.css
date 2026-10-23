@@ -42,3 +42,35 @@
 .typography-sample--weight {
   font-weight: var(--sample-weight);
 }
+
+.typography-weight-demo__content {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+}
+
+.typography-weight-demo__toggle {
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  font: var(--typo-label-large);
+  font-feature-settings: var(--typo-features-body);
+  cursor: pointer;
+}
+
+.typography-weight-demo__sample {
+  font-weight: var(--typo-weight-regular);
+  transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.typography-weight-demo[data-heavy] .typography-weight-demo__sample {
+  font-weight: var(--typo-weight-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typography-weight-demo__sample {
+    transition: none;
+  }
+}

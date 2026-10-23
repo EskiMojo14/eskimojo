@@ -87,6 +87,31 @@ A custom property resolves `var()` on the element where it's declared, so `typog
 
 <Canvas of={TypographyStories.Weights} />
 
+## Weight transitions
+
+Paper Mono is a variable font, so the browser can interpolate smoothly between its supported weights. Use the weight tokens as the endpoints and transition `font-weight`:
+
+```css
+.interactive-label {
+  font-weight: var(--typo-weight-regular);
+  transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.interactive-label[data-emphasized] {
+  font-weight: var(--typo-weight-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive-label {
+    transition: none;
+  }
+}
+```
+
+The duration and easing use the shared motion tokens. Disable the transition for users who prefer reduced motion. The interactive example transitions between the regular and bold tokens:
+
+<Canvas of={TypographyStories.WeightTransition} />
+
 ## Font features
 
 Paper Mono has optional OpenType features that change how some characters look. Three tokens group them for different kinds of text:
