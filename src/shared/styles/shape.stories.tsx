@@ -1,12 +1,13 @@
+import BEMHelper from "react-bem-helper";
+
 import preview from "#.storybook/preview";
-import { createBem } from "#/shared/lib/bem";
 
 import "./shape.stories.css";
 
-const shapeTileBem = createBem("shape-tile");
-const shapePageBem = createBem("shape-page");
-const shapeFigureBem = createBem("shape-figure");
-const shapeCaptionBem = createBem("shape-caption");
+const shapeTileBem = BEMHelper("shape-tile");
+const shapePageBem = BEMHelper("shape-page");
+const shapeFigureBem = BEMHelper("shape-figure");
+const shapeCaptionBem = BEMHelper("shape-caption");
 
 const corners = [
   { name: "none", dp: "0" },

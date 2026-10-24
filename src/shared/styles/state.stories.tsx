@@ -1,12 +1,13 @@
+import BEMHelper from "react-bem-helper";
+
 import preview from "#.storybook/preview";
-import { createBem } from "#/shared/lib/bem";
 
 import "./state.stories.css";
 
-const stateSampleBem = createBem("state-sample");
-const statePageBem = createBem("state-page");
-const stateSectionBem = createBem("state-section");
-const stateSamplesBem = createBem("state-samples");
+const stateSampleBem = BEMHelper("state-sample");
+const statePageBem = BEMHelper("state-page");
+const stateSectionBem = BEMHelper("state-section");
+const stateSamplesBem = BEMHelper("state-samples");
 const states = ["hover", "focus", "pressed", "dragged"] as const;
 
 const meta = preview.meta({

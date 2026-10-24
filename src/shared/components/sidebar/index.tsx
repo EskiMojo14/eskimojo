@@ -1,14 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { Fragment } from "react";
+import BEMHelper from "react-bem-helper";
 
 import { List, ListDivider, ListItem } from "#/shared/components/list";
 import { usePalette } from "#/shared/components/prefs/context";
 import { MdSymbol } from "#/shared/components/symbol";
-import { createBem } from "#/shared/lib/bem";
 
 import { links } from "./groups";
 
-const siteSidebarBem = createBem("site-sidebar");
+const siteSidebarBem = BEMHelper("site-sidebar");
 
 export function Sidebar() {
   const { palette, setPalette } = usePalette();

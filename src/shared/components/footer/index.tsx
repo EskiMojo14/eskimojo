@@ -1,6 +1,6 @@
-import { createBem } from "#/shared/lib/bem";
+import BEMHelper from "react-bem-helper";
 
-const siteFooterBem = createBem("site-footer");
+const siteFooterBem = BEMHelper("site-footer");
 
 export function Footer() {
   return (

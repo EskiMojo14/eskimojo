@@ -9,10 +9,9 @@ import {
   type ComponentProps,
   type ReactNode,
 } from "react";
+import BEMHelper from "react-bem-helper";
 
-import { createBem } from "#/shared/lib/bem";
-
-const dialogBem = createBem("dialog");
+const dialogBem = BEMHelper("dialog");
 
 interface DialogLabels {
   titleId: string;

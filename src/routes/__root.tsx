@@ -3,6 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import BEMHelper from "react-bem-helper";
 
 import { Footer } from "#/shared/components/footer";
 import {
@@ -12,7 +13,6 @@ import {
 } from "#/shared/components/prefs/provider";
 import { Providers } from "#/shared/components/providers.tsx";
 import { Sidebar } from "#/shared/components/sidebar";
-import { createBem } from "#/shared/lib/bem";
 import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
 import { symbolsUrl } from "#/shared/lib/symbols";
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -23,7 +23,7 @@ interface MyRouterContext {
   queryClient: QueryClient;
 }
 
-const appShellBem = createBem("app-shell");
+const appShellBem = BEMHelper("app-shell");
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: () =>

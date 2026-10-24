@@ -1,8 +1,7 @@
 import type { ComponentPropsWithRef } from "react";
+import BEMHelper from "react-bem-helper";
 
-import { createBem } from "#/shared/lib/bem";
-
-const symbolBem = createBem("md-symbol");
+const symbolBem = BEMHelper("md-symbol");
 
 export interface MdSymbolProps extends ComponentPropsWithRef<"span"> {
   children: string;

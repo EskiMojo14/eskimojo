@@ -1,16 +1,16 @@
 import { useState } from "react";
+import BEMHelper from "react-bem-helper";
 
 import preview from "#.storybook/preview";
-import { createBem } from "#/shared/lib/bem";
 
 import "./typography.stories.css";
 
-const typographyPageBem = createBem("typography-page");
-const typographyRowBem = createBem("typography-row");
-const typographyWeightDemoBem = createBem("typography-weight-demo");
-const typographyLabelBem = createBem("typography-label");
-const typographySampleBem = createBem("typography-sample");
-const typographyFigureBem = createBem("typography-figure");
+const typographyPageBem = BEMHelper("typography-page");
+const typographyRowBem = BEMHelper("typography-row");
+const typographyWeightDemoBem = BEMHelper("typography-weight-demo");
+const typographyLabelBem = BEMHelper("typography-label");
+const typographySampleBem = BEMHelper("typography-sample");
+const typographyFigureBem = BEMHelper("typography-figure");
 
 type Features = "heading" | "body" | "code";
 

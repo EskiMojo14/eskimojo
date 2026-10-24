@@ -1,8 +1,7 @@
 import type { ComponentPropsWithRef } from "react";
+import BEMHelper from "react-bem-helper";
 
-import { createBem } from "#/shared/lib/bem";
-
-const listBem = createBem("list");
+const listBem = BEMHelper("list");
 
 export function List({ className, ...props }: ComponentPropsWithRef<"ul">) {
   return <ul {...props} {...listBem({ extra: className })} />;

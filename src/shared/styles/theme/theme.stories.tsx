@@ -1,11 +1,12 @@
+import BEMHelper from "react-bem-helper";
+
 import preview from "#.storybook/preview";
-import { createBem } from "#/shared/lib/bem";
 
 import "./theme.stories.css";
 
-const themePageBem = createBem("theme-page");
-const themeGroupBem = createBem("theme-group");
-const themeSwatchBem = createBem("theme-swatch");
+const themePageBem = BEMHelper("theme-page");
+const themeGroupBem = BEMHelper("theme-group");
+const themeSwatchBem = BEMHelper("theme-swatch");
 
 type Swatch = {
   /** Role used as the background. */

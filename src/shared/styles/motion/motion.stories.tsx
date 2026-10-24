@@ -1,16 +1,16 @@
 import { useState, type ReactNode } from "react";
+import BEMHelper from "react-bem-helper";
 
 import preview from "#.storybook/preview";
-import { createBem } from "#/shared/lib/bem";
 
 import "./motion.stories.css";
 
-const motionTrackBem = createBem("motion-track");
-const motionDotBem = createBem("motion-dot");
-const motionPageBem = createBem("motion-page");
-const motionPlayBem = createBem("motion-play");
-const motionRowBem = createBem("motion-row");
-const motionLabelBem = createBem("motion-label");
+const motionTrackBem = BEMHelper("motion-track");
+const motionDotBem = BEMHelper("motion-dot");
+const motionPageBem = BEMHelper("motion-page");
+const motionPlayBem = BEMHelper("motion-play");
+const motionRowBem = BEMHelper("motion-row");
+const motionLabelBem = BEMHelper("motion-label");
 
 const easings = [
   "emphasized",
