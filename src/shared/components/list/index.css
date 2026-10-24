@@ -1,0 +1,99 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+}
+
+.list__item {
+  min-inline-size: 0;
+
+  > a {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-block-size: 56px;
+    padding-inline: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-large);
+    text-decoration: none;
+    transition:
+      background-color var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects),
+      color var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects);
+    /* full radius on top right and bottom right corners in LTR, top left and bottom left corners in RTL */
+    border-radius: 0 var(--md-sys-shape-corner-full) var(--md-sys-shape-corner-full) 0;
+    &:dir(rtl) {
+      border-radius: var(--md-sys-shape-corner-full) 0 0 var(--md-sys-shape-corner-full);
+    }
+
+    &::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      border-radius: inherit;
+      background-color: currentColor;
+      content: "";
+      opacity: 0;
+      transition: opacity var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects);
+    }
+
+    &:hover::before {
+      opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+
+    &:focus-visible::before {
+      opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+
+    &:active::before {
+      opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--md-sys-color-secondary);
+      outline-offset: 2px;
+    }
+
+    &[aria-current="page"] {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      --icon-fill: 1;
+    }
+  }
+}
+
+.list__divider {
+  min-block-size: 1px;
+  margin: 4px 0;
+  margin-inline: 16px -12px;
+  background-color: var(--md-sys-color-outline-variant);
+}
+
+@media (max-width: 48rem) {
+  .list {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-block: 8px;
+  }
+
+  .list__item {
+    flex: 0 0 auto;
+
+    > a {
+      min-inline-size: 7rem;
+      justify-content: center;
+    }
+  }
+
+  .list__divider {
+    flex: 0 0 1px;
+    margin: 8px 4px;
+  }
+}

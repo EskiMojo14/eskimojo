@@ -8,6 +8,17 @@
   color: var(--md-sys-color-on-surface);
 }
 
+.site-sidebar .list {
+  padding-inline-start: 0;
+}
+
+@media (max-width: 48rem) {
+  .site-sidebar {
+    inline-size: 100%;
+    min-block-size: auto;
+  }
+}
+
 .site-sidebar::before {
   content: "";
   position: absolute;

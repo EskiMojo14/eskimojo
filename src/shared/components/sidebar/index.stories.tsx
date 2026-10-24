@@ -1,7 +1,10 @@
 import preview from "#.storybook/preview";
 import { Footer } from "#/shared/components/footer";
+import { createBem } from "#/shared/lib/bem";
 
 import { Sidebar } from "./index";
+
+const appShellBem = createBem("app-shell");
 
 const meta = preview.meta({
   title: "Components/Sidebar",
@@ -11,7 +14,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "An empty, non-modal sidebar. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
+          "Primary navigation in an MD3 list. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
       },
     },
   },
@@ -21,10 +24,10 @@ export const Default = meta.story({});
 
 export const WithFooter = meta.story({
   render: () => (
-    <div style={{ display: "flex", flexWrap: "wrap" }}>
+    <div {...appShellBem()}>
       <Sidebar />
-      <div className="app-shell" style={{ flex: "1 1 20rem", minInlineSize: 0 }}>
-        <main className="app-shell__content" />
+      <div {...appShellBem({ element: "main" })}>
+        <main {...appShellBem({ element: "content" })} />
         <Footer />
       </div>
     </div>

@@ -11,6 +11,8 @@ import {
   PaletteProvider,
 } from "#/shared/components/prefs/provider";
 import { Providers } from "#/shared/components/providers.tsx";
+import { Sidebar } from "#/shared/components/sidebar";
+import { createBem } from "#/shared/lib/bem";
 import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
 import { symbolsUrl } from "#/shared/lib/symbols";
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -20,6 +22,8 @@ import appCss from "#/shared/styles/index.css?url";
 interface MyRouterContext {
   queryClient: QueryClient;
 }
+
+const appShellBem = createBem("app-shell");
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: () =>
@@ -80,9 +84,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             [PaletteProvider, { palette }],
           ]}
         >
-          <div className="app-shell">
-            <div className="app-shell__content">{children}</div>
-            <Footer />
+          <div {...appShellBem()}>
+            <Sidebar />
+            <div {...appShellBem({ element: "main" })}>
+              <div {...appShellBem({ element: "content" })}>{children}</div>
+              <Footer />
+            </div>
           </div>
         </Providers>
         <TanStackDevtools

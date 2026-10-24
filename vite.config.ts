@@ -15,6 +15,7 @@ import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
+import { links } from "#/shared/components/sidebar/groups";
 import { themeLabels, paletteLabels } from "#/shared/constants/prefs";
 
 import fmtConfig from "./config/fmt.config.ts";
@@ -106,9 +107,12 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
     materialSymbols({
-      knownSymbols: [themeLabels, paletteLabels].flatMap((labels) =>
-        Object.values(labels).map(({ icon }) => icon),
-      ),
+      knownSymbols: [
+        ...[themeLabels, paletteLabels].flatMap((labels) =>
+          Object.values(labels).map(({ icon }) => icon),
+        ),
+        ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
+      ],
     }),
     msw(),
   ]),
