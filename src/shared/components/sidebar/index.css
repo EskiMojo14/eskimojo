@@ -1,7 +1,7 @@
 .site-sidebar {
   position: relative;
   isolation: isolate;
-  inline-size: min(100%, 22.5rem);
+  inline-size: min(100%, 20rem);
   min-block-size: 100svh;
   flex-shrink: 0;
   background-color: var(--md-sys-color-surface-container-low);
@@ -10,6 +10,70 @@
 
 .site-sidebar .list {
   padding-inline-start: 0;
+}
+
+.site-sidebar__header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  gap: 1rem;
+}
+
+.site-sidebar__title {
+  font: var(--typo-title-medium);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.site-sidebar__palette-toggle {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  place-items: center;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: transparent;
+  cursor: pointer;
+
+  &::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    border-radius: inherit;
+    background-color: currentColor;
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-sys-motion-spring-default-effects-duration)
+      var(--md-sys-motion-spring-default-effects);
+  }
+
+  &:hover::before {
+    opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+
+  &:focus-visible::before {
+    opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+
+  &:active::before {
+    opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--md-sys-color-secondary);
+    outline-offset: 3px;
+  }
+}
+
+.site-sidebar__palette-avatar {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
 }
 
 @media (max-width: 48rem) {

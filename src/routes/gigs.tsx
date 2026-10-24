@@ -5,5 +5,5 @@ export const Route = createFileRoute("/gigs")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/gigs"!</div>;
+  return null;
 }

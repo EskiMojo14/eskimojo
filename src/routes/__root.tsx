@@ -72,7 +72,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette } = Route.useLoaderData();
   return (
-    <html lang="en">
+    <html lang="en" data-theme={theme} data-contrast={contrast} data-palette={palette}>
       <head>
         <HeadContent />
       </head>
@@ -95,6 +95,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <TanStackDevtools
           config={{
             position: "bottom-right",
+            triggerHidden: true,
           }}
           plugins={[
             {
