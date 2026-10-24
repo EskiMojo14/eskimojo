@@ -1,6 +1,12 @@
 import preview from "#.storybook/preview";
+import { createBem } from "#/shared/lib/bem";
 
 import "./shape.stories.css";
+
+const shapeTileBem = createBem("shape-tile");
+const shapePageBem = createBem("shape-page");
+const shapeFigureBem = createBem("shape-figure");
+const shapeCaptionBem = createBem("shape-caption");
 
 const corners = [
   { name: "none", dp: "0" },
@@ -24,13 +30,13 @@ const meta = preview.meta({
 
 export const CornerScale = meta.story({
   render: () => (
-    <main className="shape-page">
+    <main {...shapePageBem()}>
       {corners.map(({ name, dp }) => {
         const token = `--md-sys-shape-corner-${name}`;
         return (
-          <figure key={name} className="shape-figure">
-            <div className="shape-tile" style={{ "--tile-radius": `var(${token})` }} />
-            <figcaption className="shape-caption">
+          <figure key={name} {...shapeFigureBem()}>
+            <div {...shapeTileBem()} style={{ "--tile-radius": `var(${token})` }} />
+            <figcaption {...shapeCaptionBem()}>
               {token}
               <br />
               {dp === "full" ? "full" : `${dp}dp`}
@@ -44,14 +50,13 @@ export const CornerScale = meta.story({
 
 export const CornerShape = meta.story({
   render: () => (
-    <main className="shape-page">
+    <main {...shapePageBem()}>
       {(["bevel", "round"] as const).map((shape) => {
-        const shapeClass = shape === "round" ? " shape-tile--round" : "";
         return (
-          <figure key={shape} className="shape-figure">
-            <div className={`shape-tile${shapeClass}`} />
-            <div className={`shape-tile shape-tile--pill${shapeClass}`} />
-            <figcaption className="shape-caption">corner-shape: {shape}</figcaption>
+          <figure key={shape} {...shapeFigureBem()}>
+            <div {...shapeTileBem({ modifiers: { round: shape === "round" } })} />
+            <div {...shapeTileBem({ modifiers: { pill: true, round: shape === "round" } })} />
+            <figcaption {...shapeCaptionBem()}>corner-shape: {shape}</figcaption>
           </figure>
         );
       })}

@@ -1,8 +1,16 @@
 import { useState, type ReactNode } from "react";
 
 import preview from "#.storybook/preview";
+import { createBem } from "#/shared/lib/bem";
 
 import "./motion.stories.css";
+
+const motionTrackBem = createBem("motion-track");
+const motionDotBem = createBem("motion-dot");
+const motionPageBem = createBem("motion-page");
+const motionPlayBem = createBem("motion-play");
+const motionRowBem = createBem("motion-row");
+const motionLabelBem = createBem("motion-label");
 
 const easings = [
   "emphasized",
@@ -34,10 +42,10 @@ function Track({
 }) {
   return (
     <div
-      className={effects ? "motion-track motion-track--effects" : "motion-track"}
+      {...motionTrackBem({ modifiers: { effects } })}
       style={{ "--track-duration": duration, "--track-easing": easing }}
     >
-      <div className="motion-dot" />
+      <div {...motionDotBem()} />
     </div>
   );
 }
@@ -45,8 +53,8 @@ function Track({
 function Demo({ children }: { children: ReactNode }) {
   const [played, setPlayed] = useState(false);
   return (
-    <main className="motion-page" data-played={played || undefined}>
-      <button type="button" className="motion-play" onClick={() => setPlayed((p) => !p)}>
+    <main {...motionPageBem()} data-played={played || undefined}>
+      <button type="button" {...motionPlayBem()} onClick={() => setPlayed((p) => !p)}>
         {played ? "Play back" : "Play"}
       </button>
       {children}
@@ -56,8 +64,8 @@ function Demo({ children }: { children: ReactNode }) {
 
 function Row({ token, children }: { token: string; children: ReactNode }) {
   return (
-    <section className="motion-row">
-      <code className="motion-label">{token}</code>
+    <section {...motionRowBem()}>
+      <code {...motionLabelBem()}>{token}</code>
       {children}
     </section>
   );

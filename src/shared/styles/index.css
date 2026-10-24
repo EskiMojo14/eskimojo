@@ -6,6 +6,7 @@
 @import "./motion/index.css";
 @import "./syntax.css";
 @import "#/shared/components/footer/index.css";
+@import "#/shared/components/list/index.css";
 @import "#/shared/components/sidebar/index.css";
 @import "#/shared/components/symbol/index.css";
 @import "#/shared/components/dialog/index.css";

@@ -1,8 +1,16 @@
 import { useState } from "react";
 
 import preview from "#.storybook/preview";
+import { createBem } from "#/shared/lib/bem";
 
 import "./typography.stories.css";
+
+const typographyPageBem = createBem("typography-page");
+const typographyRowBem = createBem("typography-row");
+const typographyWeightDemoBem = createBem("typography-weight-demo");
+const typographyLabelBem = createBem("typography-label");
+const typographySampleBem = createBem("typography-sample");
+const typographyFigureBem = createBem("typography-figure");
 
 type Features = "heading" | "body" | "code";
 
@@ -44,19 +52,26 @@ const meta = preview.meta({
 function WeightTransitionDemo() {
   const [heavy, setHeavy] = useState(false);
   return (
-    <main className="typography-page">
-      <section className="typography-row typography-weight-demo" data-heavy={heavy || undefined}>
-        <code className="typography-label">--typo-weight-regular → --typo-weight-bold</code>
-        <div className="typography-weight-demo__content">
+    <main {...typographyPageBem()}>
+      <section
+        {...typographyRowBem({ extra: typographyWeightDemoBem().className })}
+        data-heavy={heavy || undefined}
+      >
+        <code {...typographyLabelBem()}>--typo-weight-regular → --typo-weight-bold</code>
+        <div {...typographyWeightDemoBem({ element: "content" })}>
           <button
             type="button"
-            className="typography-weight-demo__toggle"
+            {...typographyWeightDemoBem({ element: "toggle" })}
             aria-pressed={heavy}
             onClick={() => setHeavy((current) => !current)}
           >
             {heavy ? "Make lighter" : "Make heavier"}
           </button>
-          <p className="typography-sample typography-weight-demo__sample">
+          <p
+            {...typographySampleBem({
+              extra: typographyWeightDemoBem({ element: "sample" }).className,
+            })}
+          >
             The quick brown fox jumps over the lazy dog.
           </p>
         </div>
@@ -67,20 +82,20 @@ function WeightTransitionDemo() {
 
 export const TypeScale = meta.story({
   render: () => (
-    <main className="typography-page">
+    <main {...typographyPageBem()}>
       {scale.flatMap(({ role, features, sizes }) =>
         sizes.map((size) => {
           const token = `--typo-${role}-${size}`;
           const featuresToken = `--typo-features-${features}`;
           return (
-            <section key={token} className="typography-row">
-              <code className="typography-label">
+            <section key={token} {...typographyRowBem()}>
+              <code {...typographyLabelBem()}>
                 {token}
                 <br />
                 {featuresToken}
               </code>
               <p
-                className="typography-sample"
+                {...typographySampleBem()}
                 style={{
                   "--sample-font": `var(${token})`,
                   "--sample-features": `var(${featuresToken})`,
@@ -98,14 +113,14 @@ export const TypeScale = meta.story({
 
 export const Weights = meta.story({
   render: () => (
-    <main className="typography-page">
+    <main {...typographyPageBem()}>
       {weights.map((weight) => {
         const token = `--typo-weight-${weight}`;
         return (
-          <section key={token} className="typography-row">
-            <code className="typography-label">{token}</code>
+          <section key={token} {...typographyRowBem()}>
+            <code {...typographyLabelBem()}>{token}</code>
             <p
-              className="typography-sample typography-sample--weight"
+              {...typographySampleBem({ modifiers: { weight: true } })}
               style={{ "--sample-weight": `var(${token})` }}
             >
               The quick brown fox jumps over the lazy dog.
@@ -123,10 +138,10 @@ export const WeightTransition = meta.story({
 
 export const FontFeatures = meta.story({
   render: () => (
-    <main className="typography-page">
+    <main {...typographyPageBem()}>
       {featureSamples.map(({ tag, name, sample }) => (
-        <section key={tag} className="typography-row typography-row--features">
-          <code className="typography-label">
+        <section key={tag} {...typographyRowBem({ modifiers: { features: true } })}>
+          <code {...typographyLabelBem()}>
             {tag}
             <br />
             {name}
@@ -135,9 +150,9 @@ export const FontFeatures = meta.story({
             { state: "off", settings: "normal" },
             { state: "on", settings: `"${tag}"` },
           ].map(({ state, settings }) => (
-            <figure key={state} className="typography-figure">
-              <figcaption className="typography-label">{state}</figcaption>
-              <p className="typography-sample" style={{ "--sample-features": settings }}>
+            <figure key={state} {...typographyFigureBem()}>
+              <figcaption {...typographyLabelBem()}>{state}</figcaption>
+              <p {...typographySampleBem()} style={{ "--sample-features": settings }}>
                 {sample}
               </p>
             </figure>

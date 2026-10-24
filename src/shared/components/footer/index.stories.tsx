@@ -1,6 +1,9 @@
 import preview from "#.storybook/preview";
+import { createBem } from "#/shared/lib/bem";
 
 import { Footer } from "./index";
+
+const appShellBem = createBem("app-shell");
 
 const meta = preview.meta({
   title: "Components/Footer",
@@ -12,8 +15,8 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   render: () => (
-    <div className="app-shell">
-      <div className="app-shell__content" />
+    <div {...appShellBem()}>
+      <div {...appShellBem({ element: "content" })} />
       <Footer />
     </div>
   ),

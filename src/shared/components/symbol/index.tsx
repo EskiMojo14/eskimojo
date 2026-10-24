@@ -1,5 +1,9 @@
 import type { ComponentPropsWithRef } from "react";
 
+import { createBem } from "#/shared/lib/bem";
+
+const symbolBem = createBem("md-symbol");
+
 export interface MdSymbolProps extends ComponentPropsWithRef<"span"> {
   children: string;
   flipRtl?: boolean;
@@ -33,11 +37,11 @@ export function MdSymbol({
   return (
     <span
       {...props}
+      {...symbolBem({ extra: ["material-symbols-sharp", className ?? ""] })}
       aria-hidden={!labelled}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       role={role ?? (labelled ? "img" : undefined)}
-      className={`md-symbol material-symbols-sharp${className ? ` ${className}` : ""}`}
       data-flip-rtl={flipRtl || undefined}
       style={{
         "--icon-fill": typeof fill === "boolean" ? Number(fill) : undefined,

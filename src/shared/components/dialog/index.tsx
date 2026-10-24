@@ -10,6 +10,10 @@ import {
   type ReactNode,
 } from "react";
 
+import { createBem } from "#/shared/lib/bem";
+
+const dialogBem = createBem("dialog");
+
 interface DialogLabels {
   titleId: string;
   descriptionId?: string;
@@ -166,8 +170,8 @@ export function Dialog({
 
   return (
     <dialog
+      {...dialogBem({ extra: className })}
       ref={dialogRef}
-      className={`dialog${className ? ` ${className}` : ""}`}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : labels?.titleId)}
       aria-describedby={ariaDescribedBy ?? labels?.descriptionId}
@@ -217,19 +221,19 @@ export function DialogContent({
   }, [setLabels, titleId, descriptionId, hasDescription]);
 
   return (
-    <div className={`dialog__surface${className ? ` ${className}` : ""}`}>
-      <header className="dialog__header">
-        <h2 className="dialog__title" id={titleId}>
+    <div {...dialogBem({ element: "surface", extra: className })}>
+      <header {...dialogBem({ element: "header" })}>
+        <h2 {...dialogBem({ element: "title" })} id={titleId}>
           {title}
         </h2>
         {hasDescription && (
-          <div className="dialog__description" id={descriptionId}>
+          <div {...dialogBem({ element: "description" })} id={descriptionId}>
             {description}
           </div>
         )}
       </header>
-      <div className="dialog__body">{children}</div>
-      {actions && <footer className="dialog__actions">{actions}</footer>}
+      <div {...dialogBem({ element: "body" })}>{children}</div>
+      {actions && <footer {...dialogBem({ element: "actions" })}>{actions}</footer>}
     </div>
   );
 }

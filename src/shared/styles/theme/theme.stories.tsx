@@ -1,6 +1,11 @@
 import preview from "#.storybook/preview";
+import { createBem } from "#/shared/lib/bem";
 
 import "./theme.stories.css";
+
+const themePageBem = createBem("theme-page");
+const themeGroupBem = createBem("theme-group");
+const themeSwatchBem = createBem("theme-swatch");
 
 type Swatch = {
   /** Role used as the background. */
@@ -126,9 +131,9 @@ const token = (role: string) => `var(--md-sys-color-${role})`;
 
 function SwatchTile({ bg, fg, border }: Swatch) {
   return (
-    <figure className="theme-swatch">
+    <figure {...themeSwatchBem()}>
       <div
-        className={border ? "theme-swatch__tile theme-swatch__tile--border" : "theme-swatch__tile"}
+        {...themeSwatchBem({ element: "tile", modifiers: { border: Boolean(border) } })}
         style={{
           "--swatch-bg": token(bg),
           "--swatch-fg": fg && token(fg),
@@ -137,8 +142,8 @@ function SwatchTile({ bg, fg, border }: Swatch) {
       >
         {fg && "Aa"}
       </div>
-      <figcaption className="theme-swatch__caption">
-        <strong className="theme-swatch__name">{border ?? bg}</strong>
+      <figcaption {...themeSwatchBem({ element: "caption" })}>
+        <strong {...themeSwatchBem({ element: "name" })}>{border ?? bg}</strong>
         {fg && !border && (
           <>
             <br />
@@ -165,11 +170,11 @@ const meta = preview.meta({
 
 export const Swatches = meta.story({
   render: () => (
-    <div className="theme-page">
+    <div {...themePageBem()}>
       {groups.map(({ title, swatches }) => (
-        <section key={title} className="theme-group">
-          <h3 className="theme-group__title">{title}</h3>
-          <div className="theme-group__swatches">
+        <section key={title} {...themeGroupBem()}>
+          <h3 {...themeGroupBem({ element: "title" })}>{title}</h3>
+          <div {...themeGroupBem({ element: "swatches" })}>
             {swatches.map((swatch) => (
               <SwatchTile key={`${swatch.bg}-${swatch.fg}-${swatch.border}`} {...swatch} />
             ))}
