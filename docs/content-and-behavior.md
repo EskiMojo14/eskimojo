@@ -80,6 +80,11 @@ the ancestor's title/subtitle pair. For example:
 staticData: { title: "Music", subtitle: "Recent listening and all-time favourites" }
 ```
 
+The browser tab title uses the same deepest matched `staticData.title`, both
+on initial load and after navigation, followed by ` | eskimojo` (for example,
+`Music | eskimojo`). Missing or empty titles fall back to `eskimojo`; the site
+name itself is not suffixed again. Subtitles are not included in the tab title.
+
 The sidebar retains the site
 identity. No breadcrumbs are needed for the current route hierarchy; Gigs uses
 tabs for its internal views.

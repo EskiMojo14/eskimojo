@@ -3,12 +3,13 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  HeadContent,
   RouterProvider,
 } from "@tanstack/react-router";
 import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
-import { Route as RootRoute } from "#/routes/__root";
+import { getDocumentHead, Route as RootRoute } from "#/routes/__root";
 import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index.tsx";
 import { Route as HomeRoute } from "#/routes/index";
 import { Route as MusicRoute } from "#/routes/music";
@@ -69,10 +70,16 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   await expect.element(homeSubtitle).toBeVisible();
 });
 
-test("uses route staticData titles and updates the app bar after navigation", async () => {
+test("keeps the document title and app bar matched to the current route after navigation", async () => {
   const root = createRootRoute({
     staticData: RootRoute.options.staticData,
-    component: () => <AppBar navigationOpen={false} onOpenNavigation={() => {}} />,
+    head: getDocumentHead,
+    component: () => (
+      <>
+        <HeadContent />
+        <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
+      </>
+    ),
   });
   const routes = [
     ["/", HomeRoute.options.staticData],
@@ -92,6 +99,7 @@ test("uses route staticData titles and updates the app bar after navigation", as
   const banner = result.getByRole("banner");
 
   await expect.element(banner.getByText("Home", { exact: true })).toBeVisible();
+  await expect.poll(() => document.title).toBe("Home | eskimojo");
   for (const [to, title] of [
     ["/projects", "Projects"],
     ["/music", "Music"],
@@ -100,5 +108,19 @@ test("uses route staticData titles and updates the app bar after navigation", as
   ] as const) {
     await router.navigate({ to });
     await expect.element(banner.getByText(title, { exact: true })).toBeVisible();
+    await expect.poll(() => document.title).toBe(`${title} | eskimojo`);
   }
+});
+
+test.each([
+  { matches: [], expected: "eskimojo" },
+  { matches: [{ staticData: {} }], expected: "eskimojo" },
+  { matches: [{ staticData: { title: "" } }], expected: "eskimojo" },
+  { matches: [{ staticData: { title: "eskimojo" } }], expected: "eskimojo" },
+  {
+    matches: [{ staticData: { title: "Music" } }, { staticData: { subtitle: "Recent listening" } }],
+    expected: "Music | eskimojo",
+  },
+])("sets document title metadata to $expected for $matches", ({ matches, expected }) => {
+  expect(getDocumentHead({ matches }).meta.find((meta) => meta.title)?.title).toBe(expected);
 });

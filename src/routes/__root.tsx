@@ -1,7 +1,12 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+  type StaticDataRouteOption,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useState } from "react";
 import BEMHelper from "react-bem-helper";
@@ -35,7 +40,18 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       contrast: getContrastFn(),
       palette: getPaletteFn(),
     }),
-  head: () => ({
+  head: getDocumentHead,
+  shellComponent: RootDocument,
+});
+
+export function getDocumentHead({
+  matches,
+}: {
+  matches: ReadonlyArray<{ staticData: StaticDataRouteOption }>;
+}) {
+  const title = matches.findLast((match) => match.staticData.title !== undefined)?.staticData.title;
+
+  return {
     meta: [
       {
         charSet: "utf-8",
@@ -45,7 +61,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: title && title !== "eskimojo" ? `${title} | eskimojo` : "eskimojo",
       },
     ],
     links: [
@@ -56,21 +72,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         rel: "preconnect",
         href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
+        crossOrigin: "anonymous" as const,
       },
       {
         rel: "stylesheet",
         href: symbolsUrl,
-        crossOrigin: "anonymous",
+        crossOrigin: "anonymous" as const,
       },
       {
         rel: "stylesheet",
         href: appCss,
       },
     ],
-  }),
-  shellComponent: RootDocument,
-});
+  };
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette } = Route.useLoaderData();
