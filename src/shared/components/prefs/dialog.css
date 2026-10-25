@@ -1,0 +1,54 @@
+.preferences-dialog {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.preferences-dialog__section {
+  min-inline-size: 0;
+
+  > .button-group {
+    inline-size: 100%;
+  }
+}
+
+.preferences-dialog__label {
+  margin: 0 0 0.5rem;
+  font: var(--typo-title-medium);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.preferences-dialog .button[data-palette="goat"] {
+  @extend %goat-standard;
+}
+
+.preferences-dialog .button[data-palette="goat"][data-contrast="medium"] {
+  @extend %goat-medium;
+}
+
+.preferences-dialog .button[data-palette="goat"][data-contrast="high"] {
+  @extend %goat-high;
+}
+
+.preferences-dialog .button[data-palette="arctic"] {
+  @extend %arctic-standard;
+}
+
+.preferences-dialog .button[data-palette="arctic"][data-contrast="medium"] {
+  @extend %arctic-medium;
+}
+
+.preferences-dialog .button[data-palette="arctic"][data-contrast="high"] {
+  @extend %arctic-high;
+}
+
+@media (prefers-contrast: more) {
+  .preferences-dialog .button[data-palette="goat"][data-contrast="system"] {
+    @extend %goat-high;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .preferences-dialog .button[data-palette="arctic"][data-contrast="system"] {
+    @extend %arctic-high;
+  }
+}

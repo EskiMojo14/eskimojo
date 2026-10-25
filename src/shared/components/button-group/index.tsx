@@ -64,6 +64,13 @@ export function ButtonGroup({
       attributes: true,
       attributeFilter: ["disabled", "aria-disabled", "hidden", "inert", "aria-pressed"],
     });
+    // A mounted group may become visible when its enclosing dialog opens.
+    for (let ancestor = group.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      observer.observe(ancestor, {
+        attributes: true,
+        attributeFilter: ["open", "hidden", "inert", "class", "style"],
+      });
+    }
     return () => {
       observer.disconnect();
       for (const [button, tabIndex] of originalTabIndexes) {

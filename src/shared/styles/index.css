@@ -12,6 +12,7 @@
 @import "#/shared/components/sidebar/index.css";
 @import "#/shared/components/symbol/index.css";
 @import "#/shared/components/dialog/index.css";
+@import "#/shared/components/prefs/dialog.css";
 
 * {
   box-sizing: border-box;

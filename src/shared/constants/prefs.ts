@@ -13,12 +13,11 @@ export const contrastSchema = v.fallback(
   "system",
 );
 export type Contrast = v.InferOutput<typeof contrastSchema>;
-// we'll just use "contrast" for all of them
-export const contrastLabels: Record<Contrast, string> = {
-  standard: "Standard",
-  medium: "Medium",
-  high: "High",
-  system: "System",
+export const contrastLabels: Record<Contrast, { label: string; icon: string }> = {
+  standard: { label: "Standard", icon: "contrast" },
+  medium: { label: "Medium", icon: "contrast_circle" },
+  high: { label: "High", icon: "contrast_square" },
+  system: { label: "System", icon: "brightness_auto" },
 };
 
 export const paletteSchema = v.fallback(v.picklist(["goat", "arctic"]), "goat");

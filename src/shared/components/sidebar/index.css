@@ -24,6 +24,10 @@
   font-feature-settings: var(--typo-features-heading);
 }
 
+.site-sidebar__preferences {
+  padding: 0.5rem 1rem;
+}
+
 .site-sidebar__palette-toggle {
   position: relative;
   isolation: isolate;

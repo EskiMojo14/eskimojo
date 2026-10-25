@@ -16,7 +16,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { links } from "#/shared/components/sidebar/groups";
-import { themeLabels, paletteLabels } from "#/shared/constants/prefs";
+import { themeLabels, contrastLabels, paletteLabels } from "#/shared/constants/prefs";
 
 import fmtConfig from "./config/fmt.config.ts";
 import materialSymbols from "./vite/symbols.ts";
@@ -108,7 +108,7 @@ const config = defineConfig({
     viteReact(),
     materialSymbols({
       knownSymbols: [
-        ...[themeLabels, paletteLabels].flatMap((labels) =>
+        ...[themeLabels, contrastLabels, paletteLabels].flatMap((labels) =>
           Object.values(labels).map(({ icon }) => icon),
         ),
         ...links.flatMap((group) => group.children.map(({ icon }) => icon)),

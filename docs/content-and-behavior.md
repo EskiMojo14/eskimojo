@@ -57,6 +57,17 @@ general Contact group.
 The shared site footer also links to GitHub, Twitter/X, and Bluesky, with the
 transparent Mitzi illustration centered behind the profile links as decoration.
 
+## Appearance preferences
+
+The sidebar's Preferences button opens a modal dialog with connected button
+groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,
+High), and Palette (Goat, Arctic). Each group permits one selection. Changes use the existing cookie-backed
+preference providers and apply without a separate Save action.
+
+Arrow keys move focus without selecting; Enter or Space selects the focused
+option. Done, Escape, and clicking the backdrop close the dialog without
+reverting changes. System follows the corresponding operating-system preference.
+
 ## Music
 
 Keep the three listening views:
