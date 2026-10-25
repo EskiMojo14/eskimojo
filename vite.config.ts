@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import mdx from "@mdx-js/rollup";
 import netlify from "@netlify/vite-plugin-tanstack-start";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { devtools } from "@tanstack/devtools-vite";
@@ -12,10 +13,13 @@ import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
 import { msw } from "msw/vite";
 import postcssExtendRule from "postcss-extend-rule";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
-import { gigBreakdownLabels } from "#/routes/gigs/-constants";
+import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
 import { links } from "#/shared/components/sidebar/groups";
 import { themeLabels, contrastLabels, paletteLabels } from "#/shared/constants/prefs";
 
@@ -106,7 +110,11 @@ const config = defineConfig({
     devtools(),
     netlify(),
     tanstackStart(),
-    viteReact(),
+    process.env.STORYBOOK !== "true" && {
+      enforce: "pre",
+      ...mdx({ remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter] }),
+    },
+    viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
     materialSymbols({
       knownSymbols: [
         ...[themeLabels, contrastLabels, paletteLabels, gigBreakdownLabels].flatMap((labels) =>

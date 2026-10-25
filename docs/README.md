@@ -18,3 +18,14 @@ features have been implemented.
 
 - [Material Symbols](./material-symbols.md) — icon component usage, accessibility,
   font loading, and production symbol extraction.
+- MDX content can be authored in `.mdx` files and imported as React components.
+  The Gigs page uses this for its shared intro in
+  [`src/routes/gigs/-intro.mdx`](../src/routes/gigs/-intro.mdx). GitHub Flavored
+  Markdown syntax is enabled. Run `vp run typecheck:mdx` to type-check MDX with
+  `mdx-content-mapper`; that package currently requires TypeScript 7.1 or newer.
+  TypeScript `7.1.0-beta` is pinned in the project dependencies.
+  YAML frontmatter between opening `---` delimiters is exported as a
+  `frontmatter` object, not rendered as page content. Import it alongside the
+  component: `import GigsIntro, { frontmatter } from "./-intro.mdx"`, then access
+  metadata such as `frontmatter.title`. The compiler, Storybook, and content
+  mapper use the same frontmatter plugins.

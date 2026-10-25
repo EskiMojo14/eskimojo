@@ -54,7 +54,7 @@ function createTabRouter(initialEntry = "/") {
       }),
       createRoute({
         getParentRoute: () => root,
-        path: "/gigs/{-$breakdown}",
+        path: "/gigs/{-$breakdown}/",
         component: () => <p>Gigs content</p>,
       }),
     ]),

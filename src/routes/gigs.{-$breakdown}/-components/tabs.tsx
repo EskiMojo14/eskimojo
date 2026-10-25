@@ -1,11 +1,10 @@
 import { getRouteApi } from "@tanstack/react-router";
 
+import { gigBreakdownLabels, gigBreakdownSchema } from "#/routes/gigs.{-$breakdown}/-constants";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabNav } from "#/shared/components/tabs";
 
-import { gigBreakdownLabels, gigBreakdownSchema } from "./-constants";
-
-const gigsRoute = getRouteApi("/gigs/{-$breakdown}");
+const gigsRoute = getRouteApi("/gigs/{-$breakdown}/");
 
 export function GigsBreakdownTabs() {
   const { breakdown } = gigsRoute.useParams();

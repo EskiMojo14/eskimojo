@@ -1,5 +1,7 @@
 import type { StorybookConfig } from "@storybook/tanstack-react";
+import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 
 import { symbolsUrl } from "../src/shared/lib/symbols.ts";
 
@@ -11,7 +13,13 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     {
       name: "@storybook/addon-docs",
-      options: { mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } } },
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+          },
+        },
+      },
     },
     "@storybook/addon-mcp",
     "msw-storybook-addon",
