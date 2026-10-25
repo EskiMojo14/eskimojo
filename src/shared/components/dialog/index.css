@@ -7,7 +7,7 @@
   inline-size: min(35rem, calc(100% - 2rem));
   max-block-size: min(48rem, calc(100% - 3rem));
   padding: 0;
-  overflow: auto;
+  overflow: visible;
   border: 0;
   background: transparent;
   color: var(--md-sys-color-on-surface);
@@ -39,6 +39,10 @@
 
 .dialog:modal {
   overscroll-behavior: contain;
+}
+
+.dialog:focus {
+  outline: none;
 }
 
 .dialog::backdrop {
