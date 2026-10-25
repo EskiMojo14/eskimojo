@@ -29,6 +29,7 @@ export function getRouter({
 declare module "@tanstack/react-router" {
   interface StaticDataRouteOption {
     title?: string;
+    subtitle?: string;
   }
 
   interface Register {

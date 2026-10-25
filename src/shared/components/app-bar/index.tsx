@@ -15,14 +15,14 @@ export interface AppBarProps {
 
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
-  const title = useMatches({
+  const pageData = useMatches({
     select: (matches) =>
-      matches.findLast((match) => match.staticData.title !== undefined)?.staticData.title,
+      matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
   });
 
   return (
     <>
-      <header {...appBarBem()}>
+      <header {...appBarBem({ modifiers: { "with-subtitle": Boolean(pageData?.subtitle) } })}>
         <IconButton
           {...appBarBem({ element: "navigation" })}
           icon={<MdSymbol>menu</MdSymbol>}
@@ -31,8 +31,14 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
           aria-expanded={navigationOpen}
           onClick={onOpenNavigation}
         />
-        <span {...appBarBem({ element: "title" })}>{title}</span>
+        <div {...appBarBem({ element: "text" })}>
+          <span {...appBarBem({ element: "title" })}>{pageData?.title}</span>
+          {pageData?.subtitle && (
+            <span {...appBarBem({ element: "subtitle" })}>{pageData.subtitle}</span>
+          )}
+        </div>
         <IconButton
+          {...appBarBem({ element: "preferences" })}
           icon={<MdSymbol>settings</MdSymbol>}
           aria-label="Preferences"
           tooltip="Preferences"

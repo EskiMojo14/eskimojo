@@ -60,12 +60,27 @@ It credits the artwork to [Popurri](https://x.com/popurri_arts).
 
 ## Appearance preferences
 
-An MD3 small top app bar displays the current page title and a trailing Preferences icon
-button on all screen sizes. On small screens, its leading menu icon opens the
+An MD3 large flexible top app bar displays the current page title below a
+navigation/actions row with a trailing Preferences icon button on all screen sizes.
+Without a subtitle, it has a 120px minimum height, display-small title typography,
+and 16px title insets. An optional `staticData.subtitle` adds title-medium text
+below the title and increases the minimum height to 152px. Long titles and subtitles
+wrap and grow the bar rather than being clipped.
+The bar scrolls with the page; scroll-driven collapse is not enabled.
+On small screens, its leading menu icon opens the
 modal navigation drawer; the desktop drawer remains permanent. Preferences is
 not available inside either drawer, so opening it never stacks mobile modals.
 Page titles are supplied by route `staticData.title`; the app bar uses
-`useMatches` to select the deepest matched title. The sidebar retains the site
+`useMatches` to select the deepest matched route with a title and reads both
+`title` and `subtitle` from that route. A child route with its own title but no
+subtitle does not inherit an ancestor's subtitle; a child without a title retains
+the ancestor's title/subtitle pair. For example:
+
+```ts
+staticData: { title: "Music", subtitle: "Recent listening and all-time favourites" }
+```
+
+The sidebar retains the site
 identity. No breadcrumbs are needed for the current route hierarchy; Gigs uses
 tabs for its internal views.
 

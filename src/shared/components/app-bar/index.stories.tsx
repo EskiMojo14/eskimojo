@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { expect, fn, waitFor, within } from "storybook/test";
 
 import preview from "#.storybook/preview";
@@ -20,7 +21,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "MD3 small top app bar with a 64px minimum height, title-large typography, and a trailing Preferences icon button. The title comes from the deepest matched route with a staticData title, selected with useMatches. The leading navigation icon is visible only on small screens. Preferences opens independently of the navigation drawer and returns focus to its trigger when dismissed.",
+          "MD3 large flexible top app bar: a 64px navigation/actions row above a display-small title, with a 120px minimum total height. An optional staticData.subtitle uses title-medium typography and increases the minimum height to 152px. Both title and subtitle can wrap and grow the bar rather than being clipped. Both come from the deepest matched route with a staticData title, selected with useMatches; subtitles are not inherited independently. The leading navigation icon is visible only on small screens. Preferences opens independently of the navigation drawer and returns focus to its trigger when dismissed. The bar scrolls with the page; scroll-driven collapse is not enabled.",
       },
     },
   },
@@ -36,6 +37,22 @@ export const Gigs = meta.story({
   parameters: { tanstack: { router: { route: GigsRoute } } },
   play: async ({ canvas }) => {
     await expect(canvas.getByText("Gigs", { exact: true })).toBeVisible();
+  },
+});
+
+export const WithSubtitle = meta.story({
+  parameters: {
+    tanstack: {
+      router: {
+        route: createFileRoute("/")({
+          staticData: { title: "Home", subtitle: "Projects, music, and other interests" },
+        }),
+      },
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("Home", { exact: true })).toBeVisible();
+    await expect(canvas.getByText("Projects, music, and other interests")).toBeVisible();
   },
 });
 
