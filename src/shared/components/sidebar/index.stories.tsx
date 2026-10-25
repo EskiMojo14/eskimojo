@@ -34,3 +34,16 @@ function NavigationLayout() {
 }
 
 export const Default = meta.story({});
+
+export const ScrollingPage = meta.story({
+  render: () => (
+    <div className="app-shell">
+      <Sidebar open={false} onClose={() => {}} />
+      <main className="app-shell__main">
+        {Array.from({ length: 40 }, (_, index) => (
+          <p key={index}>Page content {index + 1}. The desktop navigation stays in place.</p>
+        ))}
+      </main>
+    </div>
+  ),
+});

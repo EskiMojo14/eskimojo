@@ -1,3 +1,5 @@
+@import "./-components/heatmap.css";
+
 .gigs-intro {
   padding: 0 1rem;
   > p {

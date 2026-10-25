@@ -59,6 +59,13 @@
 
 .site-sidebar--desktop {
   display: block;
+  position: sticky;
+  inset-block-start: 0;
+  align-self: flex-start;
+  block-size: 100dvh;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   @media (max-width: 48rem) {
     display: none;

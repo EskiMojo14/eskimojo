@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
+import { GigsHeatmap } from "./-components/heatmap";
 import { GigsBreakdownTabs } from "./-components/tabs";
 import { gigBreakdownSchema } from "./-constants";
+import gigs from "./-data/gigs.json";
 import GigsIntro from "./-intro.mdx";
 
 import breakdownCss from "./index.css?url";
@@ -23,12 +25,14 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
 });
 
 function RouteComponent() {
+  const { breakdown = "by-month" } = Route.useParams();
   return (
     <>
       <div className="gigs-intro">
         <GigsIntro />
       </div>
       <GigsBreakdownTabs />
+      {breakdown === "by-month" && <GigsHeatmap events={gigs.events} />}
     </>
   );
 }

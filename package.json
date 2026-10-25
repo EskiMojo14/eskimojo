@@ -28,6 +28,7 @@
     "check:fix": "vp check --fix && vpr lint:css:all --fix && vpr typecheck"
   },
   "dependencies": {
+    "@tanstack/charts": "1.1.0",
     "@tanstack/react-devtools": "0.10.13",
     "@tanstack/react-query": "5.104.5",
     "@tanstack/react-query-devtools": "5.104.5",

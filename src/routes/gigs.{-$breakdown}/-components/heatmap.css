@@ -1,0 +1,103 @@
+@property --gigs-count-contrast {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: black;
+}
+
+@property --gigs-surface-contrast {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: black;
+}
+
+.gigs-heatmap {
+  padding: 1rem;
+  color: var(--md-sys-color-on-surface);
+
+  & h2 {
+    font: var(--typo-title-large);
+    margin-block: 0 1rem;
+  }
+}
+
+.gigs-heatmap__chart {
+  min-width: 0;
+
+  & text[fill^="contrast-color("] {
+    @supports not (fill: contrast-color(red)) {
+      fill: var(--md-sys-color-on-surface);
+    }
+
+    @supports (fill: if(style(--gigs-count-contrast: white): white; else: black)) and
+      (fill: attr(fill type(<color>))) {
+      --gigs-count-contrast: attr(fill type(<color>));
+      --gigs-surface-contrast: contrast-color(var(--md-sys-color-surface));
+
+      --gigs-count-color: if(
+        style(--gigs-count-contrast: var(--gigs-surface-contrast)): var(--md-sys-color-on-surface);
+          else: var(--md-sys-color-inverse-on-surface)
+      );
+      fill: var(--gigs-count-color);
+    }
+  }
+
+  & svg[role="img"] {
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--md-sys-color-secondary);
+      outline-offset: 4px;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+    }
+  }
+}
+
+.gigs-heatmap__tooltip {
+  max-width: min(20rem, calc(100dvw - 1rem));
+  max-height: 60dvh;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  corner-shape: round;
+  font-feature-settings: var(--typo-features-body);
+
+  @media (forced-colors: active) {
+    border: 1px solid currentColor;
+  }
+}
+
+.gigs-heatmap__events {
+  padding-inline-start: 1rem;
+  margin-block: 0.75rem;
+
+  & strong {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  & li + li {
+    margin-block-start: 0.75rem;
+  }
+
+  .gigs-heatmap__support {
+    font: var(--typo-body-small);
+    color: rgb(from var(--md-sys-color-on-surface) r g b / 70%);
+  }
+
+  & p {
+    white-space: pre-line;
+    margin: 0.25rem 0 0;
+  }
+}
+
+.gigs-heatmap__table {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}

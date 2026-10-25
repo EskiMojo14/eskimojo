@@ -86,7 +86,11 @@ on initial load and after navigation, followed by ` | eskimojo` (for example,
 name itself is not suffixed again. Subtitles are not included in the tab title.
 
 The sidebar retains the site
-identity. No breadcrumbs are needed for the current route hierarchy; Gigs uses
+identity. On desktop it stays anchored to the top of the viewport while the page
+scrolls, without overlapping the main content. It fills the viewport height;
+navigation scrolls independently only when needed to keep links reachable on
+short screens. The small-screen modal drawer is unchanged.
+No breadcrumbs are needed for the current route hierarchy; Gigs uses
 tabs for its internal views.
 
 Client-side navigations, including browser Back and Forward, use a generic
@@ -167,7 +171,32 @@ The optional `breakdown` path parameter selects the view:
 `/gigs` defaults to By month, with `/gigs/by-month` also selecting that tab;
 the other destinations are `/gigs/by-artist`, `/gigs/by-venue`, and
 `/gigs/by-city`. Selection follows the URL and browser Back/Forward history.
-The archive views themselves remain to be implemented.
+The Year / month view uses TanStack Charts to display a heatmap with January
+through December as columns and ascending years as rows. It counts events, not
+artists, and includes all months and intervening years between the first and last
+recorded event. Zero counts remain visible. Cells show exact counts alongside a
+theme-aware colour intensity scale, and a screen-reader-only semantic table
+provides the same values without duplicating the visible chart. The table is
+visually clipped, not hidden from assistive technology. The chart and its cells
+shrink to fit the available width on narrow screens without horizontal scrolling.
+An empty archive displays "No gigs recorded yet."
+Hovering or keyboard-focusing a cell shows a custom tooltip listing that month's
+events in date order, including main/co-billed artists, support when recorded,
+date, and venue. Its surface, typography, spacing, rounded corners, elevation,
+and text action match the site's rich tooltips. Empty months explicitly say no gigs are recorded. Clicking,
+tapping, or pressing Enter pins the details so long lists can be scrolled.
+Escape, clicking outside, or Close details dismisses pinned details. Dates use
+UTC so calendar dates cannot shift with the visitor's time zone.
+Keyboard focus adds a theme-coloured outline around the chart. The active cell
+has a contrasting border instead of a circular marker; clicking the chart does
+not show the outer keyboard-focus outline.
+Count labels are decorative chart marks, so each cell contributes only one
+keyboard navigation stop rather than separate stops for its rectangle and text.
+Left/Right move to the adjacent month in the same year; Up/Down move to the
+adjacent year in the same month. Movement follows the rendered chart geometry
+and stops at the edges without wrapping. Home/End retain first/last-cell
+navigation, and Enter/Escape retain tooltip pinning/dismissal.
+The artist, venue, and city views remain to be implemented.
 
 Source data and the exact visual design should be verified during migration.
 The counts and date range above describe the inspected legacy archive; they
