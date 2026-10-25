@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
+import { GigsArtistChart } from "./-components/artist-chart";
 import { GigsHeatmap } from "./-components/heatmap";
 import { GigsBreakdownTabs } from "./-components/tabs";
 import { gigBreakdownSchema } from "./-constants";
@@ -33,6 +34,7 @@ function RouteComponent() {
       </div>
       <GigsBreakdownTabs />
       {breakdown === "by-month" && <GigsHeatmap events={gigs.events} />}
+      {breakdown === "by-artist" && <GigsArtistChart events={gigs.events} />}
     </>
   );
 }

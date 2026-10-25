@@ -167,6 +167,7 @@ test.each(["/gigs", "/gigs/by-month"])(
     await expect.element(chart).toBeVisible();
     await result.getByRole("link", { name: "Artist", exact: true }).click();
     await expect.element(chart).not.toBeInTheDocument();
+    await expect.element(result.getByRole("img", { name: "Gigs by artist" })).toBeVisible();
     await result.getByRole("link", { name: "Month", exact: true }).click();
     await expect.element(chart).toBeVisible();
     await result.getByRole("link", { name: "City", exact: true }).click();

@@ -196,7 +196,18 @@ Left/Right move to the adjacent month in the same year; Up/Down move to the
 adjacent year in the same month. Movement follows the rendered chart geometry
 and stops at the edges without wrapping. Home/End retain first/last-cell
 navigation, and Enter/Escape retain tooltip pinning/dismissal.
-The artist, venue, and city views remain to be implemented.
+The artist view uses a horizontal stacked bar chart with Main and Support
+segments per artist, sorted by Main appearances descending, then Support
+appearances descending, then alphabetically for ties.
+Each main/co-billed artist and each recorded support act counts once
+per event in its respective role. Support-only artists are included. Hovering or
+keyboard-focusing a segment shows both role counts, the total, and a chronological
+list of actual events with dates and venues. Support appearances also name the
+main/co-billed artists they supported. Clicking or pressing Enter pins the tooltip
+so long event lists can be scrolled; Escape or Close details dismisses it. A labelled
+legend identifies the segments, and a screen-reader-only semantic table provides
+exact counts. An empty archive displays "No artists recorded yet."
+The venue and city views remain to be implemented.
 
 Source data and the exact visual design should be verified during migration.
 The counts and date range above describe the inspected legacy archive; they
