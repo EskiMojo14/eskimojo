@@ -30,7 +30,30 @@
   }
 
   [data-palette="arctic"] &::before {
-    background-image: url("/OC.PNG");
+    background-image: none;
+  }
+
+  [data-palette="arctic"] &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: -1;
+    aspect-ratio: 2772 / 3508;
+    max-block-size: 100%;
+    background-image:
+      linear-gradient(
+        rgb(from var(--md-sys-color-surface-container-low) r g b / 0.75),
+        rgb(from var(--md-sys-color-surface-container-low) r g b / 0.75)
+      ),
+      url("/OC.PNG");
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 1;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%);
+    mask-image: linear-gradient(to bottom, transparent, black 20%);
   }
 }
 
