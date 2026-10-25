@@ -4,6 +4,7 @@ import BEMHelper from "react-bem-helper";
 import { Button } from "#/shared/components/buttons/button";
 import { ButtonGroup } from "#/shared/components/buttons/button-group";
 import { Dialog, DialogContent, type DialogProps } from "#/shared/components/dialog";
+import { SelectMenu } from "#/shared/components/select-menu";
 import { MdSymbol } from "#/shared/components/symbol";
 import {
   themeSchema,
@@ -45,6 +46,18 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
               <h3 {...preferencesBem({ element: "label" })} id={themeId}>
                 Theme
               </h3>
+              <SelectMenu
+                {...preferencesBem({ element: "select" })}
+                label="Theme"
+                name="theme"
+                value={theme}
+                onChange={setTheme}
+                options={themeSchema.options.map((value) => ({
+                  value,
+                  label: themeLabels[value].label,
+                  icon: <MdSymbol>{themeLabels[value].icon}</MdSymbol>,
+                }))}
+              />
               <ButtonGroup variant="connected" aria-labelledby={themeId}>
                 {themeSchema.options.map((value) => (
                   <Button
@@ -63,6 +76,18 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
               <h3 {...preferencesBem({ element: "label" })} id={contrastId}>
                 Contrast
               </h3>
+              <SelectMenu
+                {...preferencesBem({ element: "select" })}
+                label="Contrast"
+                name="contrast"
+                value={contrast}
+                onChange={setContrast}
+                options={contrastSchema.options.map((value) => ({
+                  value,
+                  label: contrastLabels[value].label,
+                  icon: <MdSymbol>{contrastLabels[value].icon}</MdSymbol>,
+                }))}
+              />
               <ButtonGroup variant="connected" aria-labelledby={contrastId}>
                 {contrastSchema.options.map((value) => (
                   <Button
@@ -81,6 +106,18 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
               <h3 {...preferencesBem({ element: "label" })} id={paletteId}>
                 Palette
               </h3>
+              <SelectMenu
+                {...preferencesBem({ element: "select" })}
+                label="Palette"
+                name="palette"
+                value={palette}
+                onChange={setPalette}
+                options={paletteSchema.options.map((value) => ({
+                  value,
+                  label: paletteLabels[value].label,
+                  icon: <MdSymbol>{paletteLabels[value].icon}</MdSymbol>,
+                }))}
+              />
               <ButtonGroup variant="connected" aria-labelledby={paletteId}>
                 {paletteSchema.options.map((value) => (
                   <Button

@@ -17,6 +17,23 @@
   font-feature-settings: var(--typo-features-heading);
 }
 
+.preferences-dialog__select {
+  --select-menu-label-background: var(--md-sys-color-surface-container-high);
+
+  display: none;
+}
+
+@media (max-width: 37.5rem) {
+  .preferences-dialog__label,
+  .preferences-dialog__section > .button-group {
+    display: none;
+  }
+
+  .preferences-dialog__select {
+    display: block;
+  }
+}
+
 .preferences-dialog .button[data-palette="goat"] {
   @extend %goat-standard;
 }

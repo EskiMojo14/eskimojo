@@ -16,7 +16,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Theme, contrast, and palette preferences using connected button groups and the existing preference contexts. Each group is single-select; arrows move focus and Enter/Space select. Changes are applied through the existing setters without an Apply step. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the existing Theme, Contrast, and Palette globals; the app saves them through its cookie-backed providers.",
+          "Theme, contrast, and palette preferences using the existing preference contexts. At viewport widths up to 37.5rem (600px), each preference uses an MD3 outlined SelectMenu with a floating label, icons in the selection and options, and a themed, anchored listbox. Larger viewports use connected button groups with icons. Both layouts share the same selections and save changes immediately. Select menus support arrows, Home/End, type-ahead, Enter/Space to select, and Escape to dismiss without changing the value or closing the dialog. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the existing Theme, Contrast, and Palette globals; the app saves them through its cookie-backed providers.",
       },
     },
   },
