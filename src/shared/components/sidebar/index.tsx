@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { Button } from "#/shared/components/button";
+import { Dialog } from "#/shared/components/dialog";
 import { List, ListDivider, ListItem } from "#/shared/components/list";
 import { usePalette } from "#/shared/components/prefs/context";
 import { PreferencesDialog } from "#/shared/components/prefs/dialog";
@@ -12,14 +13,18 @@ import { links } from "./groups";
 
 const siteSidebarBem = BEMHelper("site-sidebar");
 
-export function Sidebar() {
-  const [preferencesOpen, setPreferencesOpen] = useState(false);
+function SidebarContents({
+  onOpenPreferences,
+  onNavigate,
+}: {
+  onOpenPreferences: () => void;
+  onNavigate: () => void;
+}) {
   const { palette, setPalette } = usePalette();
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";
-
   return (
-    <aside {...siteSidebarBem()} aria-label="Sidebar">
+    <>
       <div {...siteSidebarBem({ element: "header" })}>
         <button
           {...siteSidebarBem({ element: "palette-toggle" })}
@@ -42,7 +47,7 @@ export function Sidebar() {
             <Fragment key={key}>
               {children.map(({ icon, label, ...link }) => (
                 <ListItem key={label}>
-                  <Link {...link}>
+                  <Link {...link} onClick={onNavigate}>
                     <MdSymbol size={24}>{icon}</MdSymbol>
                     <span>{label}</span>
                   </Link>
@@ -58,12 +63,52 @@ export function Sidebar() {
           variant="text"
           icon={<MdSymbol>settings</MdSymbol>}
           aria-haspopup="dialog"
-          onClick={() => setPreferencesOpen(true)}
+          onClick={onOpenPreferences}
         >
           Preferences
         </Button>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  const [navigationOpen, setNavigationOpen] = useState(false);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
+
+  return (
+    <>
+      <header {...siteSidebarBem({ element: "mobile-header" })}>
+        <Button
+          variant="text"
+          icon={<MdSymbol>menu</MdSymbol>}
+          aria-label="Open navigation menu"
+          aria-haspopup="dialog"
+          aria-expanded={navigationOpen}
+          onClick={() => setNavigationOpen(true)}
+        />
+        <span {...siteSidebarBem({ element: "mobile-title" })}>eskimojo</span>
+      </header>
+      <aside {...siteSidebarBem({ modifier: "desktop" })} aria-label="Primary navigation">
+        <SidebarContents
+          onOpenPreferences={() => setPreferencesOpen(true)}
+          onNavigate={() => setNavigationOpen(false)}
+        />
+      </aside>
+      <Dialog
+        open={navigationOpen}
+        className="site-sidebar__dialog"
+        aria-label="Primary navigation"
+        onClose={() => setNavigationOpen(false)}
+      >
+        <aside {...siteSidebarBem({ modifier: "modal-content" })}>
+          <SidebarContents
+            onOpenPreferences={() => setPreferencesOpen(true)}
+            onNavigate={() => setNavigationOpen(false)}
+          />
+        </aside>
+      </Dialog>
       <PreferencesDialog open={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
-    </aside>
+    </>
   );
 }

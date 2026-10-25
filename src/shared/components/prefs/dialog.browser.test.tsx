@@ -61,6 +61,7 @@ test("selects every theme and contrast independently through existing contexts",
 
 test("sidebar opens preferences, keeps changes after Done, and reopens", async () => {
   const result = await page.renderWithProviders(<Sidebar />);
+  await result.getByRole("button", { name: "Open navigation menu" }).click();
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
@@ -85,6 +86,7 @@ test("sidebar opens preferences, keeps changes after Done, and reopens", async (
 
 test("arrows only move focus; Space selects; Escape keeps changes", async () => {
   const result = await page.renderWithProviders(<Sidebar />);
+  await result.getByRole("button", { name: "Open navigation menu" }).click();
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
@@ -101,4 +103,20 @@ test("arrows only move focus; Space selects; Escape keeps changes", async () => 
   await expect.element(dialogElement).not.toBeVisible();
   await trigger.click();
   await expect.element(light).toHaveAttribute("aria-pressed", "true");
+});
+
+test("sidebar opens a modal navigation drawer and Escape restores focus", async () => {
+  const result = await page.renderWithProviders(<Sidebar />);
+  const trigger = result.getByRole("button", { name: "Open navigation menu" });
+
+  await trigger.click();
+  const dialog = result.getByRole("dialog", { name: "Primary navigation" }).element();
+  await expect.element(dialog).toBeVisible();
+  expect(dialog.matches(":modal")).toBe(true);
+  await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+
+  await userEvent.keyboard("{Escape}");
+  await expect.element(dialog).not.toBeVisible();
+  await expect.element(trigger).toHaveFocus();
+  await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
 });

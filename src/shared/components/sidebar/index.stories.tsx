@@ -10,7 +10,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Primary navigation in an MD3 list. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
+          "Primary navigation in an MD3 list. It is a permanent navigation drawer on larger screens and a modal navigation drawer on small screens. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
       },
     },
   },
