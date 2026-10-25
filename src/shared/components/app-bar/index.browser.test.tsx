@@ -9,7 +9,7 @@ import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { Route as RootRoute } from "#/routes/__root";
-import { Route as GigsRoute } from "#/routes/gigs";
+import { Route as GigsRoute } from "#/routes/gigs/{-$breakdown}.tsx";
 import { Route as HomeRoute } from "#/routes/index";
 import { Route as MusicRoute } from "#/routes/music";
 import { Route as ProjectsRoute } from "#/routes/projects";
@@ -42,7 +42,7 @@ test("uses route staticData titles and updates the app bar after navigation", as
   for (const [to, title] of [
     ["/projects", "Projects"],
     ["/music", "Music"],
-    ["/gigs", "Gigs"],
+    ["/gigs/{-$breakdown}", "Gigs"],
     ["/", "Home"],
   ] as const) {
     await router.navigate({ to });

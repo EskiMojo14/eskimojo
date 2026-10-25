@@ -1,7 +1,7 @@
 import { expect, fn, waitFor, within } from "storybook/test";
 
 import preview from "#.storybook/preview";
-import { Route as GigsRoute } from "#/routes/gigs";
+import { Route as GigsRoute } from "#/routes/gigs/{-$breakdown}.tsx";
 import { Route as HomeRoute } from "#/routes/index";
 
 import { AppBar } from "./index";
