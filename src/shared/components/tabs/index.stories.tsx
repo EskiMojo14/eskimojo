@@ -1,10 +1,18 @@
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import { MdSymbol } from "#/shared/components/symbol";
 
-import { Tab, TabList, TabPanel, Tabs } from "./index";
+import { Tab, TabLink, TabList, TabNav, TabPanel, Tabs, type TabNavProps } from "./index";
 
 const meta = preview.meta({
   title: "Components/Tabs",
@@ -118,6 +126,105 @@ export const Secondary = meta.story({
       </TabPanel>
     </Tabs>
   ),
+});
+
+function createDemoRouter({
+  variant = "primary",
+  orientation = "horizontal",
+}: Pick<TabNavProps, "variant" | "orientation">) {
+  const root = createRootRoute({
+    component: () => (
+      <div style={{ minWidth: 280 }}>
+        <TabNav aria-label="Site sections" variant={variant} orientation={orientation}>
+          <TabLink to="/" activeOptions={{ exact: true }} icon={<MdSymbol>home</MdSymbol>}>
+            Home
+          </TabLink>
+          <TabLink to="/projects" icon={<MdSymbol>work</MdSymbol>}>
+            Projects
+          </TabLink>
+          <TabLink to="/music" icon={<MdSymbol>music_note</MdSymbol>}>
+            Music
+          </TabLink>
+        </TabNav>
+        <Outlet />
+      </div>
+    ),
+  });
+  const home = createRoute({
+    getParentRoute: () => root,
+    path: "/",
+    component: () => <p>Welcome home.</p>,
+  });
+  const projects = createRoute({
+    getParentRoute: () => root,
+    path: "/projects",
+    component: () => <p>Selected projects and contributions.</p>,
+  });
+  const music = createRoute({
+    getParentRoute: () => root,
+    path: "/music",
+    component: () => <p>Recently played music.</p>,
+  });
+  return createRouter({
+    routeTree: root.addChildren([home, projects, music]),
+    history: createMemoryHistory({ initialEntries: ["/"] }),
+  });
+}
+
+function RouterTabsDemo(props: Pick<TabNavProps, "variant" | "orientation">) {
+  const [router] = useState(() => createDemoRouter(props));
+  return <RouterProvider router={router} />;
+}
+
+export const RouterLinks = meta.story({
+  render: () => <RouterTabsDemo />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Use TabNav with TabLink for router-backed navigation: no Tabs value, TabPanel, or navigate callback is needed. TabLink uses TanStack createLink, preserving typed to/params/search, activeOptions, preload, replace, and normal anchor behavior. The router supplies aria-current="page" and moves the indicator after navigation, including browser Back/Forward. Use activeOptions={{ exact: true }} for a root destination. Route navigation uses a labelled nav and links, not tab/tabpanel roles: Tab moves through links and Enter follows them. This demo uses isolated memory history.',
+      },
+    },
+  },
+  play: async ({ canvas, userEvent }) => {
+    await expect(canvas.getByRole("link", { name: "Home" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await userEvent.click(canvas.getByRole("link", { name: "Projects" }));
+    await expect(canvas.getByText("Selected projects and contributions.")).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "Projects" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(canvas.getByRole("link", { name: "Home" })).not.toHaveAttribute("aria-current");
+    await userEvent.click(canvas.getByRole("link", { name: "Music" }));
+    await expect(canvas.getByText("Recently played music.")).toBeVisible();
+  },
+});
+
+export const RouterSecondary = meta.story({
+  render: () => <RouterTabsDemo variant="secondary" />,
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("link", { name: "Music" }));
+    await expect(canvas.getByRole("link", { name: "Music" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(canvas.getByText("Recently played music.")).toBeVisible();
+  },
+});
+
+export const RouterVertical = meta.story({
+  render: () => <RouterTabsDemo orientation="vertical" />,
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("link", { name: "Projects" }));
+    await expect(canvas.getByRole("link", { name: "Projects" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(canvas.getByText("Selected projects and contributions.")).toBeVisible();
+  },
 });
 
 function VerticalTabsDemo({

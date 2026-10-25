@@ -16,7 +16,9 @@
   overscroll-behavior-inline: contain;
   scrollbar-width: none;
 
-  &[aria-orientation="horizontal"]:has(> .tabs__tab[aria-selected="true"])::after {
+  &[data-orientation="horizontal"]:has(
+      > .tabs__tab:is([aria-selected="true"], [aria-current="page"])
+    )::after {
     position: absolute;
     position-anchor: var(--tabs-active-label);
     inset-block-end: 0;
@@ -36,7 +38,7 @@
     display: none;
   }
 
-  &[aria-orientation="vertical"] {
+  &[data-orientation="vertical"] {
     inline-size: max-content;
     max-block-size: 100%;
     flex-direction: column;
@@ -62,6 +64,7 @@
   color: var(--md-sys-color-on-surface-variant);
   font: var(--typo-title-small);
   text-align: center;
+  text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -69,7 +72,7 @@
     background-color var(--md-sys-motion-spring-fast-effects-duration)
       var(--md-sys-motion-spring-fast-effects);
 
-  &[aria-selected="true"] {
+  &:is([aria-selected="true"], [aria-current="page"]) {
     color: var(--md-sys-color-primary);
   }
 
@@ -97,7 +100,7 @@
   --tabs-indicator-size: 2px;
   --tabs-indicator-radius: 0;
 
-  .tabs__tab[aria-selected="true"] {
+  .tabs__tab:is([aria-selected="true"], [aria-current="page"]) {
     anchor-name: var(--tabs-active-label);
 
     > .tabs__content {
@@ -110,7 +113,7 @@
   }
 }
 
-.tabs--primary .tabs__list[aria-orientation="horizontal"] {
+.tabs--primary .tabs__list[data-orientation="horizontal"] {
   .tabs__tab:has(.tabs__icon) {
     min-block-size: 4rem;
     padding-block: 0.5rem;
@@ -122,7 +125,7 @@
   }
 }
 
-.tabs__list[aria-orientation="vertical"] .tabs__tab {
+.tabs__list[data-orientation="vertical"] .tabs__tab {
   justify-content: flex-start;
   flex: 0 0 auto;
   text-align: start;
@@ -142,7 +145,7 @@
       var(--md-sys-motion-spring-fast-spatial);
   }
 
-  &[aria-selected="true"]::after {
+  &:is([aria-selected="true"], [aria-current="page"])::after {
     transform: scaleY(1);
   }
 }
@@ -174,7 +177,7 @@
   align-items: center;
 }
 
-.tabs__tab[aria-selected="true"] > .tabs__content {
+.tabs__tab:is([aria-selected="true"], [aria-current="page"]) > .tabs__content {
   anchor-name: var(--tabs-active-label);
 }
 
@@ -210,7 +213,7 @@
 
 @media (forced-colors: active) {
   .tabs__list::after,
-  .tabs__tab[aria-selected="true"]::after {
+  .tabs__tab:is([aria-selected="true"], [aria-current="page"])::after {
     background: currentColor;
   }
 }

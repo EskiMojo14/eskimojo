@@ -1,3 +1,4 @@
+import { createLink } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -5,6 +6,7 @@ import {
   useId,
   useRef,
   useState,
+  type ComponentPropsWithRef,
   type ComponentPropsWithoutRef,
   type KeyboardEvent,
   type ReactNode,
@@ -12,6 +14,61 @@ import {
 import BEMHelper from "react-bem-helper";
 
 const tabsBem = BEMHelper("tabs");
+
+function TabContent({ icon, children }: { icon?: ReactNode; children?: ReactNode }) {
+  return (
+    <span {...tabsBem({ element: "content" })}>
+      {icon && (
+        <span {...tabsBem({ element: "icon" })} aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      <span {...tabsBem({ element: "label" })}>{children}</span>
+    </span>
+  );
+}
+
+export type TabNavProps = ComponentPropsWithoutRef<"nav"> & {
+  variant?: "primary" | "secondary";
+  orientation?: "horizontal" | "vertical";
+} & ({ "aria-label": string } | { "aria-labelledby": string });
+
+export function TabNav({
+  variant = "primary",
+  orientation = "horizontal",
+  className,
+  style,
+  children,
+  ...props
+}: TabNavProps) {
+  const anchorId = useId().replaceAll(":", "");
+  return (
+    <nav {...props} {...tabsBem({ modifier: variant, extra: className })} style={style}>
+      <div
+        {...tabsBem({ element: "list" })}
+        data-orientation={orientation}
+        style={{ "--tabs-active-label": `--tabs-label-${anchorId}` }}
+      >
+        {children}
+      </div>
+    </nav>
+  );
+}
+
+function TabLinkBase({
+  icon,
+  className,
+  children,
+  ...props
+}: ComponentPropsWithRef<"a"> & { icon?: ReactNode }) {
+  return (
+    <a {...props} {...tabsBem({ element: "tab", extra: className })}>
+      <TabContent icon={icon}>{children}</TabContent>
+    </a>
+  );
+}
+
+export const TabLink = createLink(TabLinkBase);
 
 interface TabsContextValue {
   value: string | undefined;
@@ -186,6 +243,7 @@ export function TabList({
       {...tabsBem({ element: "list", extra: className })}
       role="tablist"
       aria-orientation={orientation}
+      data-orientation={orientation}
       tabIndex={-1}
       ref={listRef}
       style={{ ...style, "--tabs-active-label": `--tabs-label-${anchorId}` }}
@@ -225,14 +283,7 @@ export function Tab({ value, icon, className, children, onClick, ...props }: Tab
         if (!event.defaultPrevented) context.select(value);
       }}
     >
-      <span {...tabsBem({ element: "content" })}>
-        {icon && (
-          <span {...tabsBem({ element: "icon" })} aria-hidden="true">
-            {icon}
-          </span>
-        )}
-        <span {...tabsBem({ element: "label" })}>{children}</span>
-      </span>
+      <TabContent icon={icon}>{children}</TabContent>
     </button>
   );
 }
