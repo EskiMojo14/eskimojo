@@ -1,4 +1,4 @@
-import { expect, test, vi } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -138,6 +138,56 @@ function labelIn(tab: Element) {
   if (!label) throw new Error("Expected a tab label.");
   return label;
 }
+
+test.for([false, true])("horizontal tabs with responsive=%s size correctly", async (responsive) => {
+  const previousViewport = { width: window.innerWidth, height: window.innerHeight };
+  onTestFinished(() => page.viewport(previousViewport.width, previousViewport.height));
+  await page.viewport(768, 800);
+  const result = await page.renderWithProviders(
+    <Tabs defaultValue="first" responsive={responsive} style={{ width: "100%" }}>
+      <TabList aria-label="Responsive sections">
+        <Tab value="first">First</Tab>
+        <Tab value="second">Second</Tab>
+      </TabList>
+      <TabPanel value="first">First panel</TabPanel>
+      <TabPanel value="second">Second panel</TabPanel>
+    </Tabs>,
+  );
+  const list = result.getByRole("tablist", { name: "Responsive sections" }).element();
+  const first = result.getByRole("tab", { name: "First" }).element();
+  const second = result.getByRole("tab", { name: "Second" }).element();
+  await expect
+    .poll(() =>
+      Math.abs(
+        first.getBoundingClientRect().width +
+          second.getBoundingClientRect().width -
+          list.getBoundingClientRect().width,
+      ),
+    )
+    .toBeLessThan(1);
+  await page.viewport(1200, 800);
+  await expect
+    .poll(
+      () =>
+        (first.getBoundingClientRect().width + second.getBoundingClientRect().width) /
+        list.getBoundingClientRect().width,
+    )
+    .toBeLessThan(responsive ? 0.5 : 1.01);
+  await expect
+    .poll(() =>
+      Math.abs(
+        first.getBoundingClientRect().width +
+          second.getBoundingClientRect().width -
+          list.getBoundingClientRect().width,
+      ),
+    )
+    .toBeGreaterThanOrEqual(responsive ? list.getBoundingClientRect().width / 2 : 0);
+  expect(getComputedStyle(first).flexGrow).toBe(responsive ? "0" : "1");
+  expect(first.getBoundingClientRect().left).toBeCloseTo(list.getBoundingClientRect().left);
+  expect(second.getBoundingClientRect().left).toBeCloseTo(first.getBoundingClientRect().right);
+  await result.getByRole("tab", { name: "Second" }).click();
+  await expect.element(second).toHaveAttribute("aria-selected", "true");
+});
 
 test("primary icon tabs use MD3 stacked icons, spacing, and container dimensions", async () => {
   const result = await page.renderWithProviders(

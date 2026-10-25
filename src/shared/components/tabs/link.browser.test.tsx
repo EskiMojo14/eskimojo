@@ -7,16 +7,16 @@ import {
   RouterContextProvider,
   RouterProvider,
 } from "@tanstack/react-router";
-import { expect, test, vi } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { TabLink, TabNav } from "./index";
 
-function createTabRouter(initialEntry = "/") {
+function createTabRouter(initialEntry = "/", responsive = false) {
   const root = createRootRoute({
     component: () => (
       <>
-        <TabNav aria-label="Sections" variant="secondary">
+        <TabNav aria-label="Sections" variant="secondary" responsive={responsive}>
           <TabLink to="/" activeOptions={{ exact: true }}>
             Home
           </TabLink>
@@ -56,6 +56,29 @@ function createTabRouter(initialEntry = "/") {
     ]),
   });
 }
+
+test.for([false, true])("navigation tabs with responsive=%s size correctly", async (responsive) => {
+  const previousViewport = { width: window.innerWidth, height: window.innerHeight };
+  onTestFinished(() => page.viewport(previousViewport.width, previousViewport.height));
+  await page.viewport(768, 800);
+  const router = createTabRouter("/", responsive);
+  const result = await page.renderWithProviders(<RouterProvider router={router} />);
+  const nav = result.getByRole("navigation", { name: "Sections" }).element();
+  const home = result.getByRole("link", { name: "Home" }).element();
+  const artists = result.getByRole("link", { name: "Artists" }).element();
+  await expect
+    .poll(() => Math.abs(artists.getBoundingClientRect().right - nav.getBoundingClientRect().right))
+    .toBeLessThan(1);
+  await page.viewport(1200, 800);
+  await expect.poll(() => getComputedStyle(home).flexGrow).toBe(responsive ? "0" : "1");
+  await expect
+    .poll(() => Math.abs(artists.getBoundingClientRect().right - nav.getBoundingClientRect().right))
+    .toBeLessThan(responsive ? 1200 : 1);
+  expect(home.getBoundingClientRect().left).toBeCloseTo(nav.getBoundingClientRect().left);
+  expect(artists.getBoundingClientRect().right - nav.getBoundingClientRect().left).toBeLessThan(
+    nav.getBoundingClientRect().width * (responsive ? 0.5 : 1.01),
+  );
+});
 
 test("router links navigate and track active state through history without manual state", async () => {
   const router = createTabRouter();

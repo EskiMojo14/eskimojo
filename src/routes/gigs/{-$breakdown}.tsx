@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
+import { GigsBreakdownTabs } from "./-breakdown-tabs";
 import { gigBreakdownSchema } from "./-constants";
 
 const paramsSchema = v.object({
@@ -16,5 +17,5 @@ export const Route = createFileRoute("/gigs/{-$breakdown}")({
 });
 
 function RouteComponent() {
-  return null;
+  return <GigsBreakdownTabs />;
 }

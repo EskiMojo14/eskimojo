@@ -128,6 +128,31 @@ export const Secondary = meta.story({
   ),
 });
 
+export const Responsive = meta.story({
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Tabs and TabNav fill the available width by default. Opt into responsive sizing to align content-sized horizontal tabs to the start above 48rem, retaining full-width tabs on smaller screens. Vertical tabs are unchanged.",
+      },
+    },
+  },
+  render: () => (
+    <Tabs defaultValue="overview" responsive>
+      <TabList aria-label="Responsive project details">
+        <Tab value="overview">Overview</Tab>
+        <Tab value="activity">Activity</Tab>
+      </TabList>
+      <TabPanel value="overview">Project overview content.</TabPanel>
+      <TabPanel value="activity">Recent project activity.</TabPanel>
+    </Tabs>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("tab", { name: "Activity" }));
+    await expect(canvas.getByRole("tabpanel")).toHaveTextContent("Recent project activity.");
+  },
+});
+
 function createDemoRouter({
   variant = "primary",
   orientation = "horizontal",

@@ -113,6 +113,12 @@
   }
 }
 
+@media (width > 48rem) {
+  .tabs--responsive > .tabs__list[data-orientation="horizontal"] > .tabs__tab {
+    flex-grow: 0;
+  }
+}
+
 .tabs--primary .tabs__list[data-orientation="horizontal"] {
   .tabs__tab:has(.tabs__icon) {
     min-block-size: 4rem;

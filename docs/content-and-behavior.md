@@ -132,6 +132,17 @@ Open on Year / month. Keep the existing artist and venue breakdowns, and keep
 the city visualization, where circle area represents event count. The city view
 must also provide an accessible text/list alternative.
 
+The Gigs page uses router-backed primary tabs with stacked icons labelled
+By month, By artist, By venue, and By city. These tabs opt into `responsive` sizing.
+Tabs otherwise fill the available width at all screen sizes. Above 48rem, responsive horizontal tabs are
+content-sized and aligned to the start; smaller screens retain expanding tabs
+with horizontal scrolling when needed.
+The optional `breakdown` path parameter selects the view:
+`/gigs` defaults to By month, with `/gigs/by-month` also selecting that tab;
+the other destinations are `/gigs/by-artist`, `/gigs/by-venue`, and
+`/gigs/by-city`. Selection follows the URL and browser Back/Forward history.
+The archive views themselves remain to be implemented.
+
 Source data and the exact visual design should be verified during migration.
 The counts and date range above describe the inspected legacy archive; they
 should not be treated as permanent values after new events are added.

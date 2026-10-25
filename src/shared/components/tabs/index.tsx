@@ -31,11 +31,13 @@ function TabContent({ icon, children }: { icon?: ReactNode; children?: ReactNode
 export type TabNavProps = ComponentPropsWithoutRef<"nav"> & {
   variant?: "primary" | "secondary";
   orientation?: "horizontal" | "vertical";
+  responsive?: boolean;
 } & ({ "aria-label": string } | { "aria-labelledby": string });
 
 export function TabNav({
   variant = "primary",
   orientation = "horizontal",
+  responsive = false,
   className,
   style,
   children,
@@ -43,7 +45,11 @@ export function TabNav({
 }: TabNavProps) {
   const anchorId = useId().replaceAll(":", "");
   return (
-    <nav {...props} {...tabsBem({ modifier: variant, extra: className })} style={style}>
+    <nav
+      {...props}
+      {...tabsBem({ modifier: { [variant]: true, responsive }, extra: className })}
+      style={style}
+    >
       <div
         {...tabsBem({ element: "list" })}
         data-orientation={orientation}
@@ -87,6 +93,7 @@ function useTabsContext() {
 export type TabsProps = Omit<ComponentPropsWithoutRef<"div">, "defaultValue" | "onChange"> & {
   onValueChange?: (value: string) => void;
   variant?: "primary" | "secondary";
+  responsive?: boolean;
   children: ReactNode;
 } & ({ value: string; defaultValue?: never } | { defaultValue: string; value?: never });
 
@@ -95,6 +102,7 @@ export function Tabs({
   defaultValue,
   onValueChange,
   variant = "primary",
+  responsive = false,
   className,
   children,
   ...props
@@ -114,7 +122,7 @@ export function Tabs({
 
   return (
     <TabsContext value={context}>
-      <div {...props} {...tabsBem({ modifier: variant, extra: className })}>
+      <div {...props} {...tabsBem({ modifier: { [variant]: true, responsive }, extra: className })}>
         {children}
       </div>
     </TabsContext>
