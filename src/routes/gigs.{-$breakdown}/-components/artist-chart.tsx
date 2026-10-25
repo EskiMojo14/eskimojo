@@ -8,10 +8,9 @@ import { useMemo } from "react";
 
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
+import { formatDate } from "#/shared/lib/date";
 
 import { getArtistChartData, type ArtistEvent } from "./artist-chart-data";
-
-const gigDate = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" });
 
 export function GigsArtistChart({
   events,
@@ -51,7 +50,15 @@ export function GigsArtistChart({
         ],
         scales: {
           y: { scale: () => scaleBand().domain(artists.map(({ artist }) => artist)) },
-          x: { scale: () => scaleLinear(), side: "top" },
+          x: {
+            scale: scaleLinear().domain([0, Math.max(1, ...artists.map(({ total }) => total))]),
+            side: "top",
+          },
+          xBottom: {
+            channel: "x",
+            scale: scaleLinear().domain([0, Math.max(1, ...artists.map(({ total }) => total))]),
+            side: "bottom",
+          },
         },
         color: {
           domain: ["Main", "Support"],
@@ -116,7 +123,7 @@ export function GigsArtistChart({
                   .toSorted((a, b) => a.event.date.localeCompare(b.event.date))
                   .map(({ event, role }, index) => (
                     <li key={index}>
-                      <strong>{gigDate.format(new Date(`${event.date}T00:00:00Z`))}</strong>
+                      <strong>{formatDate(event.date)}</strong>
                       <p>{event.venue}</p>
                       {role === "Support" && (
                         <p className="gigs-artists__supported">

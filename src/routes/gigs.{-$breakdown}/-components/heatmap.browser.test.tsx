@@ -172,5 +172,7 @@ test.each(["/gigs", "/gigs/by-month"])(
     await expect.element(chart).toBeVisible();
     await result.getByRole("link", { name: "City", exact: true }).click();
     await expect.element(chart).not.toBeInTheDocument();
+    await result.getByRole("link", { name: "Venue", exact: true }).click();
+    await expect.element(result.getByRole("img", { name: "Gigs by venue" })).toBeVisible();
   },
 );

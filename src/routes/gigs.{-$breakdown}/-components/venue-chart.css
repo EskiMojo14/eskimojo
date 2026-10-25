@@ -1,0 +1,65 @@
+.gigs-venues {
+  padding: 1rem;
+  min-width: 0;
+  color: var(--md-sys-color-on-surface);
+
+  & h2 {
+    font: var(--typo-title-large);
+    margin-block: 0 1rem;
+  }
+
+  & svg[role="img"]:focus-visible {
+    outline: 2px solid var(--md-sys-color-secondary);
+    outline-offset: 4px;
+    border-radius: var(--md-sys-shape-corner-extra-small);
+  }
+
+  & svg[role="img"]:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+.gigs-venues__tooltip {
+  width: min(20rem, calc(100dvw - 1rem));
+  max-height: 60dvh;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  corner-shape: round;
+
+  @media (forced-colors: active) {
+    border: 1px solid currentColor;
+  }
+}
+
+.gigs-venues__events {
+  padding-inline-start: 1rem;
+
+  & strong {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  & li + li {
+    margin-block-start: 0.75rem;
+  }
+
+  & p {
+    margin-block: 0.25rem 0;
+  }
+}
+
+.gigs-venues__support {
+  font: var(--typo-body-small);
+  color: rgb(from var(--md-sys-color-on-surface) r g b / 70%);
+}
+
+.gigs-venues__table {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}

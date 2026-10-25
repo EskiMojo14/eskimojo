@@ -4,6 +4,7 @@ import * as v from "valibot";
 import { GigsArtistChart } from "./-components/artist-chart";
 import { GigsHeatmap } from "./-components/heatmap";
 import { GigsBreakdownTabs } from "./-components/tabs";
+import { GigsVenueChart } from "./-components/venue-chart";
 import { gigBreakdownSchema } from "./-constants";
 import gigs from "./-data/gigs.json";
 import GigsIntro from "./-intro.mdx";
@@ -35,6 +36,7 @@ function RouteComponent() {
       <GigsBreakdownTabs />
       {breakdown === "by-month" && <GigsHeatmap events={gigs.events} />}
       {breakdown === "by-artist" && <GigsArtistChart events={gigs.events} />}
+      {breakdown === "by-venue" && <GigsVenueChart events={gigs.events} />}
     </>
   );
 }

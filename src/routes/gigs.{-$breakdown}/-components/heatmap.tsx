@@ -9,10 +9,9 @@ import { useMemo, useRef } from "react";
 
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
+import { formatDate } from "#/shared/lib/date";
 
 import { getGigHeatmapData, gigMonths, type GigMonth } from "./heatmap-data";
-
-const gigDate = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" });
 
 interface HeatmapEvent extends Pick<GigEvent, "date" | "venue"> {
   artists: ReadonlyArray<string>;
@@ -91,7 +90,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                 ? month.events.map((event) => ({
                     label: event.artists.join(", "),
                     value: [
-                      gigDate.format(new Date(`${event.date}T00:00:00Z`)),
+                      formatDate(event.date),
                       event.venue,
                       ...(event.support?.length ? [`Support: ${event.support.join(", ")}`] : []),
                     ].join("\n"),
@@ -178,7 +177,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                     <li key={index}>
                       <strong>{event.artists.join(", ")}</strong>
                       <p>
-                        {gigDate.format(new Date(`${event.date}T00:00:00Z`))}
+                        {formatDate(event.date)}
                         {"\n"}
                         {event.venue}
                       </p>
