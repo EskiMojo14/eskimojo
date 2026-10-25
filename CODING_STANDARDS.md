@@ -110,6 +110,12 @@ contributor guidance.
 - Use BEM-like class names: a component block such as `.music-list`, an element
   such as `.music-list__item`, and a modifier such as
   `.music-list--compact`.
+- Use native CSS nesting for related states, descendants, pseudo-elements, and
+  conditional rules where it improves readability. Preserve selector specificity
+  and cascade order. Keep independent BEM classes standalone; native nesting does
+  not support Sass-style class-name concatenation such as `&__item`.
+  Leave token rules containing `@extend` flat and keep their media blocks separate;
+  `postcss-extend-rule` cannot resolve multiple extends inside a shared wrapper.
 - Use the design tokens defined in `src/shared/styles` for typography, color,
   shape, and motion. Avoid hard-coded font, color, and corner-radius values in
   component styles; Stylelint checks these declarations.

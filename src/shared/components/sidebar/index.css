@@ -6,14 +6,40 @@
   flex-shrink: 0;
   background-color: var(--md-sys-color-surface-container-low);
   color: var(--md-sys-color-on-surface);
-}
 
-.site-sidebar .list__divider {
-  background-color: var(--md-sys-color-outline);
+  .list__divider {
+    background-color: var(--md-sys-color-outline);
+  }
+
+  .list {
+    padding-inline-start: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--palette-artwork-background);
+    background-image: url("/Goat.JPG");
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  [data-palette="arctic"] &::before {
+    background-image: url("/OC.PNG");
+  }
 }
 
 .site-sidebar--desktop {
   display: block;
+
+  @media (max-width: 48rem) {
+    display: none;
+  }
 }
 
 .dialog.site-sidebar__dialog {
@@ -39,12 +65,16 @@
     display var(--dialog-transition-duration) linear,
     overlay var(--dialog-transition-duration) linear;
   transition-behavior: allow-discrete;
-}
 
-.dialog.site-sidebar__dialog[open]:not([data-closing]) {
-  opacity: 1;
-  scale: none;
-  translate: 0;
+  &[open]:not([data-closing]) {
+    opacity: 1;
+    scale: none;
+    translate: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0.01ms;
+  }
 }
 
 .site-sidebar--modal-content {
@@ -55,10 +85,6 @@
   border-start-end-radius: var(--md-sys-shape-corner-large);
   border-end-end-radius: var(--md-sys-shape-corner-large);
   box-shadow: 0 1rem 2rem rgb(from var(--md-sys-color-shadow) r g b / 0.24);
-}
-
-.site-sidebar .list {
-  padding-inline-start: 0;
 }
 
 .site-sidebar__header {
@@ -134,53 +160,27 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .dialog.site-sidebar__dialog {
-    transition-duration: 0.01ms;
-  }
-}
-
 @media (max-width: 48rem) {
-  .site-sidebar--desktop {
-    display: none;
+  .site-sidebar__dialog {
+    .list {
+      flex-direction: column;
+      overflow: visible;
+      padding-block: 12px;
+    }
+
+    .list__item {
+      flex: initial;
+
+      > a {
+        min-inline-size: 0;
+        justify-content: flex-start;
+      }
+    }
+
+    .list__divider {
+      flex: 0 0 1px;
+      margin: 4px 0;
+      margin-inline: 16px -12px;
+    }
   }
-
-  .site-sidebar__dialog .list {
-    flex-direction: column;
-    overflow: visible;
-    padding-block: 12px;
-  }
-
-  .site-sidebar__dialog .list__item {
-    flex: initial;
-  }
-
-  .site-sidebar__dialog .list__item > a {
-    min-inline-size: 0;
-    justify-content: flex-start;
-  }
-
-  .site-sidebar__dialog .list__divider {
-    flex: 0 0 1px;
-    margin: 4px 0;
-    margin-inline: 16px -12px;
-  }
-}
-
-.site-sidebar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--palette-artwork-background);
-  background-image: url("/Goat.JPG");
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-size: contain;
-  opacity: 0.2;
-  pointer-events: none;
-}
-
-[data-palette="arctic"] .site-sidebar::before {
-  background-image: url("/OC.PNG");
 }

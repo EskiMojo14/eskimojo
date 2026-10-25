@@ -63,14 +63,12 @@
 .typography-weight-demo__sample {
   font-weight: var(--typo-weight-regular);
   transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
-}
 
-.typography-weight-demo[data-heavy] .typography-weight-demo__sample {
-  font-weight: var(--typo-weight-bold);
-}
+  .typography-weight-demo[data-heavy] & {
+    font-weight: var(--typo-weight-bold);
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .typography-weight-demo__sample {
+  @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 }

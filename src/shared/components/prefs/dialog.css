@@ -8,6 +8,10 @@
 
   > .button-group {
     inline-size: 100%;
+
+    @media (max-width: 37.5rem) {
+      display: none;
+    }
   }
 }
 
@@ -15,21 +19,18 @@
   margin: 0 0 0.5rem;
   font: var(--typo-title-medium);
   font-feature-settings: var(--typo-features-heading);
+
+  @media (max-width: 37.5rem) {
+    display: none;
+  }
 }
 
 .preferences-dialog__select {
   --select-menu-label-background: var(--md-sys-color-surface-container-high);
 
   display: none;
-}
 
-@media (max-width: 37.5rem) {
-  .preferences-dialog__label,
-  .preferences-dialog__section > .button-group {
-    display: none;
-  }
-
-  .preferences-dialog__select {
+  @media (max-width: 37.5rem) {
     display: block;
   }
 }

@@ -4,10 +4,10 @@
 
   interest-delay-start: var(--interest-delay-start);
   interest-delay-end: var(--interest-delay-end);
-}
 
-[data-tooltip-trigger]:focus-visible {
-  --interest-delay-start: 0ms;
+  &:focus-visible {
+    --interest-delay-start: 0ms;
+  }
 }
 
 .tooltip {
@@ -39,43 +39,55 @@
       var(--md-sys-motion-spring-fast-effects),
     display var(--md-sys-motion-spring-fast-effects-duration) allow-discrete,
     overlay var(--md-sys-motion-spring-fast-effects-duration) allow-discrete;
-}
+  &[data-placement="top"] {
+    position-area: top span-all;
+  }
 
-.tooltip[data-placement="top"] {
-  position-area: top span-all;
-}
+  &[data-placement="left"] {
+    position-area: left span-all;
+    align-self: anchor-center;
+    justify-self: normal;
+  }
 
-.tooltip[data-placement="left"] {
-  position-area: left span-all;
-  align-self: anchor-center;
-  justify-self: normal;
-}
+  &[data-placement="right"] {
+    position-area: right span-all;
+    align-self: anchor-center;
+    justify-self: normal;
+  }
 
-.tooltip[data-placement="right"] {
-  position-area: right span-all;
-  align-self: anchor-center;
-  justify-self: normal;
-}
+  &:popover-open {
+    opacity: 1;
+    scale: 1;
+    transition:
+      opacity var(--md-sys-motion-spring-fast-effects-duration)
+        var(--md-sys-motion-spring-fast-effects),
+      scale var(--md-sys-motion-spring-fast-spatial-duration)
+        var(--md-sys-motion-spring-fast-spatial),
+      display
+        max(
+          var(--md-sys-motion-spring-fast-effects-duration),
+          var(--md-sys-motion-spring-fast-spatial-duration)
+        )
+        allow-discrete,
+      overlay
+        max(
+          var(--md-sys-motion-spring-fast-effects-duration),
+          var(--md-sys-motion-spring-fast-spatial-duration)
+        )
+        allow-discrete;
+  }
 
-.tooltip:popover-open {
-  opacity: 1;
-  scale: 1;
-  transition:
-    opacity var(--md-sys-motion-spring-fast-effects-duration)
-      var(--md-sys-motion-spring-fast-effects),
-    scale var(--md-sys-motion-spring-fast-spatial-duration) var(--md-sys-motion-spring-fast-spatial),
-    display
-      max(
-        var(--md-sys-motion-spring-fast-effects-duration),
-        var(--md-sys-motion-spring-fast-spatial-duration)
-      )
-      allow-discrete,
-    overlay
-      max(
-        var(--md-sys-motion-spring-fast-effects-duration),
-        var(--md-sys-motion-spring-fast-spatial-duration)
-      )
-      allow-discrete;
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &:popover-open {
+      scale: none;
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    border: 1px solid currentColor;
+  }
 }
 
 @starting-style {
@@ -117,18 +129,4 @@
   padding: 0;
   border: 0;
   min-inline-size: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tooltip,
-  .tooltip:popover-open {
-    scale: none;
-    transition: none;
-  }
-}
-
-@media (forced-colors: active) {
-  .tooltip {
-    border: 1px solid currentColor;
-  }
 }

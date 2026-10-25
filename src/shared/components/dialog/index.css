@@ -26,40 +26,44 @@
   @media (prefers-reduced-motion: reduce) {
     scale: none;
   }
-}
 
-.dialog[open]:not([data-closing]) {
-  opacity: 1;
-  scale: 1;
+  &[open]:not([data-closing]) {
+    opacity: 1;
+    scale: 1;
 
-  @media (prefers-reduced-motion: reduce) {
-    scale: none;
+    @media (prefers-reduced-motion: reduce) {
+      scale: none;
+    }
   }
-}
 
-.dialog:modal {
-  overscroll-behavior: contain;
-}
+  &:modal {
+    overscroll-behavior: contain;
+  }
 
-.dialog:focus {
-  outline: none;
-}
+  &:focus {
+    outline: none;
+  }
 
-.dialog::backdrop {
-  overflow: hidden;
-  background-color: rgb(from var(--md-sys-color-scrim) r g b / 0.32);
-  overscroll-behavior: contain;
-  opacity: 0;
-  transition:
-    opacity var(--md-sys-motion-spring-default-effects-duration)
-      var(--md-sys-motion-spring-default-effects),
-    display var(--dialog-transition-duration) linear,
-    overlay var(--dialog-transition-duration) linear;
-  transition-behavior: allow-discrete;
-}
+  &::backdrop {
+    overflow: hidden;
+    background-color: rgb(from var(--md-sys-color-scrim) r g b / 0.32);
+    overscroll-behavior: contain;
+    opacity: 0;
+    transition:
+      opacity var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects),
+      display var(--dialog-transition-duration) linear,
+      overlay var(--dialog-transition-duration) linear;
+    transition-behavior: allow-discrete;
+  }
 
-.dialog[open]:not([data-closing])::backdrop {
-  opacity: 1;
+  &[open]:not([data-closing])::backdrop {
+    opacity: 1;
+  }
+
+  @media (max-width: 37.5rem) {
+    inline-size: calc(100% - 2rem);
+  }
 }
 
 @starting-style {
@@ -70,10 +74,10 @@
     @media (prefers-reduced-motion: reduce) {
       scale: none;
     }
-  }
 
-  .dialog[open]:not([data-closing])::backdrop {
-    opacity: 0;
+    &::backdrop {
+      opacity: 0;
+    }
   }
 }
 
@@ -115,32 +119,26 @@
   justify-content: flex-end;
   gap: 0.5rem;
   padding: 0.5rem 1.5rem 1.5rem;
-}
 
-.dialog__actions button {
-  min-block-size: 2.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 0;
-  border-radius: var(--md-sys-shape-corner-full);
-  background: transparent;
-  color: var(--md-sys-color-primary);
-  cursor: pointer;
-  font: var(--typo-label-large);
-}
+  button {
+    min-block-size: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    cursor: pointer;
+    font: var(--typo-label-large);
 
-.dialog__actions button:hover {
-  background-color: rgb(
-    from var(--md-sys-color-primary) r g b / var(--md-sys-state-hover-state-layer-opacity)
-  );
-}
+    &:hover {
+      background-color: rgb(
+        from var(--md-sys-color-primary) r g b / var(--md-sys-state-hover-state-layer-opacity)
+      );
+    }
 
-.dialog__actions button:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
-}
-
-@media (max-width: 37.5rem) {
-  .dialog {
-    inline-size: calc(100% - 2rem);
+    &:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
   }
 }

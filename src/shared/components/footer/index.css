@@ -1,6 +1,10 @@
 .app-shell {
   display: flex;
   min-block-size: 100vh;
+
+  @media (max-width: 48rem) {
+    flex-direction: column;
+  }
 }
 
 .app-shell__main {
@@ -24,25 +28,19 @@
   place-items: center;
   min-block-size: 8rem;
   padding: 2rem 1.5rem;
-}
 
-@media (max-width: 48rem) {
-  .app-shell {
-    flex-direction: column;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url("/Transparent.PNG");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: min(100vw, 32rem) auto;
+    opacity: 0.15;
+    pointer-events: none;
   }
-}
-
-.site-footer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: url("/Transparent.PNG");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: min(100vw, 32rem) auto;
-  opacity: 0.15;
-  pointer-events: none;
 }
 
 .site-footer__links {

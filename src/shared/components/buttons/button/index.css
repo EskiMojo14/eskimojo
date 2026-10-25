@@ -74,15 +74,17 @@
     --icon-fill: 1;
     border-radius: var(--md-sys-shape-corner-medium);
   }
+
+  &:has(> .button__icon):not(.button--text) {
+    padding-inline-start: 16px;
+  }
 }
 
-.button--filled:is([aria-pressed="false"], [aria-pressed="mixed"]) {
-  background-color: var(--md-sys-color-surface-container-highest);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.button:has(> .button__icon):not(.button--text) {
-  padding-inline-start: 16px;
+.button--filled {
+  &:is([aria-pressed="false"], [aria-pressed="mixed"]) {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+  }
 }
 
 .button__icon {
@@ -166,9 +168,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button,
-  .button::before {
-    transition: none;
+  .button {
+    &,
+    &::before {
+      transition: none;
+    }
   }
 }
 

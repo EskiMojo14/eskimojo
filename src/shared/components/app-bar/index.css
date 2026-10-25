@@ -6,6 +6,10 @@
   gap: 0.25rem;
   background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
+
+  @media (max-width: 48rem) {
+    padding-inline-start: 0.25rem;
+  }
 }
 
 .app-bar__title {
@@ -19,14 +23,8 @@
 .app-bar__navigation.icon-button {
   display: none;
   color: inherit;
-}
 
-@media (max-width: 48rem) {
-  .app-bar {
-    padding-inline-start: 0.25rem;
-  }
-
-  .app-bar__navigation.icon-button {
+  @media (max-width: 48rem) {
     display: inline-grid;
   }
 }

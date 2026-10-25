@@ -4,6 +4,16 @@
   padding: 1.5rem;
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
+
+  &[data-played] .motion-dot {
+    translate: calc(100cqi - var(--dot-size));
+  }
+
+  &[data-played] .motion-track--effects .motion-dot {
+    translate: none;
+    opacity: 1;
+    background: var(--md-sys-color-tertiary);
+  }
 }
 
 .motion-play {
@@ -48,10 +58,6 @@
   transition: translate var(--track-duration) var(--track-easing);
 }
 
-.motion-page[data-played] .motion-dot {
-  translate: calc(100cqi - var(--dot-size));
-}
-
 /* Effects tracks fade and change color instead of moving. */
 .motion-track--effects .motion-dot {
   width: 100%;
@@ -59,10 +65,4 @@
   transition:
     opacity var(--track-duration) var(--track-easing),
     background-color var(--track-duration) var(--track-easing);
-}
-
-.motion-page[data-played] .motion-track--effects .motion-dot {
-  translate: none;
-  opacity: 1;
-  background: var(--md-sys-color-tertiary);
 }

@@ -76,8 +76,10 @@
   }
 }
 
-.icon-button--standard[aria-pressed="true"] {
-  color: var(--md-sys-color-primary);
+.icon-button--standard {
+  &[aria-pressed="true"] {
+    color: var(--md-sys-color-primary);
+  }
 }
 
 .icon-button--filled {
@@ -122,8 +124,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .icon-button,
-  .icon-button::before {
-    transition: none;
+  .icon-button {
+    &,
+    &::before {
+      transition: none;
+    }
   }
 }
