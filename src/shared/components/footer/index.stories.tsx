@@ -1,10 +1,6 @@
-import BEMHelper from "react-bem-helper";
-
 import preview from "#.storybook/preview";
 
 import { Footer } from "./index";
-
-const appShellBem = BEMHelper("app-shell");
 
 const meta = preview.meta({
   title: "Components/Footer",
@@ -14,11 +10,4 @@ const meta = preview.meta({
   },
 });
 
-export const Default = meta.story({
-  render: () => (
-    <div {...appShellBem()}>
-      <div {...appShellBem({ element: "content" })} />
-      <Footer />
-    </div>
-  ),
-});
+export const Default = meta.story();
