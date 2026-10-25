@@ -29,14 +29,16 @@ export const MixedAppearances = meta.story({
         support: ["Cory Wong"],
         date: "2024-12-29",
         venue: "O2 Academy Brixton",
+        city: "London",
       },
       {
         artists: ["Cory Wong"],
         support: ["Joey Dosik"],
         date: "2024-01-01",
         venue: "Royal Albert Hall",
+        city: "London",
       },
-      { artists: ["Vulfpeck", "Cory Wong"], date: "2024-06-01", venue: "Barbican" },
+      { artists: ["Vulfpeck", "Cory Wong"], date: "2024-06-01", venue: "Barbican", city: "London" },
     ],
   },
   play: async ({ canvas, userEvent }) => {
@@ -47,7 +49,7 @@ export const MixedAppearances = meta.story({
     await expect(canvas.getByText("Main: 2")).toBeVisible();
     await expect(canvas.getByText("Support: 1")).toBeVisible();
     await expect(canvas.getByText("Supported Vulfpeck")).toBeVisible();
-    await expect(canvas.getByText("O2 Academy Brixton")).toBeVisible();
+    await expect(canvas.getByText("O2 Academy Brixton, London")).toBeVisible();
     await userEvent.keyboard("{Enter}");
   },
 });

@@ -76,8 +76,14 @@ test("shows complete monthly event details and supports keyboard pinning and dis
           support: ["Joey Dosik", "Phoebe Katis"],
           date: "2024-12-29",
           venue: "O2 Academy Brixton",
+          city: "London",
         },
-        { artists: ["Jacob Collier"], date: "2024-12-01", venue: "Royal Albert Hall" },
+        {
+          artists: ["Jacob Collier"],
+          date: "2024-12-01",
+          venue: "Royal Albert Hall",
+          city: "London",
+        },
       ]}
     />,
   );
@@ -91,7 +97,7 @@ test("shows complete monthly event details and supports keyboard pinning and dis
   await expect.element(result.getByText("Vulfpeck, Cory Wong")).toBeVisible();
   await expect.element(result.getByText(/Support: Joey Dosik, Phoebe Katis/)).toBeVisible();
   await expect.element(result.getByText(/29 Dec 2024/)).toBeVisible();
-  await expect.element(result.getByText(/O2 Academy Brixton/)).toBeVisible();
+  await expect.element(result.getByText(/O2 Academy Brixton, London/)).toBeVisible();
   await expect.element(result.getByText(/1 Dec 2024/)).toBeVisible();
   await expect.element(result.getByText(/Royal Albert Hall/)).toBeVisible();
   await result.getByRole("button", { name: "Close details" }).click();

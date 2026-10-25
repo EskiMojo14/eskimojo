@@ -11,11 +11,12 @@ import { Button } from "#/shared/components/buttons/button";
 import { formatDate } from "#/shared/lib/date";
 
 import { getArtistChartData, type ArtistEvent } from "./artist-chart-data";
+import { formatVenue } from "./venue-label";
 
 export function GigsArtistChart({
   events,
 }: {
-  events: ReadonlyArray<ArtistEvent & Pick<GigEvent, "date" | "venue">>;
+  events: ReadonlyArray<ArtistEvent & Pick<GigEvent, "date" | "venue" | "city">>;
 }) {
   const artists = useMemo(() => getArtistChartData(events), [events]);
   const definition = useMemo(
@@ -124,7 +125,7 @@ export function GigsArtistChart({
                   .map(({ event, role }, index) => (
                     <li key={index}>
                       <strong>{formatDate(event.date)}</strong>
-                      <p>{event.venue}</p>
+                      <p>{formatVenue(event)}</p>
                       {role === "Support" && (
                         <p className="gigs-artists__supported">
                           Supported {event.artists.join(", ")}

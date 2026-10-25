@@ -14,23 +14,26 @@ test("shows venue counts and chronological event details with keyboard pinning a
           support: ["Joey Dosik"],
           date: "2024-12-29",
           venue: "Brixton",
+          city: "London",
         },
-        { artists: ["Jacob Collier"], date: "2024-01-01", venue: "Brixton" },
-        { artists: ["Couch"], date: "2024-06-01", venue: "Barbican" },
+        { artists: ["Jacob Collier"], date: "2024-01-01", venue: "Brixton", city: "London" },
+        { artists: ["Couch"], date: "2024-06-01", venue: "Barbican", city: "London" },
       ]}
     />,
   );
   const table = result.getByRole("table", { name: "Recorded gigs per venue" });
   await expect
-    .element(table.getByRole("row", { name: "Brixton 2", exact: true }))
+    .element(table.getByRole("row", { name: "Brixton, London 2", exact: true }))
     .toBeInTheDocument();
   await expect
-    .element(table.getByRole("row", { name: "Barbican 1", exact: true }))
+    .element(table.getByRole("row", { name: "Barbican, London 1", exact: true }))
     .toBeInTheDocument();
   const chart = result.getByRole("img", { name: "Gigs by venue" });
   chart.element().focus();
   await userEvent.keyboard("{Home}{Enter}");
-  await expect.element(result.getByRole("heading", { name: "Brixton", exact: true })).toBeVisible();
+  await expect
+    .element(result.getByRole("heading", { name: "Brixton, London", exact: true }))
+    .toBeVisible();
   await expect.element(result.getByText("Vulfpeck, Cory Wong")).toBeVisible();
   await expect.element(result.getByText("Support: Joey Dosik")).toBeVisible();
   const entries = result.getByRole("listitem").all();
@@ -46,7 +49,7 @@ test("shows venue counts and chronological event details with keyboard pinning a
   chart.element().focus();
   await userEvent.keyboard("{End}{Enter}");
   await expect
-    .element(result.getByRole("heading", { name: "Barbican", exact: true }))
+    .element(result.getByRole("heading", { name: "Barbican, London", exact: true }))
     .toBeVisible();
   await expect.element(result.getByText("Couch", { exact: true })).toBeVisible();
   await expect.element(result.getByText("Jacob Collier", { exact: true })).not.toBeInTheDocument();

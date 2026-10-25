@@ -91,11 +91,13 @@ export const MonthlyEvents = meta.story({
         support: ["Joey Dosik", "Phoebe Katis"],
         date: "2024-12-29",
         venue: "O2 Academy Brixton",
+        city: "London",
       },
       {
         artists: ["Jacob Collier"],
         date: "2024-12-01",
         venue: "Royal Albert Hall",
+        city: "London",
       },
     ],
   },
@@ -109,7 +111,7 @@ export const MonthlyEvents = meta.story({
     await expect(canvas.getByText("Vulfpeck, Cory Wong")).toBeVisible();
     await expect(canvas.getByText(/Support: Joey Dosik, Phoebe Katis/)).toBeVisible();
     await expect(canvas.getByText(/29 Dec 2024/)).toBeVisible();
-    await expect(canvas.getByText(/O2 Academy Brixton/)).toBeVisible();
+    await expect(canvas.getByText(/O2 Academy Brixton, London/)).toBeVisible();
     await expect(canvas.getByText("Jacob Collier")).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "Close details" }));
     await expect(canvas.queryByRole("button", { name: "Close details" })).not.toBeInTheDocument();

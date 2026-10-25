@@ -207,8 +207,12 @@ main/co-billed artists they supported. Clicking or pressing Enter pins the toolt
 so long event lists can be scrolled; Escape or Close details dismisses it. A labelled
 legend identifies the segments, and a screen-reader-only semantic table provides
 exact counts. An empty archive displays "No artists recorded yet."
+Whenever a venue is displayed, its city follows as "Venue, City", including chart
+labels, tooltip headings and event details, and accessible table rows.
+On the venue chart's axis, venue names and cities instead occupy separate lines,
+with cities beneath in smaller, alpha-muted text.
 The venue view uses a horizontal bar chart counting events per standardised venue
-name, sorted by count descending and alphabetically for ties. Tooltips list that
+and city, sorted by count descending and alphabetically for ties. Tooltips list that
 venue's events chronologically with main/co-billed artists, dates, and optional
 support acts. Support acts use smaller, alpha-muted text. Clicking or pressing
 Enter pins the scrollable rich tooltip; Escape or Close details dismisses it.

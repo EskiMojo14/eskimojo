@@ -1,7 +1,12 @@
 .gigs-venues {
+  --gigs-venue-city-color: rgb(from var(--md-sys-color-on-surface) r g b / 70%);
   padding: 1rem;
   min-width: 0;
   color: var(--md-sys-color-on-surface);
+
+  & text[fill="var(--gigs-venue-city-color)"] {
+    font: var(--typo-body-small);
+  }
 
   & h2 {
     font: var(--typo-title-large);

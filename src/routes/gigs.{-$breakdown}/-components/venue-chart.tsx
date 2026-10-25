@@ -1,4 +1,5 @@
-import { barX, defineChart } from "@tanstack/charts";
+import { barX, defineChart, text } from "@tanstack/charts";
+import { decorative } from "@tanstack/charts/mark/decorative";
 import { Chart } from "@tanstack/charts/react/tooltip";
 import { scaleBand } from "@tanstack/charts/scales/band";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
@@ -15,7 +16,7 @@ import { getVenueChartData } from "./venue-chart-data";
 export function GigsVenueChart({
   events,
 }: {
-  events: ReadonlyArray<ArtistEvent & { venue: string; date: string }>;
+  events: ReadonlyArray<ArtistEvent & { venue: string; city: string; date: string }>;
 }) {
   const venues = useMemo(() => getVenueChartData(events), [events]);
   const definition = useMemo(
@@ -37,9 +38,40 @@ export function GigsVenueChart({
               },
             ],
           }),
+          decorative(
+            text(venues, {
+              x: () => 0,
+              y: "venue",
+              text: (row) => row.events[0].venue,
+              anchor: "end",
+              dx: -10,
+              dy: -7,
+              fill: "var(--md-sys-color-on-surface)",
+            }),
+          ),
+          decorative(
+            text(venues, {
+              x: () => 0,
+              y: "venue",
+              text: (row) => row.events[0].city,
+              anchor: "end",
+              dx: -10,
+              dy: 9,
+              fill: "var(--gigs-venue-city-color)",
+            }),
+          ),
         ],
         scales: {
-          y: { scale: () => scaleBand().domain(venues.map(({ venue }) => venue)) },
+          y: {
+            scale: () => scaleBand().domain(venues.map(({ venue }) => venue)),
+            axis: {
+              ticks: {
+                format: (value) =>
+                  venues.find(({ venue }) => venue === value)?.events[0].venue ?? value,
+              },
+              tickLabels: { opacity: 0, thin: false },
+            },
+          },
           x: {
             scale: scaleLinear().domain([0, Math.max(1, ...venues.map(({ count }) => count))]),
             side: "top",
@@ -73,7 +105,7 @@ export function GigsVenueChart({
       <h2>Gigs by venue</h2>
       <Chart
         definition={definition}
-        height={venues.length * 32 + 56}
+        height={venues.length * 48 + 56}
         initialWidth={720}
         ariaLabel="Gigs by venue"
         ariaDescription="One horizontal bar per venue, sorted by gig count, highest first. A table of exact counts follows for screen readers."

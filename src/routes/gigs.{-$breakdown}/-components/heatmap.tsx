@@ -12,8 +12,9 @@ import { Button } from "#/shared/components/buttons/button";
 import { formatDate } from "#/shared/lib/date";
 
 import { getGigHeatmapData, gigMonths, type GigMonth } from "./heatmap-data";
+import { formatVenue } from "./venue-label";
 
-interface HeatmapEvent extends Pick<GigEvent, "date" | "venue"> {
+interface HeatmapEvent extends Pick<GigEvent, "date" | "venue" | "city"> {
   artists: ReadonlyArray<string>;
   support?: ReadonlyArray<string>;
 }
@@ -91,7 +92,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                     label: event.artists.join(", "),
                     value: [
                       formatDate(event.date),
-                      event.venue,
+                      formatVenue(event),
                       ...(event.support?.length ? [`Support: ${event.support.join(", ")}`] : []),
                     ].join("\n"),
                   }))
@@ -179,7 +180,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                       <p>
                         {formatDate(event.date)}
                         {"\n"}
-                        {event.venue}
+                        {formatVenue(event)}
                       </p>
                       {event.support?.length ? (
                         <p className="gigs-heatmap__support">Support: {event.support.join(", ")}</p>

@@ -9,9 +9,15 @@ test("renders exact artist counts and shows both roles on keyboard focus", async
   const result = await page.renderWithProviders(
     <GigsArtistChart
       events={[
-        { artists: ["A"], support: ["B"], date: "2024-03-03", venue: "Brixton" },
-        { artists: ["B"], support: ["A"], date: "2024-01-01", venue: "Royal Albert Hall" },
-        { artists: ["A"], support: ["C"], date: "2024-02-02", venue: "Barbican" },
+        { artists: ["A"], support: ["B"], date: "2024-03-03", venue: "Brixton", city: "London" },
+        {
+          artists: ["B"],
+          support: ["A"],
+          date: "2024-01-01",
+          venue: "Royal Albert Hall",
+          city: "London",
+        },
+        { artists: ["A"], support: ["C"], date: "2024-02-02", venue: "Barbican", city: "London" },
       ]}
     />,
   );
@@ -32,7 +38,9 @@ test("renders exact artist counts and shows both roles on keyboard focus", async
   await expect.element(result.getByText("Main: 2")).toBeVisible();
   await expect.element(result.getByText("Support: 1")).toBeVisible();
   await expect.element(result.getByText("Supported B", { exact: true })).toBeVisible();
-  await expect.element(result.getByText("Royal Albert Hall", { exact: true })).toBeVisible();
+  await expect
+    .element(result.getByText("Royal Albert Hall, London", { exact: true }))
+    .toBeVisible();
   await expect.element(result.getByText("1 Jan 2024", { exact: true })).toBeVisible();
   const entries = result.getByRole("listitem").all();
   expect(entries[2].element().textContent).toContain("1 Jan 2024");
