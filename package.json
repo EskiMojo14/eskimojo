@@ -14,16 +14,18 @@
     "coverage": "vp test run --coverage",
     "test:types": "vp test run --project types",
     "typecheck": "tsc --runExternalCode",
-    "lint": "vp lint && vp run lint:css",
+    "lint": "vp lint && vpr lint:css:all",
     "preview": "vp preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint:css": "stylelint --config config/stylelint.config.js \"src/**/*.css\" \".storybook/**/*.css\"",
+    "lint:css": "stylelint --config config/stylelint.config.js",
+    "lint:css:all": "vpr lint:css \"src/**/*.css\" \".storybook/**/*.css\"",
     "gigs:types": "node scripts/generate-gigs-types.ts",
     "theme:generate": "node scripts/generate-theme.ts",
     "motion:generate": "node scripts/generate-motion.ts",
     "prepare": "vp config",
-    "check": "vp check && vpr typecheck"
+    "check": "vp check && vpr lint:css:all && vpr typecheck",
+    "check:fix": "vp check --fix && vpr lint:css:all --fix && vpr typecheck"
   },
   "dependencies": {
     "@tanstack/react-devtools": "0.10.13",

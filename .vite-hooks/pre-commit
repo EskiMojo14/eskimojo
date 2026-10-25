@@ -1,1 +1,2 @@
-vp staged
+vp staged --concurrent false
+vpr typecheck

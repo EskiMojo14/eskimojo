@@ -33,6 +33,7 @@ const dirname =
 const config = defineConfig({
   staged: {
     "*": "vp check --fix",
+    "{src,.storybook}/**/*.css": "vpr lint:css --fix",
   },
   fmt: fmtConfig,
   lint: {
@@ -56,7 +57,7 @@ const config = defineConfig({
     },
     options: {
       typeAware: true,
-      typeCheck: true,
+      typeCheck: false,
       reportUnusedDisableDirectives: "error",
     },
     categories: {

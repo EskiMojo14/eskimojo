@@ -156,8 +156,14 @@ contributor guidance.
   code, with Query's exhaustive-deps rule disabled to match schema-benchmarks.
   The dependency plugin also checks for packages with native or simpler
   alternatives.
-- Run `vp check` and `vp test` for code changes. Run `vp run lint` to include
-  both JavaScript/TypeScript and CSS linting; run `vp run build` when changes
+- Run `vpr check` and `vp test` for code changes. `vpr check` runs formatting,
+  type-aware linting, Stylelint, and the separate TypeScript compiler check; use
+  `vpr check:fix` to apply formatting and lint fixes before type checking.
+  Run `vp run lint` for just JavaScript/TypeScript and CSS linting; run `vp run build` when changes
   could affect production compilation or routing.
 - Use `vp run <script>` for project scripts declared in `package.json`;
   `vp <command>` may invoke a Vite+ built-in instead.
+- The pre-commit hook formats and lints staged filenames, running Stylelint
+  after formatting to avoid concurrent edits to CSS files. It then runs
+  `vpr typecheck` once for the project, without filenames, so TypeScript loads
+  `tsconfig.json`.

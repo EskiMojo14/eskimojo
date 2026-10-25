@@ -175,7 +175,7 @@ The export doesn't include state-layer tokens. Instead, mix the content color ov
 
 ## Linting
 
-`vp run lint:css` runs [Stylelint](https://stylelint.io/) on `src/**/*.css` and `.storybook/**/*.css`. It warns about colors that don't come from the theme. It checks every property ending in `color`, plus `background`, `border` (and its sides), `outline`, `text-decoration`, `fill` and `stroke`. These are allowed:
+`vpr lint:css:all` runs [Stylelint](https://stylelint.io/) on `src/**/*.css` and `.storybook/**/*.css`. It warns about colors that don't come from the theme. It checks every property ending in `color`, plus `background`, `border` (and its sides), `outline`, `text-decoration`, `fill` and `stroke`. These are allowed:
 
 - `var()`
 - `color-mix()`, but only if both colors are `var(--md-sys-color-*)`, `transparent` or `currentcolor`. Any color space, hue method and percentages are fine.
