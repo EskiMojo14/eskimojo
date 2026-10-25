@@ -20,6 +20,7 @@ export function GigsBreakdownTabs() {
           }}
           activeOptions={{ exact: true }}
           icon={<MdSymbol>{gigBreakdownLabels[value].icon}</MdSymbol>}
+          replace
         >
           {gigBreakdownLabels[value].label}
         </TabLink>
