@@ -5,6 +5,8 @@
 @import "./state.css";
 @import "./motion/index.css";
 @import "./syntax.css";
+@import "#/shared/components/button/index.css";
+@import "#/shared/components/button-group/index.css";
 @import "#/shared/components/footer/index.css";
 @import "#/shared/components/list/index.css";
 @import "#/shared/components/sidebar/index.css";

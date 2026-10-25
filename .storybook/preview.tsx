@@ -167,5 +167,12 @@ export default definePreview({
     },
 
     layout: "centered",
+
+    options: {
+      storySort: {
+        method: "alphabetical",
+        order: ["Foundations", "Components"],
+      },
+    },
   },
 });

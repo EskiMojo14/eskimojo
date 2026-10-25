@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { Button } from "#/shared/components/button";
 import { List, ListDivider, ListItem } from "#/shared/components/list";
 import { usePalette } from "#/shared/components/prefs/context";
+import { PreferencesDialog } from "#/shared/components/prefs/dialog";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { links } from "./groups";
@@ -11,6 +13,7 @@ import { links } from "./groups";
 const siteSidebarBem = BEMHelper("site-sidebar");
 
 export function Sidebar() {
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
   const { palette, setPalette } = usePalette();
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";
@@ -50,6 +53,17 @@ export function Sidebar() {
           ))}
         </List>
       </nav>
+      <div {...siteSidebarBem({ element: "preferences" })}>
+        <Button
+          variant="text"
+          icon={<MdSymbol>settings</MdSymbol>}
+          aria-haspopup="dialog"
+          onClick={() => setPreferencesOpen(true)}
+        >
+          Preferences
+        </Button>
+      </div>
+      <PreferencesDialog open={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
     </aside>
   );
 }
