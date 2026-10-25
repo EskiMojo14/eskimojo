@@ -26,6 +26,10 @@ test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px",
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
+  await expect.poll(() => dialog.element().getBoundingClientRect().bottom).toBeCloseTo(568, 0);
+  const dialogBounds = dialog.element().getBoundingClientRect();
+  expect(dialogBounds.left).toBe(0);
+  expect(dialogBounds.right).toBe(width);
   const theme = dialog.getByRole("combobox", { name: "Theme" });
   const contrast = dialog.getByRole("combobox", { name: "Contrast" });
   const palette = dialog.getByRole("combobox", { name: "Palette" });
@@ -70,7 +74,11 @@ test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px",
       .click();
     await expect.element(palette).toHaveAccessibleDescription(paletteLabels[value].label);
   }
+  const dialogElement = dialog.element();
+  dialogElement.style.setProperty("--md-sys-motion-spring-default-spatial-duration", "317ms");
+  const visibleTop = dialogElement.getBoundingClientRect().top;
   await dialog.getByRole("button", { name: "Done" }).click();
+  await expect.poll(() => dialogElement.getBoundingClientRect().top).toBeGreaterThan(visibleTop);
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");

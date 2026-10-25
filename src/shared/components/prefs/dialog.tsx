@@ -30,7 +30,7 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
   const paletteId = useId();
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} className="preferences-dialog-modal">
       {({ close }) => (
         <DialogContent
           title="Preferences"

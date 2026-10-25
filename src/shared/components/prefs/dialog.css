@@ -3,6 +3,51 @@
   gap: 1.5rem;
 }
 
+.dialog.preferences-dialog-modal {
+  @media (max-width: 37.5rem) {
+    position: fixed;
+    inset-block: auto 0;
+    inset-inline: 0;
+    inline-size: 100%;
+    max-inline-size: none;
+    max-block-size: min(85dvh, 48rem);
+    margin-block: 0;
+    translate: 0 100%;
+    scale: none;
+    transition:
+      opacity var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects),
+      translate var(--md-sys-motion-spring-default-spatial-duration)
+        var(--md-sys-motion-spring-default-spatial),
+      display var(--dialog-transition-duration) linear,
+      overlay var(--dialog-transition-duration) linear;
+    transition-behavior: allow-discrete;
+
+    &[open]:not([data-closing]) {
+      translate: 0 0;
+    }
+
+    > .dialog__surface {
+      border-start-start-radius: var(--md-sys-shape-corner-extra-large);
+      border-start-end-radius: var(--md-sys-shape-corner-extra-large);
+      border-end-start-radius: var(--md-sys-shape-corner-none);
+      border-end-end-radius: var(--md-sys-shape-corner-none);
+      background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    .dialog__actions {
+      padding-block-end: max(1.5rem, env(safe-area-inset-bottom));
+    }
+  }
+}
+
+@starting-style {
+  .dialog.preferences-dialog-modal[open]:not([data-closing]) {
+    translate: 0 100%;
+    scale: none;
+  }
+}
+
 .preferences-dialog__section {
   min-inline-size: 0;
 
@@ -32,6 +77,7 @@
 
   @media (max-width: 37.5rem) {
     display: block;
+    --select-menu-label-background: var(--md-sys-color-surface-container-low);
   }
 }
 
