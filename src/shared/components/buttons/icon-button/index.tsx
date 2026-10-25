@@ -1,11 +1,13 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
+
 const iconButtonBem = BEMHelper("icon-button");
 
 export type IconButtonVariant = "standard" | "filled" | "tonal" | "outlined";
 
-export type IconButtonProps = Omit<
+type IconButtonBaseProps = Omit<
   ComponentPropsWithRef<"button">,
   "aria-label" | "aria-labelledby" | "children"
 > & {
@@ -16,13 +18,15 @@ export type IconButtonProps = Omit<
     | { "aria-label"?: never; "aria-labelledby": string }
   );
 
-export function IconButton({
+export type IconButtonProps = IconButtonBaseProps & TooltipProps;
+
+function IconButtonBase({
   variant = "standard",
   type = "button",
   className,
   icon,
   ...props
-}: IconButtonProps) {
+}: IconButtonBaseProps) {
   return (
     <button {...props} {...iconButtonBem({ modifier: variant, extra: className })} type={type}>
       <span {...iconButtonBem({ element: "icon" })} aria-hidden="true">
@@ -31,3 +35,5 @@ export function IconButton({
     </button>
   );
 }
+
+export const IconButton = withTooltip(IconButtonBase);

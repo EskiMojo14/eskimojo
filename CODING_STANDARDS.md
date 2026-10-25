@@ -113,6 +113,11 @@ contributor guidance.
 - Use the design tokens defined in `src/shared/styles` for typography, color,
   shape, and motion. Avoid hard-coded font, color, and corner-radius values in
   component styles; Stylelint checks these declarations.
+- Always use spring tokens and their matching duration tokens for motion unless
+  a non-spring easing is unavoidable; document the reason for any exception.
+  Use spatial springs for movement/size and non-overshooting effects springs
+  for color/opacity. Discrete display/overlay transitions should share the
+  visible animation's spring duration.
 - Keep literal token definitions in the foundation styles that define them.
   Generated styles are excluded from linting and should be changed through
   their source or generator.
@@ -120,6 +125,11 @@ contributor guidance.
   resets, design tokens, and genuinely site-wide behavior.
 
 ## Accessibility and behavior
+
+- Target current evergreen Chrome/Edge, Firefox, and Safari. Require native
+  Popover and CSS anchor positioning; do not add legacy-browser polyfills for
+  these APIs. A modern API not yet implemented across those browsers may use
+  a feature-detected fallback, such as `interestfor` for tooltip interactions.
 
 - Use semantic HTML and provide accessible names for interactive controls.
 - Ensure interactive controls work with a keyboard and expose their state to

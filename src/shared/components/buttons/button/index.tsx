@@ -1,23 +1,25 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
+
 const buttonBem = BEMHelper("button");
 
 export type ButtonVariant = "filled" | "tonal" | "elevated" | "outlined" | "text";
 
-export interface ButtonProps extends ComponentPropsWithRef<"button"> {
+export interface ButtonProps extends ComponentPropsWithRef<"button">, TooltipProps {
   variant?: ButtonVariant;
   icon?: ReactNode;
 }
 
-export function Button({
+function ButtonBase({
   variant = "filled",
   type = "button",
   className,
   icon,
   children,
   ...props
-}: ButtonProps) {
+}: Omit<ButtonProps, keyof TooltipProps>) {
   return (
     <button {...props} {...buttonBem({ modifier: variant, extra: className })} type={type}>
       {!!icon && (
@@ -29,3 +31,5 @@ export function Button({
     </button>
   );
 }
+
+export const Button = withTooltip(ButtonBase);

@@ -8,8 +8,8 @@ import * as MotionStories from "./motion.stories";
 
 `src/shared/styles/motion/` defines Material 3's motion tokens. There are two sets:
 
-- **Springs**: the current Material 3 (Expressive) system. Each spring is an easing curve plus the duration it takes to settle. Use these for new work.
-- **Easing and duration**: the original Material 3 tokens, kept because many component specs still refer to them.
+- **Springs**: the current Material 3 (Expressive) system. Each spring is an easing curve plus the duration it takes to settle. Always use these unless a non-spring easing is unavoidable; document any exception.
+- **Easing and duration**: the original Material 3 tokens, kept for reference and unavoidable non-spring cases, not as an alternative default.
 
 `src/shared/styles/index.css` imports them, so the tokens are available globally.
 
