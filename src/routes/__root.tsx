@@ -3,8 +3,10 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { useState } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { AppBar } from "#/shared/components/app-bar";
 import { Footer } from "#/shared/components/footer";
 import {
   ThemeProvider,
@@ -71,6 +73,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette } = Route.useLoaderData();
+  const [navigationOpen, setNavigationOpen] = useState(false);
   return (
     <html lang="en" data-theme={theme} data-contrast={contrast} data-palette={palette}>
       <head>
@@ -85,8 +88,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ]}
         >
           <div {...appShellBem()}>
-            <Sidebar />
+            <Sidebar open={navigationOpen} onClose={() => setNavigationOpen(false)} />
             <div {...appShellBem({ element: "main" })}>
+              <AppBar
+                navigationOpen={navigationOpen}
+                onOpenNavigation={() => setNavigationOpen(true)}
+              />
               <div {...appShellBem({ element: "content" })}>{children}</div>
               <Footer />
             </div>

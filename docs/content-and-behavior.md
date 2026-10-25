@@ -59,7 +59,12 @@ transparent Mitzi illustration centered behind the profile links as decoration.
 
 ## Appearance preferences
 
-The sidebar's Preferences button opens a modal dialog with connected button
+An MD3 small top app bar displays the site title and a trailing Preferences icon
+button on all screen sizes. On small screens, its leading menu icon opens the
+modal navigation drawer; the desktop drawer remains permanent. Preferences is
+not available inside either drawer, so opening it never stacks mobile modals.
+
+The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,
 High), and Palette (Goat, Arctic). Each group permits one selection. Changes use the existing cookie-backed
 preference providers and apply without a separate Save action.
