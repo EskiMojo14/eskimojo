@@ -27,3 +27,22 @@ body {
   background-color: var(--md-sys-color-background);
   color: var(--md-sys-color-on-background);
 }
+
+::view-transition-group(root) {
+  animation-duration: var(--md-sys-motion-spring-slow-effects-duration);
+  animation-timing-function: var(--md-sys-motion-spring-slow-effects);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: inherit;
+  animation-timing-function: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

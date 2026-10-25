@@ -89,6 +89,11 @@ The sidebar retains the site
 identity. No breadcrumbs are needed for the current route hierarchy; Gigs uses
 tabs for its internal views.
 
+Client-side navigations, including browser Back and Forward, use a generic
+full-page crossfade through the View Transitions API. The fade uses the slow
+effects spring and its matching duration. Reduced-motion preferences disable
+the animation, and browsers without the API navigate normally without a fade.
+
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,
 High), and Palette (Goat, Arctic). Each group permits one selection. Changes use the existing cookie-backed
