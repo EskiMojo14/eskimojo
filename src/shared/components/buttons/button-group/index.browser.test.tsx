@@ -1,7 +1,7 @@
 import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
-import { Button } from "#/shared/components/button";
+import { Button } from "#/shared/components/buttons/button";
 
 import { ButtonGroup } from "./index";
 

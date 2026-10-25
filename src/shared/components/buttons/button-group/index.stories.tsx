@@ -2,13 +2,13 @@ import { useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
-import { Button } from "#/shared/components/button";
+import { Button } from "#/shared/components/buttons/button";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { ButtonGroup, type ButtonGroupProps } from "./index";
 
 const meta = preview.meta({
-  title: "Components/ButtonGroup",
+  title: "Components/Buttons/ButtonGroup",
   component: ButtonGroup,
   args: { "aria-label": "Document actions" },
   parameters: {

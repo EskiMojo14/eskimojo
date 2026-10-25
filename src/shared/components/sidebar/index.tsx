@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Fragment, useState } from "react";
 import BEMHelper from "react-bem-helper";
 
-import { Button } from "#/shared/components/button";
+import { Button } from "#/shared/components/buttons/button";
 import { Dialog } from "#/shared/components/dialog";
 import { List, ListDivider, ListItem } from "#/shared/components/list";
 import { usePalette } from "#/shared/components/prefs/context";

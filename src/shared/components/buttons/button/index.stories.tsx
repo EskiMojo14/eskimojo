@@ -9,7 +9,7 @@ import { Button, type ButtonProps, type ButtonVariant } from "./index";
 const variants: Array<ButtonVariant> = ["filled", "tonal", "elevated", "outlined", "text"];
 
 const meta = preview.meta({
-  title: "Components/Button",
+  title: "Components/Buttons/Button",
   component: Button,
   args: { children: "Save changes" },
   argTypes: {

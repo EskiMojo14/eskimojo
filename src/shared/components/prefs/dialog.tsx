@@ -1,8 +1,8 @@
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
-import { Button } from "#/shared/components/button";
-import { ButtonGroup } from "#/shared/components/button-group";
+import { Button } from "#/shared/components/buttons/button";
+import { ButtonGroup } from "#/shared/components/buttons/button-group";
 import { Dialog, DialogContent, type DialogProps } from "#/shared/components/dialog";
 import { MdSymbol } from "#/shared/components/symbol";
 import {
