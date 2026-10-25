@@ -18,6 +18,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint:css": "stylelint --config config/stylelint.config.js \"src/**/*.css\" \".storybook/**/*.css\"",
+    "gigs:types": "node scripts/generate-gigs-types.ts",
     "theme:generate": "node scripts/generate-theme.ts",
     "motion:generate": "node scripts/generate-motion.ts",
     "prepare": "vp config"
@@ -60,6 +61,7 @@
     "dependency-cruiser": "^18.7.0",
     "eslint-plugin-depend": "^1.5.0",
     "eslint-plugin-no-relative-import-paths": "^1.7.3",
+    "json-schema-to-typescript": "^16.0.0",
     "lightningcss": "^1.33.0",
     "mix-n-matchers": "^3.0.0",
     "modern-web-guidance": "^0.0.195",
