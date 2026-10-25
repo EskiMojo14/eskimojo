@@ -35,8 +35,12 @@
       background-color: var(--md-sys-color-surface-container-low);
     }
 
-    .dialog__actions {
+    .dialog__body {
       padding-block-end: max(1.5rem, env(safe-area-inset-bottom));
+    }
+
+    .dialog__actions {
+      display: none;
     }
   }
 }

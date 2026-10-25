@@ -26,6 +26,7 @@ test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px",
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
+  await expect.element(dialog.getByRole("button", { name: "Done" })).not.toBeInTheDocument();
   await expect.poll(() => dialog.element().getBoundingClientRect().bottom).toBeCloseTo(568, 0);
   const dialogBounds = dialog.element().getBoundingClientRect();
   expect(dialogBounds.left).toBe(0);
@@ -77,7 +78,7 @@ test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px",
   const dialogElement = dialog.element();
   dialogElement.style.setProperty("--md-sys-motion-spring-default-spatial-duration", "317ms");
   const visibleTop = dialogElement.getBoundingClientRect().top;
-  await dialog.getByRole("button", { name: "Done" }).click();
+  await userEvent.keyboard("{Escape}");
   await expect.poll(() => dialogElement.getBoundingClientRect().top).toBeGreaterThan(visibleTop);
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
