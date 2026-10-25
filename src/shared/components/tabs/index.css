@@ -73,6 +73,8 @@
       var(--md-sys-motion-spring-fast-effects);
 
   &:is([aria-selected="true"], [aria-current="page"]) {
+    --icon-fill: 1;
+
     color: var(--md-sys-color-primary);
   }
 

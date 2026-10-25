@@ -10,6 +10,8 @@ import {
 import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import { MdSymbol } from "#/shared/components/symbol";
+
 import { TabLink, TabNav } from "./index";
 
 function createTabRouter(initialEntry = "/", responsive = false) {
@@ -17,10 +19,12 @@ function createTabRouter(initialEntry = "/", responsive = false) {
     component: () => (
       <>
         <TabNav aria-label="Sections" variant="secondary" responsive={responsive}>
-          <TabLink to="/" activeOptions={{ exact: true }}>
+          <TabLink to="/" activeOptions={{ exact: true }} icon={<MdSymbol>home</MdSymbol>}>
             Home
           </TabLink>
-          <TabLink to="/projects">Projects</TabLink>
+          <TabLink to="/projects" icon={<MdSymbol>folder</MdSymbol>}>
+            Projects
+          </TabLink>
           <TabLink to="/music">Music</TabLink>
           <TabLink to="/gigs/{-$breakdown}" params={{ breakdown: "by-artist" }}>
             Artists
@@ -87,11 +91,22 @@ test("router links navigate and track active state through history without manua
   const home = result.getByRole("link", { name: "Home" });
   const projects = result.getByRole("link", { name: "Projects" });
   await expect.element(home).toHaveAttribute("aria-current", "page");
+  const homeSymbol = home.element().querySelector(".md-symbol");
+  const projectsSymbol = projects.element().querySelector(".md-symbol");
+  if (!homeSymbol || !projectsSymbol) throw new Error("Expected navigation symbols.");
+  await expect.poll(() => getComputedStyle(homeSymbol).fontVariationSettings).toContain('"FILL" 1');
+  await expect
+    .poll(() => getComputedStyle(projectsSymbol).fontVariationSettings)
+    .toContain('"FILL" 0');
   await expect.element(projects).toHaveAttribute("href", "/projects");
   await projects.click();
   await expect.element(result.getByText("Project content")).toBeVisible();
   await expect.element(projects).toHaveAttribute("aria-current", "page");
   await expect.element(home).not.toHaveAttribute("aria-current");
+  await expect.poll(() => getComputedStyle(homeSymbol).fontVariationSettings).toContain('"FILL" 0');
+  await expect
+    .poll(() => getComputedStyle(projectsSymbol).fontVariationSettings)
+    .toContain('"FILL" 1');
   expect(router.state.location.pathname).toBe("/projects");
   const list = result.getByRole("navigation", { name: "Sections" }).element().firstElementChild;
   if (!list) throw new Error("Expected the navigation tab list.");

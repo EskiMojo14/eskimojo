@@ -57,7 +57,7 @@ export const Primary = meta.story({
     docs: {
       description: {
         story:
-          "MD3 primary icon-and-label tabs: 64px height, 24px icons stacked above title-small labels, and a 2px icon-to-label gap. The 3px indicator follows the content width.",
+          "MD3 primary icon-and-label tabs: 64px height, 24px icons stacked above title-small labels, and a 2px icon-to-label gap. The 3px indicator follows the content width. Selected Material Symbols are filled for both tabs and router links.",
       },
     },
   },

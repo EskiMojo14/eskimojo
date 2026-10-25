@@ -221,9 +221,19 @@ test("primary icon tabs use MD3 stacked icons, spacing, and container dimensions
     labelBounds.left + labelBounds.width / 2,
   );
   expect(tab.getBoundingClientRect().height).toBe(64);
+  await expect.poll(() => getComputedStyle(symbol).fontVariationSettings).toContain('"FILL" 1');
   await expect.element(icon).toHaveAttribute("aria-hidden", "true");
   await result.getByRole("tab", { name: "Settings", exact: true }).click();
   await expect.element(result.getByRole("tabpanel", { name: "Settings" })).toBeVisible();
+  await expect.poll(() => getComputedStyle(symbol).fontVariationSettings).toContain('"FILL" 0');
+  const settingsSymbol = result
+    .getByRole("tab", { name: "Settings", exact: true })
+    .element()
+    .querySelector(".md-symbol");
+  if (!settingsSymbol) throw new Error("Expected settings symbol.");
+  await expect
+    .poll(() => getComputedStyle(settingsSymbol).fontVariationSettings)
+    .toContain('"FILL" 1');
 });
 
 test("text-only primary tabs use MD3 height, typography, padding, and label-width indicator", async () => {
