@@ -19,6 +19,12 @@ export function Footer() {
           Bluesky
         </a>
       </nav>
+      <p {...siteFooterBem({ element: "credit" })}>
+        Artwork by{" "}
+        <a {...siteFooterBem({ element: "link" })} href="https://x.com/popurri_arts">
+          Popurri
+        </a>
+      </p>
     </footer>
   );
 }

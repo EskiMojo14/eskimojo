@@ -56,6 +56,7 @@ general Contact group.
 
 The shared site footer also links to GitHub, Twitter/X, and Bluesky, with the
 transparent Mitzi illustration centered behind the profile links as decoration.
+It credits the artwork to [Popurri](https://x.com/popurri_arts).
 
 ## Appearance preferences
 

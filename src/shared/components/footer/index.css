@@ -38,8 +38,12 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: min(100vw, 32rem) auto;
-    opacity: 0.15;
+    opacity: 0.25;
     pointer-events: none;
+
+    @media (min-width: 48rem) {
+      background-position: right center;
+    }
   }
 }
 
@@ -48,6 +52,10 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem 1.5rem;
+}
+
+.site-footer__credit {
+  margin: 0;
 }
 
 .site-footer__link {
