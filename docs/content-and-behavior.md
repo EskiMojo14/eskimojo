@@ -59,10 +59,14 @@ transparent Mitzi illustration centered behind the profile links as decoration.
 
 ## Appearance preferences
 
-An MD3 small top app bar displays the site title and a trailing Preferences icon
+An MD3 small top app bar displays the current page title and a trailing Preferences icon
 button on all screen sizes. On small screens, its leading menu icon opens the
 modal navigation drawer; the desktop drawer remains permanent. Preferences is
 not available inside either drawer, so opening it never stacks mobile modals.
+Page titles are supplied by route `staticData.title`; the app bar uses
+`useMatches` to select the deepest matched title. The sidebar retains the site
+identity. No breadcrumbs are needed for the current route hierarchy; Gigs uses
+tabs for its internal views.
 
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,

@@ -1,3 +1,4 @@
+import { useMatches } from "@tanstack/react-router";
 import { useState } from "react";
 import BEMHelper from "react-bem-helper";
 
@@ -14,6 +15,10 @@ export interface AppBarProps {
 
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const title = useMatches({
+    select: (matches) =>
+      matches.findLast((match) => match.staticData.title !== undefined)?.staticData.title,
+  });
 
   return (
     <>
@@ -26,7 +31,7 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
           aria-expanded={navigationOpen}
           onClick={onOpenNavigation}
         />
-        <span {...appBarBem({ element: "title" })}>eskimojo</span>
+        <span {...appBarBem({ element: "title" })}>{title}</span>
         <IconButton
           icon={<MdSymbol>settings</MdSymbol>}
           aria-label="Preferences"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import preview from "#.storybook/preview";
+import { Route as HomeRoute } from "#/routes/index";
 import { AppBar } from "#/shared/components/app-bar";
 
 import { Sidebar } from "./index";
@@ -10,6 +11,7 @@ const meta = preview.meta({
   component: NavigationLayout,
   parameters: {
     layout: "fullscreen",
+    tanstack: { router: { route: HomeRoute } },
     docs: {
       description: {
         component:

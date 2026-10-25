@@ -28,6 +28,7 @@ interface MyRouterContext {
 const appShellBem = BEMHelper("app-shell");
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  staticData: { title: "eskimojo" },
   loader: () =>
     promiseAllKeyed({
       theme: getThemeFn(),
