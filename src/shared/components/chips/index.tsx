@@ -1,5 +1,6 @@
 import { createLink } from "@tanstack/react-router";
 import type { ComponentPropsWithRef, ReactNode } from "react";
+import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -34,13 +35,54 @@ export interface FilterChipProps extends Omit<AssistChipProps, "aria-pressed"> {
   selected: boolean;
 }
 
-export function FilterChip({ selected, icon, ...props }: FilterChipProps) {
+function SelectionIcon({ icon }: Pick<AssistChipProps, "icon">) {
+  const maskId = useId();
   return (
-    <AssistChip
-      {...props}
-      aria-pressed={selected}
-      icon={selected ? <MdSymbol>check</MdSymbol> : icon}
-    />
+    <span
+      {...chipBem({
+        element: "icon",
+        extra: chipBem({
+          element: "selection",
+          modifier: { "with-icon": !!icon },
+        }).className,
+      })}
+      aria-hidden="true"
+    >
+      {!!icon && <span {...chipBem({ element: "leading-icon" })}>{icon}</span>}
+      <svg {...chipBem({ element: "check-mask" })} width="0" height="0" focusable="false">
+        <defs>
+          <mask id={maskId} maskContentUnits="objectBoundingBox">
+            <path
+              {...chipBem({ element: "check-reveal" })}
+              d="M .16 .46 L .398 .70 L .85 .25"
+              pathLength="1"
+              fill="none"
+              stroke="white"
+              strokeWidth=".16"
+            />
+          </mask>
+        </defs>
+      </svg>
+      <MdSymbol {...chipBem({ element: "check" })} style={{ maskImage: `url("#${maskId}")` }}>
+        check
+      </MdSymbol>
+    </span>
+  );
+}
+
+export function FilterChip({
+  selected,
+  icon,
+  type = "button",
+  className,
+  children,
+  ...props
+}: FilterChipProps) {
+  return (
+    <button {...props} type={type} {...chipBem({ extra: className })} aria-pressed={selected}>
+      <SelectionIcon icon={icon} />
+      {children}
+    </button>
   );
 }
 
@@ -49,15 +91,9 @@ export interface ExternalLinkChipProps extends ComponentPropsWithRef<"a"> {
 }
 
 function LinkChipBase({ icon, className, children, ...props }: ExternalLinkChipProps) {
-  const current = props["aria-current"];
-  const selected = current !== undefined && current !== false && current !== "false";
   return (
     <a {...props} {...chipBem({ extra: className })}>
-      {(selected || !!icon) && (
-        <span {...chipBem({ element: "icon" })} aria-hidden="true">
-          {selected ? <MdSymbol>check</MdSymbol> : icon}
-        </span>
-      )}
+      <SelectionIcon icon={icon} />
       {children}
     </a>
   );

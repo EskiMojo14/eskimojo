@@ -28,6 +28,7 @@ function createDemoRouter() {
       }),
     ]),
     history: createMemoryHistory({ initialEntries: ["/music/top-music?period=1month"] }),
+    defaultViewTransition: true,
   });
 }
 
@@ -39,7 +40,16 @@ function Demo() {
 const meta = preview.meta({
   title: "Music/Period Picker",
   component: MusicPeriodPicker,
-  parameters: { layout: "padded", a11y: { test: "error" } },
+  parameters: {
+    layout: "padded",
+    a11y: { test: "error" },
+    docs: {
+      description: {
+        component:
+          "Period links use the music-period view-transition type. Only the top-music results crossfade; chips and page chrome remain live so the selection animation is not frozen in a page snapshot. Other navigation keeps the default page transition.",
+      },
+    },
+  },
 });
 
 export const Selection = meta.story({

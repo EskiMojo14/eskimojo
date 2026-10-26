@@ -17,6 +17,7 @@ export function MusicPeriodPicker() {
           from="/music/{-$breakdown}/"
           to="."
           search={(previous) => ({ ...previous, period: value })}
+          viewTransition={{ types: ["music-period"] }}
           aria-current={period === value ? "page" : undefined}
           replace
         >

@@ -63,6 +63,14 @@
   padding: 16px;
 }
 
+:root:active-view-transition-type(music-period) {
+  view-transition-name: none;
+
+  .music-top-music {
+    view-transition-name: music-results;
+  }
+}
+
 .recent-tracks__heading {
   margin: 0 0 16px;
   color: var(--md-sys-color-on-surface);

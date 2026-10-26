@@ -10,6 +10,10 @@
 }
 
 .chip {
+  --chip-selection-size: 0px;
+  --chip-selection-margin: -8px;
+  --chip-check-offset: 1;
+  --chip-leading-opacity: 1;
   position: relative;
   isolation: isolate;
   display: inline-flex;
@@ -26,6 +30,8 @@
   text-decoration: none;
   cursor: pointer;
   transition:
+    padding-inline-start var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
     background-color var(--md-sys-motion-spring-fast-effects-duration)
       var(--md-sys-motion-spring-fast-effects),
     color var(--md-sys-motion-spring-fast-effects-duration) var(--md-sys-motion-spring-fast-effects);
@@ -58,7 +64,16 @@
     outline-offset: 2px;
   }
 
+  &:has(> .chip__selection--with-icon) {
+    padding-inline-start: 8px;
+  }
+
   &:is([aria-pressed="true"], [aria-current]:not([aria-current="false"])) {
+    --chip-selection-size: 18px;
+    --chip-selection-margin: 0px;
+    --chip-check-offset: 0;
+    --chip-leading-opacity: 0;
+    padding-inline-start: 8px;
     border-color: transparent;
     background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
@@ -88,8 +103,65 @@
   }
 }
 
+.chip__selection {
+  position: relative;
+  flex-shrink: 0;
+  inline-size: var(--chip-selection-size);
+  margin-inline-end: var(--chip-selection-margin);
+  transition:
+    inline-size var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
+    margin-inline-end var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial);
+
+  &.chip__selection--with-icon {
+    inline-size: 18px;
+    margin-inline-end: 0;
+  }
+}
+
+.chip__check,
+.chip__leading-icon {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.chip__leading-icon {
+  opacity: var(--chip-leading-opacity);
+  transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
+    var(--md-sys-motion-spring-fast-effects);
+
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.chip__icon > .chip__check-mask {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  forced-color-adjust: none;
+}
+
+.chip__check-reveal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: var(--chip-check-offset);
+  transition: stroke-dashoffset var(--md-sys-motion-spring-fast-effects-duration)
+    var(--md-sys-motion-spring-fast-effects);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .chip {
+  .chip,
+  .chip__selection,
+  .chip__leading-icon,
+  .chip__check-reveal {
     transition: none;
   }
 }

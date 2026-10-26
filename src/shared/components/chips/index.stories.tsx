@@ -15,7 +15,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "MD3 outlined assist chips and controlled filter chips. FilterChip requires selected and exposes aria-pressed with a decorative checkmark. ChipGroup wraps chips and requires an accessible name. Buttons retain native Tab, Enter and Space behavior; callers own single- or multiple-selection logic. Uses the shared head-linked stylesheet.",
+          "MD3 outlined assist chips and controlled filter chips. FilterChip requires selected and exposes aria-pressed with a decorative checkmark. Selection draws the original Material Symbols check through an SVG mask and springs the icon slot's width; deselection reverses both transitions. Existing leading icons crossfade without resizing the chip. Link chips share the same animation. Reduced motion disables these transitions. ChipGroup wraps chips and requires an accessible name. Buttons retain native Tab, Enter and Space behavior; callers own single- or multiple-selection logic. Uses the shared head-linked stylesheet.",
       },
     },
   },
@@ -50,6 +50,36 @@ export const SingleSelect = meta.story({
 
 export const Assist = meta.story({
   render: () => <AssistChip icon={<MdSymbol>event</MdSymbol>}>Add to calendar</AssistChip>,
+});
+
+function ToggleDemo() {
+  const [selected, setSelected] = useState(false);
+  return (
+    <ChipGroup aria-label="Toggle filters">
+      <FilterChip selected={selected} onClick={() => setSelected(!selected)}>
+        Favourite
+      </FilterChip>
+      <FilterChip
+        selected={selected}
+        icon={<MdSymbol>favorite</MdSymbol>}
+        onClick={() => setSelected(!selected)}
+      >
+        With icon
+      </FilterChip>
+    </ChipGroup>
+  );
+}
+
+export const Toggle = meta.story({
+  render: () => <ToggleDemo />,
+  play: async ({ canvas, userEvent }) => {
+    const chip = canvas.getByRole("button", { name: "Favourite" });
+    await expect(chip).toHaveAttribute("aria-pressed", "false");
+    await userEvent.click(chip);
+    await expect(chip).toHaveAttribute("aria-pressed", "true");
+    await userEvent.keyboard(" ");
+    await expect(chip).toHaveAttribute("aria-pressed", "false");
+  },
 });
 
 export const Disabled = meta.story({
