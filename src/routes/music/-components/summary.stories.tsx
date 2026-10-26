@@ -1,4 +1,4 @@
-import { expect } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 
 import preview from "#.storybook/preview";
 
@@ -24,12 +24,56 @@ const meta = preview.meta({
 
 export const Statistics = meta.story({
   play: async ({ canvas }) => {
-    await expect(canvas.getByText("163,572")).toBeVisible();
-    await expect(canvas.getByText("6,047")).toBeVisible();
+    const counts = canvas.getAllByRole("definition");
+    await waitFor(async () => {
+      await expect(counts[0].lastElementChild).toHaveTextContent("163,572");
+      await expect(counts[1].lastElementChild).toHaveTextContent("6,047");
+    });
     await expect(canvas.getByText("22 Sept 2017")).toBeVisible();
     await expect(canvas.getByRole("link", { name: "Last.fm" })).toHaveAttribute(
       "href",
       "https://www.last.fm",
+    );
+  },
+});
+
+export const AnimatedCounts = meta.story({
+  render: (args) => (
+    <div style={{ "--md-sys-motion-spring-default-effects-duration": "1000ms" }}>
+      <MusicSummary {...args} />
+    </div>
+  ),
+  play: async ({ canvas, args }) => {
+    const counts = canvas.getAllByRole("definition");
+    const targets = [
+      args.user.playcount,
+      args.user.artist_count,
+      args.user.album_count,
+      args.user.track_count,
+    ];
+    const widths = counts.map((count) => count.getBoundingClientRect().width);
+    let previous = targets.map((target) => Math.ceil(target * 0.95));
+    const readCounts = () =>
+      counts.map((count) => Number(count.lastElementChild?.textContent?.replaceAll(",", "")));
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      await expect(readCounts()[0]).toBeLessThan(targets[0]);
+    }
+    await waitFor(
+      async () => {
+        const current = readCounts();
+        for (const [index, value] of current.entries()) {
+          await expect(value).toBeGreaterThanOrEqual(previous[index]);
+          await expect(value).toBeLessThanOrEqual(targets[index]);
+          await expect(counts[index].firstElementChild).toHaveTextContent(
+            targets[index].toLocaleString("en-GB"),
+          );
+          await expect(counts[index].lastElementChild).toHaveAttribute("aria-hidden", "true");
+          await expect(counts[index].getBoundingClientRect().width).toBe(widths[index]);
+        }
+        previous = current;
+        await expect(current).toEqual(targets);
+      },
+      { timeout: 2000 },
     );
   },
 });

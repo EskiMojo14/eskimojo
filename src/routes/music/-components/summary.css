@@ -49,8 +49,18 @@
   }
 
   dd {
+    display: grid;
     margin: 8px 0 0;
     font: var(--typo-headline-small);
     font-variant-numeric: tabular-nums;
+  }
+
+  .music-summary__count-final,
+  .music-summary__count-animated {
+    grid-area: 1 / 1;
+  }
+
+  .music-summary__count-final {
+    opacity: 0;
   }
 }
