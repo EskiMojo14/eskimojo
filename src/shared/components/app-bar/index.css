@@ -33,6 +33,11 @@
   font: var(--typo-title-medium);
   font-feature-settings: var(--typo-features-heading);
   color: var(--md-sys-color-on-surface-variant);
+
+  a {
+    color: var(--md-sys-color-primary);
+    text-underline-offset: 3px;
+  }
 }
 
 .app-bar__navigation.icon-button {

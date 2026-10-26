@@ -110,6 +110,13 @@ test("keeps the document title and app bar matched to the current route after na
     await expect.element(banner.getByText(title, { exact: true })).toBeVisible();
     await expect.poll(() => document.title).toBe(`${title} | eskimojo`);
   }
+  await router.navigate({ to: "/music/{-$breakdown}" });
+  await expect.element(banner.getByText("Powered by", { exact: false })).toBeVisible();
+  await expect
+    .element(banner.getByRole("link", { name: "Last.fm" }))
+    .toHaveAttribute("href", "https://www.last.fm");
+  await router.navigate({ to: "/projects" });
+  await expect.element(banner.getByRole("link", { name: "Last.fm" })).not.toBeInTheDocument();
 });
 
 test.each([

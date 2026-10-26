@@ -64,9 +64,6 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   const average = Math.round(user.playcount / days);
   return (
     <section ref={summaryRef} {...summaryBem()} aria-label="Listening statistics">
-      <p {...summaryBem({ element: "attribution" })}>
-        Powered by <a href="https://www.last.fm">Last.fm</a>
-      </p>
       <p>I love music! So far I've listened to:</p>
       <dl {...summaryBem({ element: "stats" })}>
         <div>

@@ -23,7 +23,14 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
     parse: v.parser(v.object({ breakdown: v.optional(musicBreakdownSchema) })),
   },
-  staticData: { title: "Music" },
+  staticData: {
+    title: "Music",
+    subtitle: (
+      <>
+        Powered by <a href="https://www.last.fm">Last.fm</a>
+      </>
+    ),
+  },
   validateSearch: v.object({
     period: v.optional(periodSchema),
   }),

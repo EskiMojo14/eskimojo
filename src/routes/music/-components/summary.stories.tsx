@@ -30,10 +30,6 @@ export const Statistics = meta.story({
       await expect(counts[1].lastElementChild).toHaveTextContent("6,047");
     });
     await expect(canvas.getByText("22 Sept 2017")).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "Last.fm" })).toHaveAttribute(
-      "href",
-      "https://www.last.fm",
-    );
   },
 });
 

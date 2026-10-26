@@ -8,16 +8,6 @@
     margin: 0 0 16px;
     text-wrap: balance;
   }
-
-  a {
-    color: var(--md-sys-color-primary);
-    text-underline-offset: 3px;
-  }
-}
-
-.music-summary__attribution {
-  color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-body-medium);
 }
 
 .music-summary__stats {

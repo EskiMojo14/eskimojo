@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter, type RouterHistory } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import type { ReactNode } from "react";
 
 import { routeTree } from "./routeTree.gen";
 import { createQueryClient } from "./shared/lib/query";
@@ -30,7 +31,7 @@ export function getRouter({
 declare module "@tanstack/react-router" {
   interface StaticDataRouteOption {
     title?: string;
-    subtitle?: string;
+    subtitle?: ReactNode;
   }
 
   interface Register {
