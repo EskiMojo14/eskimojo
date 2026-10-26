@@ -7,10 +7,19 @@ hosts as part of the design unless that decision is revisited explicitly.
 
 ## Domain
 
-The selected public URL is `https://eskimojo.dev`, which is used to resolve
-absolute social preview image URLs. Domain registration and DNS/Netlify
-configuration still need to be verified before launch. This selection is not
-authorization to buy the domain or change production domain settings.
+`eskimojo.dev` is a preliminary candidate for the public URL, not a confirmed
+domain. It has not been purchased. The code currently uses
+`https://eskimojo.dev` to resolve absolute social preview image URLs, but that
+does not indicate ownership or a final domain decision. Do not buy the domain
+or change production domain settings without explicit authorization.
+
+### Verification status
+
+Checked 2026-10-26: the repository contains Netlify configuration, but its
+production deployment and domain configuration could not be verified from the
+available project information. The domain has not been purchased; ownership,
+DNS, and production configuration therefore remain unconfirmed. Revisit these
+checks only after a domain has been selected and purchased.
 
 ## Relationship to the Neocities site
 
@@ -21,6 +30,10 @@ The archived site should link visitors to the new primary site.
 
 The archive and new site are intentionally separate destinations. A redirect
 from the old address is not part of the agreed plan.
+
+The Neocities homepage was reachable on 2026-10-26, but the fetched page did
+not show a link to the new primary site. Keep that migration item open until
+the archive is updated and checked.
 
 ## Migration references
 
