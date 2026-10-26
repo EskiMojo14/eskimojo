@@ -29,6 +29,30 @@
   box-sizing: border-box;
 }
 
+:where(
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  .button,
+  .icon-button,
+  .chip,
+  .tabs__tab,
+  .app-bar__destination,
+  .list__item > a
+) {
+  user-select: none;
+}
+
 body {
   background-color: var(--md-sys-color-background);
   color: var(--md-sys-color-on-background);
