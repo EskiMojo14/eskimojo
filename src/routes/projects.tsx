@@ -5,6 +5,7 @@ export const Route = createFileRoute("/projects")({
   component: RouteComponent,
 });
 
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
   return null;
 }

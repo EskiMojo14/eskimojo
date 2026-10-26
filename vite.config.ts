@@ -87,6 +87,14 @@ const config = defineConfig({
       {
         files: ["src/**/*.{ts,tsx}"],
         rules: {
+          "react/only-export-components": [
+            "error",
+            {
+              allowConstantExport: true,
+              allowExportNames: ["Route"],
+              customHOCs: ["createLink", "createPrefProvider", "withTooltip"],
+            },
+          ],
           ...eslintPluginRouter.configs.recommended.rules,
           ...eslintPluginQuery.configs.recommended.rules,
           "@tanstack/query/exhaustive-deps": "off",

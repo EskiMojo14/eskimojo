@@ -8,7 +8,7 @@ import {
 import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
-import { getDocumentHead } from "#/routes/__root";
+import { getDocumentHead } from "#/shared/lib/document-head";
 
 import { AppBar } from "./index";
 

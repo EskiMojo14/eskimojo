@@ -27,6 +27,7 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
   }),
 });
 
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
   const { breakdown = "by-month" } = Route.useParams();
   return (

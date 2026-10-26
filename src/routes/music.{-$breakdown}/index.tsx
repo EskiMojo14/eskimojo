@@ -65,6 +65,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
   component: RouteComponent,
 });
 
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
   const { data: user, dataUpdatedAt } = useSuspenseQuery({
@@ -82,6 +83,7 @@ function RouteComponent() {
   );
 }
 
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RecentTracksPanel() {
   const { data: recentTracks } = useSuspenseQuery({
     ...getRecentTracks({ limit: 10 }),
@@ -90,6 +92,7 @@ function RecentTracksPanel() {
   return <RecentTracks tracks={recentTracks} />;
 }
 
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function TopMusicPanel() {
   const { period = periodSchema.fallback } = Route.useSearch();
   const [tracks, artists] = useSuspenseQueries({

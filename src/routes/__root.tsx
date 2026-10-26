@@ -1,12 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import {
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-  type StaticDataRouteOption,
-} from "@tanstack/react-router";
+import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useState } from "react";
 import BEMHelper from "react-bem-helper";
@@ -20,11 +15,9 @@ import {
 } from "#/shared/components/prefs/provider";
 import { Providers } from "#/shared/components/providers.tsx";
 import { Sidebar } from "#/shared/components/sidebar";
+import { getDocumentHead } from "#/shared/lib/document-head";
 import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
-import { symbolsUrl } from "#/shared/lib/symbols";
 import { promiseAllKeyed } from "#/utils/index.ts";
-
-import appCss from "#/shared/styles/index.css?url";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -44,49 +37,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
 });
 
-export function getDocumentHead({
-  matches,
-}: {
-  matches: ReadonlyArray<{ staticData: StaticDataRouteOption }>;
-}) {
-  const title = matches.findLast((match) => match.staticData.title !== undefined)?.staticData.title;
-
-  return {
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: title && title !== "eskimojo" ? `${title} | eskimojo` : "eskimojo",
-      },
-    ],
-    links: [
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous" as const,
-      },
-      {
-        rel: "stylesheet",
-        href: symbolsUrl,
-        crossOrigin: "anonymous" as const,
-      },
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  };
-}
-
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette } = Route.useLoaderData();
   const [navigationOpen, setNavigationOpen] = useState(false);
