@@ -1,0 +1,16 @@
+.page-state {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-inline-size: 0;
+  min-block-size: 100svh;
+}
+
+.app-shell__content:has(> .page-state) {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__content > .page-state {
+  min-block-size: 0;
+}
