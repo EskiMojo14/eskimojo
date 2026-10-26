@@ -3,6 +3,7 @@ import BEMHelper from "react-bem-helper";
 
 import { MusicSearchLinks } from "#/routes/music.{-$breakdown}/-components/search-links";
 import type { TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
+import { EmptyState } from "#/shared/components/empty-state";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { MdSymbol } from "#/shared/components/symbol";
 
@@ -23,7 +24,11 @@ export function MusicTopList({
         {title}
       </h2>
       {items.length === 0 ? (
-        <p {...recentTracksBem({ element: "empty" })}>No listening data for this period.</p>
+        <EmptyState
+          icon={<MdSymbol>music_note</MdSymbol>}
+          title="No listening data for this period."
+          description="Try choosing a different time period."
+        />
       ) : (
         <List aria-labelledby={headingId}>
           {items.map((item) => (

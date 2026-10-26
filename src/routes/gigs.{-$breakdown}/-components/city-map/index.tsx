@@ -10,6 +10,8 @@ import { useMemo } from "react";
 import type { ArtistEvent } from "#/routes/gigs.{-$breakdown}/-components/artist-chart/data";
 import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
 import { Button } from "#/shared/components/buttons/button";
+import { EmptyState } from "#/shared/components/empty-state";
+import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 
 import { englandGeometry, getCityMapData, getCityMapFit } from "./data";
@@ -85,7 +87,15 @@ export function GigsCityMap({
     });
   }, [cities]);
 
-  if (!cities.length) return <p className="gigs-city-map">No cities recorded yet.</p>;
+  if (!cities.length) {
+    return (
+      <EmptyState
+        icon={<MdSymbol>map</MdSymbol>}
+        title="No cities recorded yet."
+        description="Cities will appear here when gigs are added to the archive."
+      />
+    );
+  }
 
   return (
     <section className="gigs-city-map" aria-label="Gigs by city">

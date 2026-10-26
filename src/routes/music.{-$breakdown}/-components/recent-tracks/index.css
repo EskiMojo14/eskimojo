@@ -97,13 +97,6 @@
   text-wrap: balance;
 }
 
-.recent-tracks__empty {
-  color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
-  text-wrap: balance;
-}
-
 .recent-tracks__placeholder {
   display: grid;
   place-items: center;

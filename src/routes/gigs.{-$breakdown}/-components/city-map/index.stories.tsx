@@ -18,7 +18,10 @@ export const Archive = meta.story({});
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText("No cities recorded yet.")).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "No cities recorded yet." })).toBeVisible();
+    await expect(
+      canvas.getByText("Cities will appear here when gigs are added to the archive."),
+    ).toBeVisible();
   },
 });
 export const NearbyCities = meta.story({

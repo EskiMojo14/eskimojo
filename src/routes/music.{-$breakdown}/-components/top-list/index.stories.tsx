@@ -1,3 +1,5 @@
+import { expect } from "storybook/test";
+
 import preview from "#.storybook/preview";
 
 import { MusicTopList } from "./index";
@@ -35,6 +37,13 @@ export const Tracks = meta.story({
 
 export const Empty = meta.story({
   args: { title: "Top tracks", items: [] },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { name: "No listening data for this period." }),
+    ).toBeVisible();
+    await expect(canvas.getByText("Try choosing a different time period.")).toBeVisible();
+    await expect(canvas.queryByRole("list")).not.toBeInTheDocument();
+  },
 });
 
 export const NarrowTracks = meta.story({

@@ -52,7 +52,12 @@ export const Recent = meta.story({
 export const Empty = meta.story({
   args: { tracks: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText("No recently played tracks yet.")).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", { name: "No recently played tracks yet." }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByText("Your recently played tracks will appear here once you start listening."),
+    ).toBeVisible();
   },
 });
 

@@ -10,6 +10,8 @@ import { useMemo, useRef } from "react";
 import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
+import { EmptyState } from "#/shared/components/empty-state";
+import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 
 import { getGigHeatmapData, gigMonths, type GigMonth } from "./data";
@@ -105,7 +107,13 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
   );
 
   if (total === 0) {
-    return <p className="gigs-heatmap">No gigs recorded yet.</p>;
+    return (
+      <EmptyState
+        icon={<MdSymbol>event</MdSymbol>}
+        title="No gigs recorded yet."
+        description="Your gig history will appear here when gigs are added to the archive."
+      />
+    );
   }
 
   return (

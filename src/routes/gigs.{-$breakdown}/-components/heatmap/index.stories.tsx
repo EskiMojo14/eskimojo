@@ -27,7 +27,10 @@ export const Archive = meta.story({
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText("No gigs recorded yet.")).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "No gigs recorded yet." })).toBeVisible();
+    await expect(
+      canvas.getByText("Your gig history will appear here when gigs are added to the archive."),
+    ).toBeVisible();
     await expect(canvas.queryByRole("img")).not.toBeInTheDocument();
   },
 });

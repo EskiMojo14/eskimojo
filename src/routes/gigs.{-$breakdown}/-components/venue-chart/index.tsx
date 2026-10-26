@@ -9,6 +9,8 @@ import { useMemo } from "react";
 
 import type { ArtistEvent } from "#/routes/gigs.{-$breakdown}/-components/artist-chart/data";
 import { Button } from "#/shared/components/buttons/button";
+import { EmptyState } from "#/shared/components/empty-state";
+import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 
 import { getVenueChartData } from "./data";
@@ -98,7 +100,15 @@ export function GigsVenueChart({
     [venues],
   );
 
-  if (!venues.length) return <p className="gigs-venues">No venues recorded yet.</p>;
+  if (!venues.length) {
+    return (
+      <EmptyState
+        icon={<MdSymbol>location_on</MdSymbol>}
+        title="No venues recorded yet."
+        description="Venues will appear here when gigs are added to the archive."
+      />
+    );
+  }
 
   return (
     <section className="gigs-venues" aria-label="Gigs by venue">
