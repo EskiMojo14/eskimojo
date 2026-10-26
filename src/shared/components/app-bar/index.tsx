@@ -39,10 +39,15 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
         </div>
         <IconButton
           {...appBarBem({ element: "preferences" })}
-          icon={<MdSymbol>settings</MdSymbol>}
+          icon={
+            <span {...appBarBem({ element: "preferences-icon" })}>
+              <MdSymbol>settings</MdSymbol>
+            </span>
+          }
           aria-label="Preferences"
           tooltip="Preferences"
           aria-haspopup="dialog"
+          aria-expanded={preferencesOpen}
           onClick={() => setPreferencesOpen(true)}
         />
       </header>

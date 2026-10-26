@@ -55,4 +55,26 @@
 .app-bar__preferences {
   grid-column: 2;
   grid-row: 1;
+  --icon-fill: 0;
+
+  &[aria-expanded="true"] {
+    --icon-fill: 1;
+  }
+}
+
+.app-bar__preferences-icon {
+  display: inline-flex;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: rotate var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial);
+
+    .app-bar__preferences:is(:hover, :focus-visible) & {
+      rotate: 30deg;
+    }
+
+    .app-bar__preferences[aria-expanded="true"] & {
+      rotate: 60deg;
+    }
+  }
 }
