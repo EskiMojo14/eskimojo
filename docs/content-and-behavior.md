@@ -217,7 +217,22 @@ venue's events chronologically with main/co-billed artists, dates, and optional
 support acts. Support acts use smaller, alpha-muted text. Clicking or pressing
 Enter pins the scrollable rich tooltip; Escape or Close details dismisses it.
 A screen-reader-only semantic table provides exact venue counts. Empty archives
-display "No venues recorded yet." The city view remains to be implemented.
+display "No venues recorded yet."
+The city view plots event cities on a locally bundled Natural Earth 1:50m
+England outline (public domain), using a shared Mercator projection for coastline
+and city-centre coordinates. TanStack Charts' `geoShape` layers project both the
+decorative outline and interactive city points responsively. Dot area is proportional
+to event count. The chart shows rich tooltips with the city name and chronological events
+including artists, dates, venues/cities, and support acts. Hover, focus, or click
+shows details; Enter or click pins them, and Escape or Close details dismisses them.
+Arrow keys explore the cities, including overlapping dots. A screen-reader-only table gives city counts
+without extra visible information. The map crops to the event dots with padding,
+rather than showing unvisited northern England. The projection clips land geometry
+to the map frame so the outline closes along cropped edges as well as the coastline.
+Unknown cities raise an
+explicit missing-coordinate error rather than being silently omitted. An empty
+archive displays "No cities recorded yet." Map data makes no runtime network
+requests and requires no API key.
 
 Source data and the exact visual design should be verified during migration.
 The counts and date range above describe the inspected legacy archive; they

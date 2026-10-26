@@ -215,6 +215,9 @@ importers:
       '@tanstack/react-start':
         specifier: 1.169.3
         version: 1.169.3(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rollup@4.65.0)(supports-color@7.2.0)
+      d3-geo:
+        specifier: ^3.1.1
+        version: 3.1.1
       interestfor:
         specifier: ^1.0.10
         version: 1.0.10
@@ -276,6 +279,9 @@ importers:
       '@tanstack/router-cli':
         specifier: ^1.167.45
         version: 1.167.45(supports-color@7.2.0)
+      '@types/d3-geo':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5

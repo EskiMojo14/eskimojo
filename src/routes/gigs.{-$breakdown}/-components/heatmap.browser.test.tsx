@@ -13,7 +13,7 @@ import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index";
 
 import { GigsHeatmap } from "./heatmap";
 
-import "./heatmap.css";
+import "#/routes/gigs.{-$breakdown}/index.css";
 
 test("moves to a different month on every horizontal arrow press", async () => {
   const result = await page.renderWithProviders(
@@ -178,6 +178,7 @@ test.each(["/gigs", "/gigs/by-month"])(
     await expect.element(chart).toBeVisible();
     await result.getByRole("link", { name: "City", exact: true }).click();
     await expect.element(chart).not.toBeInTheDocument();
+    await expect.element(result.getByRole("img", { name: "Map of England" })).toBeVisible();
     await result.getByRole("link", { name: "Venue", exact: true }).click();
     await expect.element(result.getByRole("img", { name: "Gigs by venue" })).toBeVisible();
   },
