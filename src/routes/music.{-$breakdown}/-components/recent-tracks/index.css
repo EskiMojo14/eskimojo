@@ -97,7 +97,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-tertiary);
 }
 
 .music-search-links {

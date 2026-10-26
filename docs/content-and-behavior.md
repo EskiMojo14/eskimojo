@@ -117,6 +117,9 @@ reverting changes. System follows the corresponding operating-system preference.
 
 ## Music
 
+The Now playing icon and label and listening-summary counts use the theme's
+tertiary accent. Summary card surfaces and labels remain neutral.
+
 Provide two listening tabs: Top music (the default) and Recently played.
 Top music combines Top tracks and Top artists with one shared listening-period
 picker. Show tracks first, then artists: side by side when the content area has
