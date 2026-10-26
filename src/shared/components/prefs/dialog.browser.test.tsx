@@ -235,7 +235,7 @@ test("arrows only move focus; Space selects; Escape keeps changes", async () => 
 });
 
 test("sidebar opens a modal navigation drawer and Escape restores focus", async () => {
-  await page.viewport(390, 844);
+  await page.viewport(600, 844);
   const result = await page.renderWithProviders(<NavigationLayout />);
   const trigger = result.getByRole("button", { name: "Open navigation menu" });
 

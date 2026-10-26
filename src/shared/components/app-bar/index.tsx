@@ -1,12 +1,14 @@
-import { useMatches } from "@tanstack/react-router";
+import { Link, useMatches, useMatchRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { PreferencesDialog } from "#/shared/components/prefs/dialog";
+import { links } from "#/shared/components/sidebar/groups";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const appBarBem = BEMHelper("app-bar");
+const destinations = links.map(({ children }) => children).flat();
 
 export interface AppBarProps {
   navigationOpen: boolean;
@@ -15,6 +17,10 @@ export interface AppBarProps {
 
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const matchRoute = useMatchRoute();
+  const selectedIndex = destinations.findIndex((destination) =>
+    matchRoute({ ...destination, fuzzy: destination.to !== "/" }),
+  );
   const pageData = useMatches({
     select: (matches) =>
       matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
@@ -53,6 +59,26 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
           )}
         </div>
       </header>
+      <nav {...appBarBem({ element: "bottom-navigation" })} aria-label="Primary">
+        {destinations.map(({ label, icon, ...link }, index) => (
+          <Link
+            {...link}
+            key={label}
+            {...appBarBem({ element: "destination" })}
+            activeOptions={{ exact: link.to === "/" }}
+            viewTransition={
+              selectedIndex < 0 || index === selectedIndex
+                ? false
+                : { types: [index > selectedIndex ? "page-forward" : "page-backward"] }
+            }
+          >
+            <span {...appBarBem({ element: "destination-icon" })} aria-hidden="true">
+              <MdSymbol>{icon}</MdSymbol>
+            </span>
+            <span>{label}</span>
+          </Link>
+        ))}
+      </nav>
       <PreferencesDialog open={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
     </>
   );
