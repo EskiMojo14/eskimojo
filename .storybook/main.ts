@@ -6,7 +6,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { symbolsUrl } from "../src/shared/lib/symbols.ts";
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ["../src/**/*.doc.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   staticDirs: ["../public"],
   addons: [
     "@storybook/addon-vitest",

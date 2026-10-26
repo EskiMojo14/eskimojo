@@ -59,7 +59,9 @@ contributor guidance.
   - `foo.node.test.ts` for Node-side tests (test React/DOM behavior in the browser);
   - `foo.browser.test.ts` or `foo.browser.test.tsx` for browser tests;
   - `foo.test-d.ts` for complex TypeScript type behavior;
-  - `foo.stories.tsx` for Storybook stories.
+  - `foo.stories.tsx` for Storybook stories;
+  - `foo.doc.mdx` for Storybook documentation. Plain `.mdx` files are application
+    content and are not indexed by Storybook.
 - Add focused tests for non-trivial logic and behavior. Use stories to document
   and exercise UI states; a story is not a substitute for a logic test.
 - Cover meaningful edge cases and user-visible behavior without coupling tests
