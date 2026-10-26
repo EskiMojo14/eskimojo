@@ -1,14 +1,16 @@
 import { getRouteApi } from "@tanstack/react-router";
+import BEMHelper from "react-bem-helper";
 
 import { fullPeriodLabels, periodSchema } from "#/routes/music/-query";
 import { ChipGroup, InternalLinkChip } from "#/shared/components/chips";
 
 const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const periodPickerBem = BEMHelper("music-period-picker");
 
 export function MusicPeriodPicker() {
   const { period = "7day" } = musicRoute.useSearch();
   return (
-    <ChipGroup className="music-period-picker" aria-label="Listening period">
+    <ChipGroup {...periodPickerBem()} aria-label="Listening period">
       {periodSchema.options.map((value) => (
         <InternalLinkChip
           key={value}

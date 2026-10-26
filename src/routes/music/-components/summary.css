@@ -1,0 +1,56 @@
+.music-summary {
+  container: music-summary / inline-size;
+  padding: 16px;
+  color: var(--md-sys-color-on-surface);
+  font: var(--typo-body-large);
+
+  > p {
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+
+  a {
+    color: var(--md-sys-color-primary);
+    text-underline-offset: 3px;
+  }
+}
+
+.music-summary__attribution {
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--typo-body-medium);
+}
+
+.music-summary__stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 0 0 16px;
+
+  > div {
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-large);
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  @container music-summary (inline-size >= 25rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container music-summary (inline-size >= 50rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--typo-label-large);
+  }
+
+  dd {
+    margin: 8px 0 0;
+    font: var(--typo-headline-small);
+    font-variant-numeric: tabular-nums;
+  }
+}

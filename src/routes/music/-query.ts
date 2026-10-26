@@ -316,6 +316,9 @@ const userDataSchema = v.object({
   artist_count: vUtils.coerceNumber,
   track_count: vUtils.coerceNumber,
   album_count: vUtils.coerceNumber,
+  registered: v.object({
+    unixtime: vUtils.coerceNumber,
+  }),
 });
 
 export type UserData = v.InferOutput<typeof userDataSchema>;

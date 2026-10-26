@@ -1,4 +1,5 @@
 import { useId } from "react";
+import BEMHelper from "react-bem-helper";
 
 import type { RecentTrack } from "#/routes/music/-query";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
@@ -6,6 +7,7 @@ import { MdSymbol } from "#/shared/components/symbol";
 
 import { MusicSearchLinks } from "./search-links";
 
+const recentTracksBem = BEMHelper("recent-tracks");
 const playedAt = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
   timeStyle: "short",
@@ -16,12 +18,12 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
   const headingId = useId();
 
   return (
-    <section className="recent-tracks" aria-labelledby={headingId}>
-      <h2 id={headingId} className="recent-tracks__heading">
+    <section {...recentTracksBem()} aria-labelledby={headingId}>
+      <h2 id={headingId} {...recentTracksBem({ element: "heading" })}>
         Recently played
       </h2>
       {tracks.length === 0 ? (
-        <p className="recent-tracks__empty">No recently played tracks yet.</p>
+        <p {...recentTracksBem({ element: "empty" })}>No recently played tracks yet.</p>
       ) : (
         <List aria-labelledby={headingId}>
           {tracks.map((track, index) => {
@@ -37,7 +39,7 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
                     artwork ? (
                       <img src={artwork} alt="" width={56} height={56} loading="lazy" />
                     ) : (
-                      <span className="recent-tracks__placeholder" aria-hidden="true">
+                      <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
                         <MdSymbol>music_note</MdSymbol>
                       </span>
                     )
@@ -51,7 +53,7 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
                   }
                   trailing={
                     track.nowPlaying ? (
-                      <span className="recent-tracks__now-playing">
+                      <span {...recentTracksBem({ element: "now-playing" })}>
                         <MdSymbol aria-hidden="true">graphic_eq</MdSymbol>
                         <span>Now playing</span>
                       </span>

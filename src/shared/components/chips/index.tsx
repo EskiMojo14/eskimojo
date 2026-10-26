@@ -5,6 +5,7 @@ import BEMHelper from "react-bem-helper";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const chipBem = BEMHelper("chip");
+const chipGroupBem = BEMHelper("chip-group");
 
 export interface AssistChipProps extends ComponentPropsWithRef<"button"> {
   icon?: ReactNode;
@@ -68,5 +69,5 @@ export type ChipGroupProps = Omit<ComponentPropsWithRef<"fieldset">, "role"> &
   ({ "aria-label": string } | { "aria-labelledby": string });
 
 export function ChipGroup({ className, ...props }: ChipGroupProps) {
-  return <fieldset {...props} className={["chip-group", className].filter(Boolean).join(" ")} />;
+  return <fieldset {...props} {...chipGroupBem({ extra: className })} />;
 }

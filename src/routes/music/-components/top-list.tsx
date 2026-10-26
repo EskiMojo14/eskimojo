@@ -1,10 +1,14 @@
 import { useId } from "react";
+import BEMHelper from "react-bem-helper";
 
 import type { TopArtist, TopTrack } from "#/routes/music/-query";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { MusicSearchLinks } from "./search-links";
+
+const recentTracksBem = BEMHelper("recent-tracks");
+const topListBem = BEMHelper("music-top-list");
 
 export function MusicTopList({
   title,
@@ -15,21 +19,21 @@ export function MusicTopList({
 }) {
   const headingId = useId();
   return (
-    <section className="recent-tracks" aria-labelledby={headingId}>
-      <h2 id={headingId} className="recent-tracks__heading">
+    <section {...recentTracksBem()} aria-labelledby={headingId}>
+      <h2 id={headingId} {...recentTracksBem({ element: "heading" })}>
         {title}
       </h2>
       {items.length === 0 ? (
-        <p className="recent-tracks__empty">No listening data for this period.</p>
+        <p {...recentTracksBem({ element: "empty" })}>No listening data for this period.</p>
       ) : (
         <List aria-labelledby={headingId}>
           {items.map((item) => (
             <ListItem key={item.rank}>
               <ListItemContent
                 leading={
-                  <span className="music-top-list__leading">
+                  <span {...topListBem({ element: "leading" })}>
                     <span aria-label={`Rank ${item.rank}`}>{item.rank}</span>
-                    <span className="recent-tracks__placeholder" aria-hidden="true">
+                    <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
                       {"artist" in item ? (
                         <MdSymbol>music_note</MdSymbol>
                       ) : (

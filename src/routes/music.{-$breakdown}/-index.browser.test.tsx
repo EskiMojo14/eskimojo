@@ -12,13 +12,20 @@ import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { musicBreakdownSchema } from "#/routes/music/-constants";
-import { getRecentTracks, getTopArtists, getTopTracks } from "#/routes/music/-query";
+import { getRecentTracks, getTopArtists, getTopTracks, getUserData } from "#/routes/music/-query";
 import { createQueryClient } from "#/shared/lib/query";
 
 import { Route } from "./index";
 
 test("switches music views using suspense query data and preserves the selected period", async () => {
   const queryClient = createQueryClient();
+  queryClient.setQueryData(getUserData().queryKey, {
+    playcount: 100,
+    artist_count: 10,
+    album_count: 20,
+    track_count: 30,
+    registered: { unixtime: 1506038400 },
+  });
   queryClient.setQueryData(getRecentTracks({ limit: 10 }).queryKey, [
     {
       name: "Recent song",

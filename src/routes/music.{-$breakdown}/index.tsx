@@ -4,6 +4,7 @@ import * as v from "valibot";
 
 import { MusicPeriodPicker } from "#/routes/music/-components/period-picker";
 import { RecentTracks } from "#/routes/music/-components/recent-tracks";
+import { MusicSummary } from "#/routes/music/-components/summary";
 import { MusicBreakdownTabs } from "#/routes/music/-components/tabs";
 import { MusicTopList } from "#/routes/music/-components/top-list";
 import { musicBreakdownSchema } from "#/routes/music/-constants";
@@ -11,10 +12,12 @@ import {
   getRecentTracks,
   getTopTracks,
   getTopArtists,
+  getUserData,
   periodSchema,
 } from "#/routes/music/-query.ts";
 
 import recentTracksCss from "#/routes/music/-components/recent-tracks.css?url";
+import summaryCss from "#/routes/music/-components/summary.css?url";
 
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
@@ -30,6 +33,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     params: { breakdown = "recent" },
     deps: { period = "7day" },
   }) => {
+    await queryClient.query({ ...getUserData(), staleTime: "static" });
     if (breakdown === "recent") {
       await queryClient.query({ ...getRecentTracks({ limit: 10 }), staleTime: "static" });
     } else if (breakdown === "top-artists") {
@@ -39,15 +43,23 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     }
   },
   head: () => ({
-    links: [{ rel: "stylesheet", href: recentTracksCss }],
+    links: [
+      { rel: "stylesheet", href: recentTracksCss },
+      { rel: "stylesheet", href: summaryCss },
+    ],
   }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { breakdown = "recent" } = Route.useParams();
+  const { data: user, dataUpdatedAt } = useSuspenseQuery({
+    ...getUserData(),
+    staleTime: "static",
+  });
   return (
     <>
+      <MusicSummary user={user} asOf={dataUpdatedAt} />
       <MusicBreakdownTabs />
       {breakdown !== "recent" && <MusicPeriodPicker />}
       {breakdown === "recent" && <RecentTracksPanel />}

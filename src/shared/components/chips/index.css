@@ -1,6 +1,7 @@
 .chip-group {
   display: flex;
   flex-wrap: wrap;
+  flex-wrap: balance;
   gap: 8px;
   min-inline-size: 0;
   margin: 0;
