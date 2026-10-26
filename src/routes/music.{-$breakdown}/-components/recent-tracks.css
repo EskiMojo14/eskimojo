@@ -1,8 +1,52 @@
 .recent-tracks {
+  container-type: inline-size;
   inline-size: 100%;
   max-inline-size: 56rem;
   margin-inline: auto;
   padding: 16px;
+
+  @container (max-width: 36rem) {
+    .list__content {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        "leading title"
+        "leading subtitle"
+        "leading metadata"
+        "links links";
+      align-items: start;
+      gap: 4px 12px;
+    }
+
+    .list__leading {
+      grid-area: leading;
+    }
+
+    .list__text,
+    .list__supporting {
+      display: contents;
+    }
+
+    .list__headline {
+      grid-area: title;
+    }
+
+    .list__supporting > span:not(.music-search-links) {
+      grid-area: subtitle;
+      color: var(--md-sys-color-on-surface-variant);
+      font: var(--md-sys-typescale-body-medium);
+    }
+
+    .list__trailing {
+      grid-area: metadata;
+      max-inline-size: none;
+    }
+
+    .music-search-links {
+      grid-area: links;
+      gap: 4px;
+    }
+  }
 }
 
 .music-period-picker {

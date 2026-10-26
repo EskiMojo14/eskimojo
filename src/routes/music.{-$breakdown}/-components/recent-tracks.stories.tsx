@@ -56,6 +56,27 @@ export const Empty = meta.story({
   },
 });
 
+export const NarrowNowPlaying = meta.story({
+  args: {
+    tracks: [
+      {
+        name: "Would I Lie to You?",
+        artist: "Charles & Eddie",
+        album: "Duophonic",
+        image: { large: "/Goat_square-1.jpeg" },
+        nowPlaying: true,
+      },
+    ],
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 320, maxWidth: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+});
+
 export const LongContent = meta.story({
   args: {
     tracks: [

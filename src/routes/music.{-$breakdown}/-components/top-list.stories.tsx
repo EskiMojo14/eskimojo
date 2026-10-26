@@ -27,3 +27,39 @@ export const Tracks = meta.story({
 export const Empty = meta.story({
   args: { title: "Top tracks", items: [] },
 });
+
+export const NarrowTracks = meta.story({
+  args: {
+    title: "Top tracks",
+    items: [{ name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290, image: {} }],
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 320, maxWidth: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Narrow lists put play counts below the title details and search links in a full-width row, preserving room for names and touch targets.",
+      },
+    },
+  },
+});
+
+export const NarrowArtists = meta.story({
+  args: {
+    title: "Top artists",
+    items: [{ name: "Scary Pockets", rank: 1, playcount: 4794, image: {} }],
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 320, maxWidth: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+});
