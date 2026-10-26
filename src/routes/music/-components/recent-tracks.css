@@ -26,10 +26,23 @@
   color: var(--md-sys-color-on-surface-variant);
 }
 
+.music-top-list__leading {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .recent-tracks__now-playing {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
   color: var(--md-sys-color-primary);
+}
+
+.music-search-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-block-start: 4px;
 }

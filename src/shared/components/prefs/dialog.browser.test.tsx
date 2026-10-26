@@ -2,6 +2,7 @@ import { useState } from "react";
 import { beforeEach, expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import { AppBar } from "#/shared/components/app-bar";
 import { Sidebar } from "#/shared/components/sidebar";
 import {
   themeSchema,
@@ -260,4 +261,3 @@ test("sidebar opens a modal navigation drawer and Escape restores focus", async 
   await expect.element(result.getByRole("dialog", { name: "Preferences" })).toBeVisible();
   expect(document.querySelectorAll("dialog:modal")).toHaveLength(1);
 });
-import { AppBar } from "#/shared/components/app-bar";

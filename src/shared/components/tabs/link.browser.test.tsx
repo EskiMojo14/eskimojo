@@ -25,7 +25,9 @@ function createTabRouter(initialEntry = "/") {
           <TabLink to="/projects" icon={<MdSymbol>folder</MdSymbol>}>
             Projects
           </TabLink>
-          <TabLink to="/music">Music</TabLink>
+          <TabLink to="/music/{-$breakdown}" params={{ breakdown: undefined }}>
+            Music
+          </TabLink>
           <TabLink to="/gigs/{-$breakdown}" params={{ breakdown: "by-artist" }}>
             Artists
           </TabLink>
@@ -49,7 +51,7 @@ function createTabRouter(initialEntry = "/") {
       }),
       createRoute({
         getParentRoute: () => root,
-        path: "/music",
+        path: "/music/{-$breakdown}",
         component: () => <p>Music content</p>,
       }),
       createRoute({
@@ -115,7 +117,9 @@ test("cancelled and modified clicks do not navigate the current router", async (
         >
           Cancelled
         </TabLink>
-        <TabLink to="/music">Music</TabLink>
+        <TabLink to="/music/{-$breakdown}" params={{ breakdown: undefined }}>
+          Music
+        </TabLink>
         <TabLink to="/projects" disabled>
           Unavailable
         </TabLink>

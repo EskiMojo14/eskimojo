@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as MusicIndexRouteImport } from './routes/music/index'
 import { Route as GigsChar123BreakdownChar125IndexRouteImport } from './routes/gigs.{-$breakdown}/index'
+import { Route as MusicChar123BreakdownChar125IndexRouteImport } from './routes/music.{-$breakdown}/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,50 +24,57 @@ const ProjectsRoute = ProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MusicIndexRoute = MusicIndexRouteImport.update({
-  id: '/music/',
-  path: '/music/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const GigsChar123BreakdownChar125IndexRoute =
   GigsChar123BreakdownChar125IndexRouteImport.update({
     id: '/gigs/{-$breakdown}/',
     path: '/gigs/{-$breakdown}/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MusicChar123BreakdownChar125IndexRoute =
+  MusicChar123BreakdownChar125IndexRouteImport.update({
+    id: '/music/{-$breakdown}/',
+    path: '/music/{-$breakdown}/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/projects': typeof ProjectsRoute
-  '/music/': typeof MusicIndexRoute
   '/gigs/{-$breakdown}/': typeof GigsChar123BreakdownChar125IndexRoute
+  '/music/{-$breakdown}/': typeof MusicChar123BreakdownChar125IndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/projects': typeof ProjectsRoute
-  '/music': typeof MusicIndexRoute
   '/gigs/{-$breakdown}': typeof GigsChar123BreakdownChar125IndexRoute
+  '/music/{-$breakdown}': typeof MusicChar123BreakdownChar125IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/projects': typeof ProjectsRoute
-  '/music/': typeof MusicIndexRoute
   '/gigs/{-$breakdown}/': typeof GigsChar123BreakdownChar125IndexRoute
+  '/music/{-$breakdown}/': typeof MusicChar123BreakdownChar125IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/projects' | '/music/' | '/gigs/{-$breakdown}/'
+  fullPaths:
+    '/' | '/projects' | '/gigs/{-$breakdown}/' | '/music/{-$breakdown}/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/projects' | '/music' | '/gigs/{-$breakdown}'
-  id: '__root__' | '/' | '/projects' | '/music/' | '/gigs/{-$breakdown}/'
+  to: '/' | '/projects' | '/gigs/{-$breakdown}' | '/music/{-$breakdown}'
+  id:
+    | '__root__'
+    | '/'
+    | '/projects'
+    | '/gigs/{-$breakdown}/'
+    | '/music/{-$breakdown}/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProjectsRoute: typeof ProjectsRoute
-  MusicIndexRoute: typeof MusicIndexRoute
   GigsChar123BreakdownChar125IndexRoute: typeof GigsChar123BreakdownChar125IndexRoute
+  MusicChar123BreakdownChar125IndexRoute: typeof MusicChar123BreakdownChar125IndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -86,18 +93,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/music/': {
-      id: '/music/'
-      path: '/music'
-      fullPath: '/music/'
-      preLoaderRoute: typeof MusicIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/gigs/{-$breakdown}/': {
       id: '/gigs/{-$breakdown}/'
       path: '/gigs/{-$breakdown}'
       fullPath: '/gigs/{-$breakdown}/'
       preLoaderRoute: typeof GigsChar123BreakdownChar125IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/music/{-$breakdown}/': {
+      id: '/music/{-$breakdown}/'
+      path: '/music/{-$breakdown}'
+      fullPath: '/music/{-$breakdown}/'
+      preLoaderRoute: typeof MusicChar123BreakdownChar125IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -106,8 +113,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProjectsRoute: ProjectsRoute,
-  MusicIndexRoute: MusicIndexRoute,
   GigsChar123BreakdownChar125IndexRoute: GigsChar123BreakdownChar125IndexRoute,
+  MusicChar123BreakdownChar125IndexRoute:
+    MusicChar123BreakdownChar125IndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

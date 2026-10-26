@@ -12,7 +12,7 @@ import { page } from "vite-plus/test/browser";
 import { getDocumentHead, Route as RootRoute } from "#/routes/__root";
 import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index.tsx";
 import { Route as HomeRoute } from "#/routes/index";
-import { Route as MusicRoute } from "#/routes/music/index.tsx";
+import { Route as MusicRoute } from "#/routes/music.{-$breakdown}/index.tsx";
 import { Route as ProjectsRoute } from "#/routes/projects";
 
 import { AppBar } from "./index";
@@ -34,7 +34,7 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   });
   const music = createRoute({
     getParentRoute: () => root,
-    path: "/music",
+    path: "/music/{-$breakdown}",
   });
   const gigs = createRoute({
     getParentRoute: () => root,
@@ -58,7 +58,7 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   await expect.element(homeSubtitle).not.toBeInTheDocument();
   await expect.element(siteSubtitle).not.toBeInTheDocument();
 
-  await router.navigate({ to: "/music" });
+  await router.navigate({ to: "/music/{-$breakdown}" });
   await expect.element(banner.getByText("Site", { exact: true })).toBeVisible();
   await expect.element(siteSubtitle).toBeVisible();
 
@@ -84,7 +84,7 @@ test("keeps the document title and app bar matched to the current route after na
   const routes = [
     ["/", HomeRoute.options.staticData],
     ["/projects", ProjectsRoute.options.staticData],
-    ["/music", MusicRoute.options.staticData],
+    ["/music/{-$breakdown}", MusicRoute.options.staticData],
     ["/gigs", GigsRoute.options.staticData],
   ] as const;
   const router = createRouter({
@@ -102,7 +102,7 @@ test("keeps the document title and app bar matched to the current route after na
   await expect.poll(() => document.title).toBe("Home | eskimojo");
   for (const [to, title] of [
     ["/projects", "Projects"],
-    ["/music", "Music"],
+    ["/music/{-$breakdown}", "Music"],
     ["/gigs/{-$breakdown}", "Gigs"],
     ["/", "Home"],
   ] as const) {

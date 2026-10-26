@@ -20,6 +20,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
+import { musicBreakdownLabels } from "#/routes/music/-constants";
 import { links } from "#/shared/components/sidebar/groups";
 import { themeLabels, contrastLabels, paletteLabels } from "#/shared/constants/prefs";
 
@@ -118,9 +119,13 @@ const config = defineConfig({
     viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
     materialSymbols({
       knownSymbols: [
-        ...[themeLabels, contrastLabels, paletteLabels, gigBreakdownLabels].flatMap((labels) =>
-          Object.values(labels).map(({ icon }) => icon),
-        ),
+        ...[
+          themeLabels,
+          contrastLabels,
+          paletteLabels,
+          gigBreakdownLabels,
+          musicBreakdownLabels,
+        ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
         ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
       ],
     }),

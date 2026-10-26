@@ -167,7 +167,11 @@ function createDemoRouter({
           <TabLink to="/projects" icon={<MdSymbol>work</MdSymbol>}>
             Projects
           </TabLink>
-          <TabLink to="/music" icon={<MdSymbol>music_note</MdSymbol>}>
+          <TabLink
+            to="/music/{-$breakdown}"
+            params={{ breakdown: undefined }}
+            icon={<MdSymbol>music_note</MdSymbol>}
+          >
             Music
           </TabLink>
         </TabNav>
@@ -187,7 +191,7 @@ function createDemoRouter({
   });
   const music = createRoute({
     getParentRoute: () => root,
-    path: "/music",
+    path: "/music/{-$breakdown}",
     component: () => <p>Recently played music.</p>,
   });
   return createRouter({

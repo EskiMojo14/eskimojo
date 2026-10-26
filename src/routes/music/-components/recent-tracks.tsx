@@ -4,6 +4,8 @@ import type { RecentTrack } from "#/routes/music/-query";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { MdSymbol } from "#/shared/components/symbol";
 
+import { MusicSearchLinks } from "./search-links";
+
 const playedAt = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
   timeStyle: "short",
@@ -41,7 +43,12 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
                     )
                   }
                   headline={track.name}
-                  supportingText={[track.artist, track.album].filter(Boolean).join(" / ")}
+                  supportingText={
+                    <>
+                      <span>{[track.artist, track.album].filter(Boolean).join(" / ")}</span>
+                      <MusicSearchLinks name={track.name} artist={track.artist} />
+                    </>
+                  }
                   trailing={
                     track.nowPlaying ? (
                       <span className="recent-tracks__now-playing">

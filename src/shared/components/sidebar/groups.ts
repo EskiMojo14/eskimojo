@@ -9,7 +9,11 @@ export const links = [
   {
     key: "music-gigs",
     children: [
-      { ...linkOptions({ to: "/music" }), label: "Music", icon: "headphones" },
+      {
+        ...linkOptions({ to: "/music/{-$breakdown}", params: { breakdown: undefined } }),
+        label: "Music",
+        icon: "headphones",
+      },
       {
         ...linkOptions({ to: "/gigs/{-$breakdown}", params: { breakdown: undefined } }),
         label: "Gigs",
