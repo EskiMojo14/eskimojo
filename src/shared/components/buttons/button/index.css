@@ -71,7 +71,7 @@
     outline-offset: 3px;
   }
 
-  &:is([aria-pressed="true"], [aria-current]:not([aria-current="false"])) {
+  &:where([aria-pressed="true"], [aria-current]:not([aria-current="false"])) {
     --icon-fill: 1;
     border-radius: var(--md-sys-shape-corner-medium);
   }

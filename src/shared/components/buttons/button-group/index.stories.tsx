@@ -65,6 +65,14 @@ function ThemeButtons(props: ButtonGroupProps) {
 }
 
 export const Connected = meta.story({
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Selected buttons use full 24px corners at the default 48px size, including the middle button. Group shape rules override the standalone selected-button shape; unselected inner corners stay small.",
+      },
+    },
+  },
   args: { variant: "connected" },
   render: (args) => <ThemeButtons {...args} />,
   play: async ({ canvas, userEvent, globals }) => {
