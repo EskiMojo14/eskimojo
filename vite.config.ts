@@ -87,6 +87,7 @@ const config = defineConfig({
       {
         files: ["src/**/*.{ts,tsx}"],
         rules: {
+          "import/no-unassigned-import": "error",
           "react/only-export-components": [
             "error",
             {
@@ -98,11 +99,16 @@ const config = defineConfig({
           ...eslintPluginRouter.configs.recommended.rules,
           ...eslintPluginQuery.configs.recommended.rules,
           "@tanstack/query/exhaustive-deps": "off",
+          "@tanstack/query/prefer-query-options": "error",
           "no-relative/no-relative-import-paths": [
             "error",
             { allowSameFolder: true, rootDir: "src", prefix: "#" },
           ],
         },
+      },
+      {
+        files: ["src/**/*.{browser,node}.test.{ts,tsx}", "src/**/*.stories.tsx"],
+        rules: { "import/no-unassigned-import": "off" },
       },
     ],
   },
