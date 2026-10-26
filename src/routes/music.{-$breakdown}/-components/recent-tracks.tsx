@@ -1,7 +1,7 @@
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
-import type { RecentTrack } from "#/routes/music/-query";
+import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { MdSymbol } from "#/shared/components/symbol";
 

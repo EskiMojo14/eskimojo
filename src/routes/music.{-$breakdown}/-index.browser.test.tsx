@@ -11,8 +11,13 @@ import * as v from "valibot";
 import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
-import { musicBreakdownSchema } from "#/routes/music/-constants";
-import { getRecentTracks, getTopArtists, getTopTracks, getUserData } from "#/routes/music/-query";
+import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
+import {
+  getRecentTracks,
+  getTopArtists,
+  getTopTracks,
+  getUserData,
+} from "#/routes/music.{-$breakdown}/-query.ts";
 import { createQueryClient } from "#/shared/lib/query";
 
 import { Route } from "./index";

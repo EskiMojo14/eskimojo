@@ -1,6 +1,9 @@
 import { getRouteApi } from "@tanstack/react-router";
 
-import { musicBreakdownLabels, musicBreakdownSchema } from "#/routes/music/-constants";
+import {
+  musicBreakdownLabels,
+  musicBreakdownSchema,
+} from "#/routes/music.{-$breakdown}/-constants.ts";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabNav } from "#/shared/components/tabs";
 

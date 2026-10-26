@@ -20,7 +20,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
-import { musicBreakdownLabels } from "#/routes/music/-constants";
+import { musicBreakdownLabels } from "#/routes/music.{-$breakdown}/-constants.ts";
 import { links } from "#/shared/components/sidebar/groups";
 import { themeLabels, contrastLabels, paletteLabels } from "#/shared/constants/prefs";
 

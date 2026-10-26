@@ -10,7 +10,7 @@ import { expect } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import { musicBreakdownSchema } from "#/routes/music/-constants";
+import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 
 import { MusicBreakdownTabs } from "./tabs";
 

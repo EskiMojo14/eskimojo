@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import BEMHelper from "react-bem-helper";
 
-import { fullPeriodLabels, periodSchema } from "#/routes/music/-query";
+import { fullPeriodLabels, periodSchema } from "#/routes/music.{-$breakdown}/-query.ts";
 import { ChipGroup, InternalLinkChip } from "#/shared/components/chips";
 
 const musicRoute = getRouteApi("/music/{-$breakdown}/");

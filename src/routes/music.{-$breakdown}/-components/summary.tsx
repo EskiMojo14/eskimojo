@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import BEMHelper from "react-bem-helper";
 
-import type { UserData } from "#/routes/music/-query";
+import type { UserData } from "#/routes/music.{-$breakdown}/-query.ts";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const summaryBem = BEMHelper("music-summary");

@@ -10,7 +10,7 @@ import { expect } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import { periodSchema } from "#/routes/music/-query";
+import { periodSchema } from "#/routes/music.{-$breakdown}/-query.ts";
 
 import { MusicPeriodPicker } from "./period-picker";
 

@@ -2,22 +2,22 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
-import { MusicPeriodPicker } from "#/routes/music/-components/period-picker";
-import { RecentTracks } from "#/routes/music/-components/recent-tracks";
-import { MusicSummary } from "#/routes/music/-components/summary";
-import { MusicBreakdownTabs } from "#/routes/music/-components/tabs";
-import { MusicTopList } from "#/routes/music/-components/top-list";
-import { musicBreakdownSchema } from "#/routes/music/-constants";
+import { MusicPeriodPicker } from "#/routes/music.{-$breakdown}/-components/period-picker";
+import { RecentTracks } from "#/routes/music.{-$breakdown}/-components/recent-tracks";
+import { MusicSummary } from "#/routes/music.{-$breakdown}/-components/summary";
+import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs";
+import { MusicTopList } from "#/routes/music.{-$breakdown}/-components/top-list";
+import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
   getTopTracks,
   getTopArtists,
   getUserData,
   periodSchema,
-} from "#/routes/music/-query.ts";
+} from "#/routes/music.{-$breakdown}/-query.ts";
 
-import recentTracksCss from "#/routes/music/-components/recent-tracks.css?url";
-import summaryCss from "#/routes/music/-components/summary.css?url";
+import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks.css?url";
+import summaryCss from "#/routes/music.{-$breakdown}/-components/summary.css?url";
 
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {

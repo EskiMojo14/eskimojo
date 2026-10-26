@@ -1,7 +1,7 @@
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
-import type { TopArtist, TopTrack } from "#/routes/music/-query";
+import type { TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { MdSymbol } from "#/shared/components/symbol";
 

@@ -1,7 +1,7 @@
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
-import type { RecentTrack } from "#/routes/music/-query";
+import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 
 import { RecentTracks } from "./recent-tracks";
 
