@@ -38,7 +38,7 @@ const config = defineConfig({
   },
   fmt: fmtConfig,
   lint: {
-    plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y"],
+    plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
     jsPlugins: [
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
       { name: "depend", specifier: "eslint-plugin-depend" },
@@ -49,6 +49,8 @@ const config = defineConfig({
     rules: {
       ...eslintDependConfigs["flat/recommended"].rules,
       "vite-plus/prefer-vite-plus-imports": "error",
+      "import/first": "error",
+      "import/no-unassigned-import": "off",
       "typescript/array-type": ["error", { default: "generic" }],
       "typescript/consistent-type-imports": "error",
       "typescript/no-deprecated": "error",

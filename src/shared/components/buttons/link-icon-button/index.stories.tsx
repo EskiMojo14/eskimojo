@@ -23,7 +23,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Native anchors using IconButton's standard, filled, tonal and outlined variants and 48px target. Supply an icon and either aria-label or aria-labelledby; icons are decorative. ExternalLinkIconButton accepts native anchor props and refs plus tooltip options. InternalLinkIconButton wraps it with TanStack createLink for typed routes, params, search and active state. Links retain link semantics and open in the current tab unless target is supplied. Uses the shared icon-button stylesheet.",
+          "Native anchors using IconButton's standard, filled, tonal and outlined variants and 48px target. Supply an icon and either aria-label or aria-labelledby; icons are decorative. ExternalLinkIconButton accepts native anchor props and refs plus tooltip options, and opens a new tab with noopener noreferrer by default. InternalLinkIconButton shares the base with TanStack createLink for typed routes, params, search and active state, and stays in the current tab. Uses the shared icon-button stylesheet.",
       },
     },
   },
@@ -123,6 +123,7 @@ export const Internal = meta.story({
   play: async ({ canvas, userEvent }) => {
     const link = canvas.getByRole("link", { name: "View projects" });
     await expect(link).toHaveAttribute("href", "/projects");
+    await expect(link).not.toHaveAttribute("target");
     await userEvent.tab();
     await expect(link).toHaveFocus();
     await userEvent.keyboard("{Enter}");

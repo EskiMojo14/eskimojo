@@ -10,8 +10,6 @@ test("forwards anchor props and refs and hides the decorative icon", async () =>
     <ExternalLinkIconButton
       ref={ref}
       href="https://example.com"
-      target="_blank"
-      rel="noopener noreferrer"
       aria-label="Visit site"
       icon={
         <svg aria-label="External">

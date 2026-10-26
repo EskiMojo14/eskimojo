@@ -23,7 +23,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Semantic anchors sharing Button's variants, decorative icon slot, tooltip support, native anchor props and refs. ExternalLinkButton uses href; InternalLinkButton wraps it with TanStack createLink for typed destinations, search, params and active state. Links navigate rather than expose a button role. They open in the current tab by default; pass target and rel explicitly when needed. Styles are supplied by the shared button stylesheet.",
+          "Semantic anchors sharing Button's variants, decorative icon slot, tooltip support, native anchor props and refs. ExternalLinkButton opens href in a new tab with noopener noreferrer by default. InternalLinkButton shares the base with TanStack createLink for typed destinations, search, params and active state, and stays in the current tab. Links navigate rather than expose a button role. Styles are supplied by the shared button stylesheet.",
       },
     },
   },
@@ -105,6 +105,7 @@ export const Internal = meta.story({
   play: async ({ canvas, userEvent }) => {
     const link = canvas.getByRole("link", { name: "View projects" });
     await expect(link).toHaveAttribute("href", "/projects");
+    await expect(link).not.toHaveAttribute("target");
     await userEvent.tab();
     await expect(link).toHaveFocus();
     await userEvent.keyboard("{Enter}");

@@ -48,7 +48,7 @@ export interface ExternalLinkChipProps extends ComponentPropsWithRef<"a"> {
   icon?: ReactNode;
 }
 
-export function ExternalLinkChip({ icon, className, children, ...props }: ExternalLinkChipProps) {
+function LinkChipBase({ icon, className, children, ...props }: ExternalLinkChipProps) {
   const current = props["aria-current"];
   const selected = current !== undefined && current !== false && current !== "false";
   return (
@@ -63,7 +63,11 @@ export function ExternalLinkChip({ icon, className, children, ...props }: Extern
   );
 }
 
-export const InternalLinkChip = createLink(ExternalLinkChip);
+export function ExternalLinkChip(props: ExternalLinkChipProps) {
+  return <LinkChipBase target="_blank" rel="noopener noreferrer" {...props} />;
+}
+
+export const InternalLinkChip = createLink(LinkChipBase);
 
 export type ChipGroupProps = Omit<ComponentPropsWithRef<"fieldset">, "role"> &
   ({ "aria-label": string } | { "aria-labelledby": string });

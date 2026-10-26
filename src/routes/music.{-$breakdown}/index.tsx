@@ -27,7 +27,10 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     title: "Music",
     subtitle: (
       <>
-        Powered by <a href="https://www.last.fm">Last.fm</a>
+        Powered by{" "}
+        <a href="https://www.last.fm/user/eskimojo14" target="_blank" rel="noopener noreferrer">
+          Last.fm
+        </a>
       </>
     ),
   },

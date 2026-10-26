@@ -114,7 +114,13 @@ test("keeps the document title and app bar matched to the current route after na
   await expect.element(banner.getByText("Powered by", { exact: false })).toBeVisible();
   await expect
     .element(banner.getByRole("link", { name: "Last.fm" }))
-    .toHaveAttribute("href", "https://www.last.fm");
+    .toHaveAttribute("href", "https://www.last.fm/user/eskimojo14");
+  await expect
+    .element(banner.getByRole("link", { name: "Last.fm" }))
+    .toHaveAttribute("target", "_blank");
+  await expect
+    .element(banner.getByRole("link", { name: "Last.fm" }))
+    .toHaveAttribute("rel", "noopener noreferrer");
   await router.navigate({ to: "/projects" });
   await expect.element(banner.getByRole("link", { name: "Last.fm" })).not.toBeInTheDocument();
 });

@@ -61,7 +61,7 @@ export const Links = meta.story({
     docs: {
       description: {
         story:
-          "ExternalLinkChip renders a native anchor; InternalLinkChip wraps it with TanStack createLink for typed destinations. Non-false aria-current adds selected colors and a checkmark without changing link semantics.",
+          "ExternalLinkChip renders a native anchor opening a new tab with noopener noreferrer by default. InternalLinkChip shares its base with TanStack createLink for typed destinations and stays in the current tab. Non-false aria-current adds selected colors and a checkmark without changing link semantics.",
       },
     },
   },
@@ -73,4 +73,9 @@ export const Links = meta.story({
       <ExternalLinkChip href="https://example.com">Visit site</ExternalLinkChip>
     </ChipGroup>
   ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole("link", { name: "Visit site" });
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  },
 });

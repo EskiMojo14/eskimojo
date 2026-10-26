@@ -35,5 +35,7 @@ function LinkIconButtonBase({
   );
 }
 
-export const ExternalLinkIconButton = withTooltip(LinkIconButtonBase);
-export const InternalLinkIconButton = createLink(ExternalLinkIconButton);
+export const ExternalLinkIconButton = withTooltip((props: LinkIconButtonBaseProps) => (
+  <LinkIconButtonBase target="_blank" rel="noopener noreferrer" {...props} />
+));
+export const InternalLinkIconButton = createLink(withTooltip(LinkIconButtonBase));

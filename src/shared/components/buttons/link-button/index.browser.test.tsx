@@ -10,8 +10,6 @@ test("forwards native anchor props and refs and keeps the icon decorative", asyn
     <ExternalLinkButton
       ref={ref}
       href="https://example.com"
-      target="_blank"
-      rel="noopener noreferrer"
       icon={
         <svg aria-label="External">
           <title>External</title>

@@ -8,6 +8,11 @@ test("encodes track and artist names in both search destinations", async () => {
   const artist = "Björk & friends";
   const query = `${name} ${artist}`;
   const result = await page.renderWithProviders(<MusicSearchLinks name={name} artist={artist} />);
+  for (const provider of ["Spotify", "YouTube"]) {
+    const link = result.getByRole("link", { name: `Search ${provider} for ${query}` });
+    await expect.element(link).toHaveAttribute("target", "_blank");
+    await expect.element(link).toHaveAttribute("rel", "noopener noreferrer");
+  }
   await expect
     .element(result.getByRole("link", { name: `Search Spotify for ${query}` }))
     .toHaveAttribute("href", `https://open.spotify.com/search/${encodeURIComponent(query)}`);
