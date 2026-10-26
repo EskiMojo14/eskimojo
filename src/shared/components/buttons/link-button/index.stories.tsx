@@ -10,6 +10,7 @@ import { useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import type { ButtonSize } from "#/shared/components/buttons/button";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { ExternalLinkButton, InternalLinkButton } from "./index";
@@ -23,7 +24,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Semantic anchors sharing Button's variants, decorative icon slot, tooltip support, native anchor props and refs. ExternalLinkButton opens href in a new tab with noopener noreferrer by default. InternalLinkButton shares the base with TanStack createLink for typed destinations, search, params and active state, and stays in the current tab. Links navigate rather than expose a button role. Styles are supplied by the shared button stylesheet.",
+          "Semantic anchors sharing Button's variants, optional extra-small through extra-large sizes, decorative icon slot, tooltip support, native anchor props and refs. Size defaults to small (40px). ExternalLinkButton opens href in a new tab with noopener noreferrer by default. InternalLinkButton shares the base with TanStack createLink for typed destinations, search, params and active state, and stays in the current tab. Links navigate rather than expose a button role. Styles are supplied by the shared button stylesheet.",
       },
     },
   },
@@ -46,6 +47,20 @@ export const Variants = meta.story({
           {variant}
         </ExternalLinkButton>
       ))}
+    </div>
+  ),
+});
+
+export const Sizes = meta.story({
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "start" }}>
+      {(["extra-small", "small", "medium", "large", "extra-large"] satisfies Array<ButtonSize>).map(
+        (size) => (
+          <ExternalLinkButton key={size} size={size} href="https://example.com">
+            {size}
+          </ExternalLinkButton>
+        ),
+      )}
     </div>
   ),
 });

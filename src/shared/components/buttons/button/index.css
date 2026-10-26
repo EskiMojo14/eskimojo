@@ -1,5 +1,13 @@
 .button {
   --button-min-size: 48px;
+  --button-icon-size: 18;
+  --button-gap: 8px;
+  --button-padding-block: 10px;
+  --button-padding-inline: 24px;
+  --button-icon-padding-start: 16px;
+  --button-text-padding-inline: 12px;
+  --button-border-width: 1px;
+  --button-font: var(--typo-label-large);
   /* Avoid interpolating from a full-radius value far beyond the visible edge. */
   --button-corner-full: min(var(--md-sys-shape-corner-full), calc(var(--button-min-size) / 2));
 
@@ -8,15 +16,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--button-gap);
   min-inline-size: var(--button-min-size);
   min-block-size: var(--button-min-size);
-  padding: 10px 24px;
-  border: 1px solid transparent;
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  border: var(--button-border-width) solid transparent;
   border-radius: var(--button-corner-full);
   background-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
-  font: var(--typo-label-large);
+  font: var(--button-font);
   font-feature-settings: var(--typo-features-body);
   text-align: center;
   text-decoration: none;
@@ -77,8 +85,57 @@
   }
 
   &:has(> .button__icon):not(.button--text) {
-    padding-inline-start: 16px;
+    padding-inline-start: var(--button-icon-padding-start);
   }
+}
+
+.button--extra-small {
+  --button-min-size: 32px;
+  --button-icon-size: 20;
+  --button-padding-block: 5px;
+  --button-padding-inline: 16px;
+  --button-icon-padding-start: 16px;
+}
+
+.button--small {
+  --button-min-size: 40px;
+  --button-icon-size: 20;
+  --button-padding-block: 9px;
+  --button-padding-inline: 16px;
+  --button-icon-padding-start: 16px;
+}
+
+.button--medium {
+  --button-min-size: 56px;
+  --button-icon-size: 24;
+  --button-padding-block: 15px;
+  --button-icon-padding-start: 24px;
+  --button-text-padding-inline: 16px;
+  --button-font: var(--typo-title-medium);
+}
+
+.button--large {
+  --button-min-size: 96px;
+  --button-icon-size: 32;
+  --button-gap: 12px;
+  --button-padding-block: 30px;
+  --button-padding-inline: 48px;
+  --button-icon-padding-start: 48px;
+  --button-text-padding-inline: 32px;
+  --button-border-width: 2px;
+  --button-font: var(--typo-headline-small);
+}
+
+.button--extra-large {
+  --button-min-size: 136px;
+  --button-icon-size: 40;
+  --button-gap: 16px;
+  --button-padding-block: 45px;
+  --button-padding-inline: 64px;
+  --button-icon-padding-start: 64px;
+  --button-text-padding-inline: 48px;
+  --button-border-width: 3px;
+  --button-font: var(--typo-headline-large);
 }
 
 .button--filled {
@@ -89,14 +146,14 @@
 }
 
 .button__icon {
-  --icon-size: 18;
+  --icon-size: var(--button-icon-size);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 18px;
-  inline-size: 18px;
-  block-size: 18px;
+  flex: 0 0 calc(var(--button-icon-size) * 1px);
+  inline-size: calc(var(--button-icon-size) * 1px);
+  block-size: calc(var(--button-icon-size) * 1px);
   pointer-events: none;
 
   > svg {
@@ -142,13 +199,20 @@
 }
 
 .button--text {
-  padding-inline: 12px;
+  padding-inline: var(--button-text-padding-inline);
   background-color: transparent;
   color: var(--md-sys-color-primary);
 
   &:is([aria-pressed="true"], [aria-current]:not([aria-current="false"])) {
     background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
+  }
+}
+
+@media (pointer: coarse) {
+  .button {
+    min-inline-size: max(48px, var(--button-min-size));
+    min-block-size: max(48px, var(--button-min-size));
   }
 }
 
@@ -186,7 +250,7 @@
     &[aria-pressed="mixed"] {
       border-style: double;
       border-width: 3px;
-      padding-block: 8px;
+      padding-block: calc(var(--button-padding-block) - (3px - var(--button-border-width)));
     }
   }
 }

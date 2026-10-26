@@ -10,6 +10,7 @@ import { useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import type { ButtonSize } from "#/shared/components/buttons/button";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { ExternalLinkIconButton, InternalLinkIconButton } from "./index";
@@ -17,13 +18,16 @@ import { ExternalLinkIconButton, InternalLinkIconButton } from "./index";
 const meta = preview.meta({
   title: "Components/Buttons/LinkIconButton",
   component: ExternalLinkIconButton,
+  beforeEach: async () => {
+    await document.fonts.load('24px "Material Symbols Sharp"');
+  },
   parameters: {
     layout: "centered",
     a11y: { test: "error" },
     docs: {
       description: {
         component:
-          "Native anchors using IconButton's standard, filled, tonal and outlined variants and 48px target. Supply an icon and either aria-label or aria-labelledby; icons are decorative. ExternalLinkIconButton accepts native anchor props and refs plus tooltip options, and opens a new tab with noopener noreferrer by default. InternalLinkIconButton shares the base with TanStack createLink for typed routes, params, search and active state, and stays in the current tab. Uses the shared icon-button stylesheet.",
+          "Native anchors using IconButton's standard, filled, tonal and outlined variants and optional extra-small through extra-large sizes. Size defaults to small (40px). Supply an icon and either aria-label or aria-labelledby; icons are decorative. ExternalLinkIconButton accepts native anchor props and refs plus tooltip options, and opens a new tab with noopener noreferrer by default. InternalLinkIconButton shares the base with TanStack createLink for typed routes, params, search and active state, and stays in the current tab. Uses the shared icon-button stylesheet.",
       },
     },
   },
@@ -50,6 +54,25 @@ export const Variants = meta.story({
           icon={<MdSymbol>open_in_new</MdSymbol>}
         />
       ))}
+    </div>
+  ),
+});
+
+export const Sizes = meta.story({
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "start" }}>
+      {(["extra-small", "small", "medium", "large", "extra-large"] satisfies Array<ButtonSize>).map(
+        (size) => (
+          <ExternalLinkIconButton
+            key={size}
+            size={size}
+            variant="tonal"
+            href="https://example.com"
+            aria-label={`${size} link`}
+            icon={<MdSymbol>open_in_new</MdSymbol>}
+          />
+        ),
+      )}
     </div>
   ),
 });

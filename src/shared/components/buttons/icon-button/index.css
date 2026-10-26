@@ -1,12 +1,16 @@
 .icon-button {
+  --icon-button-size: 48px;
+  --icon-button-icon-size: 24;
+  --icon-button-border-width: 1px;
+
   position: relative;
   isolation: isolate;
   display: inline-grid;
   place-items: center;
-  inline-size: 48px;
-  block-size: 48px;
+  min-inline-size: var(--icon-button-size);
+  min-block-size: var(--icon-button-size);
   padding: 0;
-  border: 1px solid transparent;
+  border: var(--icon-button-border-width) solid transparent;
   border-radius: var(--md-sys-shape-corner-full);
   background-color: transparent;
   color: var(--md-sys-color-on-surface-variant);
@@ -61,19 +65,51 @@
   }
 }
 
+.icon-button--extra-small {
+  --icon-button-size: 32px;
+  --icon-button-icon-size: 20;
+}
+
+.icon-button--small {
+  --icon-button-size: 40px;
+}
+
+.icon-button--medium {
+  --icon-button-size: 56px;
+}
+
+.icon-button--large {
+  --icon-button-size: 96px;
+  --icon-button-icon-size: 32;
+  --icon-button-border-width: 2px;
+}
+
+.icon-button--extra-large {
+  --icon-button-size: 136px;
+  --icon-button-icon-size: 40;
+  --icon-button-border-width: 3px;
+}
+
 .icon-button__icon {
-  --icon-size: 24;
+  --icon-size: var(--icon-button-icon-size);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 24px;
-  block-size: 24px;
+  inline-size: calc(var(--icon-button-icon-size) * 1px);
+  block-size: calc(var(--icon-button-icon-size) * 1px);
   pointer-events: none;
 
   > svg {
     inline-size: 100%;
     block-size: 100%;
+  }
+}
+
+@media (pointer: coarse) {
+  .icon-button {
+    min-inline-size: max(48px, var(--icon-button-size));
+    min-block-size: max(48px, var(--icon-button-size));
   }
 }
 

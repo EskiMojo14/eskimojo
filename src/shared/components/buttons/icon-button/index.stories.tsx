@@ -2,6 +2,7 @@ import { useState } from "react";
 import { expect, fn } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import type { ButtonSize } from "#/shared/components/buttons/button";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { IconButton, type IconButtonVariant } from "./index";
@@ -11,12 +12,21 @@ const variants: Array<IconButtonVariant> = ["standard", "filled", "tonal", "outl
 const meta = preview.meta({
   title: "Components/Buttons/IconButton",
   component: IconButton,
+  beforeEach: async () => {
+    await document.fonts.load('24px "Material Symbols Sharp"');
+  },
   args: {
     "aria-label": "More options",
     icon: <MdSymbol>more_vert</MdSymbol>,
   },
   argTypes: {
     variant: { control: "select", options: variants },
+    size: {
+      control: "select",
+      options: ["extra-small", "small", "medium", "large", "extra-large"],
+      description:
+        "MD3 heights: 32, 40, 56, 96, and 136px. Defaults to small (40px). Compact sizes grow to 48px on coarse pointers.",
+    },
     icon: {
       control: false,
       description: "Decorative icon content, typically an MdSymbol or SVG.",
@@ -29,7 +39,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 icon-only button with standard (default), filled, tonal, and outlined variants. It provides a 48px target and 24px icon slot. Give every button an accessible name with aria-label or aria-labelledby; the icon is decorative. Use aria-pressed for a controlled toggle and update it in onClick. The component does not manage pressed state. Native button props and refs are forwarded, and type defaults to "button". Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves.',
+          'MD3 icon-only button with standard (default), filled, tonal, and outlined variants. Defaults to small (40px) with a 24px icon slot; choose extra-small through extra-large to scale the container, icon, and outline width. Compact sizes expand to 48px on coarse pointers. Give every button an accessible name with aria-label or aria-labelledby; the icon is decorative. Use aria-pressed for a controlled toggle and update it in onClick. The component does not manage pressed state. Native button props and refs are forwarded, and type defaults to "button". Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves.',
       },
     },
   },
@@ -55,6 +65,28 @@ export const Variants = meta.story({
           icon={<MdSymbol>favorite</MdSymbol>}
         />
       ))}
+    </div>
+  ),
+});
+
+export const Sizes = meta.story({
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "start" }}>
+      {(["extra-small", "small", "medium", "large", "extra-large"] satisfies Array<ButtonSize>).map(
+        (size) => (
+          <div key={size} style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+            {variants.map((variant) => (
+              <IconButton
+                key={variant}
+                size={size}
+                variant={variant}
+                aria-label={`${size} ${variant} favorite`}
+                icon={<MdSymbol>favorite</MdSymbol>}
+              />
+            ))}
+          </div>
+        ),
+      )}
     </div>
   ),
 });
