@@ -1,5 +1,5 @@
 .gigs-venues {
-  --gigs-venue-city-color: rgb(from var(--md-sys-color-on-surface) r g b / 70%);
+  --gigs-venue-city-color: var(--md-sys-color-on-surface-variant);
   padding: 1rem;
   min-width: 0;
   color: var(--md-sys-color-on-surface);
@@ -53,7 +53,7 @@
 
 .gigs-venues__support {
   font: var(--typo-body-small);
-  color: rgb(from var(--md-sys-color-on-surface) r g b / 70%);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .gigs-venues__table {
