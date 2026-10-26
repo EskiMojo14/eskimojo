@@ -1,17 +1,17 @@
 ---
 name: git-like-corbin
-description: "Apply Corbin Crutchley's Git workflow when implementing repository changes, organizing commits, synchronizing branches, or preparing a push. Commit incrementally using Conventional Commits, require explicit push permission, and never rebase, force push, rewrite published commits, or discard work. Loading this skill for a review or planning task does not authorize repository changes, and explaining Git concepts without touching a repository does not need it."
+description: "Apply Corbin Crutchley's Git workflow when implementing repository changes, organizing commits, synchronizing branches, or preparing a push. Keep changes uncommitted unless the user explicitly asks for a commit; use Conventional Commits when committing, require explicit push permission, and never rebase, force push, rewrite published commits, or discard work. Loading this skill for a review or planning task does not authorize repository changes, and explaining Git concepts without touching a repository does not need it."
 ---
 
 # Git Like Corbin
 
-Keep progress in coherent incremental commits and preserve existing history. Apply this workflow to authorized repository work; honor a request to leave changes uncommitted.
+Keep changes uncommitted by default and preserve existing history. Editing, testing, staging, or preparing work does not authorize a commit. Create a commit only when the user explicitly asks you to commit; honor any request to leave changes uncommitted.
 
 When asked to establish repository guidance, also record the push, history-rewriting, and force-push constraints in its `AGENTS.md` so they are available outside this skill.
 
-## Commit in useful increments
+## Commit when requested
 
-Inspect the working tree and existing changes before staging. Commit each coherent, reviewable milestone once the checks relevant to that change pass. Avoid one large end-of-task commit when the work naturally separates into useful units; do not split a small change into arbitrary commits.
+When the user asks for a commit, inspect the working tree and existing changes before staging. Commit only the requested work after the relevant checks pass. If the user requests multiple or incremental commits, make each one a coherent, reviewable milestone; do not split a small change into arbitrary commits.
 
 Keep changes focused enough to review on their own. Separate migrations from unrelated feature work so reviewers can assess each change and its effects independently.
 
