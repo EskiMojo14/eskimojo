@@ -114,12 +114,14 @@
 
 .icon-button:is(:disabled, [aria-disabled="true"]) {
   border-color: transparent;
-  background-color: alpha(from var(--md-sys-color-on-surface) / 12%);
-  color: alpha(from var(--md-sys-color-on-surface) / 38%);
+  background-color: alpha(
+    from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity)
+  );
+  color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity));
   cursor: default;
 
   &.icon-button--outlined {
-    border-color: alpha(from var(--md-sys-color-on-surface) / 12%);
+    border-color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity));
     background-color: transparent;
   }
 }

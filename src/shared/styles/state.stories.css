@@ -33,9 +33,7 @@
 }
 
 .state-sample__surface {
-  --state-sample-layer: rgb(
-    from var(--md-sys-color-on-surface) r g b / var(--state-sample-opacity)
-  );
+  --state-sample-layer: alpha(from var(--md-sys-color-on-surface) / var(--state-sample-opacity));
   position: relative;
   isolation: isolate;
   padding: 1.25rem;
@@ -56,8 +54,8 @@
 }
 
 .state-sample__surface--selected {
-  --state-sample-layer: rgb(
-    from var(--md-sys-color-on-secondary-container) r g b / var(--state-sample-opacity)
+  --state-sample-layer: alpha(
+    from var(--md-sys-color-on-secondary-container) / var(--state-sample-opacity)
   );
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);

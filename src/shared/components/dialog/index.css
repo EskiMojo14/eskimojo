@@ -46,7 +46,7 @@
 
   &::backdrop {
     overflow: hidden;
-    background-color: alpha(from var(--md-sys-color-scrim) / 0.32);
+    background-color: alpha(from var(--md-sys-color-scrim) / var(--md-sys-dialog-backdrop-opacity));
     overscroll-behavior: contain;
     opacity: 0;
     transition:
@@ -88,7 +88,8 @@
   overflow: hidden;
   border-radius: var(--md-sys-shape-corner-extra-large);
   background-color: var(--md-sys-color-surface-container-high);
-  box-shadow: 0 1rem 2rem alpha(from var(--md-sys-color-shadow) / 0.24);
+  box-shadow: 0 1rem 2rem
+    alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-floating-shadow-opacity));
 }
 
 .dialog__header {

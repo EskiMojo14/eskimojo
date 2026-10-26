@@ -61,7 +61,7 @@
 /* Effects tracks fade and change color instead of moving. */
 .motion-track--effects .motion-dot {
   width: 100%;
-  opacity: 0.2;
+  opacity: var(--md-sys-motion-effects-track-opacity);
   transition:
     opacity var(--track-duration) var(--track-easing),
     background-color var(--track-duration) var(--track-easing);

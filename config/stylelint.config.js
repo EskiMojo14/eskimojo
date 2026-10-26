@@ -50,7 +50,7 @@ const noParentRelativePaths = (primary) => (root, result) => {
 const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
 const colorMixArg = String.raw`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
 const colorMix = String.raw`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|longer|increasing|decreasing)\s+hue)?\s*,\s*${colorMixArg}\s*,\s*${colorMixArg}\s*\)$/i`;
-const alphaColor = String.raw`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-state-[a-z-]+-state-layer-opacity\))\s*\)$/i`;
+const alphaColor = String.raw`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-[a-z-]+-opacity\))\s*\)$/i`;
 
 const globalKeywords = ["inherit", "initial", "unset", "revert", "revert-layer"];
 const colorValues = [

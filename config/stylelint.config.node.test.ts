@@ -72,7 +72,7 @@ test("preserves foundation overrides and generated-file exclusions with an expli
 });
 
 test.each([
-  "a { color: alpha(from var(--md-sys-color-primary) / 50%); }",
+  "a { color: alpha(from var(--md-sys-color-primary) / var(--md-sys-state-disabled-content-opacity)); }",
   "a { color: alpha(from currentColor / var(--md-sys-state-hover-state-layer-opacity)); }",
   "a { color: color-mix(in srgb, var(--md-sys-color-primary), var(--md-sys-color-secondary)); }",
 ])("allows theme colors with alpha() and opaque color-mix(): %s", async (code) => {

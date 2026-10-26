@@ -179,7 +179,7 @@ The export doesn't include state-layer tokens. Instead, mix the content color ov
 
 - `var()`
 - `color-mix()`, but only if neither color is `transparent` and both colors are `var(--md-sys-color-*)` or `currentcolor`. Any color space, hue method and percentages are fine.
-- `alpha()` to apply alpha to an existing color, such as `alpha(from var(--md-sys-color-primary) / 50%)` or `alpha(from currentColor / 0.5)`.
+- `alpha()` to apply alpha to an existing color, such as `alpha(from var(--md-sys-color-primary) / var(--md-sys-state-disabled-content-opacity))`. Shared alpha values are named for their use in `opacity.css`; state-layer alpha values use the `--md-sys-state-*-state-layer-opacity` tokens.
 - `transparent`, `currentcolor`, `none`, `url()` and global keywords such as `inherit`
 
 Everything else gets a warning: hex, `rgb()`, named colors such as `red`, and a `color-mix()` or `alpha()` with a literal color in it. The files in `theme/` are exempt, because they define the tokens. The same rule checks fonts (see Foundations / Typography). It's configured in `stylelint.config.js`.

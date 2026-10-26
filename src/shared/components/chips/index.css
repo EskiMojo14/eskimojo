@@ -65,9 +65,11 @@
   }
 
   &:disabled {
-    border-color: alpha(from var(--md-sys-color-on-surface) / 12%);
+    border-color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity));
     background-color: transparent;
-    color: alpha(from var(--md-sys-color-on-surface) / 38%);
+    color: alpha(
+      from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity)
+    );
     cursor: default;
   }
 }

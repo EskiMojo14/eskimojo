@@ -1,0 +1,11 @@
+:root {
+  --md-sys-state-disabled-opacity: 12%;
+  --md-sys-state-disabled-content-opacity: 38%;
+  --md-sys-elevation-shadow-ambient-opacity: 15%;
+  --md-sys-elevation-shadow-key-opacity: 30%;
+  --md-sys-elevation-floating-shadow-opacity: 24%;
+  --md-sys-dialog-backdrop-opacity: 32%;
+  --md-sys-sidebar-image-overlay-opacity: 75%;
+  --md-sys-artwork-opacity: 25%;
+  --md-sys-motion-effects-track-opacity: 20%;
+}

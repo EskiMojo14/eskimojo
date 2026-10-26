@@ -169,7 +169,7 @@
 
       &:disabled {
         cursor: default;
-        opacity: 0.38;
+        opacity: var(--md-sys-state-disabled-content-opacity);
 
         &::before {
           opacity: 0;
