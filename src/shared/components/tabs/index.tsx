@@ -1,4 +1,4 @@
-import { createLink } from "@tanstack/react-router";
+import { createLink, type LinkComponent } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -74,7 +74,11 @@ function TabLinkBase({
   );
 }
 
-export const TabLink = createLink(TabLinkBase);
+const RouterTabLink = createLink(TabLinkBase);
+
+export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => (
+  <RouterTabLink resetScroll={false} {...props} />
+);
 
 interface TabsContextValue {
   value: string | undefined;

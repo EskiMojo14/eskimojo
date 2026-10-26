@@ -211,7 +211,7 @@ export const RouterLinks = meta.story({
     docs: {
       description: {
         story:
-          'Use TabNav with TabLink for router-backed navigation: no Tabs value, TabPanel, or navigate callback is needed. TabLink uses TanStack createLink, preserving typed to/params/search, activeOptions, preload, replace, and normal anchor behavior. The router supplies aria-current="page" and moves the indicator after navigation, including browser Back/Forward. Use activeOptions={{ exact: true }} for a root destination. Route navigation uses a labelled nav and links, not tab/tabpanel roles: Tab moves through links and Enter follows them. This demo uses isolated memory history.',
+          'Use TabNav with TabLink for router-backed navigation: no Tabs value, TabPanel, or navigate callback is needed. TabLink uses TanStack createLink, preserving typed to/params/search, activeOptions, preload, replace, and normal anchor behavior. TabLink defaults resetScroll to false so switching tabs preserves the current scroll position; pass resetScroll explicitly to override. The router supplies aria-current="page" and moves the indicator after navigation, including browser Back/Forward. Use activeOptions={{ exact: true }} for a root destination. Route navigation uses a labelled nav and links, not tab/tabpanel roles: Tab moves through links and Enter follows them. This demo uses isolated memory history.',
       },
     },
   },

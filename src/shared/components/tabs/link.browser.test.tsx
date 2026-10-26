@@ -102,6 +102,29 @@ test("deep links, typed params, and keyboard navigation use native anchors", asy
   await expect.element(result.getByText("Project content")).toBeVisible();
 });
 
+test("tab navigation preserves the current scroll position", async () => {
+  const router = createTabRouter();
+  router.update({ scrollRestoration: true });
+  const result = await page.renderWithProviders(
+    <div style={{ minBlockSize: "3000px" }}>
+      <RouterProvider router={router} />
+    </div>,
+  );
+  await expect.element(result.getByRole("link", { name: "Projects" })).toBeVisible();
+  const projects = result.getByRole("link", { name: "Projects" }).element();
+  if (!(projects instanceof HTMLAnchorElement)) throw new Error("Tab link must be an anchor");
+  window.scrollTo({ top: 200, behavior: "instant" });
+  expect(window.scrollY).toBe(200);
+  try {
+    projects.click();
+    await expect.element(result.getByText("Project content")).toBeInTheDocument();
+    await expect.poll(() => router.state.status).toBe("idle");
+    expect(window.scrollY).toBe(200);
+  } finally {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+});
+
 test("cancelled and modified clicks do not navigate the current router", async () => {
   const router = createTabRouter();
   const onClick = vi.fn<() => void>();
