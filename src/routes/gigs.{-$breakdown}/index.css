@@ -1,7 +1,7 @@
-@import "./-components/heatmap.css";
-@import "./-components/artist-chart.css";
-@import "./-components/venue-chart.css";
-@import "./-components/city-map.css";
+@import "./-components/heatmap/index.css";
+@import "./-components/artist-chart/index.css";
+@import "./-components/venue-chart/index.css";
+@import "./-components/city-map/index.css";
 
 .gigs-intro {
   padding: 0 1rem;
