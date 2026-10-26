@@ -1,0 +1,36 @@
+.ripple {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  pointer-events: none;
+}
+
+.ripple__wave {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  corner-shape: round;
+  background-image: radial-gradient(
+    closest-side,
+    currentColor max(calc(100% - 70px), 65%),
+    transparent 100%
+  );
+}
+
+:is(.button, .icon-button, .chip, .list__item > a, .list__item > button):has(
+    > .ripple[data-active]
+  )::before,
+.list:not(.list--expressive) > .list__item > a:has(> .ripple[data-active])::before {
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple__wave {
+    border-radius: inherit;
+    corner-shape: inherit;
+  }
+}

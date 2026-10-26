@@ -10,6 +10,9 @@ import { AppBar } from "./index";
 const meta = preview.meta({
   title: "Components/AppBar",
   component: AppBar,
+  beforeEach: async () => {
+    await document.fonts.load('24px "Material Symbols Sharp"');
+  },
   args: {
     navigationOpen: false,
     onOpenNavigation: fn(),
@@ -48,7 +51,7 @@ export const MobileBottomBar = meta.story({
     docs: {
       description: {
         story:
-          "Below 37.5rem, Home, Projects, Music and Gigs stay visible in an opaque, shadow-free 80px surface-container-high bottom navigation bar. The current destination has a secondary-container indicator and a filled icon. Moving right through destinations slides incoming page content from the right; moving left reverses it, following reading direction in RTL. The app bar title and subtitle slide and fade together in sync with page content, while Preferences stays stationary. Navigation has a stationary snapshot above the content so scrolling pages cannot cover the bar during transitions. The 24px slide uses spatial springs and fading uses effects springs; reduced motion disables both. Safe-area padding, reserved footer space and scroll padding keep content accessible. Preferences remains at the top; the menu is hidden. Medium screens retain the artwork modal drawer, and desktop retains its persistent drawer.",
+          "Below 37.5rem, Home, Projects, Music and Gigs stay visible in an opaque, shadow-free 80px surface-container-high bottom navigation bar. The whole destination is tappable, with an unbounded ripple clipped to the 64px by 32px icon pill even when pressing its label. Enter provides the same unbounded feedback; reduced motion uses a static pressed layer. The current destination has a secondary-container indicator and a filled icon. Moving right through destinations slides incoming page content from the right; moving left reverses it, following reading direction in RTL. The app bar title and subtitle slide and fade together in sync with page content, while Preferences stays stationary. Navigation has a stationary snapshot above the content so scrolling pages cannot cover the bar during transitions. The 24px slide uses spatial springs and fading uses effects springs; reduced motion disables both. Safe-area padding, reserved footer space and scroll padding keep content accessible. Preferences remains at the top; the menu is hidden. Medium screens retain the artwork modal drawer, and desktop retains its persistent drawer.",
       },
     },
   },

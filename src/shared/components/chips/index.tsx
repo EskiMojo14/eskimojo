@@ -3,6 +3,7 @@ import type { ComponentPropsWithRef, ReactNode } from "react";
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const chipBem = BEMHelper("chip");
@@ -19,8 +20,10 @@ export function AssistChip({
   children,
   ...props
 }: AssistChipProps) {
+  const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
   return (
-    <button {...props} type={type} {...chipBem({ extra: className })}>
+    <button {...props} {...handlers} type={type} {...chipBem({ extra: className })}>
+      {ripple}
       {!!icon && (
         <span {...chipBem({ element: "icon" })} aria-hidden="true">
           {icon}
@@ -78,8 +81,16 @@ export function FilterChip({
   children,
   ...props
 }: FilterChipProps) {
+  const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
   return (
-    <button {...props} type={type} {...chipBem({ extra: className })} aria-pressed={selected}>
+    <button
+      {...props}
+      {...handlers}
+      type={type}
+      {...chipBem({ extra: className })}
+      aria-pressed={selected}
+    >
+      {ripple}
       <SelectionIcon icon={icon} />
       {children}
     </button>
@@ -91,8 +102,10 @@ export interface ExternalLinkChipProps extends ComponentPropsWithRef<"a"> {
 }
 
 function LinkChipBase({ icon, className, children, ...props }: ExternalLinkChipProps) {
+  const { handlers, ripple } = useRipple<HTMLAnchorElement>(props);
   return (
-    <a {...props} {...chipBem({ extra: className })}>
+    <a {...props} {...handlers} {...chipBem({ extra: className })}>
+      {ripple}
       <SelectionIcon icon={icon} />
       {children}
     </a>

@@ -15,7 +15,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "MD3 outlined assist chips and controlled filter chips. FilterChip requires selected and exposes aria-pressed with a decorative checkmark. Selection draws the original Material Symbols check through an SVG mask and springs the icon slot's width; deselection reverses both transitions. Existing leading icons crossfade without resizing the chip. Link chips share the same animation. Reduced motion disables these transitions. ChipGroup wraps chips and requires an accessible name. Buttons retain native Tab, Enter and Space behavior; callers own single- or multiple-selection logic. Uses the shared head-linked stylesheet.",
+          "MD3 outlined assist chips and controlled filter chips. All chip actions and links use pointer-origin ripples and unbounded keyboard feedback; reduced motion uses a static pressed layer. FilterChip requires selected and exposes aria-pressed with a decorative checkmark. Selection draws the original Material Symbols check through an SVG mask and springs the icon slot's width; deselection reverses both transitions. Existing leading icons crossfade without resizing the chip. Link chips share the same animation. Reduced motion disables these transitions. ChipGroup wraps chips and requires an accessible name. Buttons retain native Tab, Enter and Space behavior; callers own single- or multiple-selection logic. Uses the shared head-linked stylesheet.",
       },
     },
   },

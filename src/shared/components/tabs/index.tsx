@@ -13,6 +13,8 @@ import {
 } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { useRipple } from "#/shared/components/ripple";
+
 const tabsBem = BEMHelper("tabs");
 
 function TabContent({ icon, children }: { icon?: ReactNode; children?: ReactNode }) {
@@ -67,8 +69,10 @@ function TabLinkBase({
   children,
   ...props
 }: ComponentPropsWithRef<"a"> & { icon?: ReactNode }) {
+  const { handlers, ripple } = useRipple<HTMLAnchorElement>(props);
   return (
-    <a {...props} {...tabsBem({ element: "tab", extra: className })}>
+    <a {...props} {...handlers} {...tabsBem({ element: "tab", extra: className })}>
+      {ripple}
       <TabContent icon={icon}>{children}</TabContent>
     </a>
   );
@@ -271,6 +275,7 @@ export interface TabProps extends Omit<ComponentPropsWithoutRef<"button">, "role
 
 export function Tab({ value, icon, className, children, onClick, ...props }: TabProps) {
   const context = useTabsContext();
+  const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
   const selected = context.value === value;
   const disabled =
     props.disabled || props["aria-disabled"] === true || props["aria-disabled"] === "true";
@@ -278,6 +283,7 @@ export function Tab({ value, icon, className, children, onClick, ...props }: Tab
   return (
     <button
       {...props}
+      {...handlers}
       {...tabsBem({ element: "tab", extra: className })}
       id={context.idFor(value, "tab")}
       type="button"
@@ -295,6 +301,7 @@ export function Tab({ value, icon, className, children, onClick, ...props }: Tab
         if (!event.defaultPrevented) context.select(value);
       }}
     >
+      {ripple}
       <TabContent icon={icon}>{children}</TabContent>
     </button>
   );

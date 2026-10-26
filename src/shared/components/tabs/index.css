@@ -138,6 +138,7 @@
 
 .tabs__tab {
   position: relative;
+  isolation: isolate;
   display: inline-flex;
   min-inline-size: 4rem;
   min-block-size: 3rem;
@@ -180,6 +181,11 @@
       outline: 2px solid var(--md-sys-color-secondary);
       outline-offset: -2px;
     }
+  }
+
+  &:has(> .ripple[data-active]) {
+    background: transparent;
+    transition-property: color;
   }
 
   &:is(:disabled, [aria-disabled="true"]) {

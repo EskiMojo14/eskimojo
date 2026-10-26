@@ -15,7 +15,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Primary navigation in an MD3 list, shown alongside the large flexible app bar that opens it. The drawer keeps its compact site-identity header and artwork. It is persistent above 48rem and modal from 37.5rem through 48rem; below 37.5rem the app bar supplies four-destination bottom navigation instead. Preferences stays in the top app bar. The circular palette switcher slides between the Goat and OC portraits with a spatial spring, without changing its containing shape; reduced motion switches portraits immediately. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
+          "Primary navigation in an MD3 list, shown alongside the large flexible app bar that opens it. The drawer keeps its compact site-identity header and artwork. It is persistent above 48rem and modal from 37.5rem through 48rem; below 37.5rem the app bar supplies four-destination bottom navigation instead. Preferences stays in the top app bar. The circular palette switcher slides between the Goat and OC portraits with a spatial spring, without changing its containing shape. Pointer and keyboard presses use the shared unbounded ripple above the portraits, clipped to the circular button; reduced motion uses static pressed feedback and switches portraits immediately. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
       },
     },
   },

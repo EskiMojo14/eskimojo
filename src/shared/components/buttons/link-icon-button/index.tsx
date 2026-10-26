@@ -4,6 +4,7 @@ import BEMHelper from "react-bem-helper";
 
 import type { ButtonSize } from "#/shared/components/buttons/button";
 import type { IconButtonVariant } from "#/shared/components/buttons/icon-button";
+import { useRipple } from "#/shared/components/ripple";
 import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
 
 const iconButtonBem = BEMHelper("icon-button");
@@ -29,8 +30,10 @@ function LinkIconButtonBase({
   icon,
   ...props
 }: LinkIconButtonBaseProps) {
+  const { handlers, ripple } = useRipple<HTMLAnchorElement>(props, true);
   return (
-    <a {...props} {...iconButtonBem({ modifier: [variant, size], extra: className })}>
+    <a {...props} {...handlers} {...iconButtonBem({ modifier: [variant, size], extra: className })}>
+      {ripple}
       <span {...iconButtonBem({ element: "icon" })} aria-hidden="true">
         {icon}
       </span>

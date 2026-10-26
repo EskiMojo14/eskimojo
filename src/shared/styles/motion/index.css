@@ -33,6 +33,12 @@
   --md-sys-motion-duration-extra-long2: 800ms;
   --md-sys-motion-duration-extra-long3: 900ms;
   --md-sys-motion-duration-extra-long4: 1000ms;
+
+  /* Material Web ripples use fixed timing rather than springs for a sustained ink response. */
+  --md-comp-ripple-grow-duration: 450ms;
+  --md-comp-ripple-fade-in-duration: 105ms;
+  --md-comp-ripple-minimum-press-duration: 225ms;
+  --md-comp-ripple-fade-duration: 375ms;
 }
 
 /*

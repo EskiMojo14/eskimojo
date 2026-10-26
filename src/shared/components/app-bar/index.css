@@ -227,6 +227,11 @@
           var(--md-sys-motion-spring-fast-effects);
       }
     }
+
+    &:has(> .ripple[data-active])::before {
+      opacity: 0;
+      transition: none;
+    }
   }
 
   :root {

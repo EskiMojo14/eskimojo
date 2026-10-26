@@ -8,7 +8,7 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { beforeEach, expect, onTestFinished, test, vi } from "vite-plus/test";
-import { page } from "vite-plus/test/browser";
+import { page, userEvent } from "vite-plus/test/browser";
 
 import { generateMetadata } from "#/shared/lib/document-head";
 
@@ -29,6 +29,57 @@ function renderPage() {
     </div>,
   );
 }
+
+test("bottom navigation ripples use unbounded ripples in the icon pill when the label is pressed", async () => {
+  await page.viewport(390, 844);
+  const result = await renderPage();
+  const nav = result.getByRole("navigation", { name: "Primary" });
+  for (const link of nav.getByRole("link").all()) {
+    const element = link.element();
+    const label = element.lastElementChild;
+    const pill = element.querySelector(".app-bar__destination-icon");
+    if (!(label instanceof HTMLElement) || !(pill instanceof HTMLElement))
+      throw new Error("Expected destination label and icon pill");
+    const bounds = label.getBoundingClientRect();
+    label.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        bubbles: true,
+        cancelable: true,
+        isPrimary: true,
+        button: 0,
+        pointerId: 1,
+        clientX: bounds.left,
+        clientY: bounds.bottom,
+      }),
+    );
+    const wave = pill.querySelector(".ripple__wave");
+    const layer = pill.querySelector(".ripple");
+    if (!(wave instanceof HTMLElement)) throw new Error("Expected a ripple inside the icon pill");
+    if (!layer) throw new Error("Expected a ripple layer");
+    expect(element.querySelectorAll(".ripple")).toHaveLength(1);
+    expect(
+      Math.abs(wave.offsetLeft + wave.offsetWidth / 2 - pill.clientWidth / 2),
+    ).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(wave.offsetTop + wave.offsetHeight / 2 - pill.clientHeight / 2),
+    ).toBeLessThanOrEqual(1);
+    expect(pill.clientWidth).toBe(64);
+    expect(pill.clientHeight).toBe(32);
+    expect(getComputedStyle(layer).overflow).toBe("hidden");
+    expect(getComputedStyle(pill, "::before").opacity).toBe("0");
+    document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
+    expect(pill.querySelector(".ripple__wave")).toBeNull();
+  }
+  const home = nav.getByRole("link", { name: "Home", exact: true });
+  const element = home.element();
+  if (!(element instanceof HTMLElement)) throw new Error("Expected a navigation link");
+  element.addEventListener("click", (event) => event.preventDefault(), { once: true });
+  element.focus();
+  await userEvent.keyboard("{Enter>}");
+  expect(element.querySelector(".ripple__wave")).not.toBeNull();
+  await userEvent.keyboard("{/Enter}");
+  await expect.element(home).toHaveAttribute("aria-current", "page");
+});
 
 test.each([320, 390, 599, 600, 768, 769, 1280])(
   "positions navigation responsively at %i px",

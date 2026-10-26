@@ -2,6 +2,7 @@ import type { ComponentPropsWithRef, ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
 import type { ButtonSize } from "#/shared/components/buttons/button";
+import { useRipple } from "#/shared/components/ripple";
 import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
 
 const iconButtonBem = BEMHelper("icon-button");
@@ -30,12 +31,15 @@ function IconButtonBase({
   icon,
   ...props
 }: IconButtonBaseProps) {
+  const { handlers, ripple } = useRipple<HTMLButtonElement>(props, true);
   return (
     <button
       {...props}
+      {...handlers}
       {...iconButtonBem({ modifier: [variant, size], extra: className })}
       type={type}
     >
+      {ripple}
       <span {...iconButtonBem({ element: "icon" })} aria-hidden="true">
         {icon}
       </span>

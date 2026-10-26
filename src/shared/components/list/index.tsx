@@ -1,5 +1,15 @@
-import type { ComponentPropsWithRef, ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import {
+  cloneElement,
+  isValidElement,
+  type ComponentPropsWithRef,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import BEMHelper from "react-bem-helper";
+
+import { useRipple } from "#/shared/components/ripple";
 
 const listBem = BEMHelper("list");
 
@@ -11,8 +21,22 @@ export function List({ variant = "expressive", className, ...props }: ListProps)
   return <ul {...props} {...listBem({ modifier: variant, extra: className })} />;
 }
 
-export function ListItem({ className, ...props }: ComponentPropsWithRef<"li">) {
-  return <li {...props} {...listBem({ element: "item", extra: className })} />;
+type ListItemActionProps = HTMLAttributes<HTMLElement> & { disabled?: boolean };
+
+function ListItemAction({ action }: { action: ReactElement<ListItemActionProps> }) {
+  const { handlers, ripple } = useRipple<HTMLElement>(action.props);
+  return cloneElement(action, handlers, ripple, action.props.children);
+}
+
+export function ListItem({ className, children, ...props }: ComponentPropsWithRef<"li">) {
+  const interactive =
+    isValidElement<ListItemActionProps>(children) &&
+    (children.type === "a" || children.type === "button" || children.type === Link);
+  return (
+    <li {...props} {...listBem({ element: "item", extra: className })}>
+      {interactive ? <ListItemAction action={children} /> : children}
+    </li>
+  );
 }
 
 export function ListDivider() {

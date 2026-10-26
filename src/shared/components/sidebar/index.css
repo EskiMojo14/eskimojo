@@ -177,6 +177,15 @@
     opacity: var(--md-sys-state-pressed-state-layer-opacity);
   }
 
+  > .ripple {
+    z-index: 1;
+  }
+
+  &:has(> .ripple[data-active])::before {
+    opacity: 0;
+    transition: none;
+  }
+
   &:focus-visible {
     outline: 3px solid var(--md-sys-color-secondary);
     outline-offset: 3px;

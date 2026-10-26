@@ -5,6 +5,7 @@ import BEMHelper from "react-bem-helper";
 import { Dialog } from "#/shared/components/dialog";
 import { List, ListDivider, ListItem } from "#/shared/components/list";
 import { usePalette } from "#/shared/components/prefs/context";
+import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { links } from "./groups";
@@ -13,18 +14,21 @@ const siteSidebarBem = BEMHelper("site-sidebar");
 
 function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
   const { palette, setPalette } = usePalette();
+  const { handlers, ripple } = useRipple<HTMLButtonElement>({}, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";
   return (
     <>
       <div {...siteSidebarBem({ element: "header" })}>
         <button
+          {...handlers}
           {...siteSidebarBem({ element: "palette-toggle" })}
           type="button"
           aria-label={`Switch to ${nextPaletteLabel} palette`}
           title={`Switch to ${nextPaletteLabel} palette`}
           onClick={() => setPalette(nextPalette)}
         >
+          {ripple}
           <span
             {...siteSidebarBem({ element: "palette-track" })}
             data-palette={palette}

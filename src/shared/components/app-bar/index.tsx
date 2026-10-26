@@ -1,14 +1,34 @@
-import { Link, useMatches, useMatchRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createLink, useMatches, useMatchRoute } from "@tanstack/react-router";
+import { useState, type ComponentPropsWithRef } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { PreferencesDialog } from "#/shared/components/prefs/dialog";
+import { useRipple } from "#/shared/components/ripple";
 import { links } from "#/shared/components/sidebar/groups";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const appBarBem = BEMHelper("app-bar");
 const destinations = links.map(({ children }) => children).flat();
+
+function DestinationLinkBase({
+  icon,
+  children,
+  ...props
+}: ComponentPropsWithRef<"a"> & { icon: string }) {
+  const { handlers, ripple } = useRipple<HTMLAnchorElement>(props, true);
+  return (
+    <a {...props} {...handlers} {...appBarBem({ element: "destination" })}>
+      <span {...appBarBem({ element: "destination-icon" })} aria-hidden="true">
+        {ripple}
+        <MdSymbol>{icon}</MdSymbol>
+      </span>
+      <span>{children}</span>
+    </a>
+  );
+}
+
+const DestinationLink = createLink(DestinationLinkBase);
 
 export interface AppBarProps {
   navigationOpen: boolean;
@@ -61,10 +81,10 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
       </header>
       <nav {...appBarBem({ element: "bottom-navigation" })} aria-label="Primary">
         {destinations.map(({ label, icon, ...link }, index) => (
-          <Link
+          <DestinationLink
             {...link}
             key={label}
-            {...appBarBem({ element: "destination" })}
+            icon={icon}
             activeOptions={{ exact: link.to === "/" }}
             viewTransition={
               selectedIndex < 0 || index === selectedIndex
@@ -72,11 +92,8 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
                 : { types: [index > selectedIndex ? "page-forward" : "page-backward"] }
             }
           >
-            <span {...appBarBem({ element: "destination-icon" })} aria-hidden="true">
-              <MdSymbol>{icon}</MdSymbol>
-            </span>
-            <span>{label}</span>
-          </Link>
+            {label}
+          </DestinationLink>
         ))}
       </nav>
       <PreferencesDialog open={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
