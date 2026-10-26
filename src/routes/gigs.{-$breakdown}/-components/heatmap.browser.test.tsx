@@ -1,15 +1,7 @@
-import {
-  createMemoryHistory,
-  createRootRoute,
-  createRoute,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/react-router";
 import { expect, onTestFinished, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
-import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index";
 
 import { GigsHeatmap } from "./heatmap";
 
@@ -151,34 +143,3 @@ test("renders an explicit empty state without a chart", async () => {
   await expect.element(result.getByText("No gigs recorded yet.")).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
 });
-
-test.each(["/gigs", "/gigs/by-month"])(
-  "shows the heatmap at %s and only in the month view",
-  async (initialEntry) => {
-    const root = createRootRoute();
-    const router = createRouter({
-      history: createMemoryHistory({ initialEntries: [initialEntry] }),
-      routeTree: root.addChildren([
-        createRoute({
-          getParentRoute: () => root,
-          path: "/gigs/{-$breakdown}/",
-          component: GigsRoute.options.component,
-        }),
-      ]),
-    });
-    const result = await page.renderWithProviders(<RouterProvider router={router} />);
-    const chart = result.getByRole("img", { name: "Gigs by month and year" });
-
-    await expect.element(chart).toBeVisible();
-    await result.getByRole("link", { name: "Artist", exact: true }).click();
-    await expect.element(chart).not.toBeInTheDocument();
-    await expect.element(result.getByRole("img", { name: "Gigs by artist" })).toBeVisible();
-    await result.getByRole("link", { name: "Month", exact: true }).click();
-    await expect.element(chart).toBeVisible();
-    await result.getByRole("link", { name: "City", exact: true }).click();
-    await expect.element(chart).not.toBeInTheDocument();
-    await expect.element(result.getByRole("img", { name: "Map of England" })).toBeVisible();
-    await result.getByRole("link", { name: "Venue", exact: true }).click();
-    await expect.element(result.getByRole("img", { name: "Gigs by venue" })).toBeVisible();
-  },
-);

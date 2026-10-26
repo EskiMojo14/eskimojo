@@ -109,11 +109,14 @@ reverting changes. System follows the corresponding operating-system preference.
 
 ## Music
 
-Keep the three listening views:
-
-- Top Tracks;
-- Top Artists;
-- Recents.
+Provide two listening tabs: Top music (the default) and Recently played.
+Top music combines Top tracks and Top artists with one shared listening-period
+picker. Show tracks first, then artists: side by side when the content area has
+room for two readable columns, and stacked on smaller screens. Each list adapts
+its row layout to its own available width.
+Use `/music` for the default view, `/music/top-music` for its explicit URL, and
+`/music/recent` for Recently played. No redirects for the former separate tabs
+are required before launch.
 
 Use current Last.fm-backed data rather than presenting a static historical
 snapshot as live. Keep these period choices for Top Tracks and Top Artists:
@@ -125,11 +128,10 @@ snapshot as live. Keep these period choices for Top Tracks and Top Artists:
 - 12 months (`12month`);
 - all time (`overall`).
 
-Preserve the current defaults:
+Current defaults:
 
-- Top Tracks: all time, five results;
-- Top Artists: all time, five results;
-- Recents: five tracks.
+- Top tracks and Top artists: all time, ten results each;
+- Recently played: ten tracks.
 
 Link to the Last.fm profile from this section:
 `https://www.last.fm/user/eskimojo14`.

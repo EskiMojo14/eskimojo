@@ -27,7 +27,7 @@ function createDemoRouter() {
         component: MusicPeriodPicker,
       }),
     ]),
-    history: createMemoryHistory({ initialEntries: ["/music/top-artists?period=1month"] }),
+    history: createMemoryHistory({ initialEntries: ["/music/top-music?period=1month"] }),
   });
 }
 

@@ -49,8 +49,16 @@
   }
 }
 
+.music-top-music {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+  align-items: start;
+  max-inline-size: 80rem;
+  margin-inline: auto;
+}
+
 .music-period-picker {
-  max-inline-size: 56rem;
+  max-inline-size: 80rem;
   margin-inline: auto;
   padding: 16px;
 }

@@ -41,7 +41,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Responsive primary route links, matching the gigs breakdown tabs. /music defaults to Recent; top-artists and top-tracks use optional URL segments. Links replace history and preserve the period search parameter.",
+          "Responsive primary route links. /music defaults to Top music, combining tracks and artists for one listening period. /music/top-music selects it explicitly; /music/recent shows Recently played. Links replace history and preserve the period search parameter.",
       },
     },
   },
@@ -50,21 +50,21 @@ const meta = preview.meta({
 export const Navigation = meta.story({
   render: () => <MusicTabsDemo />,
   play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByRole("link", { name: "Recent" })).toHaveAttribute(
+    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await userEvent.click(canvas.getByRole("link", { name: "Top artists" }));
-    await expect(canvas.getByRole("link", { name: "Top artists" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("link", { name: "Recently played" }));
+    await expect(canvas.getByRole("link", { name: "Recently played" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await expect(canvas.getByRole("link", { name: "Top tracks" })).toHaveAttribute(
+    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
       "href",
-      "/music/top-tracks?period=1month",
+      "/music?period=1month",
     );
-    await userEvent.click(canvas.getByRole("link", { name: "Recent" }));
-    await expect(canvas.getByRole("link", { name: "Recent" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("link", { name: "Top music" }));
+    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -72,9 +72,9 @@ export const Navigation = meta.story({
 });
 
 export const DeepLink = meta.story({
-  render: () => <MusicTabsDemo initialEntry="/music/top-tracks?period=7day" />,
+  render: () => <MusicTabsDemo initialEntry="/music/top-music?period=7day" />,
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("link", { name: "Top tracks" })).toHaveAttribute(
+    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );

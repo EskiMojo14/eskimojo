@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
@@ -6,7 +6,7 @@ import { MusicPeriodPicker } from "#/routes/music.{-$breakdown}/-components/peri
 import { RecentTracks } from "#/routes/music.{-$breakdown}/-components/recent-tracks";
 import { MusicSummary } from "#/routes/music.{-$breakdown}/-components/summary";
 import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs";
-import { MusicTopList } from "#/routes/music.{-$breakdown}/-components/top-list";
+import { MusicTopMusic } from "#/routes/music.{-$breakdown}/-components/top-music";
 import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
@@ -48,11 +48,11 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
       case "recent":
         await queryClient.query({ ...getRecentTracks({ limit: 10 }), staleTime: "static" });
         break;
-      case "top-artists":
-        await queryClient.query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" });
-        break;
-      case "top-tracks":
-        await queryClient.query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" });
+      case "top-music":
+        await Promise.all([
+          queryClient.query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" }),
+          queryClient.query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" }),
+        ]);
         break;
     }
   },
@@ -77,8 +77,7 @@ function RouteComponent() {
       <MusicBreakdownTabs />
       {breakdown !== "recent" && <MusicPeriodPicker />}
       {breakdown === "recent" && <RecentTracksPanel />}
-      {breakdown === "top-artists" && <TopArtistsPanel />}
-      {breakdown === "top-tracks" && <TopTracksPanel />}
+      {breakdown === "top-music" && <TopMusicPanel />}
     </>
   );
 }
@@ -91,20 +90,13 @@ function RecentTracksPanel() {
   return <RecentTracks tracks={recentTracks} />;
 }
 
-function TopArtistsPanel() {
+function TopMusicPanel() {
   const { period = periodSchema.fallback } = Route.useSearch();
-  const { data } = useSuspenseQuery({
-    ...getTopArtists({ limit: 10, period }),
-    staleTime: "static",
+  const [tracks, artists] = useSuspenseQueries({
+    queries: [
+      { ...getTopTracks({ limit: 10, period }), staleTime: "static" },
+      { ...getTopArtists({ limit: 10, period }), staleTime: "static" },
+    ],
   });
-  return <MusicTopList title="Top artists" items={data} />;
-}
-
-function TopTracksPanel() {
-  const { period = periodSchema.fallback } = Route.useSearch();
-  const { data } = useSuspenseQuery({
-    ...getTopTracks({ limit: 10, period }),
-    staleTime: "static",
-  });
-  return <MusicTopList title="Top tracks" items={data} />;
+  return <MusicTopMusic tracks={tracks.data} artists={artists.data} />;
 }

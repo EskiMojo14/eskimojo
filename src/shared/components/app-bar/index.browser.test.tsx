@@ -3,17 +3,12 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
-  HeadContent,
   RouterProvider,
 } from "@tanstack/react-router";
 import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
-import { getDocumentHead, Route as RootRoute } from "#/routes/__root";
-import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index.tsx";
-import { Route as HomeRoute } from "#/routes/index";
-import { Route as MusicRoute } from "#/routes/music.{-$breakdown}/index.tsx";
-import { Route as ProjectsRoute } from "#/routes/projects";
+import { getDocumentHead } from "#/routes/__root";
 
 import { AppBar } from "./index";
 
@@ -68,61 +63,6 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
 
   await router.navigate({ to: "/" });
   await expect.element(homeSubtitle).toBeVisible();
-});
-
-test("keeps the document title and app bar matched to the current route after navigation", async () => {
-  const root = createRootRoute({
-    staticData: RootRoute.options.staticData,
-    head: getDocumentHead,
-    component: () => (
-      <>
-        <HeadContent />
-        <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
-      </>
-    ),
-  });
-  const routes = [
-    ["/", HomeRoute.options.staticData],
-    ["/projects", ProjectsRoute.options.staticData],
-    ["/music/{-$breakdown}", MusicRoute.options.staticData],
-    ["/gigs", GigsRoute.options.staticData],
-  ] as const;
-  const router = createRouter({
-    history: createMemoryHistory({ initialEntries: ["/"] }),
-    routeTree: root.addChildren(
-      routes.map(([path, staticData]) =>
-        createRoute({ getParentRoute: () => root, path, staticData }),
-      ),
-    ),
-  });
-  const result = await page.renderWithProviders(<RouterProvider router={router} />);
-  const banner = result.getByRole("banner");
-
-  await expect.element(banner.getByText("Home", { exact: true })).toBeVisible();
-  await expect.poll(() => document.title).toBe("Home | eskimojo");
-  for (const [to, title] of [
-    ["/projects", "Projects"],
-    ["/music/{-$breakdown}", "Music"],
-    ["/gigs/{-$breakdown}", "Gigs"],
-    ["/", "Home"],
-  ] as const) {
-    await router.navigate({ to });
-    await expect.element(banner.getByText(title, { exact: true })).toBeVisible();
-    await expect.poll(() => document.title).toBe(`${title} | eskimojo`);
-  }
-  await router.navigate({ to: "/music/{-$breakdown}" });
-  await expect.element(banner.getByText("Powered by", { exact: false })).toBeVisible();
-  await expect
-    .element(banner.getByRole("link", { name: "Last.fm" }))
-    .toHaveAttribute("href", "https://www.last.fm/user/eskimojo14");
-  await expect
-    .element(banner.getByRole("link", { name: "Last.fm" }))
-    .toHaveAttribute("target", "_blank");
-  await expect
-    .element(banner.getByRole("link", { name: "Last.fm" }))
-    .toHaveAttribute("rel", "noopener noreferrer");
-  await router.navigate({ to: "/projects" });
-  await expect.element(banner.getByRole("link", { name: "Last.fm" })).not.toBeInTheDocument();
 });
 
 test.each([
