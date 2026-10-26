@@ -64,7 +64,6 @@
   max-height: 60dvh;
   overflow-y: auto;
   overflow-wrap: anywhere;
-  corner-shape: round;
 
   @media (forced-colors: active) {
     border: 1px solid currentColor;

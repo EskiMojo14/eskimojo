@@ -59,7 +59,6 @@
   max-height: 60dvh;
   overflow-y: auto;
   overflow-wrap: anywhere;
-  corner-shape: round;
   font-feature-settings: var(--typo-features-body);
 
   @media (forced-colors: active) {

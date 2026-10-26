@@ -27,7 +27,6 @@
   padding: 0.25rem 0.5rem;
   border: 0;
   border-radius: var(--md-sys-shape-corner-extra-small);
-  corner-shape: round;
   background-color: var(--md-sys-color-inverse-surface);
   color: var(--md-sys-color-inverse-on-surface);
   font: var(--typo-body-small);
