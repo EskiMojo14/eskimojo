@@ -27,6 +27,17 @@
       translate: 0 0;
     }
 
+    /* Keep the viewport covered when the spring lifts the sheet above its resting edge. */
+    &::after {
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+      block-size: 100%;
+      background-color: var(--md-sys-color-surface-container-low);
+      content: "";
+      pointer-events: none;
+    }
+
     > .dialog__surface {
       border-start-start-radius: var(--md-sys-shape-corner-extra-large);
       border-start-end-radius: var(--md-sys-shape-corner-extra-large);

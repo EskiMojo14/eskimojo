@@ -24,6 +24,26 @@ const meta = preview.meta({
 
 export const Default = meta.story({});
 
+export const BottomSheet = meta.story({
+  parameters: {
+    viewport: {
+      options: {
+        bottomSheet: {
+          name: "Bottom sheet",
+          styles: { width: "390px", height: "844px" },
+        },
+      },
+    },
+    docs: {
+      description: {
+        story:
+          "On mobile, preferences open as a spring-animated bottom sheet. A matching surface extension below the sheet keeps the viewport bottom solid during spring overshoot without changing the content height.",
+      },
+    },
+  },
+  globals: { viewport: { value: "bottomSheet", isRotated: false } },
+});
+
 function InteractivePreferences() {
   const [open, setOpen] = useState(false);
   return (
