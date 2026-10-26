@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "architect-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "architect-like-corbin/SKILL.md",
+      "computedHash": "c9afdea5df1e50b8f8ca4c170f09e0c2c1dbf1d2913c2ae68fb4637c8dbd82ae"
+    },
     "ask-matt": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -12,6 +18,12 @@
       "sourceType": "github",
       "skillPath": "skills/in-progress/chief-of-staff/SKILL.md",
       "computedHash": "29e2444f8f030cefff1670f347e17cc839d3711aa904831a55cc1ac5475ec1c0"
+    },
+    "choose-libraries-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "choose-libraries-like-corbin/SKILL.md",
+      "computedHash": "0d25517501f32b06cb2aa6d659c947d01dc2074b21fd67751e68397f0f6abc74"
     },
     "claude-handoff": {
       "source": "mattpocock/skills",
@@ -37,6 +49,12 @@
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
       "computedHash": "ede7254edbd22fcab97a0941511f7d440d8f9a249348fea97c50987ad5501674"
     },
+    "docs-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "docs-like-corbin/SKILL.md",
+      "computedHash": "29dbfc796af96e192f3931519586590bfe0a958a50f08166014e9c44a38be0dd"
+    },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -48,6 +66,12 @@
       "sourceType": "github",
       "skillPath": "skills/misc/git-guardrails-claude-code/SKILL.md",
       "computedHash": "ccf581d304132095c2787b0a3bcb7b4ff125863c9f796fb16311d8f1cacef470"
+    },
+    "git-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "git-like-corbin/SKILL.md",
+      "computedHash": "61b6c0cf9b7512f0118d15eef1eda4020acdc365296367894088488f50e2cc3e"
     },
     "grill-me": {
       "source": "mattpocock/skills",
@@ -97,11 +121,23 @@
       "skillPath": "skills/in-progress/loop-me/SKILL.md",
       "computedHash": "72e01a16929dbf6583afc469a49d64b28b1be4a6034c900decd94cd5a69ba6e6"
     },
+    "maintain-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "maintain-like-corbin/SKILL.md",
+      "computedHash": "ec2dbc85c1518eb7817acca8b3a48967776063401a6e834ef7a82a2cf6131eac"
+    },
     "migrate-to-shoehorn": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/misc/migrate-to-shoehorn/SKILL.md",
       "computedHash": "6397731ced114f3657aa88b55ed13d1344a56d77ca449c568e3200c21740fa99"
+    },
+    "perf-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "perf-like-corbin/SKILL.md",
+      "computedHash": "600e87c86d79e825f8c190173bafa163cfb37361e57cd7d4c286de44b1196bfd"
     },
     "pr": {
       "source": "mattpocock/skills",
@@ -133,6 +169,12 @@
       "skillPath": "skills/misc/scaffold-exercises/SKILL.md",
       "computedHash": "354c91f6dbc9b058632f30594aacb4edc6d25012596585abb00402af8d7ec5e9"
     },
+    "scaffold-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "scaffold-like-corbin/SKILL.md",
+      "computedHash": "85420f7da55bf3dc0b77ff05af41dcc15ec8b431e5996b701642d9d36e6261af"
+    },
     "setup-matt-pocock-skills": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -163,6 +205,12 @@
       "skillPath": "skills/productivity/teach/SKILL.md",
       "computedHash": "81c196426808c270a9d4688be291405c038bba11f020b9fe10098ad0f1d8c132"
     },
+    "test-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "test-like-corbin/SKILL.md",
+      "computedHash": "dc3aa99d48bae85ccf3fd168e4262b338e1469cdfb09409f6a93ac006c967956"
+    },
     "to-questionnaire": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -187,6 +235,12 @@
       "skillPath": "skills/engineering/triage/SKILL.md",
       "computedHash": "a683e69163e23630f39c05a50fb9d83a3795a6a6fbd317357669e082cd43a158"
     },
+    "ui-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "ui-like-corbin/SKILL.md",
+      "computedHash": "f404726cffea17d79dcb4ccaf6e7bdb984823211a4c599b451a7c9d214255e77"
+    },
     "wait-what": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -199,11 +253,23 @@
       "skillPath": "skills/engineering/wayfinder/SKILL.md",
       "computedHash": "71d1296ae9f1ea0397f385f72d11ca3473827f5d067df4d06c58eb03377a57ce"
     },
+    "web-stack-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "web-stack-like-corbin/SKILL.md",
+      "computedHash": "58e7c91677fed5ac47b6f2a503e1e6a4322064b3abc6d89adb9f883be159f804"
+    },
     "wizard": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/wizard/SKILL.md",
       "computedHash": "49298bed80e7f722b071ad5d64798c75eb705bbbe0635b9bbffd08cd6fb81647"
+    },
+    "write-like-corbin": {
+      "source": "crutchcorn/skills",
+      "sourceType": "github",
+      "skillPath": "write-like-corbin/SKILL.md",
+      "computedHash": "7747a437423eac7df57cee3600a66865c2f51990b782c4b2ecea5236c6278d57"
     },
     "writing-beats": {
       "source": "mattpocock/skills",
