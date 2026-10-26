@@ -86,9 +86,11 @@ function RouteComponent() {
     <>
       <MusicSummary user={user} asOf={dataUpdatedAt} />
       <MusicBreakdownTabs />
-      {breakdown !== "recent" && <MusicPeriodPicker />}
-      {breakdown === "recent" && <RecentTracksPanel />}
-      {breakdown === "top-music" && <TopMusicPanel />}
+      <div className="tabs__route-content">
+        {breakdown !== "recent" && <MusicPeriodPicker />}
+        {breakdown === "recent" && <RecentTracksPanel />}
+        {breakdown === "top-music" && <TopMusicPanel />}
+      </div>
     </>
   );
 }

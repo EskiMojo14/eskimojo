@@ -11,9 +11,12 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/");
 
 export function MusicBreakdownTabs() {
   const { breakdown } = musicRoute.useParams();
+  const selectedIndex = musicBreakdownSchema.options.findIndex(
+    (value) => value === (breakdown ?? musicBreakdownSchema.fallback),
+  );
   return (
     <TabNav aria-label="Music breakdown" variant="primary" responsive>
-      {musicBreakdownSchema.options.map((value) => (
+      {musicBreakdownSchema.options.map((value, index) => (
         <TabLink
           key={value}
           to="/music/{-$breakdown}"
@@ -25,6 +28,11 @@ export function MusicBreakdownTabs() {
           }}
           search={(previous) => previous}
           activeOptions={{ exact: true }}
+          viewTransition={
+            index === selectedIndex
+              ? false
+              : { types: [index > selectedIndex ? "tab-forward" : "tab-backward"] }
+          }
           icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
           replace
         >

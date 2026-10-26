@@ -46,7 +46,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Period links use the music-period view-transition type. Only the top-music results crossfade; chips and page chrome remain live so the selection animation is not frozen in a page snapshot. Other navigation keeps the default page transition.",
+          "Period links use the music-period view-transition type. Only the top-music results crossfade; chips and page chrome remain live so the selection animation is not frozen in a page snapshot. Tab changes use a separate directional content transition; non-tab navigation keeps the default page transition.",
       },
     },
   },

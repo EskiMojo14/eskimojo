@@ -45,10 +45,12 @@ function RouteComponent() {
         <GigsIntro />
       </div>
       <GigsBreakdownTabs />
-      {breakdown === "by-month" && <GigsHeatmap events={gigs.events} />}
-      {breakdown === "by-artist" && <GigsArtistChart events={gigs.events} />}
-      {breakdown === "by-venue" && <GigsVenueChart events={gigs.events} />}
-      {breakdown === "by-city" && <GigsCityMap events={gigs.events} />}
+      <div className="tabs__route-content">
+        {breakdown === "by-month" && <GigsHeatmap events={gigs.events} />}
+        {breakdown === "by-artist" && <GigsArtistChart events={gigs.events} />}
+        {breakdown === "by-venue" && <GigsVenueChart events={gigs.events} />}
+        {breakdown === "by-city" && <GigsCityMap events={gigs.events} />}
+      </div>
     </>
   );
 }

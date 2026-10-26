@@ -3,6 +3,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  getRouteApi,
   RouterProvider,
 } from "@tanstack/react-router";
 import { useState } from "react";
@@ -10,9 +11,32 @@ import { expect } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
+import {
+  musicBreakdownLabels,
+  musicBreakdownSchema,
+} from "#/routes/music.{-$breakdown}/-constants.ts";
 
 import { MusicBreakdownTabs } from "./index";
+
+const musicRoute = getRouteApi("/music/{-$breakdown}/");
+
+function MusicTabsContent() {
+  const { breakdown: param } = musicRoute.useParams();
+  const breakdown = v.parse(musicBreakdownSchema, param);
+  return (
+    <>
+      <MusicBreakdownTabs />
+      <div className="tabs__route-content">
+        <h2>{musicBreakdownLabels[breakdown].label}</h2>
+        <p>
+          {breakdown === "recent"
+            ? "Your latest listening activity."
+            : "Your top tracks and artists for the selected period."}
+        </p>
+      </div>
+    </>
+  );
+}
 
 function MusicTabsDemo({ initialEntry = "/music?period=1month" }: { initialEntry?: string }) {
   const [router] = useState(() => {
@@ -22,7 +46,7 @@ function MusicTabsDemo({ initialEntry = "/music?period=1month" }: { initialEntry
       path: "/music/{-$breakdown}/",
       params: { parse: v.parser(v.object({ breakdown: v.optional(musicBreakdownSchema) })) },
       validateSearch: v.object({ period: v.optional(v.string()) }),
-      component: MusicBreakdownTabs,
+      component: MusicTabsContent,
     });
     return createRouter({
       routeTree: root.addChildren([music]),
@@ -41,7 +65,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Responsive primary route links. /music defaults to Top music, combining tracks and artists for one listening period. /music/top-music selects it explicitly; /music/recent shows Recently played. Links replace history and preserve the period search parameter.",
+          "Responsive primary route links. /music defaults to Top music, combining tracks and artists for one listening period. /music/top-music selects it explicitly; /music/recent shows Recently played. Links replace history and preserve the period search parameter. Contents crossfade with a 24px directional slide: a later tab enters from the inline end, an earlier tab from the inline start. Tabs and page chrome remain live, RTL reverses the direction, and reduced motion disables the transition.",
       },
     },
   },
