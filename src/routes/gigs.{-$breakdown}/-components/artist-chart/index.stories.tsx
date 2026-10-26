@@ -10,7 +10,15 @@ import "./index.css";
 const meta = preview.meta({
   title: "Gigs/Artists",
   component: GigsArtistChart,
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Chart tooltips share a typography hierarchy across artist, venue, city, and month views: MD3 title-small subheaders in on-surface-variant, label-large counts, title-small event names/dates, and body-small details. The tooltip--chart modifier styles the chart details without overriding the standard rich-tooltip subheader.",
+      },
+    },
+  },
   args: { events: gigs.events },
 });
 

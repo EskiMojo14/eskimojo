@@ -5,6 +5,23 @@
   margin-inline: auto;
   padding: 16px;
 
+  .list__headline {
+    font: var(--typo-title-medium);
+    font-feature-settings: var(--typo-features-heading);
+  }
+
+  .list__supporting {
+    font: var(--typo-body-medium);
+    font-feature-settings: var(--typo-features-body);
+  }
+
+  .list__trailing {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--typo-body-small);
+    font-feature-settings: var(--typo-features-body);
+    font-variant-numeric: tabular-nums;
+  }
+
   @container (max-width: 36rem) {
     .list__content {
       display: grid;
@@ -34,7 +51,8 @@
     .list__supporting > span:not(.music-search-links) {
       grid-area: subtitle;
       color: var(--md-sys-color-on-surface-variant);
-      font: var(--md-sys-typescale-body-medium);
+      font: var(--typo-body-medium);
+      font-feature-settings: var(--typo-features-body);
     }
 
     .list__trailing {
@@ -74,13 +92,15 @@
 .recent-tracks__heading {
   margin: 0 0 16px;
   color: var(--md-sys-color-on-surface);
-  font: var(--md-sys-typescale-title-large);
+  font: var(--typo-headline-small);
+  font-feature-settings: var(--typo-features-heading);
   text-wrap: balance;
 }
 
 .recent-tracks__empty {
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--md-sys-typescale-body-large);
+  font: var(--typo-body-large);
+  font-feature-settings: var(--typo-features-body);
   text-wrap: balance;
 }
 
@@ -100,12 +120,26 @@
   gap: 12px;
 }
 
+.music-top-list__rank {
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--typo-title-large);
+  font-feature-settings: var(--typo-features-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.music-top-list .list__trailing {
+  font: var(--typo-label-large);
+  font-feature-settings: var(--typo-features-body);
+}
+
 .recent-tracks__now-playing {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
   color: var(--md-sys-color-tertiary);
+  font: var(--typo-label-medium);
+  font-feature-settings: var(--typo-features-body);
 }
 
 .music-search-links {
@@ -114,4 +148,9 @@
   flex-wrap: balance;
   gap: 4px 16px;
   margin-block-start: 4px;
+
+  > a {
+    font: var(--typo-label-medium);
+    font-feature-settings: var(--typo-features-body);
+  }
 }

@@ -35,7 +35,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Recent Last.fm tracks in the default expressive list. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
+          "Recent Last.fm tracks in the default expressive list. Headline-small headings and title-medium track names lead the hierarchy; artist details use body-medium, timestamps body-small, and status/search actions label-medium. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
       },
     },
   },

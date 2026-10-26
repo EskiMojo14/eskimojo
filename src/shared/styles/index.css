@@ -30,6 +30,10 @@ body {
   color: var(--md-sys-color-on-background);
 }
 
+:where(a[href]) {
+  color: var(--md-sys-color-primary);
+}
+
 ::view-transition-group(root),
 ::view-transition-group(music-results) {
   animation-duration: var(--md-sys-motion-spring-slow-effects-duration);

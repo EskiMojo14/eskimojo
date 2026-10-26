@@ -18,7 +18,7 @@ export function MusicTopList({
 }) {
   const headingId = useId();
   return (
-    <section {...recentTracksBem()} aria-labelledby={headingId}>
+    <section {...recentTracksBem({ extra: topListBem().className })} aria-labelledby={headingId}>
       <h2 id={headingId} {...recentTracksBem({ element: "heading" })}>
         {title}
       </h2>
@@ -31,7 +31,9 @@ export function MusicTopList({
               <ListItemContent
                 leading={
                   <span {...topListBem({ element: "leading" })}>
-                    <span aria-label={`Rank ${item.rank}`}>{item.rank}</span>
+                    <span {...topListBem({ element: "rank" })} aria-label={`Rank ${item.rank}`}>
+                      {item.rank}
+                    </span>
                     <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
                       {"artist" in item ? (
                         <MdSymbol>music_note</MdSymbol>

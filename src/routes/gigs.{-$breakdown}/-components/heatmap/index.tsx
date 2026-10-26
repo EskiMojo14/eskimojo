@@ -168,7 +168,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
             typeof content === "string" ? (
               content
             ) : (
-              <div className="tooltip--rich gigs-heatmap__tooltip">
+              <div className="tooltip--rich tooltip--chart gigs-heatmap__tooltip">
                 <h3 className="tooltip__subhead">{content.title}</h3>
                 <ul className="gigs-heatmap__events">
                   {primaryPoint?.datum.events.map((event, index) => (

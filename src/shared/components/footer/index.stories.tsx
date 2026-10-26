@@ -9,6 +9,12 @@ const meta = preview.meta({
   component: Footer,
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Social and artwork-credit links use the global primary link colour and retain underlines. The global link default has zero specificity, so buttons, chips, tabs, and navigation keep their component colours.",
+      },
+    },
   },
 });
 

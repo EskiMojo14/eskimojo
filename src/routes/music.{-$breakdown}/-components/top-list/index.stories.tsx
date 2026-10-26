@@ -7,7 +7,16 @@ import "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css";
 const meta = preview.meta({
   title: "Music/Top List",
   component: MusicTopList,
-  parameters: { layout: "padded", a11y: { test: "error" } },
+  parameters: {
+    layout: "padded",
+    a11y: { test: "error" },
+    docs: {
+      description: {
+        component:
+          "Ranked music lists use headline-small section headings, title-medium names, title-large ranks, body-medium artist details, and label-large play counts. Search actions use label-medium. Typography and font features come from the shared theme-aware tokens.",
+      },
+    },
+  },
 });
 
 export const Artists = meta.story({

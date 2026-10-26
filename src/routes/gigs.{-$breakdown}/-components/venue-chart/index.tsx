@@ -113,7 +113,7 @@ export function GigsVenueChart({
           typeof content === "string" ? (
             content
           ) : (
-            <div className="tooltip--rich gigs-venues__tooltip">
+            <div className="tooltip--rich tooltip--chart gigs-venues__tooltip">
               <h3 className="tooltip__subhead">{content.title}</h3>
               <p>
                 {primaryPoint?.datum.count} {primaryPoint?.datum.count === 1 ? "gig" : "gigs"}

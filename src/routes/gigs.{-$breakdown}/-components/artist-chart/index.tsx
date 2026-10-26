@@ -132,7 +132,7 @@ export function GigsArtistChart({
             .toSorted((a, b) => a.event.date.localeCompare(b.event.date));
 
           return (
-            <div className="tooltip--rich gigs-artists__tooltip">
+            <div className="tooltip--rich tooltip--chart gigs-artists__tooltip">
               <h3 className="tooltip__subhead">{content.title}</h3>
               {content.rows.map((row) => (
                 <p key={row.label}>

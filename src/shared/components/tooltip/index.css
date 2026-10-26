@@ -118,9 +118,28 @@
 
 .tooltip__subhead {
   margin: 0 0 0.25rem;
-  color: var(--md-sys-color-on-surface);
+  color: var(--md-sys-color-on-surface-variant);
   font: var(--typo-title-small);
   font-feature-settings: var(--typo-features-heading);
+}
+
+.tooltip--chart {
+  > p {
+    font: var(--typo-label-large);
+    font-feature-settings: var(--typo-features-body);
+    font-variant-numeric: tabular-nums;
+  }
+
+  li > strong {
+    color: var(--md-sys-color-on-surface);
+    font: var(--typo-title-small);
+    font-feature-settings: var(--typo-features-heading);
+  }
+
+  li > p {
+    font: var(--typo-body-small);
+    font-feature-settings: var(--typo-features-body);
+  }
 }
 
 .tooltip__actions {

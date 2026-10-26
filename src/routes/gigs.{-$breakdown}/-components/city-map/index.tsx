@@ -101,7 +101,7 @@ export function GigsCityMap({
             typeof content === "string" ? (
               content
             ) : (
-              <div className="tooltip--rich gigs-city-map__tooltip">
+              <div className="tooltip--rich tooltip--chart gigs-city-map__tooltip">
                 <h3 className="tooltip__subhead">{content.title}</h3>
                 <ul className="gigs-city-map__events">
                   {primaryPoint?.datum.properties.events.map((event, index) => (
