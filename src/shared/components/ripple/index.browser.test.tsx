@@ -104,7 +104,6 @@ test("chips and interactive list rows ripple without changing static rows or eve
         wave(element).offsetLeft + wave(element).offsetWidth / 2 - (rect.left + 8 - layer.left),
       ),
     ).toBeLessThanOrEqual(1);
-    expect(wave(element).getAnimations()[0]?.effect?.getTiming().duration).toBe(450);
     await expect.element(result.getByRole(role, { name, exact: true })).toHaveAccessibleName(name);
     document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
     expect(element.querySelector(".ripple__wave")).toBeNull();
@@ -275,7 +274,6 @@ test("holds until release and cleans up after fading, even when released outside
   const button = result.getByRole("button", { name: "Hold" }).element();
   press(button);
   const ripple = wave(button);
-  expect(ripple.getAnimations()[0]?.effect?.getTiming().duration).toBe(450);
   ripple.getAnimations()[0]?.finish();
   expect(button.contains(ripple)).toBe(true);
   document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 2 }));

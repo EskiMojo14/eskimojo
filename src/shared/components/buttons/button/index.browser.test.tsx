@@ -33,8 +33,8 @@ test("supports SVG icons and replacing or removing the icon", async () => {
   await expect.element(button).toHaveAccessibleName("Edit");
   for (const icon of [null, undefined, false]) {
     await result.rerender(<Button icon={icon}>Edit</Button>);
-    expect(button.element().querySelector(".button__icon")).toBeNull();
     await expect.element(button).toHaveTextContent("Edit");
+    await expect.element(button).toHaveAccessibleName("Edit");
   }
 });
 

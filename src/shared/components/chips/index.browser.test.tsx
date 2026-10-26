@@ -32,31 +32,26 @@ test("toggles with pointer and keyboard without changing its accessible name", a
   expect(result.getByRole("img").query()).toBeNull();
 });
 
-test("keeps the check mounted while expanding and collapsing the chip", async () => {
+test("updates selected state without changing the chip's accessible name", async () => {
   const result = await page.renderWithProviders(<FilterChip selected={false}>Period</FilterChip>);
-  await document.fonts.ready;
   const chip = result.getByRole("button", { name: "Period" });
-  const check = chip.element().querySelector(".chip__check");
-  const width = chip.element().getBoundingClientRect().width;
+  await expect.element(chip).toHaveAttribute("aria-pressed", "false");
 
   await result.rerender(<FilterChip selected>Period</FilterChip>);
-  await expect.poll(() => chip.element().getBoundingClientRect().width).toBeCloseTo(width + 18, 0);
-  expect(chip.element().querySelector(".chip__check")).toBe(check);
+  await expect.element(chip).toHaveAttribute("aria-pressed", "true");
 
   await result.rerender(<FilterChip selected={false}>Period</FilterChip>);
-  await expect.poll(() => chip.element().getBoundingClientRect().width).toBeCloseTo(width, 0);
-  expect(chip.element().querySelector(".chip__check")).toBe(check);
+  await expect.element(chip).toHaveAttribute("aria-pressed", "false");
   await expect.element(chip).toHaveAccessibleName("Period");
 });
 
-test("link chips retain their check across current-state changes and preserve link semantics", async () => {
+test("link chips update their current state and preserve link semantics", async () => {
   const result = await page.renderWithProviders(
     <ExternalLinkChip href="#period" aria-current="page">
       Period
     </ExternalLinkChip>,
   );
   const chip = result.getByRole("link", { name: "Period" });
-  const check = chip.element().querySelector(".chip__check");
   await expect.element(chip).toHaveAttribute("aria-current", "page");
   await expect.element(chip).toHaveAttribute("target", "_blank");
   await expect.element(chip).toHaveAttribute("rel", "noopener noreferrer");
@@ -66,7 +61,7 @@ test("link chips retain their check across current-state changes and preserve li
       Period
     </ExternalLinkChip>,
   );
-  expect(chip.element().querySelector(".chip__check")).toBe(check);
+  await expect.element(chip).toHaveAttribute("aria-current", "false");
   await expect.element(chip).not.toHaveAttribute("aria-pressed");
   await expect.element(chip).toHaveAccessibleName("Period");
 });

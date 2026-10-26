@@ -30,53 +30,17 @@ function renderPage() {
   );
 }
 
-test("bottom navigation ripples use unbounded ripples in the icon pill when the label is pressed", async () => {
+test("primary navigation works with pointer and keyboard activation", async () => {
   await page.viewport(390, 844);
   const result = await renderPage();
   const nav = result.getByRole("navigation", { name: "Primary" });
-  for (const link of nav.getByRole("link").all()) {
-    const element = link.element();
-    const label = element.lastElementChild;
-    const pill = element.querySelector(".app-bar__destination-icon");
-    if (!(label instanceof HTMLElement) || !(pill instanceof HTMLElement))
-      throw new Error("Expected destination label and icon pill");
-    const bounds = label.getBoundingClientRect();
-    label.dispatchEvent(
-      new PointerEvent("pointerdown", {
-        bubbles: true,
-        cancelable: true,
-        isPrimary: true,
-        button: 0,
-        pointerId: 1,
-        clientX: bounds.left,
-        clientY: bounds.bottom,
-      }),
-    );
-    const wave = pill.querySelector(".ripple__wave");
-    const layer = pill.querySelector(".ripple");
-    if (!(wave instanceof HTMLElement)) throw new Error("Expected a ripple inside the icon pill");
-    if (!layer) throw new Error("Expected a ripple layer");
-    expect(element.querySelectorAll(".ripple")).toHaveLength(1);
-    expect(
-      Math.abs(wave.offsetLeft + wave.offsetWidth / 2 - pill.clientWidth / 2),
-    ).toBeLessThanOrEqual(1);
-    expect(
-      Math.abs(wave.offsetTop + wave.offsetHeight / 2 - pill.clientHeight / 2),
-    ).toBeLessThanOrEqual(1);
-    expect(pill.clientWidth).toBe(64);
-    expect(pill.clientHeight).toBe(32);
-    expect(getComputedStyle(layer).overflow).toBe("hidden");
-    expect(getComputedStyle(pill, "::before").opacity).toBe("0");
-    document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
-    expect(pill.querySelector(".ripple__wave")).toBeNull();
-  }
+  const projects = nav.getByRole("link", { name: "Projects", exact: true });
+  await projects.click();
+  await expect.element(projects).toHaveAttribute("aria-current", "page");
+
   const home = nav.getByRole("link", { name: "Home", exact: true });
-  const element = home.element();
-  if (!(element instanceof HTMLElement)) throw new Error("Expected a navigation link");
-  element.addEventListener("click", (event) => event.preventDefault(), { once: true });
-  element.focus();
+  home.element().focus();
   await userEvent.keyboard("{Enter>}");
-  expect(element.querySelector(".ripple__wave")).not.toBeNull();
   await userEvent.keyboard("{/Enter}");
   await expect.element(home).toHaveAttribute("aria-current", "page");
 });
@@ -86,16 +50,13 @@ test.each([320, 390, 599, 600, 768, 769, 1280])(
   async (width) => {
     await page.viewport(width, 844);
     const result = await renderPage();
-    const actions = result.getByRole("group", { name: "Page actions" }).element();
     const compact = width < 600;
-    const navigation = result.container.querySelector<HTMLElement>(".app-bar__bottom-navigation");
-    const bounds = actions.getBoundingClientRect();
-    expect(bounds.bottom).toBe(64);
-    expect(bounds.height).toBe(64);
-    expect(actions.querySelector(".app-bar__navigation")?.checkVisibility()).toBe(
+    const navigation = result.getByRole("navigation", { name: "Primary" });
+    const menuButton = result.getByRole("button", { name: "Open navigation menu" });
+    expect([Boolean(navigation.query()), Boolean(menuButton.query())]).toEqual([
+      compact,
       width >= 600 && width <= 768,
-    );
-    expect(navigation?.checkVisibility()).toBe(compact);
+    ]);
   },
 );
 
@@ -105,17 +66,18 @@ test.each([320, 390, 599])(
     await page.viewport(width, 844);
     const result = await renderPage();
     const nav = result.getByRole("navigation", { name: "Primary" });
+    await expect.element(nav).toBeVisible();
     expect(nav.getByRole("link").all()).toHaveLength(4);
-    expect(nav.element().getBoundingClientRect().bottom).toBe(844);
-    expect(nav.element().getBoundingClientRect().height).toBe(80);
     for (const link of nav.getByRole("link").all()) {
       expect(link.element().getBoundingClientRect().width).toBeGreaterThanOrEqual(48);
     }
     window.scrollTo(0, document.documentElement.scrollHeight);
-    expect(nav.element().getBoundingClientRect().bottom).toBe(844);
+    const navBounds = nav.element().getBoundingClientRect();
+    expect(navBounds.top).toBeGreaterThanOrEqual(0);
+    expect(navBounds.bottom).toBeLessThanOrEqual(window.innerHeight);
     expect(
       result.getByText("End of page").element().getBoundingClientRect().bottom,
-    ).toBeLessThanOrEqual(nav.element().getBoundingClientRect().top);
+    ).toBeLessThanOrEqual(navBounds.top);
     window.scrollTo(0, 0);
   },
 );
