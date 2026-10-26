@@ -12,7 +12,7 @@ import { page } from "vite-plus/test/browser";
 import { getDocumentHead, Route as RootRoute } from "#/routes/__root";
 import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index.tsx";
 import { Route as HomeRoute } from "#/routes/index";
-import { Route as MusicRoute } from "#/routes/music";
+import { Route as MusicRoute } from "#/routes/music/index.tsx";
 import { Route as ProjectsRoute } from "#/routes/projects";
 
 import { AppBar } from "./index";
