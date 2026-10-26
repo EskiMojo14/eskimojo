@@ -5,6 +5,12 @@
   padding: 16px;
 }
 
+.music-period-picker {
+  max-inline-size: 56rem;
+  margin-inline: auto;
+  padding: 16px;
+}
+
 .recent-tracks__heading {
   margin: 0 0 16px;
   color: var(--md-sys-color-on-surface);

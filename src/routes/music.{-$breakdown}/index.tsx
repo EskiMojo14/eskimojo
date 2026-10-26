@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
+import { MusicPeriodPicker } from "#/routes/music/-components/period-picker";
 import { RecentTracks } from "#/routes/music/-components/recent-tracks";
 import { MusicBreakdownTabs } from "#/routes/music/-components/tabs";
 import { MusicTopList } from "#/routes/music/-components/top-list";
@@ -48,6 +49,7 @@ function RouteComponent() {
   return (
     <>
       <MusicBreakdownTabs />
+      {breakdown !== "recent" && <MusicPeriodPicker />}
       {breakdown === "recent" && <RecentTracksPanel />}
       {breakdown === "top-artists" && <TopArtistsPanel />}
       {breakdown === "top-tracks" && <TopTracksPanel />}

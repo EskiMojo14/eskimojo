@@ -46,6 +46,10 @@ test("switches music views using suspense query data and preserves the selected 
     },
   ]);
 
+  queryClient.setQueryData(getTopTracks({ limit: 10, period: "overall" }).queryKey, [
+    { name: "All-time favourite", artist: "Artist", rank: 1, playcount: 100, image: {} },
+  ]);
+
   const root = createRootRoute({
     component: () => (
       <QueryClientProvider client={queryClient}>
@@ -66,6 +70,7 @@ test("switches music views using suspense query data and preserves the selected 
   });
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByText("Recent song")).toBeVisible();
+  expect(result.getByRole("group", { name: "Listening period" }).query()).toBeNull();
   await result.getByRole("link", { name: "Top artists" }).click();
   await expect.element(result.getByRole("heading", { name: "Top artists" })).toBeVisible();
   await expect.element(result.getByText("Favourite artist")).toBeVisible();
@@ -74,7 +79,15 @@ test("switches music views using suspense query data and preserves the selected 
   expect(router.state.location.search).toEqual({ period: "1month" });
   await result.getByRole("link", { name: "Top tracks" }).click();
   await expect.element(result.getByText("Favourite song")).toBeVisible();
+  await result.getByRole("link", { name: "All time" }).click();
+  await expect.element(result.getByText("All-time favourite")).toBeVisible();
+  expect(router.state.location.search).toEqual({ period: "overall" });
+  await expect
+    .element(result.getByRole("link", { name: "All time" }))
+    .toHaveAttribute("aria-current", "page");
   await result.getByRole("link", { name: "Recent" }).click();
   await expect.element(result.getByText("Recent song")).toBeVisible();
   expect(router.state.location.pathname).toBe("/music");
+  expect(router.state.location.search).toEqual({ period: "overall" });
+  expect(result.getByRole("group", { name: "Listening period" }).query()).toBeNull();
 });
