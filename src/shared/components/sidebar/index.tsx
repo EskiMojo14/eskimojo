@@ -34,7 +34,7 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
         <h1 {...siteSidebarBem({ element: "title" })}>eskimojo</h1>
       </div>
       <nav aria-label="Primary">
-        <List>
+        <List variant="navigation">
           {links.map(({ key, children }, groupIndex) => (
             <Fragment key={key}>
               {children.map(({ icon, label, ...link }) => (
