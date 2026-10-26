@@ -1,4 +1,4 @@
-import type { QueryKey, QueryOptions, WithRequired } from "@tanstack/react-query";
+import type { QueryKey, UnusedSkipTokenOptions, WithRequired } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { up } from "up-fetch";
@@ -98,7 +98,7 @@ interface Endpoint<
   (
     ...args: ParamsArgs<(typeof lastfmMethodParams)[TMethod]>
   ): WithRequired<
-    QueryOptions<Selected, Error, Selected, readonly ["lastfm", ...TQueryKey]>,
+    UnusedSkipTokenOptions<Selected, Error, Selected, readonly ["lastfm", ...TQueryKey]>,
     "queryKey"
   >;
   method: TMethod;

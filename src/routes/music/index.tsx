@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
@@ -8,6 +9,10 @@ import {
   periodSchema,
 } from "#/routes/music/-query.ts";
 import { promiseAllKeyed } from "#/utils/index.ts";
+
+import { RecentTracks } from "./-components/recent-tracks";
+
+import recentTracksCss from "./-components/recent-tracks.css?url";
 
 export const Route = createFileRoute("/music/")({
   staticData: { title: "Music" },
@@ -31,9 +36,16 @@ export const Route = createFileRoute("/music/")({
       }),
     });
   },
+  head: () => ({
+    links: [{ rel: "stylesheet", href: recentTracksCss }],
+  }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return null;
+  const { data: recentTracks } = useSuspenseQuery({
+    ...getRecentTracks({ limit: 10 }),
+    staleTime: "static",
+  });
+  return <RecentTracks tracks={recentTracks} />;
 }

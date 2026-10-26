@@ -1,0 +1,35 @@
+.recent-tracks {
+  inline-size: 100%;
+  max-inline-size: 56rem;
+  margin-inline: auto;
+  padding: 16px;
+}
+
+.recent-tracks__heading {
+  margin: 0 0 16px;
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typescale-title-large);
+}
+
+.recent-tracks__empty {
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-body-large);
+}
+
+.recent-tracks__placeholder {
+  display: grid;
+  place-items: center;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.recent-tracks__now-playing {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: var(--md-sys-color-primary);
+}
