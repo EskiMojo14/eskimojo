@@ -16,7 +16,7 @@ const meta = preview.meta({
     docs: {
       description: {
         story:
-          "Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
+          "Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
           "Theme, contrast, and palette preferences using the existing preference contexts. At viewport widths up to 37.5rem (600px), each preference uses an MD3 outlined SelectMenu with a floating label, icons in the selection and options, and a themed, anchored listbox. Larger viewports use connected button groups with icons. Both layouts share the same selections and save changes immediately. Select menus support arrows, Home/End, type-ahead, Enter/Space to select, and Escape to dismiss without changing the value or closing the dialog. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the existing Theme, Contrast, and Palette globals; the app saves them through its cookie-backed providers.",
       },
@@ -39,7 +39,7 @@ export const BottomSheet = meta.story({
     docs: {
       description: {
         story:
-          "On mobile, preferences open as a spring-animated bottom sheet. A matching surface extension below the sheet keeps the viewport bottom solid during spring overshoot without changing the content height.",
+          "On mobile, preferences open as a spring-animated bottom sheet using surface-container-high to match desktop dialogs, including the floating select-label backgrounds. A matching surface extension below the sheet keeps the viewport bottom solid during spring overshoot without changing the content height.",
       },
     },
   },

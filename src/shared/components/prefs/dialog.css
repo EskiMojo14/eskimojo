@@ -33,7 +33,7 @@
       inset-block-start: 100%;
       inset-inline: 0;
       block-size: 100%;
-      background-color: var(--md-sys-color-surface-container-low);
+      background-color: var(--md-sys-color-surface-container-high);
       content: "";
       pointer-events: none;
     }
@@ -43,7 +43,7 @@
       border-start-end-radius: var(--md-sys-shape-corner-extra-large);
       border-end-start-radius: var(--md-sys-shape-corner-none);
       border-end-end-radius: var(--md-sys-shape-corner-none);
-      background-color: var(--md-sys-color-surface-container-low);
+      background-color: var(--md-sys-color-surface-container-high);
     }
 
     .dialog__body {
@@ -92,7 +92,7 @@
 
   @media (max-width: 37.5rem) {
     display: block;
-    --select-menu-label-background: var(--md-sys-color-surface-container-low);
+    --select-menu-label-background: var(--md-sys-color-surface-container-high);
   }
 }
 

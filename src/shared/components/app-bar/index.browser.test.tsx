@@ -13,6 +13,36 @@ import { generateMetadata } from "#/shared/lib/document-head";
 
 import { AppBar } from "./index";
 
+test.each([390, 768, 1280])("positions page actions responsively at %i px", async (width) => {
+  await page.viewport(width, 844);
+  const result = await page.renderWithProviders(
+    <div className="app-shell">
+      <div className="app-shell__main">
+        <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
+        <div style={{ height: 1200 }}>Page content</div>
+        <footer>End of page</footer>
+      </div>
+    </div>,
+  );
+  const actions = result.getByRole("group", { name: "Page actions" }).element();
+  const mobile = width <= 768;
+  const bounds = actions.getBoundingClientRect();
+  expect(bounds.bottom).toBe(mobile ? 844 : 64);
+  expect(bounds.height).toBe(mobile ? 80 : 64);
+  expect(actions.querySelector(".app-bar__navigation")?.checkVisibility()).toBe(mobile);
+  if (mobile) {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+  expect(actions.getBoundingClientRect().bottom).toBe(mobile ? 844 : 64);
+  expect(
+    result.getByText("End of page").element().getBoundingClientRect().bottom,
+  ).toBeLessThanOrEqual(
+    mobile ? actions.getBoundingClientRect().top : document.documentElement.scrollHeight,
+  );
+  window.scrollTo(0, 0);
+  await page.viewport(1280, 800);
+});
+
 test("keeps subtitles paired with the deepest titled route and removes them on navigation", async () => {
   const root = createRootRoute({
     staticData: { title: "Site", subtitle: "Site subtitle" },

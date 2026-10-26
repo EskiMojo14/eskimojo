@@ -23,33 +23,35 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   return (
     <>
       <header {...appBarBem({ modifiers: { "with-subtitle": Boolean(pageData?.subtitle) } })}>
-        <IconButton
-          {...appBarBem({ element: "navigation" })}
-          icon={<MdSymbol>menu</MdSymbol>}
-          aria-label="Open navigation menu"
-          aria-haspopup="dialog"
-          aria-expanded={navigationOpen}
-          onClick={onOpenNavigation}
-        />
+        <fieldset {...appBarBem({ element: "actions" })} aria-label="Page actions">
+          <IconButton
+            {...appBarBem({ element: "navigation" })}
+            icon={<MdSymbol>menu</MdSymbol>}
+            aria-label="Open navigation menu"
+            aria-haspopup="dialog"
+            aria-expanded={navigationOpen}
+            onClick={onOpenNavigation}
+          />
+          <IconButton
+            {...appBarBem({ element: "preferences" })}
+            icon={
+              <span {...appBarBem({ element: "preferences-icon" })}>
+                <MdSymbol>settings</MdSymbol>
+              </span>
+            }
+            aria-label="Preferences"
+            tooltip="Preferences"
+            aria-haspopup="dialog"
+            aria-expanded={preferencesOpen}
+            onClick={() => setPreferencesOpen(true)}
+          />
+        </fieldset>
         <div {...appBarBem({ element: "text" })}>
           <span {...appBarBem({ element: "title" })}>{pageData?.title}</span>
           {pageData?.subtitle && (
             <span {...appBarBem({ element: "subtitle" })}>{pageData.subtitle}</span>
           )}
         </div>
-        <IconButton
-          {...appBarBem({ element: "preferences" })}
-          icon={
-            <span {...appBarBem({ element: "preferences-icon" })}>
-              <MdSymbol>settings</MdSymbol>
-            </span>
-          }
-          aria-label="Preferences"
-          tooltip="Preferences"
-          aria-haspopup="dialog"
-          aria-expanded={preferencesOpen}
-          onClick={() => setPreferencesOpen(true)}
-        />
       </header>
       <PreferencesDialog open={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
     </>
