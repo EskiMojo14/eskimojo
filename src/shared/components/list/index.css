@@ -25,7 +25,8 @@
     min-block-size: 56px;
     padding-inline: 16px;
     color: var(--md-sys-color-on-surface-variant);
-    font: var(--md-sys-typescale-label-large);
+    font: var(--typo-label-large);
+    font-feature-settings: var(--typo-features-body);
     text-decoration: none;
     transition:
       background-color var(--md-sys-motion-spring-default-effects-duration)
@@ -204,12 +205,14 @@
 }
 
 .list__headline {
-  font: var(--md-sys-typescale-body-large);
+  font: var(--typo-body-large);
+  font-feature-settings: var(--typo-features-body);
 }
 
 .list__supporting {
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--md-sys-typescale-body-medium);
+  font: var(--typo-body-medium);
+  font-feature-settings: var(--typo-features-body);
 }
 
 .list__leading {
@@ -232,7 +235,8 @@
   min-inline-size: 0;
   max-inline-size: 35%;
   color: inherit;
-  font: var(--md-sys-typescale-label-small);
+  font: var(--typo-label-small);
+  font-feature-settings: var(--typo-features-body);
   overflow-wrap: anywhere;
 }
 

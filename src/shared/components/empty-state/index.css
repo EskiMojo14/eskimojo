@@ -1,0 +1,42 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-inline-size: 0;
+  padding: 32px 24px;
+  color: var(--md-sys-color-on-surface);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.empty-state__icon {
+  --icon-size: 48;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block-end: 4px;
+  color: var(--md-sys-color-on-surface-variant);
+
+  > :is(svg, img) {
+    inline-size: 48px;
+    block-size: 48px;
+    object-fit: contain;
+  }
+}
+
+.empty-state__title {
+  max-inline-size: 32rem;
+  margin: 0;
+  font: var(--typo-title-large);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.empty-state__description {
+  max-inline-size: 32rem;
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--typo-body-medium);
+  font-feature-settings: var(--typo-features-body);
+}
