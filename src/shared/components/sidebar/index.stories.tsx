@@ -15,7 +15,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Primary navigation in an MD3 list, shown alongside the large flexible app bar that opens it. The drawer keeps its compact site-identity header; the app bar places the page title below its navigation/actions row. It is a permanent navigation drawer on larger screens and a modal navigation drawer on small screens. Preferences is only available from the app bar, never from inside the drawer. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
+          "Primary navigation in an MD3 list, shown alongside the large flexible app bar that opens it. The drawer keeps its compact site-identity header; the app bar places the page title below its navigation/actions row. It is a permanent navigation drawer on larger screens and a modal navigation drawer on small screens. Preferences is only available from the app bar, never from inside the drawer. The circular palette switcher slides between the Goat and OC portraits with a spatial spring, without changing its containing shape; reduced motion switches portraits immediately. Decorative artwork follows the palette selected on <html>: Goat for goat (the default), and OC for arctic.",
       },
     },
   },

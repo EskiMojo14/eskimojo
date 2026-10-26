@@ -25,11 +25,24 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
           title={`Switch to ${nextPaletteLabel} palette`}
           onClick={() => setPalette(nextPalette)}
         >
-          <img
-            {...siteSidebarBem({ element: "palette-avatar" })}
-            src={palette === "goat" ? "/Goat_square-1.jpeg" : "/OC__square.png"}
-            alt=""
-          />
+          <span
+            {...siteSidebarBem({ element: "palette-track" })}
+            data-palette={palette}
+            aria-hidden="true"
+          >
+            <img
+              {...siteSidebarBem({ element: "palette-avatar" })}
+              src="/Goat_square-1.jpeg"
+              alt=""
+              draggable={false}
+            />
+            <img
+              {...siteSidebarBem({ element: "palette-avatar" })}
+              src="/OC__square.png"
+              alt=""
+              draggable={false}
+            />
+          </span>
         </button>
         <h1 {...siteSidebarBem({ element: "title" })}>eskimojo</h1>
       </div>

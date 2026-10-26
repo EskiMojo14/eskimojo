@@ -176,8 +176,23 @@
   }
 }
 
+.site-sidebar__palette-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  direction: ltr;
+  translate: 0;
+  transition: translate var(--md-sys-motion-spring-default-spatial-duration)
+    var(--md-sys-motion-spring-default-spatial);
+
+  &[data-palette="arctic"] {
+    translate: -100% 0;
+  }
+}
+
 .site-sidebar__palette-avatar {
   display: block;
+  flex: 0 0 100%;
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
