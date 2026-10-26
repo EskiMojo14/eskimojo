@@ -186,6 +186,7 @@ overrides:
 
 patchedDependencies:
   '@material/material-color-utilities@0.4.0': b1ce5dea9a31733ac3ddd4b236a80185e050df5f98e48bb7fd93f8ccf3f58378
+  mdx-content-mapper@0.0.2: de2789c4e78720afe7fce4d35324c6867572db2c376d32cd3adbc06717e9a14c
 
 importers:
 
@@ -323,7 +324,7 @@ importers:
         version: 1.33.0
       mdx-content-mapper:
         specifier: ^0.0.2
-        version: 0.0.2(supports-color@7.2.0)
+        version: 0.0.2(patch_hash=de2789c4e78720afe7fce4d35324c6867572db2c376d32cd3adbc06717e9a14c)(supports-color@7.2.0)
       mix-n-matchers:
         specifier: ^3.0.0
         version: 3.0.0(vitest@5.0.5)
@@ -12329,7 +12330,7 @@ snapshots:
 
   mdn-data@2.27.1: {}
 
-  mdx-content-mapper@0.0.2(supports-color@7.2.0):
+  mdx-content-mapper@0.0.2(patch_hash=de2789c4e78720afe7fce4d35324c6867572db2c376d32cd3adbc06717e9a14c)(supports-color@7.2.0):
     dependencies:
       acorn: 8.19.0
       acorn-jsx: 5.3.2(acorn@8.19.0)

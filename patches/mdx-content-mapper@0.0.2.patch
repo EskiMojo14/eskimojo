@@ -1,0 +1,27 @@
+diff --git a/lib/requests/transform.js b/lib/requests/transform.js
+index 17a9e295d388d3533973c33cead696b69f787e14..d2c5536a765fbddf0c185800c3a4872db42a81f6 100644
+--- a/lib/requests/transform.js
++++ b/lib/requests/transform.js
+@@ -711,13 +711,19 @@ function transformActual({ content, fileName }, project) {
+         resource = {}
+         break
+       case 'enter:labelText':
+-        nonNull(resource).labelText = token
++        if (resource) {
++          resource.labelText = token
++        }
+         break
+       case 'enter:resourceDestinationString':
+-        nonNull(resource).destination = token
++        if (resource) {
++          resource.destination = token
++        }
+         break
+       case 'enter:resourceTitle':
+-        nonNull(resource).title = token
++        if (resource) {
++          resource.title = token
++        }
+         break
+       case 'exit:image':
+         appendJsxTag(jsx, token, 'img', '<', '')
