@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
+import { generatePageMetadata } from "#/shared/lib/document-head";
+
 import { GigsArtistChart } from "./-components/artist-chart";
 import { GigsCityMap } from "./-components/city-map";
 import { GigsHeatmap } from "./-components/heatmap";
@@ -22,9 +24,16 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
   },
   staticData: { title: "Gigs" },
   component: RouteComponent,
-  head: () => ({
-    links: [{ rel: "stylesheet", href: breakdownCss }],
-  }),
+  head: () => {
+    const metadata = generatePageMetadata({
+      title: "Gigs",
+      description: "Explore eskimojo's live gig history by month, artist, venue, and city.",
+    });
+    return {
+      ...metadata,
+      links: [...metadata.links, { rel: "stylesheet", href: breakdownCss }],
+    };
+  },
 });
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.

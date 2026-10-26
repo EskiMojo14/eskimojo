@@ -1,30 +1,64 @@
-import type { StaticDataRouteOption } from "@tanstack/react-router";
+import { createMetadataGenerator } from "tanstack-meta";
 
 import { symbolsUrl } from "#/shared/lib/symbols";
 
 import appCss from "#/shared/styles/index.css?url";
 
-export function getDocumentHead({
-  matches,
-}: {
-  matches: ReadonlyArray<{ staticData: StaticDataRouteOption }>;
-}) {
-  const title = matches.findLast((match) => match.staticData.title !== undefined)?.staticData.title;
+export const generateMetadata = createMetadataGenerator({
+  baseUrl: "https://eskimojo.dev",
+  titleTemplate: {
+    default: "eskimojo",
+    template: (title) => (title && title !== "eskimojo" ? `${title} | eskimojo` : "eskimojo"),
+  },
+});
 
+export function generatePageMetadata({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  const image = {
+    url: "/Goat_square-1.jpeg",
+    width: 712,
+    height: 712,
+    alt: "eskimojo's Goat portrait",
+  };
+
+  return generateMetadata({
+    title,
+    description,
+    openGraph: {
+      type: "website",
+      siteName: "eskimojo",
+      title,
+      description,
+      images: [image],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: [image],
+    },
+  });
+}
+
+export function getDocumentHead() {
+  const metadata = generatePageMetadata({
+    title: "eskimojo",
+    description: "eskimojo's personal website: projects, music, and live gigs.",
+  });
   return {
+    ...metadata,
     meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: title && title !== "eskimojo" ? `${title} | eskimojo` : "eskimojo",
-      },
+      ...metadata.meta,
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
     ],
     links: [
+      ...metadata.links,
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",

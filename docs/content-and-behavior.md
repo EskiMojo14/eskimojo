@@ -80,10 +80,18 @@ the ancestor's title/subtitle pair. For example:
 staticData: { title: "Music", subtitle: "Recent listening and all-time favourites" }
 ```
 
-The browser tab title uses the same deepest matched `staticData.title`, both
-on initial load and after navigation, followed by ` | eskimojo` (for example,
-`Music | eskimojo`). Missing or empty titles fall back to `eskimojo`; the site
-name itself is not suffixed again. Subtitles are not included in the tab title.
+Each route declares its browser tab title in `head` using the shared
+`tanstack-meta` generator, matching its `staticData.title`. TanStack Router
+applies the deepest matched route's metadata on initial load and after navigation.
+The shared template appends ` | eskimojo` (for example, `Music | eskimojo`).
+Missing or empty titles fall back to `eskimojo`; the site name itself is not
+suffixed again. Subtitles are not included in the tab title.
+
+Every route supplies a page-specific description for search and social previews.
+Open Graph and Twitter metadata share that description and use the existing
+712-by-712 Goat portrait (`/Goat_square-1.jpeg`) with alternative text.
+Preview image URLs resolve against `https://eskimojo.dev`; Twitter uses a
+square-image summary card.
 
 The sidebar retains the site
 identity. On desktop it stays anchored to the top of the viewport while the page

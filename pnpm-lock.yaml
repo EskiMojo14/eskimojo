@@ -236,6 +236,9 @@ importers:
       required-react-context:
         specifier: ^1.4.1
         version: 1.4.1(react@19.3.1)
+      tanstack-meta:
+        specifier: ^0.6.1
+        version: 0.6.1
       up-fetch:
         specifier: ^2.6.1
         version: 2.6.1
@@ -6598,6 +6601,9 @@ packages:
   tagged-tag@1.0.0:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
+
+  tanstack-meta@0.6.1:
+    resolution: {integrity: sha512-8i2nz4frJSpcVnIPv0D/0tmnBlCL7XVaNThb01PrTmYlfxRvT/ZLzdM4XJKhaxQbhW4CUOvDgl1VIfMenJXM0w==}
 
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
@@ -13939,6 +13945,8 @@ snapshots:
       strip-ansi: 6.0.1
 
   tagged-tag@1.0.0: {}
+
+  tanstack-meta@0.6.1: {}
 
   tapable@2.3.3: {}
 

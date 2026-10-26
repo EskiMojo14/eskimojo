@@ -15,6 +15,7 @@ import {
   getUserData,
   periodSchema,
 } from "#/routes/music.{-$breakdown}/-query.ts";
+import { generatePageMetadata } from "#/shared/lib/document-head";
 
 import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css?url";
 import summaryCss from "#/routes/music.{-$breakdown}/-components/summary/index.css?url";
@@ -56,12 +57,21 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         break;
     }
   },
-  head: () => ({
-    links: [
-      { rel: "stylesheet", href: recentTracksCss },
-      { rel: "stylesheet", href: summaryCss },
-    ],
-  }),
+  head: () => {
+    const metadata = generatePageMetadata({
+      title: "Music",
+      description:
+        "See what eskimojo is listening to, with recent tracks and top music from Last.fm.",
+    });
+    return {
+      ...metadata,
+      links: [
+        ...metadata.links,
+        { rel: "stylesheet", href: recentTracksCss },
+        { rel: "stylesheet", href: summaryCss },
+      ],
+    };
+  },
   component: RouteComponent,
 });
 

@@ -7,12 +7,10 @@ hosts as part of the design unless that decision is revisited explicitly.
 
 ## Domain
 
-The new site is intended to use a new/custom domain. `eskimojo.dev` is a
-**tentative candidate only**; it has not been finalized, purchased, or
-configured. Do not treat this document as authorization to buy the domain,
-change DNS, or update production domain settings.
-
-The final domain and its DNS/Netlify configuration remain **Open**.
+The selected public URL is `https://eskimojo.dev`, which is used to resolve
+absolute social preview image URLs. Domain registration and DNS/Netlify
+configuration still need to be verified before launch. This selection is not
+authorization to buy the domain or change production domain settings.
 
 ## Relationship to the Neocities site
 
@@ -51,7 +49,6 @@ the repository or written into these documents.
 
 ## Open before launch
 
-- Confirm the final domain; `eskimojo.dev` remains tentative.
 - Confirm domain registration, DNS, and Netlify domain configuration.
 - Decide how unavailable Last.fm data is presented and whether the existing
   five-minute refresh cadence is retained.
