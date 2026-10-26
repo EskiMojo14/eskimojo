@@ -9,14 +9,10 @@ import { unsafeEntries } from "#/utils/index.ts";
 import type { HasRequiredProps } from "#/utils/types";
 import * as vUtils from "#/utils/valibot";
 
-export const periodSchema = v.picklist([
-  "7day",
-  "1month",
-  "3month",
-  "6month",
-  "12month",
+export const periodSchema = v.fallback(
+  v.picklist(["7day", "1month", "3month", "6month", "12month", "overall"]),
   "overall",
-]);
+);
 export type Period = v.InferOutput<typeof periodSchema>;
 
 const lastfmMethodParams = {
@@ -231,15 +227,6 @@ export const getRecentTracks = buildEndpoint({
   getQueryKey: ({ limit }) => ["recent-tracks", { limit }],
   select: (res) => res.recenttracks.track,
 });
-
-export const periodLabels: Record<Period, string> = {
-  "7day": "7d",
-  "1month": "30d",
-  "3month": "3m",
-  "6month": "6m",
-  "12month": "12m",
-  overall: "All",
-};
 
 export const fullPeriodLabels: Record<Period, string> = {
   "7day": "7 days",

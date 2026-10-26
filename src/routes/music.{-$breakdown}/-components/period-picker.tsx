@@ -8,7 +8,7 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/");
 const periodPickerBem = BEMHelper("music-period-picker");
 
 export function MusicPeriodPicker() {
-  const { period = "7day" } = musicRoute.useSearch();
+  const { period = periodSchema.fallback } = musicRoute.useSearch();
   return (
     <ChipGroup {...periodPickerBem()} aria-label="Listening period">
       {periodSchema.options.map((value) => (

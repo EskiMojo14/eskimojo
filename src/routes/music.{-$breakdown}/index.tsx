@@ -40,16 +40,20 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
   loaderDeps: ({ search: { period } }) => ({ period }),
   loader: async ({
     context: { queryClient },
-    params: { breakdown = "recent" },
-    deps: { period = "7day" },
+    params: { breakdown = musicBreakdownSchema.fallback },
+    deps: { period = periodSchema.fallback },
   }) => {
     await queryClient.query({ ...getUserData(), staleTime: "static" });
-    if (breakdown === "recent") {
-      await queryClient.query({ ...getRecentTracks({ limit: 10 }), staleTime: "static" });
-    } else if (breakdown === "top-artists") {
-      await queryClient.query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" });
-    } else {
-      await queryClient.query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" });
+    switch (breakdown) {
+      case "recent":
+        await queryClient.query({ ...getRecentTracks({ limit: 10 }), staleTime: "static" });
+        break;
+      case "top-artists":
+        await queryClient.query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" });
+        break;
+      case "top-tracks":
+        await queryClient.query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" });
+        break;
     }
   },
   head: () => ({
@@ -62,7 +66,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
 });
 
 function RouteComponent() {
-  const { breakdown = "recent" } = Route.useParams();
+  const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
   const { data: user, dataUpdatedAt } = useSuspenseQuery({
     ...getUserData(),
     staleTime: "static",
@@ -88,7 +92,7 @@ function RecentTracksPanel() {
 }
 
 function TopArtistsPanel() {
-  const { period = "7day" } = Route.useSearch();
+  const { period = periodSchema.fallback } = Route.useSearch();
   const { data } = useSuspenseQuery({
     ...getTopArtists({ limit: 10, period }),
     staleTime: "static",
@@ -97,7 +101,7 @@ function TopArtistsPanel() {
 }
 
 function TopTracksPanel() {
-  const { period = "7day" } = Route.useSearch();
+  const { period = periodSchema.fallback } = Route.useSearch();
   const { data } = useSuspenseQuery({
     ...getTopTracks({ limit: 10, period }),
     staleTime: "static",

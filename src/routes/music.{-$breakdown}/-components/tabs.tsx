@@ -18,7 +18,10 @@ export function MusicBreakdownTabs() {
           key={value}
           to="/music/{-$breakdown}"
           params={{
-            breakdown: value === "recent" && breakdown !== "recent" ? undefined : value,
+            breakdown:
+              value === musicBreakdownSchema.fallback && breakdown !== musicBreakdownSchema.fallback
+                ? undefined
+                : value,
           }}
           search={(previous) => previous}
           activeOptions={{ exact: true }}
