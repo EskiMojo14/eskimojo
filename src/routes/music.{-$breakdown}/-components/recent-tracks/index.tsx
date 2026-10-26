@@ -53,7 +53,18 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
                   trailing={
                     track.nowPlaying ? (
                       <span {...recentTracksBem({ element: "now-playing" })}>
-                        <MdSymbol aria-hidden="true">graphic_eq</MdSymbol>
+                        <svg
+                          {...recentTracksBem({ element: "equalizer" })}
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <rect x="3" y="10" width="2" height="4" />
+                          <rect x="7" y="6" width="2" height="12" />
+                          <rect x="11" y="2" width="2" height="20" />
+                          <rect x="15" y="6" width="2" height="12" />
+                          <rect x="19" y="10" width="2" height="4" />
+                        </svg>
                         <span>Now playing</span>
                       </span>
                     ) : (
