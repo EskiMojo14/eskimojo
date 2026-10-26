@@ -65,9 +65,9 @@
   }
 
   &:disabled {
-    border-color: rgb(from var(--md-sys-color-on-surface) r g b / 12%);
+    border-color: alpha(from var(--md-sys-color-on-surface) / 12%);
     background-color: transparent;
-    color: rgb(from var(--md-sys-color-on-surface) r g b / 38%);
+    color: alpha(from var(--md-sys-color-on-surface) / 38%);
     cursor: default;
   }
 }

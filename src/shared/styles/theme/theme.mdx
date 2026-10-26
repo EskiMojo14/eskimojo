@@ -178,11 +178,11 @@ The export doesn't include state-layer tokens. Instead, mix the content color ov
 `vpr lint:css:all` runs [Stylelint](https://stylelint.io/) on `src/**/*.css` and `.storybook/**/*.css`. It warns about colors that don't come from the theme. It checks every property ending in `color`, plus `background`, `border` (and its sides), `outline`, `text-decoration`, `fill` and `stroke`. These are allowed:
 
 - `var()`
-- `color-mix()`, but only if both colors are `var(--md-sys-color-*)`, `transparent` or `currentcolor`. Any color space, hue method and percentages are fine.
-- Relative colors made from a token, such as `color(from var(--md-sys-color-primary) srgb r g b / 50%)`. The `rgb()`, `hsl()`, `hwb()`, `lab()`, `lch()`, `oklab()` and `oklch()` forms work as well.
+- `color-mix()`, but only if neither color is `transparent` and both colors are `var(--md-sys-color-*)` or `currentcolor`. Any color space, hue method and percentages are fine.
+- `alpha()` to apply alpha to an existing color, such as `alpha(from var(--md-sys-color-primary) / 50%)` or `alpha(from currentColor / 0.5)`.
 - `transparent`, `currentcolor`, `none`, `url()` and global keywords such as `inherit`
 
-Everything else gets a warning: hex, `rgb()`, named colors such as `red`, and a `color-mix()` or relative color with a literal color in it. The files in `theme/` are exempt, because they define the tokens. The same rule checks fonts (see Foundations / Typography). It's configured in `stylelint.config.js`.
+Everything else gets a warning: hex, `rgb()`, named colors such as `red`, and a `color-mix()` or `alpha()` with a literal color in it. The files in `theme/` are exempt, because they define the tokens. The same rule checks fonts (see Foundations / Typography). It's configured in `stylelint.config.js`.
 
 The rule doesn't look inside `box-shadow`, `text-shadow` or gradients, and it doesn't check inline styles in components.
 

@@ -46,7 +46,7 @@
 
   &::backdrop {
     overflow: hidden;
-    background-color: rgb(from var(--md-sys-color-scrim) r g b / 0.32);
+    background-color: alpha(from var(--md-sys-color-scrim) / 0.32);
     overscroll-behavior: contain;
     opacity: 0;
     transition:
@@ -88,7 +88,7 @@
   overflow: hidden;
   border-radius: var(--md-sys-shape-corner-extra-large);
   background-color: var(--md-sys-color-surface-container-high);
-  box-shadow: 0 1rem 2rem rgb(from var(--md-sys-color-shadow) r g b / 0.24);
+  box-shadow: 0 1rem 2rem alpha(from var(--md-sys-color-shadow) / 0.24);
 }
 
 .dialog__header {
@@ -131,8 +131,8 @@
     font: var(--typo-label-large);
 
     &:hover {
-      background-color: rgb(
-        from var(--md-sys-color-primary) r g b / var(--md-sys-state-hover-state-layer-opacity)
+      background-color: alpha(
+        from var(--md-sys-color-primary) / var(--md-sys-state-hover-state-layer-opacity)
       );
     }
 

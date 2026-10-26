@@ -119,8 +119,8 @@
   background-color: var(--md-sys-color-surface-container-low);
   color: var(--md-sys-color-primary);
   box-shadow:
-    0 1px 2px rgb(from var(--md-sys-color-shadow) r g b / 30%),
-    0 1px 3px 1px rgb(from var(--md-sys-color-shadow) r g b / 15%);
+    0 1px 2px alpha(from var(--md-sys-color-shadow) / 30%),
+    0 1px 3px 1px alpha(from var(--md-sys-color-shadow) / 15%);
 
   &:is([aria-pressed="true"], [aria-current]:not([aria-current="false"])) {
     background-color: var(--md-sys-color-primary-container);
@@ -153,13 +153,13 @@
 
 .button:is(:disabled, [aria-disabled="true"]) {
   border-color: transparent;
-  background-color: rgb(from var(--md-sys-color-on-surface) r g b / 12%);
-  color: rgb(from var(--md-sys-color-on-surface) r g b / 38%);
+  background-color: alpha(from var(--md-sys-color-on-surface) / 12%);
+  color: alpha(from var(--md-sys-color-on-surface) / 38%);
   box-shadow: none;
   cursor: default;
 
   &.button--outlined {
-    border-color: rgb(from var(--md-sys-color-on-surface) r g b / 12%);
+    border-color: alpha(from var(--md-sys-color-on-surface) / 12%);
     background-color: transparent;
   }
 

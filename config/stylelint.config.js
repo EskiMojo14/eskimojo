@@ -48,11 +48,9 @@ const noParentRelativePaths = (primary) => (root, result) => {
 };
 
 const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
-const colorMixArg = String.raw`(?:${colorToken}|transparent|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
+const colorMixArg = String.raw`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
 const colorMix = String.raw`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|longer|increasing|decreasing)\s+hue)?\s*,\s*${colorMixArg}\s*,\s*${colorMixArg}\s*\)$/i`;
-
-// Relative colors, e.g. color(from var(--md-sys-color-primary) srgb r g b / 50%).
-const relativeColor = String.raw`/^(?:color|rgba?|hsla?|hwb|lab|lch|oklab|oklch)\(\s*from\s+${colorToken}\s[^;]*\)$/i`;
+const alphaColor = String.raw`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-state-[a-z-]+-state-layer-opacity\))\s*\)$/i`;
 
 const globalKeywords = ["inherit", "initial", "unset", "revert", "revert-layer"];
 const colorValues = [
@@ -62,7 +60,7 @@ const colorValues = [
   "none",
   "/^url\\(/",
   colorMix,
-  relativeColor,
+  alphaColor,
 ];
 
 // The plugin can't expand these shorthands, so it checks each word: allow the non-colour ones.
@@ -116,7 +114,7 @@ export default {
         severity: "warning",
         disableFix: true,
         message:
-          'Use a design token for "${property}", not "${value}": var(--typo-*) for fonts, var(--md-sys-color-*) or color-mix() of them for colours, var(--md-sys-shape-corner-*) for radii. See Foundations in Storybook.',
+          'Use a design token for "${property}", not "${value}": var(--typo-*) for fonts, var(--md-sys-color-*) or alpha() or color-mix() of them for colours, var(--md-sys-shape-corner-*) for radii. See Foundations in Storybook.',
       },
     ],
   },

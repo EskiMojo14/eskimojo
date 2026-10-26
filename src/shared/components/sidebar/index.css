@@ -43,8 +43,8 @@
     max-block-size: 100%;
     background-image:
       linear-gradient(
-        rgb(from var(--md-sys-color-surface-container-low) r g b / 0.75),
-        rgb(from var(--md-sys-color-surface-container-low) r g b / 0.75)
+        alpha(from var(--md-sys-color-surface-container-low) / 0.75),
+        alpha(from var(--md-sys-color-surface-container-low) / 0.75)
       ),
       url("/OC.PNG");
     background-position: center bottom;
@@ -114,7 +114,7 @@
   overflow-y: auto;
   border-start-end-radius: var(--md-sys-shape-corner-large);
   border-end-end-radius: var(--md-sys-shape-corner-large);
-  box-shadow: 0 1rem 2rem rgb(from var(--md-sys-color-shadow) r g b / 0.24);
+  box-shadow: 0 1rem 2rem alpha(from var(--md-sys-color-shadow) / 0.24);
 }
 
 .site-sidebar__header {

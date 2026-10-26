@@ -114,12 +114,12 @@
 
 .icon-button:is(:disabled, [aria-disabled="true"]) {
   border-color: transparent;
-  background-color: rgb(from var(--md-sys-color-on-surface) r g b / 12%);
-  color: rgb(from var(--md-sys-color-on-surface) r g b / 38%);
+  background-color: alpha(from var(--md-sys-color-on-surface) / 12%);
+  color: alpha(from var(--md-sys-color-on-surface) / 38%);
   cursor: default;
 
   &.icon-button--outlined {
-    border-color: rgb(from var(--md-sys-color-on-surface) r g b / 12%);
+    border-color: alpha(from var(--md-sys-color-on-surface) / 12%);
     background-color: transparent;
   }
 }
