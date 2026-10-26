@@ -47,9 +47,16 @@ export const MixedAppearances = meta.story({
     await userEvent.keyboard("{Home}");
     await expect(canvas.getByRole("heading", { name: "Cory Wong" })).toBeVisible();
     await expect(canvas.getByText("Main: 2")).toBeVisible();
+    await expect(canvas.getByText("1 Jun 2024", { exact: true })).toBeVisible();
+    await expect(canvas.getByText("29 Dec 2024", { exact: true })).not.toBeInTheDocument();
+
+    const supportBar = chart.querySelectorAll("rect")[1];
+    if (!supportBar) throw new Error("Expected the first artist to have a support bar.");
+    await userEvent.hover(supportBar);
     await expect(canvas.getByText("Support: 1")).toBeVisible();
     await expect(canvas.getByText("Supported Vulfpeck")).toBeVisible();
-    await expect(canvas.getByText("O2 Academy Brixton, London")).toBeVisible();
-    await userEvent.keyboard("{Enter}");
+    await expect(canvas.getByText("29 Dec 2024", { exact: true })).toBeVisible();
+    await expect(canvas.getByText("Main: 2")).not.toBeInTheDocument();
+    await expect(canvas.getByText("1 Jun 2024", { exact: true })).not.toBeInTheDocument();
   },
 });

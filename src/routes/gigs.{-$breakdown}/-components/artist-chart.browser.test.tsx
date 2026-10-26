@@ -5,7 +5,7 @@ import { GigsArtistChart } from "./artist-chart";
 
 import "./artist-chart.css";
 
-test("renders exact artist counts and shows both roles on keyboard focus", async () => {
+test("renders exact artist counts and shows the focused appearance role", async () => {
   const result = await page.renderWithProviders(
     <GigsArtistChart
       events={[
@@ -35,18 +35,11 @@ test("renders exact artist counts and shows both roles on keyboard focus", async
   chart.element().focus();
   await userEvent.keyboard("{Home}");
   await expect.element(result.getByRole("heading", { name: "A", exact: true })).toBeVisible();
-  await expect.element(result.getByText("Main: 2")).toBeVisible();
-  await expect.element(result.getByText("Support: 1")).toBeVisible();
-  await expect.element(result.getByText("Supported B", { exact: true })).toBeVisible();
-  await expect
-    .element(result.getByText("Royal Albert Hall, London", { exact: true }))
-    .toBeVisible();
-  await expect.element(result.getByText("1 Jan 2024", { exact: true })).toBeVisible();
-  const entries = result.getByRole("listitem").all();
-  expect(entries[2].element().textContent).toContain("1 Jan 2024");
-  expect(entries[3].element().textContent).toContain("2 Feb 2024");
-  expect(entries[3].element().textContent).not.toContain("Supported");
-  expect(entries[4].element().textContent).toContain("3 Mar 2024");
+  await expect.element(result.getByText("Main: 2", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("Support: 1", { exact: true })).not.toBeInTheDocument();
+  await expect.element(result.getByText("2 Feb 2024", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("3 Mar 2024", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("1 Jan 2024", { exact: true })).not.toBeInTheDocument();
   await userEvent.keyboard("{Enter}");
   await result.getByRole("button", { name: "Close details" }).click();
   chart.element().focus();
@@ -59,4 +52,39 @@ test("renders an explicit empty state without a chart", async () => {
   const result = await page.renderWithProviders(<GigsArtistChart events={[]} />);
   await expect.element(result.getByText("No artists recorded yet.")).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
+});
+
+test("shows only the hovered artist appearance role", async () => {
+  const result = await page.renderWithProviders(
+    <GigsArtistChart
+      events={[
+        { artists: ["A"], support: ["B"], date: "2024-03-03", venue: "Brixton", city: "London" },
+        {
+          artists: ["B"],
+          support: ["A"],
+          date: "2024-01-01",
+          venue: "Royal Albert Hall",
+          city: "London",
+        },
+        { artists: ["A"], support: ["C"], date: "2024-02-02", venue: "Barbican", city: "London" },
+      ]}
+    />,
+  );
+  const chart = result.getByRole("img", { name: "Gigs by artist" });
+  const supportBar = chart.element().querySelectorAll("rect")[1];
+  const mainBar = chart.element().querySelectorAll("rect")[0];
+  if (!supportBar || !mainBar) throw new Error("Expected both artist bar segments.");
+
+  await userEvent.hover(supportBar);
+  await expect.element(result.getByRole("heading", { name: "A", exact: true })).toBeVisible();
+  await expect.element(result.getByText("Support: 1", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("1 Jan 2024", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("3 Mar 2024", { exact: true })).not.toBeInTheDocument();
+  await expect.element(result.getByText("Main: 2", { exact: true })).not.toBeInTheDocument();
+
+  await userEvent.hover(mainBar);
+  await expect.element(result.getByText("Main: 2", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("3 Mar 2024", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("1 Jan 2024", { exact: true })).not.toBeInTheDocument();
+  await expect.element(result.getByText("Support: 1", { exact: true })).not.toBeInTheDocument();
 });

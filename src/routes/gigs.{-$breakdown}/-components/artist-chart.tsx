@@ -13,12 +13,32 @@ import { formatDate } from "#/shared/lib/date";
 import { getArtistChartData, type ArtistEvent } from "./artist-chart-data";
 import { formatVenue } from "./venue-label";
 
+interface ArtistTooltipAppearance {
+  artist: string;
+  role: "Main" | "Support";
+  count: number;
+}
+
+function isArtistTooltipAppearance(value: unknown): value is ArtistTooltipAppearance {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "artist" in value &&
+    typeof value.artist === "string" &&
+    "role" in value &&
+    (value.role === "Main" || value.role === "Support") &&
+    "count" in value &&
+    typeof value.count === "number"
+  );
+}
+
 export function GigsArtistChart({
   events,
 }: {
   events: ReadonlyArray<ArtistEvent & Pick<GigEvent, "date" | "venue" | "city">>;
 }) {
   const artists = useMemo(() => getArtistChartData(events), [events]);
+
   const definition = useMemo(
     () =>
       defineChart({
@@ -69,17 +89,12 @@ export function GigsArtistChart({
           use: tooltip,
           portal,
           sticky: true,
-          content: (points) => {
-            const appearance = points[0]?.datum;
+          content: (points, context) => {
+            const candidate = context.primaryPoint?.datum ?? points[0]?.datum;
+            const appearance = isArtistTooltipAppearance(candidate) ? candidate : undefined;
             return {
               title: appearance?.artist ?? "",
-              rows: appearance
-                ? [
-                    { label: "Main", value: String(appearance.main) },
-                    { label: "Support", value: String(appearance.support) },
-                    { label: "Total", value: String(appearance.total) },
-                  ]
-                : [],
+              rows: appearance ? [{ label: appearance.role, value: String(appearance.count) }] : [],
             };
           },
         },
@@ -108,10 +123,15 @@ export function GigsArtistChart({
         initialWidth={720}
         ariaLabel="Gigs by artist"
         ariaDescription="One horizontal bar per artist, stacked by Main and Support appearances. Artists are sorted by Main appearances, then Support appearances, highest first. A table of exact counts follows for screen readers."
-        renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) =>
-          typeof content === "string" ? (
-            content
-          ) : (
+        renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) => {
+          if (typeof content === "string") return content;
+
+          const role = primaryPoint?.datum.role;
+          const appearances = primaryPoint?.datum.appearances
+            .filter((appearance) => appearance.role === role)
+            .toSorted((a, b) => a.event.date.localeCompare(b.event.date));
+
+          return (
             <div className="tooltip--rich gigs-artists__tooltip">
               <h3 className="tooltip__subhead">{content.title}</h3>
               {content.rows.map((row) => (
@@ -120,19 +140,17 @@ export function GigsArtistChart({
                 </p>
               ))}
               <ul className="gigs-artists__events">
-                {primaryPoint?.datum.appearances
-                  .toSorted((a, b) => a.event.date.localeCompare(b.event.date))
-                  .map(({ event, role }, index) => (
-                    <li key={index}>
-                      <strong>{formatDate(event.date)}</strong>
-                      <p>{formatVenue(event)}</p>
-                      {role === "Support" && (
-                        <p className="gigs-artists__supported">
-                          Supported {event.artists.join(", ")}
-                        </p>
-                      )}
-                    </li>
-                  ))}
+                {appearances?.map(({ event, role: appearanceRole }, index) => (
+                  <li key={index}>
+                    <strong>{formatDate(event.date)}</strong>
+                    <p>{formatVenue(event)}</p>
+                    {appearanceRole === "Support" && (
+                      <p className="gigs-artists__supported">
+                        Supported {event.artists.join(", ")}
+                      </p>
+                    )}
+                  </li>
+                ))}
               </ul>
               {pinned && (
                 <div className="tooltip__actions">
@@ -142,8 +160,8 @@ export function GigsArtistChart({
                 </div>
               )}
             </div>
-          )
-        }
+          );
+        }}
       />
       <div className="gigs-artists__table">
         <table>
