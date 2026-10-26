@@ -136,7 +136,6 @@ test("renders exact monthly counts and a screen-reader-accessible table", async 
   );
 
   await expect.element(result.getByRole("img", { name: "Gigs by month and year" })).toBeVisible();
-  await expect.element(result.getByText(/2 gigs total/)).toBeVisible();
   const table = result.getByRole("table", { name: "Recorded gigs per month and year" });
   await expect.element(table).toBeInTheDocument();
   expect(table.getByRole("columnheader").all()).toHaveLength(13);

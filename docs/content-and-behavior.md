@@ -161,6 +161,9 @@ Keep one Gigs archive with internal views for:
 Open on Year / month. Keep the existing artist and venue breakdowns, and keep
 the city visualization, where circle area represents event count. The city view
 must also provide an accessible text/list alternative.
+The shared intro blurb includes the total number of recorded gigs, calculated
+from the archive, so the count appears above every breakdown rather than only
+inside the monthly heatmap.
 
 The Gigs page uses router-backed primary tabs with stacked icons labelled
 By month, By artist, By venue, and By city. These tabs opt into `responsive` sizing.

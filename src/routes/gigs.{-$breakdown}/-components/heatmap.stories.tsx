@@ -55,7 +55,6 @@ export const KeyboardFocus = meta.story({
 export const SingleGig = meta.story({
   args: { events: [{ ...gigs.events[0], date: "2024-02-29" }] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText(/1 gig total/)).toBeVisible();
     const row = canvas.getByRole("row", { name: /^2024 / });
     await expect(
       within(row)
