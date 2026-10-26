@@ -200,9 +200,10 @@ and text action match the site's rich tooltips. Empty months explicitly say no g
 tapping, or pressing Enter pins the details so long lists can be scrolled.
 Escape, clicking outside, or Close details dismisses pinned details. Dates use
 UTC so calendar dates cannot shift with the visitor's time zone.
-Keyboard focus adds a theme-coloured outline around the chart. The active cell
-has a contrasting border instead of a circular marker; clicking the chart does
-not show the outer keyboard-focus outline.
+All four charts show a secondary-theme-coloured outline only on `:focus-visible`;
+pointer focus does not show it. The city map's clip margin leaves room for its
+outer outline. The heatmap's active cell has a contrasting border
+instead of a circular marker.
 Count labels are decorative chart marks, so each cell contributes only one
 keyboard navigation stop rather than separate stops for its rectangle and text.
 Left/Right move to the adjacent month in the same year; Up/Down move to the

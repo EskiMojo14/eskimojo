@@ -48,8 +48,8 @@ export function GigsCityMap({
         decorative(
           geoShape([englandGeometry], {
             projection,
-            fill: "var(--md-sys-color-green-container)",
-            stroke: "var(--md-sys-color-green)",
+            fill: "var(--md-sys-color-surface-variant)",
+            stroke: "var(--md-sys-color-on-surface-variant)",
             strokeWidth: 1,
           }),
         ),

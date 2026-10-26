@@ -12,6 +12,17 @@
   max-width: 50rem;
   margin-inline: auto;
   overflow: clip;
+  overflow-clip-margin: 6px;
+
+  & svg[role="img"]:focus-visible {
+    outline: 2px solid var(--md-sys-color-secondary);
+    outline-offset: 4px;
+    border-radius: var(--md-sys-shape-corner-extra-small);
+  }
+
+  & svg[role="img"]:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
 .gigs-city-map__tooltip {
