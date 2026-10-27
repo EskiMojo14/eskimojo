@@ -3,6 +3,8 @@ import { posix } from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
 import * as v from "valibot";
 
+const projectLogoRegex = /^\/(projects\/)?[a-z0-9-_]+\.(png|svg|jpe?g)$/i;
+
 const projects = defineCollection({
   name: "projects",
   directory: "src/routes/projects/-content",
@@ -14,8 +16,8 @@ const projects = defineCollection({
     order: v.pipe(v.number(), v.integer(), v.minValue(0)),
     logo: v.optional(
       v.object({
-        light: v.pipe(v.string(), v.regex(/^\/projects\/[a-z0-9-]+\.png$/)),
-        dark: v.optional(v.pipe(v.string(), v.regex(/^\/projects\/[a-z0-9-]+\.png$/))),
+        light: v.pipe(v.string(), v.regex(projectLogoRegex)),
+        dark: v.optional(v.pipe(v.string(), v.regex(projectLogoRegex))),
       }),
     ),
     links: v.array(

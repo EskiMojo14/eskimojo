@@ -1,5 +1,25 @@
 @import "#/routes/projects/-components/project-links/index.css";
 
+:root,
+[data-theme="light"],
+[data-theme="system"] {
+  --project-image-light-display: block;
+  --project-image-dark-display: none;
+}
+
+[data-theme="dark"] {
+  --project-image-light-display: none;
+  --project-image-dark-display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]),
+  [data-theme="system"] {
+    --project-image-light-display: none;
+    --project-image-dark-display: block;
+  }
+}
+
 .projects-page {
   padding: 0 1rem 2rem;
   overflow-wrap: anywhere;

@@ -43,4 +43,12 @@
     max-inline-size: 100%;
     block-size: auto;
   }
+
+  .project-detail__screenshot-light {
+    display: var(--project-image-light-display, block);
+  }
+
+  .project-detail__screenshot-dark {
+    display: var(--project-image-dark-display, none);
+  }
 }
