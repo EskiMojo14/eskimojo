@@ -45,12 +45,8 @@ jobs:
           path: ~/.cache/ms-playwright
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install Chromium system dependencies
-        run: vp exec playwright install-deps chromium
-
-      - name: Install Chromium
-        if: steps.chromium-cache.outputs.cache-hit != 'true'
-        run: vp exec playwright install --no-shell chromium
+      - name: Ensure Chromium and system dependencies are installed
+        run: vp exec playwright install --with-deps --no-shell chromium
 
       - name: Save Chromium cache
         if: steps.chromium-cache.outputs.cache-hit != 'true'
