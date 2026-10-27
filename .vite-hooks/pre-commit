@@ -1,2 +1,2 @@
-vp staged --concurrent false
-vpr typecheck
+vp staged
+vpx scripts/pre-commit-typecheck.ts

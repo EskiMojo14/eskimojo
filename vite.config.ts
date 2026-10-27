@@ -1,33 +1,17 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import contentCollections from "@content-collections/vite";
-import mdx from "@mdx-js/rollup";
-import netlify from "@netlify/vite-plugin-tanstack-start";
-import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
-import { devtools } from "@tanstack/devtools-vite";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
 import eslintPluginRouter from "@tanstack/eslint-plugin-router";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from "@vitejs/plugin-react";
 import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
-import { msw } from "msw/vite";
 import postcssExtendRule from "postcss-extend-rule";
-import rehypePrism from "rehype-prism-plus";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkGfm from "remark-gfm";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
-import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
-import { musicBreakdownLabels } from "#/routes/music.{-$breakdown}/-constants.ts";
-import { links } from "#/shared/components/sidebar/groups";
-import { themeLabels, contrastLabels, paletteLabels } from "#/shared/constants/prefs";
+import { promiseAllKeyed } from "#/utils/index.ts";
 
 import fmtConfig from "./config/fmt.config.ts";
-import materialSymbols from "./vite/symbols.ts";
 
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
@@ -35,8 +19,9 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const config = defineConfig({
   staged: {
-    "*": "vp check --fix",
-    "{src,.storybook}/**/*.css": "vpr lint:css --fix",
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "vp check --fix",
+    "*.css": ["vpr lint:css --fix", "vp fmt"],
+    "!(*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,css})": "vp fmt --no-error-on-unmatched-pattern",
   },
   fmt: fmtConfig,
   lint: {
@@ -126,33 +111,70 @@ const config = defineConfig({
     // nested [data-theme] sections work. The downlevelled fallback resolves at :root.
     lightningcss: { exclude: Features.LightDark },
   },
-  plugins: lazyPlugins(() => [
-    devtools(),
-    contentCollections(),
-    process.env.VITEST !== "true" && netlify(),
-    tanstackStart(),
-    process.env.STORYBOOK !== "true" && {
-      enforce: "pre",
-      ...mdx({
-        remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
-        rehypePlugins: [rehypePrism],
+  plugins: lazyPlugins(async () => {
+    const {
+      contentCollections: { default: contentCollections },
+      mdx: { default: mdx },
+      netlify: { default: netlify },
+      devtools: { devtools },
+      tanstackStart: { tanstackStart },
+      viteReact: { default: viteReact },
+      msw: { msw },
+      rehypePrism: { default: rehypePrism },
+      remarkFrontmatter: { default: remarkFrontmatter },
+      remarkGfm: { default: remarkGfm },
+      remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
+      gigs: { gigBreakdownLabels },
+      music: { musicBreakdownLabels },
+      sidebar: { links },
+      prefs: { themeLabels, contrastLabels, paletteLabels },
+      materialSymbols: { default: materialSymbols },
+    } = await promiseAllKeyed({
+      contentCollections: import("@content-collections/vite"),
+      mdx: import("@mdx-js/rollup"),
+      netlify: import("@netlify/vite-plugin-tanstack-start"),
+      devtools: import("@tanstack/devtools-vite"),
+      tanstackStart: import("@tanstack/react-start/plugin/vite"),
+      viteReact: import("@vitejs/plugin-react"),
+      msw: import("msw/vite"),
+      rehypePrism: import("rehype-prism-plus"),
+      remarkFrontmatter: import("remark-frontmatter"),
+      remarkGfm: import("remark-gfm"),
+      remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
+      gigs: import("#/routes/gigs.{-$breakdown}/-constants"),
+      music: import("#/routes/music.{-$breakdown}/-constants.ts"),
+      sidebar: import("#/shared/components/sidebar/groups"),
+      prefs: import("#/shared/constants/prefs"),
+      materialSymbols: import("./vite/symbols.ts"),
+    });
+    return [
+      devtools(),
+      contentCollections(),
+      process.env.VITEST !== "true" && netlify(),
+      tanstackStart(),
+      process.env.STORYBOOK !== "true" && {
+        enforce: "pre",
+        ...mdx({
+          remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+          rehypePlugins: [rehypePrism],
+        }),
+      },
+      viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
+      materialSymbols({
+        knownSymbols: [
+          ...[
+            themeLabels,
+            contrastLabels,
+            paletteLabels,
+            gigBreakdownLabels,
+            musicBreakdownLabels,
+          ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
+          ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
+        ],
       }),
-    },
-    viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
-    materialSymbols({
-      knownSymbols: [
-        ...[
-          themeLabels,
-          contrastLabels,
-          paletteLabels,
-          gigBreakdownLabels,
-          musicBreakdownLabels,
-        ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
-        ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
-      ],
-    }),
-    msw(),
-  ]),
+      msw(),
+    ];
+  }),
   test: {
     coverage: {
       provider: "v8",
@@ -199,13 +221,16 @@ const config = defineConfig({
       },
       {
         extends: true,
-        plugins: [
-          // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-          storybookTest({
-            configDir: path.join(dirname, ".storybook"),
-          }),
-        ],
+        plugins: lazyPlugins(async () => {
+          const { storybookTest } = await import("@storybook/addon-vitest/vitest-plugin");
+          return [
+            // The plugin will run tests for the stories defined in your Storybook config
+            // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+            storybookTest({
+              configDir: path.join(dirname, ".storybook"),
+            }),
+          ];
+        }),
         test: {
           name: "storybook",
           browser: {

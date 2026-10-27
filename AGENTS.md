@@ -32,6 +32,13 @@ release. Add a tool name to select part of the graph. For example, run
 
 ## Continuous integration
 
+Pre-commit runs non-overlapping staged tasks concurrently: JS/TS checks,
+CSS lint followed by formatting, and formatting for other files. The full
+type check runs for staged `.ts`, `.tsx`, and `.mdx` files (including deletions),
+or changes to `tsconfig.json`, `package.json`, `pnpm-lock.yaml`, or
+`pnpm-workspace.yaml`. Keep build/test-only imports inside
+`lazyPlugins` callbacks so formatting and linting do not load them.
+
 [CI](.github/workflows/ci.yml) runs on pull requests, pushes to `main`, and
 manual dispatches. It uses [.node-version](.node-version) for Node.js, the
 workspace catalog for Vite+, and `devEngines.packageManager` in
