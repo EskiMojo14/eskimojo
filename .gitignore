@@ -26,3 +26,4 @@ storybook-static
 # Local Netlify folder
 .netlify
 .vitest/
+.content-collections/

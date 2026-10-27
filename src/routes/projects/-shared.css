@@ -1,0 +1,53 @@
+@import "#/routes/projects/-components/project-links/index.css";
+
+.projects-page {
+  padding: 0 1rem 2rem;
+  overflow-wrap: anywhere;
+}
+
+.project-title {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin: 0;
+  font: var(--typo-headline-small);
+  font-feature-settings: var(--typo-features-heading);
+  color: var(--md-sys-color-primary);
+  view-transition-class: project-title;
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.project-summary {
+  margin: 0;
+  font: var(--typo-body-large);
+  font-feature-settings: var(--typo-features-body);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.projects-page a:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 4px;
+}
+
+::view-transition-group(.project-title) {
+  animation-duration: var(--md-sys-motion-spring-slow-spatial-duration);
+  animation-timing-function: var(--md-sys-motion-spring-slow-spatial);
+}
+
+::view-transition-old(.project-title),
+::view-transition-new(.project-title) {
+  animation-duration: var(--md-sys-motion-spring-slow-effects-duration);
+  animation-timing-function: var(--md-sys-motion-spring-slow-effects);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.project-title),
+  ::view-transition-old(.project-title),
+  ::view-transition-new(.project-title) {
+    animation: none;
+  }
+}

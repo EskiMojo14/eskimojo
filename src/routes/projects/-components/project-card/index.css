@@ -1,0 +1,5 @@
+@import "#/routes/projects/-shared.css";
+
+.project-card {
+  block-size: 100%;
+}

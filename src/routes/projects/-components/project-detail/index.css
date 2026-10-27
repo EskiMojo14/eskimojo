@@ -1,0 +1,46 @@
+@import "#/routes/projects/-shared.css";
+
+.project-title--detail {
+  font: var(--typo-display-small);
+  font-feature-settings: var(--typo-features-heading);
+}
+
+.project-detail {
+  max-inline-size: 70ch;
+  margin: 1.5rem auto 0;
+}
+
+.project-detail__header {
+  display: grid;
+  gap: 1rem;
+  padding-block-end: 1.5rem;
+  border-block-end-width: 1px;
+  border-block-end-style: solid;
+  border-block-end-color: var(--md-sys-color-outline-variant);
+}
+
+.project-detail__body {
+  font: var(--typo-body-large);
+  font-feature-settings: var(--typo-features-body);
+
+  h2 {
+    margin-block: 2rem 1rem;
+    font: var(--typo-headline-small);
+    font-feature-settings: var(--typo-features-heading);
+  }
+
+  h3 {
+    font: var(--typo-title-large);
+    font-feature-settings: var(--typo-features-heading);
+  }
+
+  pre {
+    max-inline-size: 100%;
+    overflow: auto;
+  }
+
+  img {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+}

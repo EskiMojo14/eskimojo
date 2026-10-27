@@ -3,6 +3,7 @@ import { useState, type ComponentPropsWithRef } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
+import { InternalLinkIconButton } from "#/shared/components/buttons/link-icon-button";
 import { PreferencesDialog } from "#/shared/components/prefs/dialog";
 import { useRipple } from "#/shared/components/ripple";
 import { links } from "#/shared/components/sidebar/groups";
@@ -45,19 +46,31 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
     select: (matches) =>
       matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
   });
+  const { label: backLabel, ...backLink } = pageData?.backLink ?? {};
 
   return (
     <>
       <header {...appBarBem({ modifiers: { "with-subtitle": Boolean(pageData?.subtitle) } })}>
         <fieldset {...appBarBem({ element: "actions" })} aria-label="Page actions">
-          <IconButton
-            {...appBarBem({ element: "navigation" })}
-            icon={<MdSymbol>menu</MdSymbol>}
-            aria-label="Open navigation menu"
-            aria-haspopup="dialog"
-            aria-expanded={navigationOpen}
-            onClick={onOpenNavigation}
-          />
+          {pageData?.backLink ? (
+            <InternalLinkIconButton
+              {...backLink}
+              activeOptions={{ exact: true }}
+              {...appBarBem({ element: "back" })}
+              aria-label={backLabel ?? "Back"}
+              tooltip={backLabel}
+              icon={<MdSymbol flipRtl>arrow_back</MdSymbol>}
+            />
+          ) : (
+            <IconButton
+              {...appBarBem({ element: "navigation" })}
+              icon={<MdSymbol>menu</MdSymbol>}
+              aria-label="Open navigation menu"
+              aria-haspopup="dialog"
+              aria-expanded={navigationOpen}
+              onClick={onOpenNavigation}
+            />
+          )}
           <IconButton
             {...appBarBem({ element: "preferences" })}
             icon={

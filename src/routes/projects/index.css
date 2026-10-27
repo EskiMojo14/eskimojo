@@ -1,6 +1,17 @@
+@import "#/routes/projects/-components/project-card/index.css";
+
 .projects-intro {
-  padding: 0 1rem;
+  max-inline-size: 65ch;
   > p {
     margin: 0 0 1rem 0;
   }
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  list-style: none;
 }

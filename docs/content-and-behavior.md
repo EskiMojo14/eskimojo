@@ -39,9 +39,18 @@ comprehensive repository catalogue. The agreed initial scope is:
 4. **Redux Toolkit:** feature the maintainer contribution separately and also
    mention it in About.
 
-The exact project descriptions, destinations, ordering, and visual treatment
-are **Open**. Do not imply that a project is currently maintained or
-production-ready unless that is confirmed.
+Each entry is authored in MDX, with validated frontmatter for its title, short
+summary, links, and ordering. The overview links to a dedicated
+`/projects/<slug>` page, dynamically importing that entry's body on navigation.
+A shared-title View Transition connects the two views and respects reduced
+motion. See [MDX content](./mdx-content.md) for authoring details.
+The detail page has a back-arrow link in the app bar that returns to Projects,
+including on direct visits; it replaces the menu action rather than adding a
+second control in the page content.
+
+The initial descriptions and destinations are drafts and remain **Open** for
+review. Do not imply that a project is currently maintained or production-ready
+unless that is confirmed.
 
 ## Contact and public links
 

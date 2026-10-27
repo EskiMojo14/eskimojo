@@ -38,6 +38,33 @@ export const Default = meta.story({
   },
 });
 
+export const WithBackLink = meta.story({
+  parameters: {
+    tanstack: {
+      router: {
+        route: createFileRoute("/")({
+          staticData: {
+            title: "Projects",
+            backLink: {
+              to: "/projects",
+              label: "Back to projects",
+              viewTransition: { types: ["project"] },
+            },
+          },
+        }),
+      },
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("link", { name: "Back to projects" })).toHaveAttribute(
+      "href",
+      "/projects",
+    );
+    await expect(canvas.queryByRole("button", { name: "Open navigation menu" })).toBeNull();
+    await expect(canvas.getByRole("button", { name: "Preferences" })).toBeVisible();
+  },
+});
+
 export const MobileBottomBar = meta.story({
   parameters: {
     viewport: {

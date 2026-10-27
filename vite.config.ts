@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import contentCollections from "@content-collections/vite";
 import mdx from "@mdx-js/rollup";
 import netlify from "@netlify/vite-plugin-tanstack-start";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
@@ -126,6 +127,7 @@ const config = defineConfig({
   },
   plugins: lazyPlugins(() => [
     devtools(),
+    contentCollections(),
     netlify(),
     tanstackStart(),
     process.env.STORYBOOK !== "true" && {

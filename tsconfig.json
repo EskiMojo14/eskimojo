@@ -7,7 +7,8 @@
     "paths": {
       "#/*": ["./src/*"],
       "#test/*": ["./test/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "content-collections": ["./.content-collections/generated"]
     },
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["vite/client", "msw/vite/client"],

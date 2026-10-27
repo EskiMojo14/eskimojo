@@ -25,6 +25,13 @@
   min-block-size: 4rem;
 }
 
+.app-bar__back {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  color: inherit;
+}
+
 .app-bar__bottom-navigation {
   display: none;
 

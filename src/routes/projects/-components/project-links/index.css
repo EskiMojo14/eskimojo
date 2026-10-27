@@ -1,0 +1,14 @@
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0;
+  margin: auto 0 0;
+  list-style: none;
+
+  .button {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    max-inline-size: 100%;
+  }
+}
