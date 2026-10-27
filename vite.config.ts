@@ -129,7 +129,7 @@ const config = defineConfig({
   plugins: lazyPlugins(() => [
     devtools(),
     contentCollections(),
-    netlify(),
+    process.env.VITEST !== "true" && netlify(),
     tanstackStart(),
     process.env.STORYBOOK !== "true" && {
       enforce: "pre",

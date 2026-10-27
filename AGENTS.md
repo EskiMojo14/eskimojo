@@ -46,6 +46,10 @@ To reproduce its checks locally, run `vp run check`, `vp run build`, and
 `vp exec playwright install --with-deps chromium` on a fresh machine.
 When changing workflows, validate them with Actionlint and Zizmor.
 
+Vitest excludes the Netlify plugin so its Vite servers do not start platform
+emulation or race to install Deno. Keep Netlify enabled for normal dev and
+production builds.
+
 ## Storybook MCP
 
 For UI work, use the `storybook` MCP server when it is available and Storybook is running. Use its docs tools to discover documented components and their APIs before creating or changing UI, and its development and testing tools to preview and validate story changes.
