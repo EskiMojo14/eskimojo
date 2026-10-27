@@ -171,7 +171,7 @@ export default definePreview({
     options: {
       storySort: {
         method: "alphabetical",
-        order: ["Foundations", "Components"],
+        order: ["Welcome", "Foundations", "Components"],
       },
     },
   },
