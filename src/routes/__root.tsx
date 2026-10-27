@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       contrast: getContrastFn(),
       palette: getPaletteFn(),
     }),
-  head: getDocumentHead,
+  head: ({ loaderData }) => getDocumentHead(loaderData?.palette),
   shellComponent: RootDocument,
 });
 

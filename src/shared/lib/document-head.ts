@@ -1,5 +1,6 @@
 import { createMetadataGenerator } from "tanstack-meta";
 
+import type { Palette } from "#/shared/constants/prefs";
 import { symbolsUrl } from "#/shared/lib/symbols";
 
 import appCss from "#/shared/styles/index.css?url";
@@ -45,7 +46,7 @@ export function generatePageMetadata({
   });
 }
 
-export function getDocumentHead() {
+export function getDocumentHead(palette: Palette = "goat") {
   const metadata = generatePageMetadata({
     title: "eskimojo",
     description: "eskimojo's personal website: projects, music, and live gigs.",
@@ -59,6 +60,12 @@ export function getDocumentHead() {
     ],
     links: [
       ...metadata.links,
+      {
+        rel: "icon",
+        href: palette === "goat" ? "/favicon.png" : "/favicon-arctic.png",
+        type: "image/png",
+        sizes: "64x64",
+      },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
