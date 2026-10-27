@@ -1,6 +1,6 @@
 ---
-title: history-adapter
-summary: Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+title: History Adapter
+summary: Utilities for undoable state management
 order: 2
 logo:
   light: /projects/history-adapter.png
@@ -11,15 +11,24 @@ links:
     href: https://github.com/EskiMojo14/history-adapter
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua.
+Inspired by [`redux-undo`](https://github.com/omnidan/redux-undo) and [`createEntityAdapter`](https://redux-toolkit.js.org/api/createEntityAdapter), this package provides utilities for managing undoable state. It can be used with Redux, or any other state management solution (such as Zustand).
 
-## Ut enim ad minim veniam
+```ts
+import { createHistoryAdapter } from "history-adapter";
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-aliquip ex ea commodo consequat.
+interface CounterState {
+  value: number;
+}
 
-## Duis aute irure dolor
+const counterAdapter = createHistoryAdapter<CounterState>({ limit: 5 });
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-eu fugiat nulla pariatur.
+const initialState = counterAdapter.getInitialState({ value: 0 });
+
+const incrementBy = counterAdapter.undoable((state, by = 1) => {
+  state.value += by;
+});
+
+const newState = incrementBy(initialState, 2);
+
+const previousState = counterAdapter.undo(newState);
+```

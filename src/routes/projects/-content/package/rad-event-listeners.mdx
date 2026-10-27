@@ -1,21 +1,38 @@
 ---
-title: rad-event-listeners
-summary: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+title: Rad Event Listeners
+summary: Utilities for adding multiple event listeners
 order: 3
 links:
   - label: View source
     href: https://github.com/EskiMojo14/rad-event-listeners
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua.
+Utility to add multiple event listeners, which can be individually removed, or all at once.
 
-## Ut enim ad minim veniam
+Also provides a signal that aborts on reentry, to help clean up processes set up in the event listener.
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-aliquip ex ea commodo consequat.
+Inspired by [rad-event-listener](https://github.com/JLarky/rad-event-listener).
 
-## Excepteur sint occaecat
+```ts
+import { radEventListeners } from "rad-event-listeners";
 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-deserunt mollit anim id est laborum.
+const unsub = radEventListeners(
+  window,
+  {
+    // signal aborts when next click event is fired
+    click: (ev, signal) => console.log(ev, signal),
+    keydown: [
+      {
+        handleEvent: (ev, signal) => console.log(ev, signal),
+      },
+      // Event options
+      { once: true },
+    ],
+  },
+  // Global options
+  { passive: true },
+);
+
+unsub.click();
+unsub();
+```
