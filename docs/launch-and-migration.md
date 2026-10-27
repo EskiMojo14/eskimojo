@@ -5,21 +5,42 @@
 Use the repository's existing Netlify setup for the new site. Do not switch
 hosts as part of the design unless that decision is revisited explicitly.
 
+### Storybook
+
+Deploy Storybook as a separate Netlify project using `pnpm run build-storybook`
+and the `storybook-static` publish directory. Ensure that this project's
+effective build settings use those values rather than the application build.
+Settings in a `netlify.toml` override the Netlify UI.
+
+Storybook sets `STORYBOOK=true`. The shared Vite configuration uses that flag
+to exclude the TanStack Start and Netlify application plugins, as well as the
+application MDX plugin. Keep these plugins enabled for normal application
+builds; Storybook's framework handles its own routing and server-code mocks.
+
 ## Domain
 
-`eskimojo.dev` is a preliminary candidate for the public URL, not a confirmed
-domain. It has not been purchased. The code currently uses
-`https://eskimojo.dev` to resolve absolute social preview image URLs, but that
-does not indicate ownership or a final domain decision. Do not buy the domain
-or change production domain settings without explicit authorization.
+`eskimojo.dev` is owned by the site owner and registered through Namecheap.
+DNS remains managed at Namecheap, with separate Netlify projects for:
+
+- Main site: [eskimojo.dev](https://eskimojo.dev).
+- Storybook: [storybook.eskimojo.dev](https://storybook.eskimojo.dev), a subdomain
+  of the same owned domain, not a separate registration.
+
+The main site's `www.eskimojo.dev` alias redirects to `eskimojo.dev`.
+Absolute social preview image URLs resolve against `https://eskimojo.dev`.
+Do not change production domain settings without explicit authorization.
 
 ### Verification status
 
-Checked 2026-10-26: the repository contains Netlify configuration, but its
-production deployment and domain configuration could not be verified from the
-available project information. The domain has not been purchased; ownership,
-DNS, and production configuration therefore remain unconfirmed. Revisit these
-checks only after a domain has been selected and purchased.
+Checked 2026-10-27: domain purchase is confirmed. The main site's DNS resolves
+to Netlify, HTTPS serves the site successfully, and its Let's Encrypt
+certificate covers both `eskimojo.dev` and `www.eskimojo.dev`. Netlify manages
+certificate renewal.
+
+The Storybook subdomain's CNAME points to `storybook-eskimojo.netlify.app`.
+Its deployment remains pending verification after the Storybook build fix;
+the corrected build succeeds locally, but the deployed Storybook content and
+its HTTPS certificate still need checking.
 
 ## Relationship to the Neocities site
 
@@ -55,14 +76,14 @@ Migration priorities:
 
 ## Deployment and secrets
 
-Confirm the Netlify production site, environment configuration, and final
-domain before launch. Last.fm credentials or other secrets must be supplied
+Verify the deployment environment configuration before launch.
+Last.fm credentials or other secrets must be supplied
 through the deployment's secret/environment configuration, never committed to
 the repository or written into these documents.
 
 ## Open before launch
 
-- Confirm domain registration, DNS, and Netlify domain configuration.
+- Verify the Storybook deployment and HTTPS at `storybook.eskimojo.dev`.
 - Decide how unavailable Last.fm data is presented and whether the existing
   five-minute refresh cadence is retained.
 - Supply final About and project copy, project URLs, and any imagery.

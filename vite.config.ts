@@ -150,8 +150,8 @@ const config = defineConfig({
     return [
       devtools(),
       contentCollections(),
-      process.env.VITEST !== "true" && netlify(),
-      tanstackStart(),
+      process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
+      process.env.STORYBOOK !== "true" && tanstackStart(),
       process.env.STORYBOOK !== "true" && {
         enforce: "pre",
         ...mdx({
