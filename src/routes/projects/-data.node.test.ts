@@ -9,8 +9,8 @@ test("separates projects, individual packages, and contributions in display orde
       slugs: projectsByKind[kind]?.map(({ slug }) => slug) ?? [],
     })),
   ).toEqual([
-    { title: "Projects", slugs: ["keycaplendar", "schema-benchmarks"] },
-    { title: "Packages", slugs: ["history-adapter", "rad-event-listeners", "mix-n-matchers"] },
+    { title: "Projects", slugs: ["schema-benchmarks", "keycaplendar"] },
+    { title: "Packages", slugs: ["mix-n-matchers", "history-adapter", "rad-event-listeners"] },
     { title: "Open-source contributions", slugs: ["redux-toolkit", "valibot"] },
   ]);
 });

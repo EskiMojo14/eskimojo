@@ -1,7 +1,7 @@
 import { lazyRouteComponent } from "@tanstack/react-router";
 import type { MDXModule } from "mdx/types";
 
-const modules = import.meta.glob<MDXModule>("./-content/*.mdx");
+const modules = import.meta.glob<MDXModule>("./-content/**/*.mdx");
 const components = new Map(
   Object.entries(modules).map(([path, load]) => [path, lazyRouteComponent(load)]),
 );

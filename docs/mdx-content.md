@@ -38,9 +38,14 @@ transform plugins, and highlighting does not change the MDX types.
 
 ## Project entries
 
-Projects live in `src/routes/projects/-content/*.mdx`. Each file becomes a card
+Projects live in `src/routes/projects/-content/`, grouped into `project/`,
+`package/`, and `contribution/` subfolders. The folder determines their `kind`;
+do not include it in frontmatter.
+Each file becomes a card
 at `/projects/` and a detail page at `/projects/<filename-without-extension>`.
-Use lowercase, hyphen-separated filenames.
+Use lowercase, hyphen-separated filenames, unique across all subfolders.
+Only the filename determines the public slug; the type folder is not part
+of the URL.
 
 [Content Collections](https://www.content-collections.dev/) discovers these files
 and validates their metadata against the Valibot schema in
@@ -50,7 +55,6 @@ parser deliberately leaves the MDX body out of the generated collection.
 ```mdx
 ---
 title: Example project
-kind: project
 summary: A short overview for the project card and page metadata.
 order: 10
 logo:
@@ -68,8 +72,9 @@ The longer description goes here.
 Markdown, images, and MDX components can tell the rest of the story.
 ```
 
-Set `kind` to `project`, `package`, or `contribution` to choose its overview
-section: Projects, Packages, or Open-source contributions. Empty sections are
+Place each entry directly in `project/`, `package/`, or `contribution/` to choose
+its overview section: Projects, Packages, or Open-source contributions.
+Unknown folders and deeper nesting fail content validation. Empty sections are
 omitted. Entries within each section sort by ascending `order`, then title.
 `links` can be empty. The initial
 seven entries use lorem ipsum summaries and bodies as explicit placeholders. Each TypeScript
