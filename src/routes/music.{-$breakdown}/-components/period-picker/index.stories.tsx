@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { useState } from "react";
-import { expect } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
@@ -55,15 +55,19 @@ const meta = preview.meta({
 export const Selection = meta.story({
   render: () => <Demo />,
   play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByRole("link", { name: "30 days" })).toHaveAttribute(
+    await expect(await canvas.findByRole("link", { name: "30 days" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     await userEvent.click(canvas.getByRole("link", { name: "All time" }));
-    await expect(canvas.getByRole("link", { name: "All time" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    await expect(canvas.getByRole("link", { name: "30 days" })).not.toHaveAttribute("aria-current");
+    await waitFor(async () => {
+      await expect(canvas.getByRole("link", { name: "All time" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
+      await expect(canvas.getByRole("link", { name: "30 days" })).not.toHaveAttribute(
+        "aria-current",
+      );
+    });
   },
 });
