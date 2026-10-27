@@ -30,6 +30,18 @@ release. Add a tool name to select part of the graph. For example, run
 
 <!--VITE PLUS END-->
 
+## Continuous integration
+
+[CI](.github/workflows/ci.yml) runs on pull requests, pushes to `main`, and
+manual dispatches. It uses [.node-version](.node-version) for Node.js, the
+workspace catalog for Vite+, and `devEngines.packageManager` in
+[package.json](package.json) for pnpm, with a frozen lockfile install.
+
+To reproduce its checks locally, run `vp run check`, `vp run build`, and
+`vp test run`. Install the test browser first with
+`vp exec playwright install --with-deps chromium` on a fresh machine.
+When changing workflows, validate them with Actionlint and Zizmor.
+
 ## Storybook MCP
 
 For UI work, use the `storybook` MCP server when it is available and Storybook is running. Use its docs tools to discover documented components and their APIs before creating or changing UI, and its development and testing tools to preview and validate story changes.
