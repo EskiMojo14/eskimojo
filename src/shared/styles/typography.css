@@ -105,5 +105,6 @@ h6 {
 
 code,
 pre {
+  font-family: "Paper Mono", monospace;
   font-feature-settings: var(--typo-features-code);
 }

@@ -12,7 +12,7 @@
   font: var(--typo-headline-small);
   font-feature-settings: var(--typo-features-heading);
   color: var(--md-sys-color-primary);
-  view-transition-class: project-title;
+  view-transition-class: project-header;
 
   a {
     color: inherit;
@@ -22,6 +22,7 @@
 }
 
 .project-summary {
+  view-transition-class: project-header;
   margin: 0;
   font: var(--typo-body-large);
   font-feature-settings: var(--typo-features-body);
@@ -33,21 +34,21 @@
   outline-offset: 4px;
 }
 
-::view-transition-group(.project-title) {
+::view-transition-group(.project-header) {
   animation-duration: var(--md-sys-motion-spring-slow-spatial-duration);
   animation-timing-function: var(--md-sys-motion-spring-slow-spatial);
 }
 
-::view-transition-old(.project-title),
-::view-transition-new(.project-title) {
+::view-transition-old(.project-header),
+::view-transition-new(.project-header) {
   animation-duration: var(--md-sys-motion-spring-slow-effects-duration);
   animation-timing-function: var(--md-sys-motion-spring-slow-effects);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(.project-title),
-  ::view-transition-old(.project-title),
-  ::view-transition-new(.project-title) {
+  ::view-transition-group(.project-header),
+  ::view-transition-old(.project-header),
+  ::view-transition-new(.project-header) {
     animation: none;
   }
 }

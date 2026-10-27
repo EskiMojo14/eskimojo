@@ -7,21 +7,12 @@
  * - .storybook/palette.gen.ts: goat's standard-contrast roles as literal hex values for
  *   Storybook's own UI, plus an accent for its colorSecondary that meets WCAG AA.
  *
- * The exports only contain the scheme's own roles, so extended colours (Material palette
- * hues the scheme lacks, e.g. green) are generated here: each is harmonised towards the
- * scheme's primary, then given primary-style roles by a tonal-spot scheme at each
- * contrast level, the same way the Theme Builder derives the exported roles.
+ * Syntax colours combine the two palettes' standard accents, adjusting their
+ * light-mode tones only as far as each contrast target requires.
  */
 import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 
-import {
-  argbFromHex,
-  Blend,
-  Hct,
-  MaterialDynamicColors,
-  SchemeTonalSpot,
-  TonalPalette,
-} from "@material/material-color-utilities";
+import { argbFromHex, Hct, TonalPalette } from "@material/material-color-utilities";
 
 import { writeFormatted } from "./write-formatted.ts";
 
@@ -30,16 +21,9 @@ type Scheme = "light" | "dark";
 
 const themeDir = new URL("../src/shared/styles/theme/", import.meta.url);
 const levels = {
-  standard: { suffix: "", contrast: 0 },
-  medium: { suffix: "-mc", contrast: 0.5 },
-  high: { suffix: "-hc", contrast: 1 },
-} as const;
-
-/** Material 2 palette 500s; only their hue and chroma are used. */
-const extendedColors = {
-  green: "#4caf50",
-  yellow: "#ffeb3b",
-  teal: "#009688",
+  standard: { suffix: "" },
+  medium: { suffix: "-mc" },
+  high: { suffix: "-hc" },
 } as const;
 
 function readTokens(theme: string, file: string): Map<string, string> {
@@ -75,30 +59,7 @@ function parseRgb(value: string): Rgb {
 }
 
 const hex = (c: Rgb) => `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-const toRgb = (argb: number) => `rgb(${(argb >> 16) & 255} ${(argb >> 8) & 255} ${argb & 255})`;
-
-function addExtendedColors(roles: Map<string, [string, string]>, contrastLevel: number) {
-  const primary = roles.get("primary");
-  if (!primary) throw new Error("The export has no primary role");
-  const source = argbFromHex(hex(parseRgb(primary[0])));
-  const materialColors = new MaterialDynamicColors();
-  for (const [name, value] of Object.entries(extendedColors)) {
-    const hct = Hct.fromInt(Blend.harmonize(argbFromHex(value), source));
-    const [light, dark] = [false, true].map(
-      (isDark) => new SchemeTonalSpot(hct, isDark, contrastLevel),
-    );
-    const colors = {
-      [name]: materialColors.primary(),
-      [`on-${name}`]: materialColors.onPrimary(),
-      [`${name}-container`]: materialColors.primaryContainer(),
-      [`on-${name}-container`]: materialColors.onPrimaryContainer(),
-    };
-    for (const [role, color] of Object.entries(colors)) {
-      roles.set(role, [toRgb(color.getArgb(light)), toRgb(color.getArgb(dark))]);
-    }
-  }
-  return roles;
-}
+const fromArgb = (argb: number): Rgb => [(argb >> 16) & 255, (argb >> 8) & 255, argb & 255];
 
 const themes = readdirSync(new URL("exports/", themeDir), { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
@@ -109,15 +70,71 @@ const themePalettes = Object.fromEntries(
   themes.map((theme) => [
     theme,
     Object.fromEntries(
-      Object.entries(levels).map(([level, { suffix, contrast: contrastLevel }]) => [
-        level,
-        addExtendedColors(readLevel(theme, suffix), contrastLevel),
-      ]),
+      Object.entries(levels).map(([level, { suffix }]) => [level, readLevel(theme, suffix)]),
     ),
   ]),
 );
 const palettes = themePalettes.goat;
 if (!palettes) throw new Error("The goat theme is required for Storybook's palette");
+
+const syntaxRoles = {
+  keyword: ["goat", "primary"],
+  string: ["arctic", "tertiary"],
+  function: ["arctic", "primary"],
+  number: ["goat", "tertiary"],
+  type: ["arctic", "primary"],
+  parameter: ["goat", "error"],
+};
+const syntaxBlocks = Object.entries({ standard: 4.5, medium: 6, high: 7 }).map(
+  ([level, target]) => {
+    const backgrounds = Object.values(themePalettes).map((palette) => {
+      const background = palette[level].get("surface-container-low");
+      if (!background) throw new Error(`Missing syntax background for ${level}`);
+      return parseRgb(background[0]);
+    });
+    const declarations = Object.entries(syntaxRoles).map(([name, [theme, role]]) => {
+      const colors = themePalettes[theme]?.standard.get(role);
+      if (!colors) throw new Error(`Missing syntax colour ${theme}/${role}`);
+      const original = parseRgb(colors[0]);
+      const hct = Hct.fromInt(argbFromHex(hex(original)));
+      let light = original;
+      for (
+        let tone = hct.tone;
+        backgrounds.some((bg) => contrast(light, bg) < target);
+        tone -= 0.1
+      ) {
+        if (tone < 0) throw new Error(`Cannot meet ${target}:1 for syntax ${name}`);
+        light = fromArgb(Hct.from(hct.hue, hct.chroma, tone).toInt());
+      }
+      return `  --syntax-${name}: light-dark(rgb(${light.join(" ")}), ${colors[1]});`;
+    });
+    return `%syntax-${level} {\n${declarations.join("\n")}\n}`;
+  },
+);
+await writeFormatted(
+  new URL("../syntax.gen.css", themeDir),
+  `/* Generated by scripts/generate-theme.ts from theme/exports — do not edit by hand. */\n\n${syntaxBlocks.join("\n\n")}
+
+:root,
+[data-contrast="standard"] {
+  @extend %syntax-standard;
+}
+
+[data-contrast="medium"] {
+  @extend %syntax-medium;
+}
+
+[data-contrast="high"] {
+  @extend %syntax-high;
+}
+
+@media (prefers-contrast: more) {
+  :root:is(:not([data-contrast]), [data-contrast="system"]) {
+    @extend %syntax-high;
+  }
+}
+`,
+);
 
 // palettes/<name>.gen.css
 
@@ -147,8 +164,6 @@ for (const [name, [l, d]] of palettes.standard) {
   roles.light[key] = parseRgb(l);
   roles.dark[key] = parseRgb(d);
 }
-
-const fromArgb = (argb: number): Rgb => [(argb >> 16) & 255, (argb >> 8) & 255, argb & 255];
 
 function luminance(c: Rgb) {
   const [r, g, b] = c.map((v) => {

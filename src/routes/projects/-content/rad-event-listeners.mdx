@@ -1,0 +1,40 @@
+---
+title: rad-event-listeners
+kind: package
+summary: Grouped event-listener management with setup and cleanup kept together.
+order: 31
+links:
+  - label: View source
+    href: https://github.com/EskiMojo14/rad-event-listeners
+---
+
+Event listeners often belong together, including when it is time to remove
+them. rad-event-listeners explores making that lifecycle easier to follow.
+
+## One interaction, several events
+
+A drag interaction might involve pointer movement, a release, and cancellation.
+Thinking about those listeners as a group makes their shared purpose clearer.
+
+```ts
+import { radEventListeners } from "rad-event-listeners";
+
+const unsubscribe = radEventListeners(document, {
+  pointermove: (event) => {
+    console.log("Pointer moved", event);
+  },
+  pointerup: (event) => {
+    console.log("Pointer released", event);
+  },
+  pointercancel: (event) => {
+    console.log("Pointer cancelled", event);
+  },
+});
+// Later, when you want to remove the listeners
+unsubscribe();
+```
+
+## Small tools, clear boundaries
+
+This is draft copy for the project page, not a complete API reference or a
+statement about the library's current maintenance.

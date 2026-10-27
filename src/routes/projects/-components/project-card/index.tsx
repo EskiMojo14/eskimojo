@@ -7,16 +7,29 @@ import { Card } from "#/shared/components/card";
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Card className="project-card">
-      <h2 className="project-title" style={{ viewTransitionName: `project-${project.slug}` }}>
-        <Link
-          to="/projects/$slug"
-          params={{ slug: project.slug }}
-          viewTransition={{ types: ["project"] }}
-        >
-          {project.title}
-        </Link>
-      </h2>
-      <p className="project-summary">{project.summary}</p>
+      <div className="project-card__heading">
+        {project.logo && (
+          <span className="project-card__logo" data-themed={project.logo.dark ? "" : undefined}>
+            <img src={project.logo.light} alt="" width={40} height={40} />
+            {project.logo.dark && <img src={project.logo.dark} alt="" width={40} height={40} />}
+          </span>
+        )}
+        <h3 className="project-title" style={{ viewTransitionName: `project-${project.slug}` }}>
+          <Link
+            to="/projects/$slug"
+            params={{ slug: project.slug }}
+            viewTransition={{ types: ["project"] }}
+          >
+            {project.title}
+          </Link>
+        </h3>
+      </div>
+      <p
+        className="project-summary"
+        style={{ viewTransitionName: `project-summary-${project.slug}` }}
+      >
+        {project.summary}
+      </p>
       <ProjectLinks project={project} />
     </Card>
   );

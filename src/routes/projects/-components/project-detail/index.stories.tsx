@@ -18,7 +18,7 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   args: {
-    project: getProject("typescript-utilities"),
+    project: getProject("history-adapter"),
     children: (
       <>
         <h2>The full story</h2>
@@ -27,11 +27,9 @@ export const Default = meta.story({
     ),
   },
   play: async ({ canvas }) => {
-    await expect(
-      canvas.getByRole("heading", { name: "TypeScript utilities", level: 1 }),
-    ).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "history-adapter", level: 1 })).toBeVisible();
     await expect(canvas.getByRole("heading", { name: "The full story" })).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "history-adapter" })).toHaveAttribute(
+    await expect(canvas.getByRole("link", { name: "View source" })).toHaveAttribute(
       "href",
       "https://github.com/EskiMojo14/history-adapter",
     );

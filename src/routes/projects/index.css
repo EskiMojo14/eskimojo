@@ -12,6 +12,16 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
   gap: 1rem;
   padding: 0;
-  margin: 1.5rem 0 0;
+  margin: 1rem 0 0;
   list-style: none;
+}
+
+.projects-section {
+  margin-block-start: 2rem;
+}
+
+.projects-section__title {
+  margin: 0;
+  font: var(--typo-headline-medium);
+  font-feature-settings: var(--typo-features-heading);
 }

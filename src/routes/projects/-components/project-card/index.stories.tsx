@@ -29,3 +29,47 @@ export const Default = meta.story({
     );
   },
 });
+
+export const Package = meta.story({
+  args: { project: getProject("history-adapter") },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("heading", { name: "history-adapter", level: 3 })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "history-adapter" })).toHaveAttribute(
+      "href",
+      "/projects/history-adapter",
+    );
+  },
+});
+
+export const ThemedLogo = meta.story({
+  args: { project: getProject("schema-benchmarks") },
+  globals: { theme: "light" },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('img[src="/projects/schema-benchmarks-light.png"]'),
+    ).toBeVisible();
+    await expect(
+      canvasElement.querySelector('img[src="/projects/schema-benchmarks-dark.png"]'),
+    ).not.toBeVisible();
+  },
+});
+
+export const DarkLogo = meta.story({
+  args: { project: getProject("mix-n-matchers") },
+  globals: { theme: "dark" },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('img[src="/projects/mix-n-matchers-dark.png"]'),
+    ).toBeVisible();
+    await expect(
+      canvasElement.querySelector('img[src="/projects/mix-n-matchers.png"]'),
+    ).not.toBeVisible();
+  },
+});
+
+export const WithoutLogo = meta.story({
+  args: { project: getProject("rad-event-listeners") },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("img")).not.toBeInTheDocument();
+  },
+});

@@ -17,13 +17,13 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: { project: getProject("typescript-utilities") },
+  args: { project: getProject("schema-benchmarks") },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("list", { name: "TypeScript utilities links" })).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "history-adapter" })).toHaveAttribute(
+    await expect(canvas.getByRole("list", { name: "Schema Benchmarks links" })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "View source" })).toHaveAttribute(
       "href",
-      "https://github.com/EskiMojo14/history-adapter",
+      "https://github.com/open-circle/schema-benchmarks",
     );
-    await expect(canvas.getAllByRole("link")).toHaveLength(3);
+    await expect(canvas.getAllByRole("link")).toHaveLength(2);
   },
 });

@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/tanstack-react";
+import rehypePrism from "rehype-prism-plus";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
@@ -17,6 +18,7 @@ const config: StorybookConfig = {
         mdxPluginOptions: {
           mdxCompileOptions: {
             remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+            rehypePlugins: [rehypePrism],
           },
         },
       },

@@ -86,6 +86,7 @@
     "playwright": "^1.64.1",
     "postcss-extend-rule": "^4.0.0",
     "postcss-value-parser": "^4.2.0",
+    "rehype-prism-plus": "^2.0.2",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-mdx-frontmatter": "^6.0.0",

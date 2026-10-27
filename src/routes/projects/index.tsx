@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ProjectCard } from "#/routes/projects/-components/project-card";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
-import { projects } from "./-data";
+import { projectGroupTitles, projectsByKind } from "./-data";
 import Intro from "./-intro.mdx";
 
 import styles from "./index.css?url";
@@ -31,13 +31,25 @@ function RouteComponent() {
       <div className="projects-intro">
         <Intro />
       </div>
-      <ul className="projects-grid">
-        {projects.map((project) => (
-          <li key={project.slug}>
-            <ProjectCard project={project} />
-          </li>
-        ))}
-      </ul>
+      {Object.entries(projectGroupTitles).map(([kind, title]) => {
+        const entries = projectsByKind[kind];
+        if (!entries?.length) return null;
+
+        return (
+          <section className="projects-section" key={kind} aria-labelledby={`projects-${kind}`}>
+            <h2 className="projects-section__title" id={`projects-${kind}`}>
+              {title}
+            </h2>
+            <ul className="projects-grid">
+              {entries.map((project) => (
+                <li key={project.slug}>
+                  <ProjectCard project={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
     </main>
   );
 }

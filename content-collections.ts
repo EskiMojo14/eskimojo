@@ -7,9 +7,16 @@ const projects = defineCollection({
   include: "*.mdx",
   parser: "frontmatter-only",
   schema: v.object({
+    kind: v.picklist(["project", "package", "contribution"]),
     title: v.pipe(v.string(), v.nonEmpty()),
     summary: v.pipe(v.string(), v.nonEmpty()),
     order: v.pipe(v.number(), v.integer(), v.minValue(0)),
+    logo: v.optional(
+      v.object({
+        light: v.pipe(v.string(), v.regex(/^\/projects\/[a-z0-9-]+\.png$/)),
+        dark: v.optional(v.pipe(v.string(), v.regex(/^\/projects\/[a-z0-9-]+\.png$/))),
+      }),
+    ),
     links: v.array(
       v.object({
         label: v.pipe(v.string(), v.nonEmpty()),

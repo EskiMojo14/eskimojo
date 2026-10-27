@@ -50,18 +50,6 @@
   --md-sys-color-surface-container: light-dark(rgb(245 235 243), rgb(35 30 35));
   --md-sys-color-surface-container-high: light-dark(rgb(239 229 237), rgb(45 40 46));
   --md-sys-color-surface-container-highest: light-dark(rgb(233 224 231), rgb(56 51 57));
-  --md-sys-color-green: light-dark(rgb(40 106 73), rgb(146 213 172));
-  --md-sys-color-on-green: light-dark(rgb(255 255 255), rgb(0 57 33));
-  --md-sys-color-green-container: light-dark(rgb(173 242 199), rgb(5 82 50));
-  --md-sys-color-on-green-container: light-dark(rgb(5 82 50), rgb(173 242 199));
-  --md-sys-color-yellow: light-dark(rgb(117 91 11), rgb(230 195 108));
-  --md-sys-color-on-yellow: light-dark(rgb(255 255 255), rgb(62 46 0));
-  --md-sys-color-yellow-container: light-dark(rgb(255 223 149), rgb(89 68 0));
-  --md-sys-color-on-yellow-container: light-dark(rgb(89 68 0), rgb(255 223 149));
-  --md-sys-color-teal: light-dark(rgb(0 105 109), rgb(128 212 216));
-  --md-sys-color-on-teal: light-dark(rgb(255 255 255), rgb(0 55 57));
-  --md-sys-color-teal-container: light-dark(rgb(156 241 244), rgb(0 79 82));
-  --md-sys-color-on-teal-container: light-dark(rgb(0 79 82), rgb(156 241 244));
 }
 
 %goat-medium {
@@ -114,18 +102,6 @@
   --md-sys-color-surface-container: light-dark(rgb(239 229 237), rgb(43 38 44));
   --md-sys-color-surface-container-high: light-dark(rgb(228 218 225), rgb(54 49 55));
   --md-sys-color-surface-container-highest: light-dark(rgb(216 207 214), rgb(65 60 66));
-  --md-sys-color-green: light-dark(rgb(0 63 37), rgb(167 235 193));
-  --md-sys-color-on-green: light-dark(rgb(255 255 255), rgb(0 44 25));
-  --md-sys-color-green-container: light-dark(rgb(56 121 86), rgb(92 158 120));
-  --md-sys-color-on-green-container: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --md-sys-color-yellow: light-dark(rgb(69 52 0), rgb(253 216 127));
-  --md-sys-color-on-yellow: light-dark(rgb(255 255 255), rgb(49 36 0));
-  --md-sys-color-yellow-container: light-dark(rgb(133 105 28), rgb(172 141 61));
-  --md-sys-color-on-yellow-container: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --md-sys-color-teal: light-dark(rgb(0 61 63), rgb(150 234 238));
-  --md-sys-color-on-teal: light-dark(rgb(255 255 255), rgb(0 43 45));
-  --md-sys-color-teal-container: light-dark(rgb(22 121 125), rgb(71 157 161));
-  --md-sys-color-on-teal-container: light-dark(rgb(255 255 255), rgb(0 0 0));
 }
 
 %goat-high {
@@ -178,16 +154,4 @@
   --md-sys-color-surface-container: light-dark(rgb(233 224 231), rgb(52 47 52));
   --md-sys-color-surface-container-high: light-dark(rgb(219 210 217), rgb(63 58 63));
   --md-sys-color-surface-container-highest: light-dark(rgb(205 196 203), rgb(75 69 75));
-  --md-sys-color-green: light-dark(rgb(0 52 30), rgb(188 255 213));
-  --md-sys-color-on-green: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --md-sys-color-green-container: light-dark(rgb(10 84 52), rgb(142 209 168));
-  --md-sys-color-on-green-container: light-dark(rgb(255 255 255), rgb(0 14 6));
-  --md-sys-color-yellow: light-dark(rgb(57 42 0), rgb(255 238 206));
-  --md-sys-color-on-yellow: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --md-sys-color-yellow-container: light-dark(rgb(92 70 0), rgb(225 191 105));
-  --md-sys-color-on-yellow-container: light-dark(rgb(255 255 255), rgb(17 10 0));
-  --md-sys-color-teal: light-dark(rgb(0 50 52), rgb(184 252 255));
-  --md-sys-color-on-teal: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --md-sys-color-teal-container: light-dark(rgb(0 82 85), rgb(124 208 212));
-  --md-sys-color-on-teal-container: light-dark(rgb(255 255 255), rgb(0 14 15));
 }

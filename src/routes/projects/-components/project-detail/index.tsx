@@ -13,7 +13,12 @@ export function ProjectDetail({ project, children }: { project: Project; childre
         >
           {project.title}
         </h1>
-        <p className="project-summary">{project.summary}</p>
+        <p
+          className="project-summary"
+          style={{ viewTransitionName: `project-summary-${project.slug}` }}
+        >
+          {project.summary}
+        </p>
         <ProjectLinks project={project} />
       </header>
       <div className="project-detail__body">{children}</div>

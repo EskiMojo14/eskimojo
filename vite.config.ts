@@ -14,6 +14,7 @@ import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
 import { msw } from "msw/vite";
 import postcssExtendRule from "postcss-extend-rule";
+import rehypePrism from "rehype-prism-plus";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
@@ -132,7 +133,10 @@ const config = defineConfig({
     tanstackStart(),
     process.env.STORYBOOK !== "true" && {
       enforce: "pre",
-      ...mdx({ remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter] }),
+      ...mdx({
+        remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+        rehypePlugins: [rehypePrism],
+      }),
     },
     viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
     materialSymbols({

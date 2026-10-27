@@ -31,16 +31,21 @@ comprehensive repository catalogue. The agreed initial scope is:
 1. **Keycaplendar:** include the Keycaplendar project, but exclude
    `keycaplendar-next`, which is experimental and unfinished.
 2. **Schema benchmarks:** include the schema-benchmarks project.
-3. **TypeScript utilities:** group selected utilities into one entry, linking
-   to:
+3. **TypeScript utilities:** give each selected library its own entry and detail
+   page:
    - `history-adapter` — undo/redo state utilities;
    - `rad-event-listeners` — grouped event-listener management;
    - `mix-n-matchers` — custom Jest-compatible matchers.
 4. **Redux Toolkit:** feature the maintainer contribution separately and also
    mention it in About.
+5. **Valibot:** include a separate contribution entry; describe this as
+   contributing, not maintaining or independently authoring the library.
 
 Each entry is authored in MDX, with validated frontmatter for its title, short
-summary, links, and ordering. The overview links to a dedicated
+summary, links, ordering, and `kind` (`project`, `package`, or `contribution`).
+The overview groups entries under Projects, Packages, and Open-source
+contributions, omitting empty sections. Ordering applies within each group.
+The overview links to a dedicated
 `/projects/<slug>` page, dynamically importing that entry's body on navigation.
 A shared-title View Transition connects the two views and respects reduced
 motion. See [MDX content](./mdx-content.md) for authoring details.
