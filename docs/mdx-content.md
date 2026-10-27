@@ -72,7 +72,7 @@ Set `kind` to `project`, `package`, or `contribution` to choose its overview
 section: Projects, Packages, or Open-source contributions. Empty sections are
 omitted. Entries within each section sort by ascending `order`, then title.
 `links` can be empty. The initial
-seven entries contain draft descriptions, not final launch copy. Each TypeScript
+seven entries use lorem ipsum summaries and bodies as explicit placeholders. Each TypeScript
 utility has its own entry rather than sharing a grouped detail page.
 
 `logo` is optional. Store PNG logos in `public/projects/` and use their

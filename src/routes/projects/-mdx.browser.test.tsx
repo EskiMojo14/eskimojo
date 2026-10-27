@@ -19,7 +19,7 @@ test("renders a project's real MDX body and frontmatter links", async () => {
     .element(result.getByRole("heading", { name: "Keycaplendar", level: 1 }))
     .toBeVisible();
   await expect
-    .element(result.getByRole("heading", { name: "A place for the details" }))
+    .element(result.getByRole("heading", { name: "Ut enim ad minim veniam" }))
     .toBeVisible();
   await expect
     .element(result.getByRole("link", { name: "View source" }))
