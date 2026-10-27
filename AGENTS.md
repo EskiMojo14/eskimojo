@@ -36,6 +36,10 @@ release. Add a tool name to select part of the graph. For example, run
 manual dispatches. It uses [.node-version](.node-version) for Node.js, the
 workspace catalog for Vite+, and `devEngines.packageManager` in
 [package.json](package.json) for pnpm, with a frozen lockfile install.
+`setup-vp` caches package-manager dependencies. Chromium downloads are cached
+by runner OS, architecture, and lockfile, and saved before tests so a test
+failure does not discard the cache. Linux browser system dependencies are
+installed on every run because they are not part of the browser cache.
 
 To reproduce its checks locally, run `vp run check`, `vp run build`, and
 `vp test run`. Install the test browser first with
