@@ -186,6 +186,7 @@ overrides:
 
 patchedDependencies:
   '@material/material-color-utilities@0.4.0': b1ce5dea9a31733ac3ddd4b236a80185e050df5f98e48bb7fd93f8ccf3f58378
+  '@storybook/addon-vitest@10.6.3': 4db49280c18222c77a62ee048f2cc7f2824c3ac5c833fdabf16472de597b306f
   mdx-content-mapper@0.0.2: de2789c4e78720afe7fce4d35324c6867572db2c376d32cd3adbc06717e9a14c
 
 importers:
@@ -276,10 +277,10 @@ importers:
         version: 10.6.3(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))
       '@storybook/addon-mcp':
         specifier: ^10.6.3
-        version: 10.6.3(e001ff5d882e862f658aca7d17b3fc1e)
+        version: 10.6.3(9adb78daa30982a3ef41d19bac87e385)
       '@storybook/addon-vitest':
         specifier: ^10.6.3
-        version: 10.6.3(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)
+        version: 10.6.3(patch_hash=4db49280c18222c77a62ee048f2cc7f2824c3ac5c833fdabf16472de597b306f)(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)
       '@storybook/tanstack-react':
         specifier: ^10.6.3
         version: 10.6.3(442d5ac0d257664b0b364df3e8616ecd)
@@ -9457,7 +9458,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react-dom'
 
-  '@storybook/addon-mcp@10.6.3(e001ff5d882e862f658aca7d17b3fc1e)':
+  '@storybook/addon-mcp@10.6.3(9adb78daa30982a3ef41d19bac87e385)':
     dependencies:
       '@tmcp/adapter-valibot': 0.1.6(tmcp@1.20.0(typescript@7.1.0-beta))(valibot@1.5.0(typescript@7.1.0-beta))
       '@tmcp/transport-http': 0.8.6(tmcp@1.20.0(typescript@7.1.0-beta))
@@ -9465,12 +9466,12 @@ snapshots:
       tmcp: 1.20.0(typescript@7.1.0-beta)
       valibot: 1.5.0(typescript@7.1.0-beta)
     optionalDependencies:
-      '@storybook/addon-vitest': 10.6.3(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)
+      '@storybook/addon-vitest': 10.6.3(patch_hash=4db49280c18222c77a62ee048f2cc7f2824c3ac5c833fdabf16472de597b306f)(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)
     transitivePeerDependencies:
       - '@tmcp/auth'
       - typescript
 
-  '@storybook/addon-vitest@10.6.3(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)':
+  '@storybook/addon-vitest@10.6.3(patch_hash=4db49280c18222c77a62ee048f2cc7f2824c3ac5c833fdabf16472de597b306f)(@vitest/browser-playwright@5.0.5)(@vitest/browser@5.0.5)(react@19.3.1)(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.4.0(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.5)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-beta)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-beta))(playwright@1.64.1)(typescript@7.1.0-beta)(yaml@2.9.1)))(vitest@5.0.5)':
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/icons': 2.2.0(react@19.3.1)

@@ -14,6 +14,7 @@ overrides:
   vitest@*: "catalog:"
 patchedDependencies:
   "@material/material-color-utilities@0.4.0": patches/@material__material-color-utilities@0.4.0.patch
+  "@storybook/addon-vitest@10.6.3": patches/@storybook__addon-vitest@10.6.3.patch
   mdx-content-mapper@0.0.2: patches/mdx-content-mapper@0.0.2.patch
 peerDependencyRules:
   allowAny:
