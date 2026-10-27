@@ -211,8 +211,8 @@ const config = defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: playwright(),
-            instances: [{ browser: "chromium", launchOptions: { channel: "chromium" } }],
+            provider: playwright({ launchOptions: { channel: "chromium" } }),
+            instances: [{ browser: "chromium" }],
           },
         },
       },
