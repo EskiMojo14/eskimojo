@@ -285,6 +285,30 @@ test("holds until release and cleans up after fading, even when released outside
   await expect.poll(() => button.querySelector(".ripple__wave")).toBeNull();
 });
 
+test("preserves ripple timings when production CSS expresses durations in seconds", async () => {
+  const result = await page.renderWithProviders(<Button>Production ripple</Button>);
+  const button = result.getByRole("button", { name: "Production ripple" }).element();
+  if (!(button instanceof HTMLElement)) throw new Error("Expected a button element");
+  button.style.setProperty("--md-comp-ripple-grow-duration", ".45s");
+  button.style.setProperty("--md-comp-ripple-fade-in-duration", ".105s");
+  button.style.setProperty("--md-comp-ripple-fade-duration", ".375s");
+  button.style.setProperty("--md-comp-ripple-minimum-press-duration", ".225s");
+  const now = vi.spyOn(performance, "now").mockReturnValue(100);
+  onTestFinished(() => now.mockRestore());
+  press(button);
+  const ripple = wave(button);
+  const [grow, fadeIn] = ripple.getAnimations();
+  expect(grow?.effect?.getTiming().duration).toBe(450);
+  expect(fadeIn?.effect?.getTiming().duration).toBe(105);
+  now.mockReturnValue(150);
+  document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+  const fade = ripple.getAnimations()[2];
+  expect(fade?.effect?.getTiming().duration).toBe(375);
+  expect(fade?.effect?.getTiming().delay).toBe(175);
+  for (const animation of ripple.getAnimations()) animation.finish();
+  await expect.poll(() => button.querySelector(".ripple__wave")).toBeNull();
+});
+
 test("matches Material Web's soft edge, initial size, centreward growth, and fade-in", async () => {
   const result = await page.renderWithProviders(<Button size="large">Soft ripple</Button>);
   const button = result.getByRole("button", { name: "Soft ripple" }).element();

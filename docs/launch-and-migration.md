@@ -81,6 +81,11 @@ Last.fm credentials or other secrets must be supplied
 through the deployment's secret/environment configuration, never committed to
 the repository or written into these documents.
 
+CSS minification can rewrite duration tokens from milliseconds to seconds
+(for example, `450ms` to `.45s`). Ripple timings read from computed styles must
+convert either unit to milliseconds before passing values to the Web
+Animations API. The ripple browser tests cover the production representation.
+
 ## Open before launch
 
 - Verify the Storybook deployment and HTTPS at `storybook.eskimojo.dev`.

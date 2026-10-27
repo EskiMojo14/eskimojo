@@ -19,6 +19,15 @@ interface ActiveRipple {
   key?: string;
 }
 
+function durationInMilliseconds(style: CSSStyleDeclaration, property: string) {
+  const value = style.getPropertyValue(property).trim();
+  const duration = Number.parseFloat(value);
+  if (!Number.isFinite(duration) || !value.endsWith("s")) {
+    throw new Error(`Expected a CSS time for ${property}, received "${value}"`);
+  }
+  return duration * (value.endsWith("ms") ? 1 : 1000);
+}
+
 export function useRipple<T extends HTMLElement>(props: RippleHandlers<T>, unbounded = false) {
   const layerRef = useRef<HTMLSpanElement>(null);
   const activeRef = useRef<ActiveRipple | null>(null);
@@ -52,12 +61,12 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T>, unbou
       return;
     }
     const style = getComputedStyle(layer);
-    const duration = Number.parseFloat(style.getPropertyValue("--md-comp-ripple-fade-duration"));
+    const duration = durationInMilliseconds(style, "--md-comp-ripple-fade-duration");
     const fade = active.wave.animate([{ opacity: 1 }, { opacity: 0 }], {
       duration,
       delay: Math.max(
         0,
-        Number.parseFloat(style.getPropertyValue("--md-comp-ripple-minimum-press-duration")) -
+        durationInMilliseconds(style, "--md-comp-ripple-minimum-press-duration") -
           (performance.now() - active.started),
       ),
       easing: style.getPropertyValue("--md-sys-motion-easing-linear").trim(),
@@ -118,13 +127,13 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T>, unbou
             },
           ],
           {
-            duration: Number.parseFloat(style.getPropertyValue("--md-comp-ripple-grow-duration")),
+            duration: durationInMilliseconds(style, "--md-comp-ripple-grow-duration"),
             easing: style.getPropertyValue("--md-sys-motion-easing-standard").trim(),
             fill: "forwards",
           },
         ),
         wave.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: Number.parseFloat(style.getPropertyValue("--md-comp-ripple-fade-in-duration")),
+          duration: durationInMilliseconds(style, "--md-comp-ripple-fade-in-duration"),
           easing: style.getPropertyValue("--md-sys-motion-easing-linear").trim(),
           fill: "forwards",
         }),
