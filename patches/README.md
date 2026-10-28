@@ -18,7 +18,7 @@
   these tokens without an image resource, after verifying `vp run typecheck`
   on MDX containing both links and images without the patch.
 
-- [Storybook Vitest addon 10.6.3](@storybook__addon-vitest@10.6.3.patch):
+- [Storybook Vitest addon 10.6.4](@storybook__addon-vitest@10.6.4.patch):
   Decode URL-encoded paths before the test-registration guard compares them
   with Vitest's filesystem paths. Without this, stories under TanStack route
   directories containing braces register no tests. Backports the decoding
