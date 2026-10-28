@@ -1,4 +1,4 @@
-@import "#/routes/-components/home-hero/index.css";
+@import "./-components/home-hero/index.css";
 
 .app-shell__content:has(> .home-hero) ~ .site-footer::before {
   display: none;

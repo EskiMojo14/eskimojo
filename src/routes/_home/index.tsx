@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { HomeHero } from "#/routes/-components/home-hero";
 import { generatePageMetadata } from "#/shared/lib/document-head";
+
+import { HomeHero } from "./-components/home-hero";
 
 import styles from "./index.css?url";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_home/")({
   staticData: { title: "Home" },
   head: () => {
     const metadata = generatePageMetadata({

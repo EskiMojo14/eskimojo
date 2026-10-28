@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { expect, fn, waitFor, within } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import { Route as HomeRoute } from "#/routes/_home";
 import { Route as GigsRoute } from "#/routes/gigs.{-$breakdown}/index.tsx";
-import { Route as HomeRoute } from "#/routes/index";
 
 import { AppBar } from "./index";
 
@@ -42,7 +42,7 @@ export const WithBackLink = meta.story({
   parameters: {
     tanstack: {
       router: {
-        route: createFileRoute("/")({
+        route: createFileRoute("/_home/")({
           staticData: {
             title: "Projects",
             backLink: {
@@ -126,7 +126,7 @@ export const WithSubtitle = meta.story({
   parameters: {
     tanstack: {
       router: {
-        route: createFileRoute("/")({
+        route: createFileRoute("/_home/")({
           staticData: { title: "Home", subtitle: "Projects, music, and other interests" },
         }),
       },

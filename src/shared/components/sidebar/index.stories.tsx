@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import preview from "#.storybook/preview";
-import { Route as HomeRoute } from "#/routes/index";
+import { Route as HomeRoute } from "#/routes/_home";
 import { AppBar } from "#/shared/components/app-bar";
 
 import { Sidebar } from "./index";
