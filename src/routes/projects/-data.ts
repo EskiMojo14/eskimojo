@@ -1,17 +1,13 @@
 import { notFound } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
 
+import type { ProjectKind } from "#/routes/projects/-constants";
+
 export const projects = allProjects.toSorted(
   (a, b) => a.order - b.order || a.title.localeCompare(b.title),
 );
 
-export const projectGroupTitles = {
-  project: "Projects",
-  package: "Packages",
-  contribution: "Open-source contributions",
-} satisfies Record<(typeof projects)[number]["kind"], string>;
-
-export const projectsByKind: Partial<Record<string, typeof projects>> = Object.groupBy(
+export const projectsByKind: Partial<Record<ProjectKind, typeof projects>> = Object.groupBy(
   projects,
   (project) => project.kind,
 );

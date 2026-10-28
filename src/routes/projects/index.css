@@ -7,6 +7,14 @@
   }
 }
 
+.projects-filter-help {
+  margin: 0 0 0.5rem;
+}
+
+.projects-filters {
+  margin-block-end: 1.5rem;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));

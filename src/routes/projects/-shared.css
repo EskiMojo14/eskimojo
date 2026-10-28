@@ -41,6 +41,15 @@
   }
 }
 
+.project-card {
+  view-transition-class: project-card;
+}
+
+/* Only during filtering: a card group that exists only in the new state stacks above the detail page's title and summary. */
+:root:active-view-transition-type(project-filter) .project-card {
+  view-transition-name: var(--project-card-name);
+}
+
 .project-summary {
   view-transition-class: project-header;
   margin: 0;
@@ -59,14 +68,33 @@
   animation-timing-function: var(--md-sys-motion-spring-slow-spatial);
 }
 
+::view-transition-group(.project-card) {
+  animation-duration: var(--md-sys-motion-spring-slow-spatial-duration);
+  animation-timing-function: var(--md-sys-motion-spring-slow-spatial);
+}
+
 ::view-transition-old(.project-header),
 ::view-transition-new(.project-header) {
   animation-duration: var(--md-sys-motion-spring-slow-effects-duration);
   animation-timing-function: var(--md-sys-motion-spring-slow-effects);
 }
 
+:root:active-view-transition-type(project-filter) {
+  &::view-transition-group(*) {
+    animation-duration: var(--md-sys-motion-spring-default-spatial-duration);
+    animation-timing-function: var(--md-sys-motion-spring-default-spatial);
+  }
+
+  &::view-transition-old(*),
+  &::view-transition-new(*) {
+    animation-duration: var(--md-sys-motion-spring-default-effects-duration);
+    animation-timing-function: var(--md-sys-motion-spring-default-effects);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(.project-header),
+  ::view-transition-group(.project-card),
   ::view-transition-old(.project-header),
   ::view-transition-new(.project-header) {
     animation: none;

@@ -6,7 +6,10 @@ import { Card } from "#/shared/components/card";
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="project-card">
+    <Card
+      className="project-card"
+      style={{ "--project-card-name": `project-card-${project.slug}` }}
+    >
       <div className="project-card__heading">
         {project.logo && (
           <span className="project-card__logo" data-themed={project.logo.dark ? "" : undefined}>
