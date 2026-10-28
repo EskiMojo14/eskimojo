@@ -36,13 +36,13 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
           >
             <img
               {...siteSidebarBem({ element: "palette-avatar" })}
-              src="/Goat_square-1.jpeg"
+              src="/Goat-avatar.webp"
               alt=""
               draggable={false}
             />
             <img
               {...siteSidebarBem({ element: "palette-avatar" })}
-              src="/OC__square.png"
+              src="/OC-avatar.webp"
               alt=""
               draggable={false}
             />

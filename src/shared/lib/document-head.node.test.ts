@@ -61,6 +61,12 @@ test("preserves the default document metadata and stylesheet links", () => {
   );
   expect(links).toEqual(
     expect.arrayContaining([
+      {
+        rel: "preload",
+        href: "/OC-sidebar.webp",
+        as: "image",
+        fetchPriority: "low",
+      },
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
@@ -77,6 +83,12 @@ test("preserves the default document metadata and stylesheet links", () => {
 test("uses the Arctic portrait as the favicon for the Arctic palette", () => {
   const { links } = getDocumentHead("arctic");
 
+  expect(links).toContainEqual({
+    rel: "preload",
+    href: "/Goat-sidebar.webp",
+    as: "image",
+    fetchPriority: "low",
+  });
   expect(links).toContainEqual({
     rel: "icon",
     href: "/favicon-arctic.png",

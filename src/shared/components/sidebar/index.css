@@ -21,7 +21,7 @@
     inset: 0;
     z-index: -1;
     background-color: var(--palette-artwork-background);
-    background-image: url("/Goat.JPG");
+    background-image: url("/Goat-sidebar.webp");
     background-position: center bottom;
     background-repeat: no-repeat;
     background-size: contain;
@@ -52,7 +52,7 @@
             var(--md-sys-sidebar-image-overlay-opacity)
         )
       ),
-      url("/OC.PNG");
+      url("/OC-sidebar.webp");
     background-position: center bottom;
     background-repeat: no-repeat;
     background-size: contain;

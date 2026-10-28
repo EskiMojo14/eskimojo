@@ -60,6 +60,13 @@ export function getDocumentHead(palette: Palette = "goat") {
     ],
     links: [
       ...metadata.links,
+      // preload the opposite theme sidebar image, so it loads quickly when the user switches themes
+      {
+        rel: "preload",
+        href: palette === "goat" ? "/OC-sidebar.webp" : "/Goat-sidebar.webp",
+        as: "image",
+        fetchPriority: "low" as const,
+      },
       {
         rel: "icon",
         href: palette === "goat" ? "/favicon.png" : "/favicon-arctic.png",
