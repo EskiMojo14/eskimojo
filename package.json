@@ -13,7 +13,7 @@
     "build": "vp build",
     "coverage": "vp test run --coverage",
     "test:types": "vp test run --project types",
-    "content:generate": "content-collections build",
+    "content:generate": "content-collections build --config config/content-collections.ts",
     "typecheck": "vp run content:generate && tsc --runExternalCode",
     "lint": "vp lint && vpr lint:css:all",
     "preview": "vp preview",

@@ -26,7 +26,7 @@ export const Expressive = meta.story({
     <List aria-label="Recently played" style={{ width: "min(100%, 28rem)" }}>
       <ListItem>
         <ListItemContent
-          leading={<img src="/Goat_square-1.jpeg" alt="" width={56} height={56} />}
+          leading={<img src="/Goat-avatar.webp" alt="" width={56} height={56} />}
           headline="Let It Happen"
           supportingText="Tame Impala"
           trailing="Now playing"

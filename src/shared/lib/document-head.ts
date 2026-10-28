@@ -17,7 +17,7 @@ export function generatePageMetadata({
   title,
   description,
   image = {
-    url: "/Goat_square-1.jpeg",
+    url: "/sources/Goat_square-1.jpeg",
     width: 712,
     height: 712,
     alt: "eskimojo's Goat portrait",

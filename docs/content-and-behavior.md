@@ -142,7 +142,9 @@ suffixed again. Subtitles are not included in the tab title.
 
 Every route supplies a page-specific description for search and social previews.
 Open Graph and Twitter metadata share that description and use the existing
-712-by-712 Goat portrait (`/Goat_square-1.jpeg`) with alternative text.
+712-by-712 Goat portrait (`/sources/Goat_square-1.jpeg`) with alternative text.
+Small on-page portraits use `/Goat-avatar.webp`; social previews retain the
+larger JPEG rather than the 144-by-144 avatar.
 Preview image URLs resolve against `https://eskimojo.dev`; Twitter uses a
 square-image summary card.
 

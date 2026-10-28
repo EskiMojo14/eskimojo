@@ -31,7 +31,10 @@ export const Route = createFileRoute("/projects/$slug")({
       title: loaderData?.title ?? "Project",
       description: loaderData?.summary ?? "Explore eskimojo's projects and contributions.",
       image: loaderData?.logo
-        ? { url: loaderData.logo.light, alt: `${loaderData.title} logo` }
+        ? {
+            url: loaderData.logo.social ?? loaderData.logo.light,
+            alt: `${loaderData.title} logo`,
+          }
         : undefined,
     });
     return {

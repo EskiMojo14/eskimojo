@@ -10,7 +10,7 @@ test("renders semantic static rows and optional content", async () => {
         <ListItemContent
           headline="Let It Happen"
           supportingText="Tame Impala"
-          leading={<img src="/Goat_square-1.jpeg" alt="" />}
+          leading={<img src="/Goat-avatar.webp" alt="" />}
           trailing="Now playing"
         />
       </ListItem>

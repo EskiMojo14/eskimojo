@@ -12,7 +12,7 @@ const tracks: Array<RecentTrack> = [
     name: "Let It Happen",
     artist: "Tame Impala",
     album: "Currents",
-    image: { large: "/Goat_square-1.jpeg" },
+    image: { large: "/Goat-avatar.webp" },
     nowPlaying: true,
   },
   {
@@ -68,7 +68,7 @@ export const NarrowNowPlaying = meta.story({
         name: "Would I Lie to You?",
         artist: "Charles & Eddie",
         album: "Duophonic",
-        image: { large: "/Goat_square-1.jpeg" },
+        image: { large: "/Goat-avatar.webp" },
         nowPlaying: true,
       },
     ],

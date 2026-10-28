@@ -54,7 +54,7 @@ of the URL.
 
 [Content Collections](https://www.content-collections.dev/) discovers these files
 and validates their metadata against the Valibot schema in
-[content-collections.ts](../content-collections.ts). Its `frontmatter-only`
+[content-collections.ts](../config/content-collections.ts). Its `frontmatter-only`
 parser deliberately leaves the MDX body out of the generated collection.
 
 ```mdx
@@ -65,6 +65,7 @@ order: 10
 logo:
   light: /projects/example.png
   dark: /projects/example-dark.png
+  social: /sources/example.png
 links:
   - label: View source
     href: https://github.com/example/project
@@ -85,9 +86,17 @@ omitted. Entries within each section sort by ascending `order`, then title.
 seven entries use lorem ipsum summaries and bodies as explicit placeholders. Each TypeScript
 utility has its own entry rather than sharing a grouped detail page.
 
-`logo` is optional. Store PNG logos in `public/projects/` and use their
-`/projects/<filename>.png` URLs. `light` is required when a logo is supplied;
+`logo` is optional. Store card logos in `public/projects/` and use their
+`/projects/<filename>` URLs. PNG, SVG, JPEG, and WebP are supported; root-level
+image URLs and arbitrary nested directories under `public/` are also accepted.
+Content generation checks that each logo references an existing file.
+Use literal root-relative paths without query strings, fragments, or dot path
+segments. `light` is required when a logo is supplied;
 `dark` is optional and otherwise the same image is used in both themes.
+`social` optionally supplies a higher-resolution image for Open Graph and Twitter
+previews, independently of the card logo. It also accepts `/sources/<filename>`
+URLs. When omitted, previews use `light`; when `logo` is omitted entirely, they
+use the site's default portrait.
 Card logos are decorative beside the project title and follow the site's
 selected theme, including its system setting. Entries without logos reserve
 no image space.
@@ -105,7 +114,7 @@ The overview does not duplicate the app
 bar's Projects title.
 
 The Vite plugin regenerates metadata during development and builds. Generated
-files in `.content-collections/` are ignored by Git. To generate them without
+files in `config/.content-collections/` are ignored by Git. To generate them without
 starting Vite, run `vp run content:generate`; `vp run typecheck` also generates
 them automatically for a fresh checkout.
 

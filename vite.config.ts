@@ -134,7 +134,7 @@ const config = defineConfig({
     });
     return [
       devtools(),
-      contentCollections(),
+      contentCollections({ configPath: "config/content-collections.ts" }),
       process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
       process.env.STORYBOOK !== "true" && tanstackStart(),
       process.env.STORYBOOK !== "true" && {

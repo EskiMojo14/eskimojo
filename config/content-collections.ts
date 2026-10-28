@@ -1,15 +1,34 @@
-import { posix } from "node:path";
+import { statSync } from "node:fs";
+import { posix, resolve } from "node:path";
 
 import { defineCollection, defineConfig } from "@content-collections/core";
 import * as v from "valibot";
 
 import { projectKindSchema } from "#/routes/projects/-schema.ts";
 
-const projectLogoRegex = /^\/(projects\/)?[a-z0-9-_]+\.(png|svg|jpe?g)$/i;
+export const publicImageSchema = v.config(
+  v.pipe(
+    v.string(),
+    v.regex(
+      /^\/(?!\/)[^?#\\\0]+\.(png|svg|jpe?g|webp)$/i,
+      "Expected a root-relative PNG, SVG, JPEG, or WebP image URL",
+    ),
+    v.check(
+      (src) => !src.split("/").some((segment) => segment === "." || segment === ".."),
+      "Image URLs must not contain dot path segments",
+    ),
+    v.check(
+      (src) =>
+        statSync(resolve("public", src.slice(1)), { throwIfNoEntry: false })?.isFile() ?? false,
+      "Image must reference an existing file in public/",
+    ),
+  ),
+  { abortPipeEarly: true },
+);
 
 const projects = defineCollection({
   name: "projects",
-  directory: "src/routes/projects/-content",
+  directory: "../src/routes/projects/-content",
   include: "**/*.mdx",
   parser: "frontmatter-only",
   schema: v.object({
@@ -18,8 +37,9 @@ const projects = defineCollection({
     order: v.pipe(v.number(), v.integer(), v.minValue(0)),
     logo: v.optional(
       v.object({
-        light: v.pipe(v.string(), v.regex(projectLogoRegex)),
-        dark: v.optional(v.pipe(v.string(), v.regex(projectLogoRegex))),
+        light: publicImageSchema,
+        dark: v.optional(publicImageSchema),
+        social: v.optional(publicImageSchema),
       }),
     ),
     links: v.array(
