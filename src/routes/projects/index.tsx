@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
 import { ProjectCard } from "#/routes/projects/-components/project-card";
-import { projectKindLabels, projectKindSchema } from "#/routes/projects/-constants";
+import { projectKindLabels } from "#/routes/projects/-constants";
+import { projectKindSchema } from "#/routes/projects/-schema";
 import { ChipGroup, InternalLinkChip } from "#/shared/components/chips";
 import { MdSymbol } from "#/shared/components/symbol";
 import { generatePageMetadata } from "#/shared/lib/document-head";

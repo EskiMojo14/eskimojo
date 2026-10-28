@@ -43,9 +43,12 @@ symbols, deduplicated and alphabetically sorted. The plugin updates JavaScript
 chunks for TanStack Start and the preview HTML for Storybook.
 
 For dynamic children such as `<MdSymbol>{icon}</MdSymbol>`, register every
-possible name in `materialSymbols({ knownSymbols: [...] })` in
-[vite.config.ts](../vite.config.ts). The plugin warns when it encounters dynamic
-children; it does not evaluate expressions. Keep the component's imported name
-as `MdSymbol` so the extractor can recognize it.
+possible name in [vite/known-symbols.ts](../vite/known-symbols.ts), usually by
+importing a constants file and mapping over its icons. The plugin loads that
+module at build time with Vite's `runnerImport`, rather than having
+[vite.config.ts](../vite.config.ts) import it, because Vite restarts the dev
+server whenever a file the config imports changes. The plugin warns when it
+encounters dynamic children; it does not evaluate expressions. Keep the
+component's imported name as `MdSymbol` so the extractor can recognize it.
 
 If no symbols are found or registered, the font URL is left unchanged.

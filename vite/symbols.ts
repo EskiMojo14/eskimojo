@@ -1,10 +1,18 @@
-import type { Plugin } from "vite-plus";
+import { fileURLToPath } from "node:url";
+
+import { runnerImport, type Plugin } from "vite-plus";
 
 import { symbolsUrl } from "../src/shared/lib/symbols";
 
 interface Options {
   /** Names used in interpolated children, which cannot be extracted statically. */
   knownSymbols?: Array<string>;
+  /**
+   * Path to a module whose default export lists more known symbols. It's loaded at
+   * build time rather than imported by the config, so editing its dependencies
+   * doesn't restart the dev server.
+   */
+  knownSymbolsModule?: string;
 }
 
 function isNode(value: unknown): value is Record<string, unknown> {
@@ -29,16 +37,24 @@ function visit(node: unknown, onCall: (node: Record<string, unknown>) => void): 
 }
 
 // Adapted from Schema Benchmarks' TanStack Start plugin (see THIRD_PARTY_NOTICES).
-export default function materialSymbols({ knownSymbols = [] }: Options = {}): Array<Plugin> {
+export default function materialSymbols({
+  knownSymbols = [],
+  knownSymbolsModule,
+}: Options = {}): Array<Plugin> {
   const usedSymbols = new Set<string>();
   return [
     {
       name: "used-symbols:pre",
       enforce: "pre",
       apply: "build",
-      buildStart() {
+      async buildStart() {
         usedSymbols.clear();
         for (const symbol of knownSymbols) usedSymbols.add(symbol);
+        if (!knownSymbolsModule) return;
+        const { module } = await runnerImport<{ default: Array<string> }>(knownSymbolsModule, {
+          resolve: { alias: { "#": fileURLToPath(new URL("../src", import.meta.url)) } },
+        });
+        for (const symbol of module.default) usedSymbols.add(symbol);
       },
       moduleParsed({ id, code }) {
         if (!code?.includes("MdSymbol")) return;
@@ -74,7 +90,7 @@ export default function materialSymbols({ knownSymbols = [] }: Options = {}): Ar
         });
         if (dynamic) {
           this.warn(
-            `Found ${dynamic} dynamic MdSymbol children in ${id}; add all possible names to materialSymbols({ knownSymbols }) in vite.config.ts.`,
+            `Found ${dynamic} dynamic MdSymbol children in ${id}; add all possible names to vite/known-symbols.ts.`,
           );
         }
       },

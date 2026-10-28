@@ -15,7 +15,7 @@ export interface MdSymbolProps extends ComponentPropsWithRef<"span"> {
 
 /**
  * Literal children are extracted at build time. Register interpolated icon names
- * in materialSymbols({ knownSymbols }) in vite.config.ts.
+ * in vite/known-symbols.ts.
  */
 export function MdSymbol({
   children,

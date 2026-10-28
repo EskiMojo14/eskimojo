@@ -3,6 +3,8 @@ import { posix } from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
 import * as v from "valibot";
 
+import { projectKindSchema } from "#/routes/projects/-schema.ts";
+
 const projectLogoRegex = /^\/(projects\/)?[a-z0-9-_]+\.(png|svg|jpe?g)$/i;
 
 const projects = defineCollection({
@@ -29,7 +31,7 @@ const projects = defineCollection({
   }),
   transform: ({ _meta: meta, ...document }) => ({
     ...document,
-    kind: v.parse(v.picklist(["project", "package", "contribution"]), posix.dirname(meta.path)),
+    kind: v.parse(projectKindSchema, posix.dirname(meta.path)),
     filePath: meta.filePath,
     slug: v.parse(
       v.pipe(v.string(), v.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)),

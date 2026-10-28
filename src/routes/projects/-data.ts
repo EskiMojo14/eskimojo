@@ -1,7 +1,7 @@
 import { notFound } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
 
-import type { ProjectKind } from "#/routes/projects/-constants";
+import type { ProjectKind } from "#/routes/projects/-schema";
 
 export const projects = allProjects.toSorted(
   (a, b) => a.order - b.order || a.title.localeCompare(b.title),

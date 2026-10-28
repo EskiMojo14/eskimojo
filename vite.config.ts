@@ -132,11 +132,6 @@ const config = defineConfig({
       remarkFrontmatter: { default: remarkFrontmatter },
       remarkGfm: { default: remarkGfm },
       remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
-      gigs: { gigBreakdownLabels },
-      music: { musicBreakdownLabels },
-      projects: { projectKindLabels },
-      sidebar: { links },
-      prefs: { themeLabels, contrastLabels, paletteLabels },
       materialSymbols: { default: materialSymbols },
     } = await promiseAllKeyed({
       contentCollections: import("@content-collections/vite"),
@@ -150,11 +145,6 @@ const config = defineConfig({
       remarkFrontmatter: import("remark-frontmatter"),
       remarkGfm: import("remark-gfm"),
       remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
-      gigs: import("#/routes/gigs.{-$breakdown}/-constants"),
-      music: import("#/routes/music.{-$breakdown}/-constants.ts"),
-      projects: import("#/routes/projects/-constants.ts"),
-      sidebar: import("#/shared/components/sidebar/groups"),
-      prefs: import("#/shared/constants/prefs"),
       materialSymbols: import("./vite/symbols.ts"),
     });
     return [
@@ -171,17 +161,7 @@ const config = defineConfig({
       },
       viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
       materialSymbols({
-        knownSymbols: [
-          ...[
-            themeLabels,
-            contrastLabels,
-            paletteLabels,
-            gigBreakdownLabels,
-            musicBreakdownLabels,
-            projectKindLabels,
-          ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
-          ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
-        ],
+        knownSymbolsModule: path.join(dirname, "vite/known-symbols.ts"),
       }),
       msw(),
     ];
