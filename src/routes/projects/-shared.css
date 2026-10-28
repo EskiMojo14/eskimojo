@@ -80,16 +80,35 @@
 }
 
 :root:active-view-transition-type(project-filter) {
+  --project-filter-spatial: var(--md-sys-motion-spring-default-spatial);
+  --project-filter-spatial-duration: var(--md-sys-motion-spring-default-spatial-duration);
+  --project-filter-effects: var(--md-sys-motion-spring-default-effects);
+  --project-filter-effects-duration: var(--md-sys-motion-spring-default-effects-duration);
+
   &::view-transition-group(*) {
-    animation-duration: var(--md-sys-motion-spring-default-spatial-duration);
-    animation-timing-function: var(--md-sys-motion-spring-default-spatial);
+    animation-duration: var(--project-filter-spatial-duration);
+    animation-timing-function: var(--project-filter-spatial);
   }
 
   &::view-transition-old(*),
   &::view-transition-new(*) {
-    animation-duration: var(--md-sys-motion-spring-default-effects-duration);
-    animation-timing-function: var(--md-sys-motion-spring-default-effects);
+    animation-duration: var(--project-filter-effects-duration);
+    animation-timing-function: var(--project-filter-effects);
   }
+}
+
+:root:active-view-transition-type(project-filter-project) {
+  --project-filter-spatial: var(--md-sys-motion-spring-fast-spatial);
+  --project-filter-spatial-duration: var(--md-sys-motion-spring-fast-spatial-duration);
+  --project-filter-effects: var(--md-sys-motion-spring-fast-effects);
+  --project-filter-effects-duration: var(--md-sys-motion-spring-fast-effects-duration);
+}
+
+:root:active-view-transition-type(project-filter-contribution) {
+  --project-filter-spatial: var(--md-sys-motion-spring-slow-spatial);
+  --project-filter-spatial-duration: var(--md-sys-motion-spring-slow-spatial-duration);
+  --project-filter-effects: var(--md-sys-motion-spring-slow-effects);
+  --project-filter-effects-duration: var(--md-sys-motion-spring-slow-effects-duration);
 }
 
 @media (prefers-reduced-motion: reduce) {
