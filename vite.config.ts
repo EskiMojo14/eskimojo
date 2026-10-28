@@ -1,10 +1,12 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import postcssGlobalData from "@csstools/postcss-global-data";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
 import eslintPluginRouter from "@tanstack/eslint-plugin-router";
 import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { Features } from "lightningcss";
+import postcssCustomMedia from "postcss-custom-media";
 import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
@@ -105,7 +107,13 @@ const config = defineConfig({
   },
   css: {
     postcss: {
-      plugins: [postcssExtendRule({ onUnusedExtend: "throw" })],
+      plugins: [
+        postcssGlobalData({
+          files: [path.join(dirname, "src/shared/styles/breakpoints.css")],
+        }),
+        postcssCustomMedia(),
+        postcssExtendRule({ onUnusedExtend: "throw" }),
+      ],
     },
     // Theme tokens rely on native light-dark() resolving where they're used, so that
     // nested [data-theme] sections work. The downlevelled fallback resolves at :root.

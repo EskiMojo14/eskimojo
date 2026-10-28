@@ -6,7 +6,7 @@
   padding: 12px;
   list-style: none;
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     flex-direction: row;
     overflow-x: auto;
     padding-block: 8px;
@@ -75,7 +75,7 @@
     }
   }
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     flex: 0 0 auto;
 
     > a {
@@ -90,7 +90,7 @@
   margin-inline: 16px -12px;
   background-color: var(--md-sys-color-outline-variant);
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     flex: 0 0 1px;
     margin: 8px 4px;
   }

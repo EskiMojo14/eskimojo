@@ -35,7 +35,7 @@
 .app-bar__bottom-navigation {
   display: none;
 
-  @media (width < 37.5rem) {
+  @media (--phone) {
     view-transition-name: bottom-navigation;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -128,7 +128,7 @@
   }
 }
 
-@media (width < 37.5rem) {
+@media (--phone) {
   :root:active-view-transition-type(page-forward),
   :root:active-view-transition-type(page-backward) {
     view-transition-name: none;
@@ -281,11 +281,11 @@
   display: none;
   color: inherit;
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     display: inline-grid;
   }
 
-  @media (width < 37.5rem) {
+  @media (--phone) {
     display: none;
   }
 }

@@ -2,7 +2,7 @@
   display: flex;
   min-block-size: 100vh;
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     flex-direction: column;
   }
 }
@@ -21,7 +21,7 @@
   margin-inline: auto;
   padding-inline: 1rem;
 
-  @media (min-width: 52.5rem) {
+  @media not (--phone) {
     padding-inline: 1.5rem;
   }
 }
@@ -49,7 +49,7 @@
     opacity: var(--md-sys-artwork-opacity);
     pointer-events: none;
 
-    @media (min-width: 48rem) {
+    @media not (--phone) {
       background-position: right center;
     }
   }

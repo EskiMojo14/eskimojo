@@ -1,51 +1,13 @@
-import valueParser from "postcss-value-parser";
 import stylelint from "stylelint";
 
-const pathRuleName = "local/no-parent-relative-paths";
-
-/** @type {import("stylelint").Rule} */
-const noParentRelativePaths = (primary) => (root, result) => {
-  if (
-    !stylelint.utils.validateOptions(result, pathRuleName, {
-      actual: primary,
-      possible: [true],
-    })
-  )
-    return;
-
-  root.walk((node) => {
-    const isImport = node.type === "atrule" && node.name.toLowerCase() === "import";
-    if (node.type !== "decl" && !isImport) return;
-
-    const value = node.type === "decl" ? node.value : node.params;
-    const parsed = valueParser(value);
-    const importPath = isImport
-      ? parsed.nodes.find((part) => part.type !== "space" && part.type !== "comment")
-      : undefined;
-
-    parsed.walk((part) => {
-      const isUrl = part.type === "function" && part.value.toLowerCase() === "url";
-      if (!isUrl && (part !== importPath || part.type !== "string")) return true;
-
-      const path = isUrl
-        ? valueParser
-            .stringify(part.nodes)
-            .trim()
-            .replace(/^(["'])(.*)\1$/, "$2")
-        : part.value;
-      if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(path) || !path.split("/").includes(".."))
-        return false;
-
-      stylelint.utils.report({
-        ruleName: pathRuleName,
-        result,
-        node,
-        message: `Use a #/ import or a root-absolute URL instead of parent-relative path "${path}".`,
-      });
-      return false;
-    });
-  });
-};
+import {
+  rule as noParentRelativePaths,
+  ruleName as noParentRelativePathsName,
+} from "./stylelint-rules/no-parent-relative-paths.js";
+import {
+  rule as useCustomMediaForWidth,
+  ruleName as useCustomMediaForWidthName,
+} from "./stylelint-rules/use-custom-media-for-width.js";
 
 const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
 const colorMixArg = String.raw`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
@@ -91,10 +53,12 @@ export default {
   ignoreFiles: ["../**/*.gen.*"],
   plugins: [
     "stylelint-declaration-strict-value",
-    stylelint.createPlugin(pathRuleName, noParentRelativePaths),
+    stylelint.createPlugin(noParentRelativePathsName, noParentRelativePaths),
+    stylelint.createPlugin(useCustomMediaForWidthName, useCustomMediaForWidth),
   ],
   rules: {
-    [pathRuleName]: true,
+    [noParentRelativePathsName]: true,
+    [useCustomMediaForWidthName]: true,
     "scale-unlimited/declaration-strict-value": [
       [...fontProperties, ...colorProperties, ...radiusProperties],
       {

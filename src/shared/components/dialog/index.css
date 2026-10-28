@@ -61,7 +61,7 @@
     opacity: 1;
   }
 
-  @media (max-width: 37.5rem) {
+  @media (--phone) {
     inline-size: calc(100% - 2rem);
   }
 }

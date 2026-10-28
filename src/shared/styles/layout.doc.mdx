@@ -1,0 +1,106 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Layout" />
+
+# Layout
+
+The site uses a shared page shell and named viewport breakpoints. Keep page-level
+layout decisions consistent across routes, and let reusable components adapt to
+their own available space.
+
+## Content width and gutters
+
+The `.app-shell__content` wrapper fills the available width up to `64rem`
+(1024px at the default 16px font size), centered within the main area beside the
+sidebar. Its maximum width includes its padding: `1rem` on each side on phones,
+and `1.5rem` on other viewport sizes.
+
+The app bar and footer remain full-width within the main area. Route content,
+including project details, fills the content wrapper; avoid adding another
+page-wide maximum width. Individual reading blocks can use a narrower measure
+where appropriate, such as the Projects introduction's `65ch` limit.
+
+The shell styles currently live in `src/shared/components/footer/index.css`.
+Use logical properties such as `inline-size`, `max-inline-size`, and
+`margin-inline` so layouts work in both text directions.
+
+## Viewport breakpoints
+
+`src/shared/styles/breakpoints.css` is the source of truth. These ranges are
+copied from [Schema Benchmarks' layout definitions](https://github.com/open-circle/schema-benchmarks/blob/ce003ca1cca9e7933a7c0fabd00a78058f292622/website/src/shared/styles/layout.css).
+
+| Custom media      | Viewport width                       |
+| ----------------- | ------------------------------------ |
+| `--phone`         | Up to 599px                          |
+| `--tablet-small`  | 600px to 904px                       |
+| `--tablet-large`  | 905px to 1239px                      |
+| `--laptop`        | 1240px to 1439px                     |
+| `--desktop`       | 1440px and above                     |
+| `--modal-sidebar` | Phone, tablet-small, or tablet-large |
+
+Use the named queries rather than repeating their numeric thresholds:
+
+```css
+@media (--phone) {
+  .page-actions {
+    flex-direction: column;
+  }
+}
+
+@media (--tablet-large), (--laptop), (--desktop) {
+  .page-actions {
+    flex-direction: row;
+  }
+}
+```
+
+Each named size is a bounded range, except `--desktop`. For example,
+`--tablet-large` alone does not include laptops or desktops. Combine the bands
+when a layout should apply to more than one size.
+
+The Vite configuration runs `@csstools/postcss-global-data` before
+`postcss-custom-media`, making the definitions available to independently
+processed stylesheets as well as the global CSS. No per-component import is
+needed. The build expands custom media into regular browser media queries;
+Storybook uses the same pipeline.
+
+## Responsive navigation and tabs
+
+- **Phone:** four-destination bottom navigation. The shell reserves space below
+  the page so navigation does not cover the content.
+- **Tablet-small and tablet-large:** an app-bar menu button opens a modal
+  sidebar.
+- **Laptop and desktop:** a persistent sidebar alongside the main area.
+
+Responsive horizontal tab bars stay within the page content area. Their tabs
+share the available space on phones and small tablets; from tablet-large
+upward, the tabs stop growing to fill the bar. Overflow remains scrollable.
+
+## Component layouts
+
+Use viewport media queries for page-level changes such as navigation and page
+gutters. Use container queries when a component should respond to the space
+its parent gives it, rather than the whole viewport.
+
+Container-query thresholds are component-specific and do not have to match the
+viewport breakpoints. For example, Music summary cards change their column
+count using the named `music-summary` container.
+
+Keep content and keyboard order aligned when changing layouts. Check narrow
+viewports and browser zoom for overflow rather than hiding content to make a
+layout fit.
+
+## Linting and changing breakpoints
+
+Run `vp run lint:css:all` to check styles. The
+`local/use-custom-media-for-width` rule rejects inline viewport-width features
+in `@media`, including `min-width`, `max-width`, and width comparisons. Use a
+named query instead.
+
+The rule leaves `@custom-media` definitions and `@container` queries alone.
+Preference queries such as `prefers-reduced-motion` and `prefers-color-scheme`
+also remain ordinary media queries.
+
+Change viewport ranges in `breakpoints.css`, then update this table. Check
+navigation, dialogs, tabs, and page gutters on both sides of each affected
+boundary, and verify both the application and Storybook builds.

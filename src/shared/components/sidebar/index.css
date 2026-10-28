@@ -73,7 +73,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  @media (max-width: 48rem) {
+  @media (--modal-sidebar) {
     display: none;
   }
 }
@@ -221,7 +221,7 @@
   }
 }
 
-@media (max-width: 48rem) {
+@media (--modal-sidebar) {
   .site-sidebar__dialog {
     .list {
       flex-direction: column;

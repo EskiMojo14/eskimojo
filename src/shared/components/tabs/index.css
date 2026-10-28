@@ -213,7 +213,7 @@
   }
 }
 
-@media (width > 48rem) {
+@media (--tablet-large), (--laptop), (--desktop) {
   .tabs--responsive {
     > .tabs__list[data-orientation="horizontal"] > .tabs__tab {
       flex-grow: 0;

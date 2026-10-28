@@ -264,7 +264,7 @@
   text-wrap: pretty;
 }
 
-@media (width < 54rem) {
+@media (--phone), (--tablet-small) {
   .storybook-welcome__hero {
     grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.8fr);
   }
@@ -276,7 +276,7 @@
   }
 }
 
-@media (width < 42rem) {
+@media (--phone) {
   .storybook-welcome__hero {
     grid-template-columns: minmax(0, 1fr);
   }
