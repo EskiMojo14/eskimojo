@@ -8,7 +8,7 @@
   color: var(--md-sys-color-on-surface);
 
   .list__divider {
-    background-color: var(--md-sys-color-outline);
+    background-color: var(--md-sys-color-outline-variant);
   }
 
   .list {

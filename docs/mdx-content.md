@@ -27,12 +27,17 @@ contrast settings; no browser-side highlighting script is needed. Untagged
 blocks stay plain, and unsupported language tags fail compilation.
 Syntax combines Goat's purple/indigo and Arctic's blue/rose standard accents,
 plus Goat's error red. These are generated from the existing theme exports by
-`vp run theme:generate`, without additional green/yellow/teal palettes.
+`vp run theme:generate`: keywords use Goat's primary, strings use Arctic's
+tertiary, functions and types use Arctic's primary, numbers use Goat's tertiary,
+and parameters use Goat's error. It adds no separate green/yellow/teal theme
+colors.
 Light-mode accents retain their source hue and chroma where the gamut allows,
 with tones darkened only as needed for at least 6:1 contrast in medium and 7:1
 in high mode against both palettes' code backgrounds. Standard accents and
 dark-mode accents remain unchanged. Backgrounds, comments, and plain text
-follow the active theme and contrast.
+follow the active theme and contrast. See the
+[theme guide](../src/shared/styles/theme/theme.doc.mdx#syntax-highlighting) for
+the Prism token mappings.
 The TypeScript content mapper does not run Prism: it supports only selected
 transform plugins, and highlighting does not change the MDX types.
 
