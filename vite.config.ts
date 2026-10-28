@@ -1,18 +1,15 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import postcssGlobalData from "@csstools/postcss-global-data";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
 import eslintPluginRouter from "@tanstack/eslint-plugin-router";
 import { configs as eslintDependConfigs } from "eslint-plugin-depend";
-import { Features } from "lightningcss";
-import postcssCustomMedia from "postcss-custom-media";
-import postcssExtendRule from "postcss-extend-rule";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { promiseAllKeyed } from "#/utils/index.ts";
 
+import { cssConfig } from "./config/css.config.ts";
 import fmtConfig from "./config/fmt.config.ts";
 
 const dirname =
@@ -23,7 +20,8 @@ const config = defineConfig({
   staged: {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "vp check --fix",
     "*.css": ["vpr lint:css --fix", "vp fmt"],
-    "!(*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,css})": "vp fmt --no-error-on-unmatched-pattern",
+    "*.pcss": "vpr lint:css --fix",
+    "!(*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,css,pcss})": "vp fmt --no-error-on-unmatched-pattern",
   },
   fmt: fmtConfig,
   lint: {
@@ -105,20 +103,7 @@ const config = defineConfig({
     alias: { "#": fileURLToPath(new URL("./src", import.meta.url)) },
     tsconfigPaths: true,
   },
-  css: {
-    postcss: {
-      plugins: [
-        postcssGlobalData({
-          files: [path.join(dirname, "src/shared/styles/breakpoints.css")],
-        }),
-        postcssCustomMedia(),
-        postcssExtendRule({ onUnusedExtend: "throw" }),
-      ],
-    },
-    // Theme tokens rely on native light-dark() resolving where they're used, so that
-    // nested [data-theme] sections work. The downlevelled fallback resolves at :root.
-    lightningcss: { exclude: Features.LightDark },
-  },
+  css: cssConfig,
   plugins: lazyPlugins(async () => {
     const {
       contentCollections: { default: contentCollections },

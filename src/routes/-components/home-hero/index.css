@@ -1,0 +1,192 @@
+@import "./animation.pcss";
+
+.app-shell__content:has(> .home-hero) {
+  max-inline-size: none;
+  padding-inline: 0;
+}
+
+.home-hero {
+  --home-hero-artwork-background: #382656;
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: center;
+  inline-size: 100%;
+  min-block-size: 18rem;
+  overflow: hidden;
+  padding-block: 2rem;
+  background-color: var(--home-hero-artwork-background);
+  color: var(--md-sys-color-white);
+
+  &::before,
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: "";
+    pointer-events: none;
+  }
+
+  &::before {
+    max-inline-size: 72rem;
+    margin-inline: auto;
+    background-image: url("/Mitzi.JPG");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &::after {
+    background-image: linear-gradient(
+      90deg,
+      alpha(from var(--md-sys-color-scrim) / 90%) 0%,
+      alpha(from var(--md-sys-color-scrim) / 78%) 44%,
+      alpha(from var(--md-sys-color-scrim) / 28%) 100%
+    );
+  }
+}
+
+.home-hero__content {
+  inline-size: 100%;
+  max-inline-size: 64rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media not (--phone) {
+    padding-inline: 1.5rem;
+  }
+}
+
+.home-hero__title {
+  max-inline-size: 38rem;
+  margin: 0;
+  font: var(--md-sys-typography-display-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
+  text-wrap: balance;
+}
+
+.home-hero__description {
+  max-inline-size: 48ch;
+  margin: 1rem 0 0;
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-prose);
+  text-wrap: pretty;
+}
+
+.home-hero__animated-description,
+.home-hero__control {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero__static-description {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .home-hero__animated-description {
+    display: inline;
+  }
+
+  .home-hero__roles {
+    display: inline-grid;
+    vertical-align: top;
+    max-inline-size: 100%;
+    color-scheme: dark;
+    color: var(--md-sys-color-tertiary);
+  }
+
+  .home-hero__role {
+    grid-area: 1 / 1;
+    opacity: 0;
+  }
+
+  .home-hero[data-paused="true"] {
+    --home-hero-play-state: paused;
+  }
+
+  .home-hero__control {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    margin-block-start: 0.5rem;
+
+    @media (pointer: coarse) {
+      inline-size: 3.25rem;
+      block-size: 3.25rem;
+    }
+  }
+
+  .home-hero__progress {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    rotate: -90deg;
+    fill: none;
+    stroke: var(--md-sys-color-tertiary);
+    stroke-width: 2;
+    color-scheme: dark;
+    pointer-events: none;
+  }
+
+  .home-hero__progress-track {
+    opacity: 0.25;
+  }
+
+  @supports (corner-shape: bevel) {
+    .home-hero__progress > path {
+      d: path("M46 24L24 46L2 24L24 2Z");
+    }
+  }
+
+  .home-hero__progress-fill {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    stroke-linecap: round;
+  }
+
+  @keyframes home-hero-progress {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .home-hero .home-hero__pause {
+    color: var(--md-sys-color-white);
+
+    &:focus-visible {
+      outline-color: var(--md-sys-color-white);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  /* stylelint-disable scale-unlimited/declaration-strict-value -- System colors preserve forced-color palettes. */
+  .home-hero {
+    background-color: Canvas;
+    color: CanvasText;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+
+    .home-hero__pause {
+      color: ButtonText;
+
+      &:focus-visible {
+        outline-color: Highlight;
+      }
+    }
+  }
+  /* stylelint-enable scale-unlimited/declaration-strict-value */
+}

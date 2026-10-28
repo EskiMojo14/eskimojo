@@ -13,6 +13,37 @@ The home page should:
   and Gigs;
 - avoid opening with a dense dashboard of activity statistics.
 
+The home banner spans the main area, with its text aligned to the main content's
+responsive gutters and maximum width.
+It continuously rotates through its role list, with four seconds
+per descriptor and a pause/resume control. The fallback sentence is generated
+from the role list with `Intl.ListFormat`.
+
+When adding or removing roles in
+[`HomeHero`](../src/routes/-components/home-hero/index.tsx), update `$role-count`
+at the top of
+[`animation.pcss`](../src/routes/-components/home-hero/animation.pcss) to match.
+Set `$role-duration` in that same file to change the per-role interval and
+progress duration together (currently `4s`).
+`postcss-advanced-variables` generates the per-role delays and `postcss-calc`
+resolves the keyframe percentages at build time. The site and Storybook share
+this pipeline through [`css.config.ts`](../config/css.config.ts).
+Keep calculations at full
+precision so keyframe selectors become bare percentages rather than unresolved
+`calc()` expressions. The template is Stylelint-checked but excluded from Oxfmt,
+which cannot parse calculations in keyframe selectors. The story checks the
+introduction and keyboard pause/resume controls. Check rotation, wraparound,
+and progress alignment visually when changing the timing template.
+
+A tertiary progress ring around the control fills during each three-second
+interval and freezes alongside the text when paused.
+The progress outline matches the diamond button in browsers supporting
+`corner-shape: bevel`, with a circular fallback elsewhere.
+The descriptors share a grid cell so the text reserves space for the longest
+phrase instead of shifting the layout. Screen readers receive the complete
+static sentence, not repeated announcements. Reduced-motion preferences show
+that static sentence visually too, without animation or a pause control.
+
 The About section should cover:
 
 - interests and hobbies;

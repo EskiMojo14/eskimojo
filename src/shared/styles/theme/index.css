@@ -11,6 +11,8 @@
 :root {
   color-scheme: light dark;
   --palette-artwork-background: #382656;
+  --md-sys-color-white: #ffffff;
+  --md-sys-color-black: #000000;
 }
 
 :root:where([data-palette="arctic"]) {

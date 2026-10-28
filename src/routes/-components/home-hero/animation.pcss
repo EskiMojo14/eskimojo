@@ -1,0 +1,53 @@
+$role-count: 6;
+$role-duration: 4s;
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero__role {
+    animation:
+      home-hero-role-fade calc($role-count * $role-duration) var(--md-sys-motion-spring-default-effects) infinite,
+      home-hero-role-slide calc($role-count * $role-duration) var(--md-sys-motion-spring-default-spatial) infinite;
+    animation-play-state: var(--home-hero-play-state, running);
+  }
+
+  @for $i from 1 through $role-count {
+    .home-hero__role:nth-child($i) {
+      animation-delay: calc(($i - 1 - $role-count) * $role-duration);
+    }
+  }
+
+  .home-hero__progress-fill {
+    animation: home-hero-progress $role-duration linear infinite;
+    animation-play-state: var(--home-hero-play-state, running);
+  }
+
+  @keyframes home-hero-role-fade {
+    calc(10% / $role-count),
+    calc(100% / $role-count) {
+      opacity: 1;
+    }
+
+    0%,
+    calc(110% / $role-count),
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes home-hero-role-slide {
+    calc(10% / $role-count),
+    calc(100% / $role-count) {
+      translate: 0;
+    }
+
+    calc(110% / $role-count) {
+      translate: 0 -0.25em;
+    }
+
+    /* Reset the hidden slide just after its exit, without animating across the hold. */
+    0%,
+    calc(110.000025% / $role-count),
+    100% {
+      translate: 0 0.25em;
+    }
+  }
+}

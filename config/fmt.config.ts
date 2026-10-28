@@ -4,7 +4,8 @@ import type { OxfmtConfig } from "vite-plus/fmt";
 // are formatted with the same options as everything else.
 const config: OxfmtConfig = {
   // Generated files are formatted by the script that writes them.
-  ignorePatterns: ["**/*.gen.*", "**/skills/**"],
+  // PostCSS templates contain keyframe calculations Oxfmt cannot parse.
+  ignorePatterns: ["**/*.gen.*", "**/skills/**", "**/*.pcss"],
   sortImports: true,
 };
 

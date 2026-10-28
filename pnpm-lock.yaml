@@ -308,6 +308,9 @@ importers:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      '@types/postcss-advanced-variables':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -356,6 +359,12 @@ importers:
       playwright:
         specifier: ^1.64.1
         version: 1.64.1
+      postcss-advanced-variables:
+        specifier: ^5.0.0
+        version: 5.0.0(postcss@8.5.32)
+      postcss-calc:
+        specifier: ^11.2.3
+        version: 11.2.3(postcss@8.5.32)
       postcss-custom-media:
         specifier: ^12.0.3
         version: 12.0.3(postcss@8.5.32)
@@ -608,6 +617,10 @@ packages:
     engines: {node: '>=20.19.0'}
     peerDependencies:
       postcss: ^8.4
+
+  '@csstools/sass-import-resolve@1.0.0':
+    resolution: {integrity: sha512-pH4KCsbtBLLe7eqUrw8brcuFO8IZlN36JjdKlOublibVdAIPHCzEnpBWOVUXK5sCf+DpBi8ZtuWtjF0srybdeA==}
+    engines: {node: '>=4.0.0'}
 
   '@csstools/selector-resolve-nested@4.0.2':
     resolution: {integrity: sha512-JpjNBJFA+4OnAHKRK4AMp8xrYyLhI9XapOeBlP2PhRU/IylSw+1ep3BFNTksBJnrTS3KT6kqKNVfpzLLwZUW5Q==}
@@ -3187,6 +3200,9 @@ packages:
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
+
+  '@types/postcss-advanced-variables@3.0.0':
+    resolution: {integrity: sha512-4rYWxCJKYAMUCbS/eYHq2/cehXkO+MiP7PWJBEhfG9STknwmjUhRVFeBSNav3uUXdpgFQ6dRhC6YH7+jx/fKQg==}
 
   '@types/prismjs@1.26.6':
     resolution: {integrity: sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw==}
@@ -6171,6 +6187,18 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
+  postcss-advanced-variables@5.0.0:
+    resolution: {integrity: sha512-g2SwNfZ1bJxoch51VqY7FMtxJ8+sJCxOqVi1vBAfzsiFgf5xRXhWIJXbUW6FXBJK0JQedOfYS5DtuVEuQLXVnQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      postcss: ^8.4
+
+  postcss-calc@11.2.3:
+    resolution: {integrity: sha512-pFW3MR2a4W7uHcSGUiyQGGXZWHon83ljbNwnUJ1mRKublWQbv+3o9NiqhlV4TJfNby+U+zLY2OgiywzhA5eFqw==}
+    engines: {node: ^22.22.3 || ^24.15 || >=26.0}
+    peerDependencies:
+      postcss: ^8.5.29
+
   postcss-custom-media@12.0.3:
     resolution: {integrity: sha512-pgOICT/unQexoA/Vh4ZvyAUrcwwA/nHh0SJcOwOombpwDEj1x5N6zK+kz97wy9NslhU6UxhE5c5Q/M2gpYfkJA==}
     engines: {node: '>=20.19.0'}
@@ -7622,6 +7650,8 @@ snapshots:
   '@csstools/postcss-global-data@4.0.0(postcss@8.5.32)':
     dependencies:
       postcss: 8.5.32
+
+  '@csstools/sass-import-resolve@1.0.0': {}
 
   '@csstools/selector-resolve-nested@4.0.2(postcss-selector-parser@7.1.7)':
     dependencies:
@@ -9888,6 +9918,10 @@ snapshots:
       undici-types: 8.9.0
 
   '@types/normalize-package-data@2.4.4': {}
+
+  '@types/postcss-advanced-variables@3.0.0':
+    dependencies:
+      postcss: 8.5.32
 
   '@types/prismjs@1.26.6': {}
 
@@ -13248,6 +13282,16 @@ snapshots:
   pngjs@7.0.0: {}
 
   possible-typed-array-names@1.1.0: {}
+
+  postcss-advanced-variables@5.0.0(postcss@8.5.32):
+    dependencies:
+      '@csstools/sass-import-resolve': 1.0.0
+      postcss: 8.5.32
+
+  postcss-calc@11.2.3(postcss@8.5.32):
+    dependencies:
+      '@csstools/css-tokenizer': 4.0.2
+      postcss: 8.5.32
 
   postcss-custom-media@12.0.3(postcss@8.5.32):
     dependencies:
