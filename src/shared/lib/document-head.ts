@@ -16,17 +16,17 @@ export const generateMetadata = createMetadataGenerator({
 export function generatePageMetadata({
   title,
   description,
-}: {
-  title: string;
-  description: string;
-}) {
-  const image = {
+  image = {
     url: "/Goat_square-1.jpeg",
     width: 712,
     height: 712,
     alt: "eskimojo's Goat portrait",
-  };
-
+  },
+}: {
+  title: string;
+  description: string;
+  image?: { url: string; alt: string; width?: number; height?: number };
+}) {
   return generateMetadata({
     title,
     description,

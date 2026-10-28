@@ -30,6 +30,25 @@ test.each(["Home", "Projects", "Music", "Gigs"])(
   },
 );
 
+test("uses a project logo for social previews without inheriting the portrait dimensions", () => {
+  const { meta } = generatePageMetadata({
+    title: "Redux",
+    description: "Predictable and maintainable global state management",
+    image: { url: "/projects/redux.png", alt: "Redux logo" },
+  });
+
+  expect(meta).toEqual(
+    expect.arrayContaining([
+      { property: "og:image", content: "https://eskimojo.dev/projects/redux.png" },
+      { property: "og:image:alt", content: "Redux logo" },
+      { name: "twitter:image", content: "https://eskimojo.dev/projects/redux.png" },
+      { name: "twitter:image:alt", content: "Redux logo" },
+    ]),
+  );
+  expect(meta).not.toContainEqual(expect.objectContaining({ property: "og:image:width" }));
+  expect(meta).not.toContainEqual(expect.objectContaining({ property: "og:image:height" }));
+});
+
 test("preserves the default document metadata and stylesheet links", () => {
   const { meta, links } = getDocumentHead();
 
