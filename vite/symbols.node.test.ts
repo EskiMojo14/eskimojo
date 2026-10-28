@@ -6,6 +6,7 @@ import materialSymbols from "./symbols";
 
 async function compile(source: string, knownSymbols: Array<string> = []) {
   const warnings: Array<string> = [];
+  const warningLocations: Array<{ file?: string; line: number; column: number }> = [];
   const result = await build({
     configFile: false,
     logLevel: "silent",
@@ -35,8 +36,10 @@ async function compile(source: string, knownSymbols: Array<string> = []) {
         input: "/symbol-fixture.tsx",
         external: ["react/jsx-runtime", "react/jsx-dev-runtime"],
         onLog(level, log, defaultHandler) {
-          if (level === "warn") warnings.push(log.message);
-          else defaultHandler(level, log);
+          if (level === "warn") {
+            warnings.push(log.message);
+            if (log.loc) warningLocations.push(log.loc);
+          } else defaultHandler(level, log);
         },
         output: { format: "es" },
         preserveEntrySignatures: "strict",
@@ -52,7 +55,7 @@ async function compile(source: string, knownSymbols: Array<string> = []) {
   const html = result.output.find(
     (item) => item.type === "asset" && item.fileName === "iframe.html",
   );
-  return { code, html, warnings };
+  return { code, html, warnings, warningLocations };
 }
 
 const prefix = `
@@ -82,12 +85,54 @@ test("warns about expressions and includes explicitly registered dynamic symbols
   expect(warnings).toEqual([expect.stringContaining("dynamic MdSymbol children")]);
 });
 
+test("extracts both branches of nested ternaries without manual registration", async () => {
+  const { code, warnings } = await compile(`${prefix}
+    export const icon = <MdSymbol>{globalThis.paused ? "play_arrow" : globalThis.stopped ? "stop" : "pause"}</MdSymbol>;
+  `);
+  expect(code).toContain(`${symbolsUrl}&icon_names=pause,play_arrow,stop`);
+  expect(warnings).toEqual([]);
+});
+
+test("extracts literal ternary branches while warning about unresolved branches", async () => {
+  const { code, warnings } = await compile(`${prefix}
+    export const icon = <MdSymbol>{globalThis.paused ? "play_arrow" : globalThis.icon}</MdSymbol>;
+  `);
+  expect(code).toContain(`${symbolsUrl}&icon_names=play_arrow`);
+  expect(warnings).toEqual([expect.stringContaining("dynamic MdSymbol children")]);
+});
+
 test("includes known symbols without a component and preserves the full font for empty builds", async () => {
   const known = await compile(`export const font = ${JSON.stringify(symbolsUrl)};`, ["check"]);
   expect(known.code).toContain(`${symbolsUrl}&icon_names=check`);
   const empty = await compile(`export const font = ${JSON.stringify(symbolsUrl)};`);
   expect(empty.code).toContain(symbolsUrl);
   expect(empty.code).not.toContain("icon_names");
+});
+
+test("normalizes registered symbols before deduplicating the font request", async () => {
+  const { code, warnings } = await compile(prefix, [" check ", "check", "\n close\t"]);
+  expect(code).toContain(`${symbolsUrl}&icon_names=check,close`);
+  expect(warnings).toEqual([]);
+});
+
+test("rejects blank registered symbols", async () => {
+  await expect(compile(prefix, [" \t\n"])).rejects.toThrow(
+    "Registered Material Symbol names must not be empty or whitespace.",
+  );
+});
+
+test("reports a source location for each unresolved use", async () => {
+  const { warnings, warningLocations } = await compile(`${prefix}
+    export const first = <MdSymbol>{globalThis.first}</MdSymbol>;
+    export const second = <MdSymbol>{globalThis.second}</MdSymbol>;
+  `);
+  expect(warnings).toHaveLength(2);
+  expect(warnings[0]).toContain("/symbol-fixture.tsx:5:");
+  expect(warnings[1]).toContain("/symbol-fixture.tsx:6:");
+  expect(warningLocations).toEqual([
+    { file: "/symbol-fixture.tsx", line: 5, column: expect.any(Number) },
+    { file: "/symbol-fixture.tsx", line: 6, column: expect.any(Number) },
+  ]);
 });
 
 test("recognizes jsxDEV, jsxs, and classic createElement calls", async () => {

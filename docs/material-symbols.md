@@ -38,8 +38,10 @@ The app and Storybook load Material Symbols Sharp from Google Fonts, so renderin
 requires access to `fonts.googleapis.com` and `fonts.gstatic.com`. Development
 loads the full font.
 
-Production builds extract literal `<MdSymbol>` children and request only those
-symbols, deduplicated and alphabetically sorted. The plugin updates JavaScript
+Production builds extract literal `<MdSymbol>` children, including both branches
+of ternaries such as `<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>`,
+and request only those symbols, deduplicated and alphabetically sorted.
+Nested ternaries are supported too. The plugin updates JavaScript
 chunks for TanStack Start and the preview HTML for Storybook.
 
 For dynamic children such as `<MdSymbol>{icon}</MdSymbol>`, register every
@@ -48,7 +50,10 @@ importing a constants file and mapping over its icons. The plugin loads that
 module at build time with Vite's `runnerImport`, rather than having
 [vite.config.ts](../vite.config.ts) import it, because Vite restarts the dev
 server whenever a file the config imports changes. The plugin warns when it
-encounters dynamic children; it does not evaluate expressions. Keep the
+encounters unresolved children or ternary branches, with a source location for
+each use; it collects literal branches
+without evaluating the condition or resolving variables. Keep the
 component's imported name as `MdSymbol` so the extractor can recognize it.
+Registered names are trimmed before deduplication; blank registrations fail the build.
 
 If no symbols are found or registered, the font URL is left unchanged.

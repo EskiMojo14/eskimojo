@@ -1,3 +1,4 @@
+import { SourceMap } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { runnerImport, type Plugin } from "vite-plus";
@@ -24,6 +25,20 @@ function nameOf(node: unknown): unknown {
   return node.type === "Identifier" ? node.name : node.value;
 }
 
+function collectSymbols(node: unknown, symbols: Set<string>): boolean {
+  if (!isNode(node)) return false;
+  if (typeof node.value === "string") {
+    symbols.add(node.value.trim());
+    return true;
+  }
+  if (node.type === "ConditionalExpression") {
+    const consequentKnown = collectSymbols(node.consequent, symbols);
+    const alternateKnown = collectSymbols(node.alternate, symbols);
+    return consequentKnown && alternateKnown;
+  }
+  return false;
+}
+
 function visit(node: unknown, onCall: (node: Record<string, unknown>) => void): void {
   if (!isNode(node)) return;
   if (node.type === "CallExpression") onCall(node);
@@ -44,21 +59,27 @@ export default function materialSymbols({
   const usedSymbols = new Set<string>();
   return [
     {
-      name: "used-symbols:pre",
-      enforce: "pre",
+      name: "used-symbols:collect",
+      enforce: "post",
       apply: "build",
       async buildStart() {
         usedSymbols.clear();
-        for (const symbol of knownSymbols) usedSymbols.add(symbol);
-        if (!knownSymbolsModule) return;
-        const { module } = await runnerImport<{ default: Array<string> }>(knownSymbolsModule, {
-          resolve: { alias: { "#": fileURLToPath(new URL("../src", import.meta.url)) } },
-        });
-        for (const symbol of module.default) usedSymbols.add(symbol);
+        const registeredSymbols = [...knownSymbols];
+        if (knownSymbolsModule) {
+          const { module } = await runnerImport<{ default: Array<string> }>(knownSymbolsModule, {
+            resolve: { alias: { "#": fileURLToPath(new URL("../src", import.meta.url)) } },
+          });
+          registeredSymbols.push(...module.default);
+        }
+        for (const symbol of registeredSymbols) {
+          const name = symbol.trim();
+          if (!name)
+            this.error("Registered Material Symbol names must not be empty or whitespace.");
+          usedSymbols.add(name);
+        }
       },
-      moduleParsed({ id, code }) {
+      transform(code, id) {
         if (!code?.includes("MdSymbol")) return;
-        let dynamic = 0;
         visit(this.parse(code), (node) => {
           const { callee, arguments: args } = node;
           const name =
@@ -82,17 +103,35 @@ export default function materialSymbols({
                     (property: unknown) => isNode(property) && nameOf(property.key) === "children",
                   )?.value
                 : undefined;
-          if (isNode(children) && typeof children.value === "string") {
-            usedSymbols.add(children.value.trim());
-          } else {
-            dynamic++;
+          if (!collectSymbols(children, usedSymbols)) {
+            const position = isNode(children) ? children.start : node.start;
+            const precedingLines =
+              typeof position === "number" ? code.slice(0, position).split("\n") : undefined;
+            const generatedLine = (precedingLines?.length ?? 1) - 1;
+            const generatedColumn = precedingLines?.at(-1)?.length ?? 0;
+            const original = new SourceMap({
+              sourceRoot: "",
+              ...this.getCombinedSourcemap(),
+            }).findEntry(generatedLine, generatedColumn);
+            const loc =
+              "originalLine" in original
+                ? {
+                    file: original.originalSource.startsWith("file:")
+                      ? fileURLToPath(original.originalSource)
+                      : original.originalSource,
+                    line: original.originalLine + 1,
+                    column: original.originalColumn,
+                  }
+                : { file: id, line: generatedLine + 1, column: generatedColumn };
+            this.warn({
+              id,
+              loc,
+              message:
+                `${loc.file}:${loc.line}:${loc.column + 1}: ` +
+                "Unresolved dynamic MdSymbol children; add all possible names to vite/known-symbols.ts.",
+            });
           }
         });
-        if (dynamic) {
-          this.warn(
-            `Found ${dynamic} dynamic MdSymbol children in ${id}; add all possible names to vite/known-symbols.ts.`,
-          );
-        }
       },
     },
     {
