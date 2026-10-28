@@ -75,7 +75,7 @@
 }
 
 .home-hero__animated-description,
-.home-hero__control {
+.home-hero__controls {
   display: none;
 }
 
@@ -95,15 +95,18 @@
   }
 
   .home-hero__roles {
+    position: relative;
     display: inline-grid;
     vertical-align: top;
     max-inline-size: 100%;
     color-scheme: dark;
     color: var(--md-sys-color-tertiary);
+    padding-block-end: 0.375rem;
   }
 
   .home-hero__role {
     grid-area: 1 / 1;
+    justify-self: start;
     opacity: 0;
   }
 
@@ -111,56 +114,43 @@
     --home-hero-play-state: paused;
   }
 
-  .home-hero__control {
-    position: relative;
-    display: inline-grid;
-    place-items: center;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+  .home-hero__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-block-start: 0.5rem;
-
-    @media (pointer: coarse) {
-      inline-size: 3.25rem;
-      block-size: 3.25rem;
-    }
   }
 
   .home-hero__progress {
     position: absolute;
-    inset: 0;
+    inset-inline-start: 0;
+    inset-block-end: 0;
     inline-size: 100%;
-    block-size: 100%;
-    rotate: -90deg;
-    fill: none;
-    stroke: var(--md-sys-color-tertiary);
-    stroke-width: 2;
-    color-scheme: dark;
+    block-size: 2px;
+    background-color: alpha(from currentColor / 25%);
     pointer-events: none;
   }
 
-  .home-hero__progress-track {
-    opacity: 0.25;
-  }
-
-  @supports (corner-shape: bevel) {
-    .home-hero__progress > path {
-      d: path("M46 24L24 46L2 24L24 2Z");
-    }
-  }
-
   .home-hero__progress-fill {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    stroke-linecap: round;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    background-color: currentColor;
+    scale: 0 1;
+    transform-origin: left center;
+
+    &:dir(rtl) {
+      transform-origin: right center;
+    }
   }
 
   @keyframes home-hero-progress {
     to {
-      stroke-dashoffset: 0;
+      scale: 1 1;
     }
   }
 
-  .home-hero .home-hero__pause {
+  .home-hero .home-hero__button {
     color: var(--md-sys-color-white);
 
     &:focus-visible {
@@ -180,7 +170,7 @@
       display: none;
     }
 
-    .home-hero__pause {
+    .home-hero__button {
       color: ButtonText;
 
       &:focus-visible {

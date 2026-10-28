@@ -16,7 +16,7 @@ The home page should:
 The home banner spans the main area, with its text aligned to the main content's
 responsive gutters and maximum width.
 It continuously rotates through its role list, with four seconds
-per descriptor and a pause/resume control. The fallback sentence is generated
+per descriptor, a pause/resume control, and a next-role button. The fallback sentence is generated
 from the role list with `Intl.ListFormat`.
 
 When adding or removing roles in
@@ -35,10 +35,18 @@ which cannot parse calculations in keyframe selectors. The story checks the
 introduction and keyboard pause/resume controls. Check rotation, wraparound,
 and progress alignment visually when changing the timing template.
 
-A tertiary progress ring around the control fills during each three-second
+A tertiary progress underline beneath the role section fills during each four-second
 interval and freezes alongside the text when paused.
-The progress outline matches the diamond button in browsers supporting
-`corner-shape: bevel`, with a circular fallback elsewhere.
+It smoothly resizes to the current phrase during each role transition, while the
+text section still reserves space for the longest phrase. A `ResizeObserver`
+supplies measured phrase widths (including font and viewport changes) to the
+generated CSS width keyframes; pause and skip seek those keyframes too.
+Pause and next sit together below the text.
+The next-role button seeks the existing CSS animations and progress underline together,
+wrapping back to the first role. During playback it starts the next transition
+with a fresh interval. While paused it seeks just past the entrance transition
+so the next role is fully visible; the underline reflects that position and both stay
+paused until resumed. Both controls are hidden for reduced motion.
 The descriptors share a grid cell so the text reserves space for the longest
 phrase instead of shifting the layout. Screen readers receive the complete
 static sentence, not repeated announcements. Reduced-motion preferences show

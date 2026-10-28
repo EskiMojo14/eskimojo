@@ -20,6 +20,25 @@ $role-duration: 4s;
     animation-play-state: var(--home-hero-play-state, running);
   }
 
+  .home-hero__progress {
+    animation: home-hero-role-width calc($role-count * $role-duration)
+      var(--md-sys-motion-spring-default-spatial) infinite;
+    animation-play-state: var(--home-hero-play-state, running);
+  }
+
+  @keyframes home-hero-role-width {
+    0% {
+      inline-size: var(--home-hero-role-width-$role-count, 100%);
+    }
+
+    @for $i from 1 through $role-count {
+      calc((($i - 1) * 100% + 10%) / $role-count),
+      calc($i * 100% / $role-count) {
+        inline-size: var(--home-hero-role-width-$i, 100%);
+      }
+    }
+  }
+
   @keyframes home-hero-role-fade {
     calc(10% / $role-count),
     calc(100% / $role-count) {
