@@ -149,16 +149,12 @@ function availableTabs(list: HTMLDivElement) {
   );
 }
 
-export function TabList({
-  orientation = "horizontal",
-  className,
-  style,
-  onKeyDown,
-  ...props
-}: TabListProps) {
-  const { select } = useTabsContext();
+function useTabListNavigation(
+  orientation: TabListProps["orientation"],
+  select: (value: string) => void,
+  onKeyDown: TabListProps["onKeyDown"],
+) {
   const listRef = useRef<HTMLDivElement>(null);
-  const anchorId = useId().replaceAll(":", "");
 
   useEffect(() => {
     const list = listRef.current;
@@ -252,6 +248,20 @@ export function TabList({
     if (nextValue !== undefined) select(nextValue);
     next.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
+
+  return { handleKeyDown, listRef };
+}
+
+export function TabList({
+  orientation = "horizontal",
+  className,
+  style,
+  onKeyDown,
+  ...props
+}: TabListProps) {
+  const { select } = useTabsContext();
+  const { handleKeyDown, listRef } = useTabListNavigation(orientation, select, onKeyDown);
+  const anchorId = useId().replaceAll(":", "");
 
   return (
     <div

@@ -70,21 +70,10 @@ export interface DialogProps {
   "aria-describedby"?: string;
 }
 
-export function Dialog({
-  open,
-  onClose,
-  onCancel,
-  closedby = "any",
-  children,
-  className,
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledBy,
-  "aria-describedby": ariaDescribedBy,
-}: DialogProps) {
+function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "closedby">) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<DialogClose | null>(null);
   const requestRef = useRef<{ returnValue?: string } | null>(null);
-  const [labels, setLabels] = useState<DialogLabels | null>(null);
   const close = useCallback((returnValue?: string) => closeRef.current?.(returnValue), []);
   const requestClose = useCallback((returnValue?: string) => {
     const dialog = dialogRef.current;
@@ -166,6 +155,23 @@ export function Dialog({
       }
     };
   }, [open, closedby, requestClose]);
+
+  return { close, dialogRef, requestClose, requestRef };
+}
+
+export function Dialog({
+  open,
+  onClose,
+  onCancel,
+  closedby = "any",
+  children,
+  className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+}: DialogProps) {
+  const [labels, setLabels] = useState<DialogLabels | null>(null);
+  const { close, dialogRef, requestClose, requestRef } = useDialogLifecycle({ open, closedby });
 
   return (
     <dialog

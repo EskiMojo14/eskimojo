@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useReducer } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
@@ -9,12 +9,8 @@ import { roles } from "./constants";
 const homeHeroBem = BEMHelper("home-hero");
 const roleList = new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(roles);
 
-export function HomeHero() {
-  const titleId = useId();
-  const heroRef = useRef<HTMLElement>(null);
+function useHomeHeroRoleWidths() {
   const rolesRef = useRef<HTMLSpanElement>(null);
-  const [paused, setPaused] = useState(false);
-  const animationAction = paused ? "Resume role animation" : "Pause role animation";
 
   useEffect(() => {
     const container = rolesRef.current;
@@ -31,6 +27,13 @@ export function HomeHero() {
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
   }, []);
+
+  return rolesRef;
+}
+
+function useHomeHeroRoleAnimation() {
+  const heroRef = useRef<HTMLElement>(null);
+  const [paused, togglePaused] = useReducer((previous: boolean) => !previous, false);
 
   function skipRole() {
     const animations = heroRef.current
@@ -74,6 +77,15 @@ export function HomeHero() {
     for (const animation of animations) animation.currentTime = target;
   }
 
+  return { heroRef, paused, skipRole, togglePaused };
+}
+
+export function HomeHero() {
+  const titleId = useId();
+  const rolesRef = useHomeHeroRoleWidths();
+  const { heroRef, paused, skipRole, togglePaused } = useHomeHeroRoleAnimation();
+  const animationAction = paused ? "Resume role animation" : "Pause role animation";
+
   return (
     <section {...homeHeroBem()} ref={heroRef} aria-labelledby={titleId} data-paused={paused}>
       <div {...homeHeroBem({ element: "content" })}>
@@ -102,7 +114,7 @@ export function HomeHero() {
             aria-label={animationAction}
             tooltip={animationAction}
             icon={<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>}
-            onClick={() => setPaused((previous) => !previous)}
+            onClick={togglePaused}
             variant="outlined"
           />
           <IconButton
