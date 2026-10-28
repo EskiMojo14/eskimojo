@@ -92,39 +92,41 @@ export function HomeHero() {
         <h1 id={titleId} {...homeHeroBem({ element: "title" })}>
           Hi, I&apos;m eskimojo.
         </h1>
-        <p {...homeHeroBem({ element: "description" })}>
-          <span {...homeHeroBem({ element: "static-description" })}>I'm {roleList}.</span>
-          <span {...homeHeroBem({ element: "animated-description" })} aria-hidden="true">
-            I'm{" "}
-            <span {...homeHeroBem({ element: "roles" })} ref={rolesRef}>
-              {roles.map((role) => (
-                <span key={role} {...homeHeroBem({ element: "role" })}>
-                  {role}.
+        <div {...homeHeroBem({ element: "description-row" })}>
+          <p {...homeHeroBem({ element: "description" })}>
+            <span {...homeHeroBem({ element: "static-description" })}>I'm {roleList}.</span>
+            <span {...homeHeroBem({ element: "animated-description" })} aria-hidden="true">
+              I'm{" "}
+              <span {...homeHeroBem({ element: "roles" })} ref={rolesRef}>
+                {roles.map((role) => (
+                  <span key={role} {...homeHeroBem({ element: "role" })}>
+                    {role}.
+                  </span>
+                ))}
+                <span {...homeHeroBem({ element: "progress" })}>
+                  <span {...homeHeroBem({ element: "progress-fill" })} />
                 </span>
-              ))}
-              <span {...homeHeroBem({ element: "progress" })}>
-                <span {...homeHeroBem({ element: "progress-fill" })} />
               </span>
             </span>
-          </span>
-        </p>
-        <div {...homeHeroBem({ element: "controls" })}>
-          <IconButton
-            {...homeHeroBem({ element: "button" })}
-            aria-label={animationAction}
-            tooltip={animationAction}
-            icon={<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>}
-            onClick={togglePaused}
-            variant="outlined"
-          />
-          <IconButton
-            {...homeHeroBem({ element: "button" })}
-            aria-label="Next role"
-            tooltip="Next role"
-            icon={<MdSymbol>skip_next</MdSymbol>}
-            onClick={skipRole}
-            variant="outlined"
-          />
+          </p>
+          <div {...homeHeroBem({ element: "controls" })}>
+            <IconButton
+              {...homeHeroBem({ element: "button" })}
+              aria-label={animationAction}
+              tooltip={animationAction}
+              icon={<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>}
+              onClick={togglePaused}
+              variant="outlined"
+            />
+            <IconButton
+              {...homeHeroBem({ element: "button" })}
+              aria-label="Next role"
+              tooltip="Next role"
+              icon={<MdSymbol>skip_next</MdSymbol>}
+              onClick={skipRole}
+              variant="outlined"
+            />
+          </div>
         </div>
       </div>
     </section>
