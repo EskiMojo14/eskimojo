@@ -26,7 +26,7 @@
   border-radius: var(--md-sys-shape-corner-small);
   background-color: transparent;
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-label-large);
+  font: var(--md-sys-typography-label-large);
   text-decoration: none;
   cursor: pointer;
   transition:

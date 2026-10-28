@@ -25,8 +25,8 @@
     min-block-size: 56px;
     padding-inline: 16px;
     color: var(--md-sys-color-on-surface-variant);
-    font: var(--typo-label-large);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-label-large);
+    font-feature-settings: var(--md-sys-typography-features-body);
     text-decoration: none;
     transition:
       background-color var(--md-sys-motion-spring-default-effects-duration)
@@ -205,14 +205,14 @@
 }
 
 .list__headline {
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .list__supporting {
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-body-medium);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-medium);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .list__leading {
@@ -235,8 +235,8 @@
   min-inline-size: 0;
   max-inline-size: 35%;
   color: inherit;
-  font: var(--typo-label-small);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-small);
+  font-feature-settings: var(--md-sys-typography-features-body);
   overflow-wrap: anywhere;
 }
 

@@ -100,7 +100,7 @@
 
 .dialog__title {
   margin: 0;
-  font: var(--typo-headline-small);
+  font: var(--md-sys-typography-headline-small);
 }
 
 .dialog__description {
@@ -129,7 +129,7 @@
     background: transparent;
     color: var(--md-sys-color-primary);
     cursor: pointer;
-    font: var(--typo-label-large);
+    font: var(--md-sys-typography-label-large);
 
     &:hover {
       background-color: alpha(

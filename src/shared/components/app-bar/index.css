@@ -170,7 +170,7 @@
     min-inline-size: 0;
     min-block-size: 3.5rem;
     color: var(--md-sys-color-on-surface-variant);
-    font: var(--typo-label-medium);
+    font: var(--md-sys-typography-label-medium);
     text-decoration: none;
     --icon-fill: 0;
 
@@ -259,13 +259,13 @@
 }
 
 .app-bar__title {
-  font: var(--typo-display-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-display-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .app-bar__subtitle {
-  font: var(--typo-title-medium);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
   color: var(--md-sys-color-on-surface-variant);
 
   a {

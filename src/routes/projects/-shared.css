@@ -29,8 +29,8 @@
   inline-size: fit-content;
   max-inline-size: 100%;
   margin: 0;
-  font: var(--typo-headline-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-headline-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
   color: var(--md-sys-color-primary);
   view-transition-class: project-header;
 
@@ -44,8 +44,8 @@
 .project-summary {
   view-transition-class: project-header;
   margin: 0;
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
   color: var(--md-sys-color-on-surface-variant);
 }
 

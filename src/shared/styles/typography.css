@@ -8,29 +8,29 @@
 /*
  * Named weights. Light text on a dark background looks heavier, so dark themes use
  * weights 50 lighter (thin stays at 100, the font's minimum). Use these instead of
- * numeric weights, e.g. `font-weight: var(--typo-weight-bold)` for a selected state.
+ * numeric weights, e.g. `font-weight: var(--md-sys-typography-weight-bold)` for a selected state.
  * The selectors mirror the color-scheme rules in theme/index.css.
  */
 %typo-weights-light {
-  --typo-weight-thin: 100;
-  --typo-weight-extra-light: 200;
-  --typo-weight-light: 300;
-  --typo-weight-regular: 400;
-  --typo-weight-medium: 500;
-  --typo-weight-semibold: 600;
-  --typo-weight-bold: 700;
-  --typo-weight-extra-bold: 800;
+  --md-sys-typography-weight-thin: 100;
+  --md-sys-typography-weight-extra-light: 200;
+  --md-sys-typography-weight-light: 300;
+  --md-sys-typography-weight-regular: 400;
+  --md-sys-typography-weight-medium: 500;
+  --md-sys-typography-weight-semibold: 600;
+  --md-sys-typography-weight-bold: 700;
+  --md-sys-typography-weight-extra-bold: 800;
 }
 
 %typo-weights-dark {
-  --typo-weight-thin: 100;
-  --typo-weight-extra-light: 150;
-  --typo-weight-light: 250;
-  --typo-weight-regular: 350;
-  --typo-weight-medium: 450;
-  --typo-weight-semibold: 550;
-  --typo-weight-bold: 650;
-  --typo-weight-extra-bold: 750;
+  --md-sys-typography-weight-thin: 100;
+  --md-sys-typography-weight-extra-light: 150;
+  --md-sys-typography-weight-light: 250;
+  --md-sys-typography-weight-regular: 350;
+  --md-sys-typography-weight-medium: 450;
+  --md-sys-typography-weight-semibold: 550;
+  --md-sys-typography-weight-bold: 650;
+  --md-sys-typography-weight-extra-bold: 750;
 }
 
 :root,
@@ -54,25 +54,40 @@
  */
 :root,
 [data-theme] {
-  --typo-display-large: var(--typo-weight-regular) 3.5625rem/4rem "Paper Mono", monospace;
-  --typo-display-medium: var(--typo-weight-regular) 2.8125rem/3.25rem "Paper Mono", monospace;
-  --typo-display-small: var(--typo-weight-regular) 2.25rem/2.75rem "Paper Mono", monospace;
+  --md-sys-typography-display-large:
+    var(--md-sys-typography-weight-regular) 3.5625rem/4rem "Paper Mono", monospace;
+  --md-sys-typography-display-medium:
+    var(--md-sys-typography-weight-regular) 2.8125rem/3.25rem "Paper Mono", monospace;
+  --md-sys-typography-display-small:
+    var(--md-sys-typography-weight-regular) 2.25rem/2.75rem "Paper Mono", monospace;
 
-  --typo-headline-large: var(--typo-weight-regular) 2rem/2.5rem "Paper Mono", monospace;
-  --typo-headline-medium: var(--typo-weight-regular) 1.75rem/2.25rem "Paper Mono", monospace;
-  --typo-headline-small: var(--typo-weight-regular) 1.5rem/2rem "Paper Mono", monospace;
+  --md-sys-typography-headline-large:
+    var(--md-sys-typography-weight-regular) 2rem/2.5rem "Paper Mono", monospace;
+  --md-sys-typography-headline-medium:
+    var(--md-sys-typography-weight-regular) 1.75rem/2.25rem "Paper Mono", monospace;
+  --md-sys-typography-headline-small:
+    var(--md-sys-typography-weight-regular) 1.5rem/2rem "Paper Mono", monospace;
 
-  --typo-title-large: var(--typo-weight-regular) 1.375rem/1.75rem "Paper Mono", monospace;
-  --typo-title-medium: var(--typo-weight-medium) 1rem/1.5rem "Paper Mono", monospace;
-  --typo-title-small: var(--typo-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
+  --md-sys-typography-title-large:
+    var(--md-sys-typography-weight-regular) 1.375rem/1.75rem "Paper Mono", monospace;
+  --md-sys-typography-title-medium:
+    var(--md-sys-typography-weight-medium) 1rem/1.5rem "Paper Mono", monospace;
+  --md-sys-typography-title-small:
+    var(--md-sys-typography-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
 
-  --typo-body-large: var(--typo-weight-regular) 1rem/1.5rem "Paper Mono", monospace;
-  --typo-body-medium: var(--typo-weight-regular) 0.875rem/1.25rem "Paper Mono", monospace;
-  --typo-body-small: var(--typo-weight-regular) 0.75rem/1rem "Paper Mono", monospace;
+  --md-sys-typography-body-large:
+    var(--md-sys-typography-weight-regular) 1rem/1.5rem "Paper Mono", monospace;
+  --md-sys-typography-body-medium:
+    var(--md-sys-typography-weight-regular) 0.875rem/1.25rem "Paper Mono", monospace;
+  --md-sys-typography-body-small:
+    var(--md-sys-typography-weight-regular) 0.75rem/1rem "Paper Mono", monospace;
 
-  --typo-label-large: var(--typo-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
-  --typo-label-medium: var(--typo-weight-medium) 0.75rem/1rem "Paper Mono", monospace;
-  --typo-label-small: var(--typo-weight-medium) 0.6875rem/1rem "Paper Mono", monospace;
+  --md-sys-typography-label-large:
+    var(--md-sys-typography-weight-medium) 0.875rem/1.25rem "Paper Mono", monospace;
+  --md-sys-typography-label-medium:
+    var(--md-sys-typography-weight-medium) 0.75rem/1rem "Paper Mono", monospace;
+  --md-sys-typography-label-small:
+    var(--md-sys-typography-weight-medium) 0.6875rem/1rem "Paper Mono", monospace;
 
   /*
   font features (comma-separated, as font-feature-settings requires):
@@ -84,14 +99,14 @@
     zero: slashed zero
   The font shorthand resets font-feature-settings, so set these after every font.
   */
-  --typo-features-heading: "ss02", "ss03", "ss04", "cv01";
-  --typo-features-body: "ss02", "ss04", "cv01";
-  --typo-features-code: "ss01", "zero";
+  --md-sys-typography-features-heading: "ss02", "ss03", "ss04", "cv01";
+  --md-sys-typography-features-body: "ss02", "ss04", "cv01";
+  --md-sys-typography-features-code: "ss01", "zero";
 }
 
 body {
-  font: var(--typo-body-medium);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-medium);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 h1,
@@ -100,11 +115,11 @@ h3,
 h4,
 h5,
 h6 {
-  font-feature-settings: var(--typo-features-heading);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 code,
 pre {
   font-family: "Paper Mono", monospace;
-  font-feature-settings: var(--typo-features-code);
+  font-feature-settings: var(--md-sys-typography-features-code);
 }

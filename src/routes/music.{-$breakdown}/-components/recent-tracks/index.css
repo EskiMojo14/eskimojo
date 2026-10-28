@@ -6,19 +6,19 @@
   padding: 16px;
 
   .list__headline {
-    font: var(--typo-title-medium);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-title-medium);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
   .list__supporting {
-    font: var(--typo-body-medium);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-body-medium);
+    font-feature-settings: var(--md-sys-typography-features-body);
   }
 
   .list__trailing {
     color: var(--md-sys-color-on-surface-variant);
-    font: var(--typo-body-small);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-body-small);
+    font-feature-settings: var(--md-sys-typography-features-body);
     font-variant-numeric: tabular-nums;
   }
 
@@ -51,8 +51,8 @@
     .list__supporting > span:not(.music-search-links) {
       grid-area: subtitle;
       color: var(--md-sys-color-on-surface-variant);
-      font: var(--typo-body-medium);
-      font-feature-settings: var(--typo-features-body);
+      font: var(--md-sys-typography-body-medium);
+      font-feature-settings: var(--md-sys-typography-features-body);
     }
 
     .list__trailing {
@@ -92,8 +92,8 @@
 .recent-tracks__heading {
   margin: 0 0 16px;
   color: var(--md-sys-color-on-surface);
-  font: var(--typo-headline-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-headline-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
   text-wrap: balance;
 }
 
@@ -115,14 +115,14 @@
 
 .music-top-list__rank {
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-title-large);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-large);
+  font-feature-settings: var(--md-sys-typography-features-heading);
   font-variant-numeric: tabular-nums;
 }
 
 .music-top-list .list__trailing {
-  font: var(--typo-label-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .recent-tracks__now-playing {
@@ -131,8 +131,8 @@
   flex-wrap: wrap;
   gap: 4px;
   color: var(--md-sys-color-tertiary);
-  font: var(--typo-label-medium);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-medium);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .recent-tracks__equalizer {
@@ -204,7 +204,7 @@
   margin-block-start: 4px;
 
   > a {
-    font: var(--typo-label-medium);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-label-medium);
+    font-feature-settings: var(--md-sys-typography-features-body);
   }
 }

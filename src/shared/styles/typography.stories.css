@@ -21,8 +21,8 @@
 
 .typography-label {
   margin: 0;
-  font: var(--typo-label-medium);
-  font-feature-settings: var(--typo-features-code);
+  font: var(--md-sys-typography-label-medium);
+  font-feature-settings: var(--md-sys-typography-features-code);
   color: var(--md-sys-color-on-surface-variant);
 }
 
@@ -35,8 +35,8 @@
 /* font-feature-settings must come after font, which resets it. */
 .typography-sample {
   margin: 0;
-  font: var(--sample-font, var(--typo-headline-small));
-  font-feature-settings: var(--sample-features, var(--typo-features-heading));
+  font: var(--sample-font, var(--md-sys-typography-headline-small));
+  font-feature-settings: var(--sample-features, var(--md-sys-typography-features-heading));
 }
 
 .typography-sample--weight {
@@ -55,17 +55,17 @@
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
-  font: var(--typo-label-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
   cursor: pointer;
 }
 
 .typography-weight-demo__sample {
-  font-weight: var(--typo-weight-regular);
+  font-weight: var(--md-sys-typography-weight-regular);
   transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 
   .typography-weight-demo[data-heavy] & {
-    font-weight: var(--typo-weight-bold);
+    font-weight: var(--md-sys-typography-weight-bold);
   }
 
   @media (prefers-reduced-motion: reduce) {

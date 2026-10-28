@@ -22,6 +22,6 @@
 
 .projects-section__title {
   margin: 0;
-  font: var(--typo-headline-medium);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-headline-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }

@@ -57,7 +57,9 @@ function WeightTransitionDemo() {
         {...typographyRowBem({ extra: typographyWeightDemoBem().className })}
         data-heavy={heavy || undefined}
       >
-        <code {...typographyLabelBem()}>--typo-weight-regular → --typo-weight-bold</code>
+        <code {...typographyLabelBem()}>
+          --md-sys-typography-weight-regular → --md-sys-typography-weight-bold
+        </code>
         <div {...typographyWeightDemoBem({ element: "content" })}>
           <button
             type="button"
@@ -85,8 +87,8 @@ export const TypeScale = meta.story({
     <main {...typographyPageBem()}>
       {scale.flatMap(({ role, features, sizes }) =>
         sizes.map((size) => {
-          const token = `--typo-${role}-${size}`;
-          const featuresToken = `--typo-features-${features}`;
+          const token = `--md-sys-typography-${role}-${size}`;
+          const featuresToken = `--md-sys-typography-features-${features}`;
           return (
             <section key={token} {...typographyRowBem()}>
               <code {...typographyLabelBem()}>
@@ -115,7 +117,7 @@ export const Weights = meta.story({
   render: () => (
     <main {...typographyPageBem()}>
       {weights.map((weight) => {
-        const token = `--typo-weight-${weight}`;
+        const token = `--md-sys-typography-weight-${weight}`;
         return (
           <section key={token} {...typographyRowBem()}>
             <code {...typographyLabelBem()}>{token}</code>

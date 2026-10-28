@@ -114,7 +114,7 @@ export default {
         severity: "warning",
         disableFix: true,
         message:
-          'Use a design token for "${property}", not "${value}": var(--typo-*) for fonts, var(--md-sys-color-*) or alpha() or color-mix() of them for colours, var(--md-sys-shape-corner-*) for radii. See Foundations in Storybook.',
+          'Use a design token for "${property}", not "${value}": var(--md-sys-typography-*) for fonts, var(--md-sys-color-*) or alpha() or color-mix() of them for colours, var(--md-sys-shape-corner-*) for radii. See Foundations in Storybook.',
       },
     ],
   },

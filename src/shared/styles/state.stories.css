@@ -2,13 +2,13 @@
   padding: 1.5rem;
 
   h1 {
-    font: var(--typo-headline-large);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-headline-large);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
   h2 {
-    font: var(--typo-title-large);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-title-large);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 }
 
@@ -40,8 +40,8 @@
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
-  font: var(--typo-label-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
 
   &::before {
     content: "";

@@ -4,7 +4,7 @@
   color: var(--md-sys-color-on-surface);
 
   & h2 {
-    font: var(--typo-title-large);
+    font: var(--md-sys-typography-title-large);
     margin-block: 0 1rem;
   }
 
@@ -83,6 +83,6 @@
 }
 
 .gigs-artists__supported {
-  font: var(--typo-body-small);
+  font: var(--md-sys-typography-body-small);
   color: var(--md-sys-color-on-surface-variant);
 }

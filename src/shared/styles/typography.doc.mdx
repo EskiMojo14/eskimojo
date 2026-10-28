@@ -6,14 +6,14 @@ import * as TypographyStories from "./typography.stories";
 
 # Typography
 
-All text uses [Paper Mono](https://github.com/paper-design/paper-mono), a variable monospace font. `src/shared/styles/typography.css` defines the font, a Material 3 type scale as 15 `--typo-*` tokens, eight weight tokens and three font-feature tokens. `src/shared/styles/index.css` imports it, so the tokens are available globally.
+All text uses [Paper Mono](https://github.com/paper-design/paper-mono), a variable monospace font. `src/shared/styles/typography.css` defines the font, a Material 3 type scale as 15 `--md-sys-typography-*` tokens, eight weight tokens and three font-feature tokens. `src/shared/styles/index.css` imports it, so the tokens are available globally.
 
 Each scale token is a complete `font` shorthand (weight, size, line height and family). Always set `font-feature-settings` straight after it:
 
 ```css
 .card-title {
-  font: var(--typo-title-medium);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 ```
 
@@ -31,23 +31,23 @@ The scale has five roles, each in three sizes. Pick a role by what the text does
 | **Body**     | Longer passages of text. `body-medium` is the default for the page.                                              | `body`    |
 | **Label**    | Small text inside components, such as buttons, tabs, chips, form labels and captions.                            | `body`    |
 
-| Token                    | Size             | Line height    | Weight    |
-| ------------------------ | ---------------- | -------------- | --------- |
-| `--typo-display-large`   | 3.5625rem (57px) | 4rem (64px)    | `regular` |
-| `--typo-display-medium`  | 2.8125rem (45px) | 3.25rem (52px) | `regular` |
-| `--typo-display-small`   | 2.25rem (36px)   | 2.75rem (44px) | `regular` |
-| `--typo-headline-large`  | 2rem (32px)      | 2.5rem (40px)  | `regular` |
-| `--typo-headline-medium` | 1.75rem (28px)   | 2.25rem (36px) | `regular` |
-| `--typo-headline-small`  | 1.5rem (24px)    | 2rem (32px)    | `regular` |
-| `--typo-title-large`     | 1.375rem (22px)  | 1.75rem (28px) | `regular` |
-| `--typo-title-medium`    | 1rem (16px)      | 1.5rem (24px)  | `medium`  |
-| `--typo-title-small`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
-| `--typo-body-large`      | 1rem (16px)      | 1.5rem (24px)  | `regular` |
-| `--typo-body-medium`     | 0.875rem (14px)  | 1.25rem (20px) | `regular` |
-| `--typo-body-small`      | 0.75rem (12px)   | 1rem (16px)    | `regular` |
-| `--typo-label-large`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
-| `--typo-label-medium`    | 0.75rem (12px)   | 1rem (16px)    | `medium`  |
-| `--typo-label-small`     | 0.6875rem (11px) | 1rem (16px)    | `medium`  |
+| Token                                 | Size             | Line height    | Weight    |
+| ------------------------------------- | ---------------- | -------------- | --------- |
+| `--md-sys-typography-display-large`   | 3.5625rem (57px) | 4rem (64px)    | `regular` |
+| `--md-sys-typography-display-medium`  | 2.8125rem (45px) | 3.25rem (52px) | `regular` |
+| `--md-sys-typography-display-small`   | 2.25rem (36px)   | 2.75rem (44px) | `regular` |
+| `--md-sys-typography-headline-large`  | 2rem (32px)      | 2.5rem (40px)  | `regular` |
+| `--md-sys-typography-headline-medium` | 1.75rem (28px)   | 2.25rem (36px) | `regular` |
+| `--md-sys-typography-headline-small`  | 1.5rem (24px)    | 2rem (32px)    | `regular` |
+| `--md-sys-typography-title-large`     | 1.375rem (22px)  | 1.75rem (28px) | `regular` |
+| `--md-sys-typography-title-medium`    | 1rem (16px)      | 1.5rem (24px)  | `medium`  |
+| `--md-sys-typography-title-small`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
+| `--md-sys-typography-body-large`      | 1rem (16px)      | 1.5rem (24px)  | `regular` |
+| `--md-sys-typography-body-medium`     | 0.875rem (14px)  | 1.25rem (20px) | `regular` |
+| `--md-sys-typography-body-small`      | 0.75rem (12px)   | 1rem (16px)    | `regular` |
+| `--md-sys-typography-label-large`     | 0.875rem (14px)  | 1.25rem (20px) | `medium`  |
+| `--md-sys-typography-label-medium`    | 0.75rem (12px)   | 1rem (16px)    | `medium`  |
+| `--md-sys-typography-label-small`     | 0.6875rem (11px) | 1rem (16px)    | `medium`  |
 
 Sizes are in `rem`, so the whole scale follows the user's browser font size. The pixel values assume the default 16px.
 
@@ -59,20 +59,20 @@ Each weight has a named token. The scale tokens are built from them, and anythin
 
 ```css
 .tab[aria-selected="true"] {
-  font-weight: var(--typo-weight-bold);
+  font-weight: var(--md-sys-typography-weight-bold);
 }
 ```
 
-| Token                       | Light | Dark |
-| --------------------------- | ----- | ---- |
-| `--typo-weight-thin`        | 100   | 100  |
-| `--typo-weight-extra-light` | 200   | 150  |
-| `--typo-weight-light`       | 300   | 250  |
-| `--typo-weight-regular`     | 400   | 350  |
-| `--typo-weight-medium`      | 500   | 450  |
-| `--typo-weight-semibold`    | 600   | 550  |
-| `--typo-weight-bold`        | 700   | 650  |
-| `--typo-weight-extra-bold`  | 800   | 750  |
+| Token                                    | Light | Dark |
+| ---------------------------------------- | ----- | ---- |
+| `--md-sys-typography-weight-thin`        | 100   | 100  |
+| `--md-sys-typography-weight-extra-light` | 200   | 150  |
+| `--md-sys-typography-weight-light`       | 300   | 250  |
+| `--md-sys-typography-weight-regular`     | 400   | 350  |
+| `--md-sys-typography-weight-medium`      | 500   | 450  |
+| `--md-sys-typography-weight-semibold`    | 600   | 550  |
+| `--md-sys-typography-weight-bold`        | 700   | 650  |
+| `--md-sys-typography-weight-extra-bold`  | 800   | 750  |
 
 Light text on a dark background looks heavier than dark text on a light one, so every weight is 50 lighter in dark themes. The exception is `thin`, which stays at 100, the lightest weight the font has. There's no `black` (900), because the font only goes up to 800.
 
@@ -83,7 +83,7 @@ The dark weights apply:
 
 This follows the same `data-theme` rules as the colors (see Foundations / Theme), including nested sections. The light and dark values are declared once each, in the `%typo-weights-light` and `%typo-weights-dark` placeholders, and the theme selectors `@extend` them.
 
-A custom property resolves `var()` on the element where it's declared, so `typography.css` redeclares the scale on every element with `data-theme`. You don't need to do anything to get the right weight inside a nested section. The same applies to your own custom properties: if you write `--my-font: var(--typo-weight-bold) …` on `:root`, it keeps the root's weight inside a nested theme. Use the weight tokens in normal properties such as `font-weight`, or redeclare your property on `[data-theme]` as well.
+A custom property resolves `var()` on the element where it's declared, so `typography.css` redeclares the scale on every element with `data-theme`. You don't need to do anything to get the right weight inside a nested section. The same applies to your own custom properties: if you write `--my-font: var(--md-sys-typography-weight-bold) …` on `:root`, it keeps the root's weight inside a nested theme. Use the weight tokens in normal properties such as `font-weight`, or redeclare your property on `[data-theme]` as well.
 
 <Canvas of={TypographyStories.Weights} />
 
@@ -93,12 +93,12 @@ Paper Mono is a variable font, so the browser can interpolate smoothly between i
 
 ```css
 .interactive-label {
-  font-weight: var(--typo-weight-regular);
+  font-weight: var(--md-sys-typography-weight-regular);
   transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 
 .interactive-label[data-emphasized] {
-  font-weight: var(--typo-weight-bold);
+  font-weight: var(--md-sys-typography-weight-bold);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -116,11 +116,11 @@ The duration and easing use the shared motion tokens. Disable the transition for
 
 Paper Mono has optional OpenType features that change how some characters look. Three tokens group them for different kinds of text:
 
-| Token                     | Features                       | Use                                                                                   |
-| ------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| `--typo-features-heading` | `ss02`, `ss03`, `ss04`, `cv01` | Display, headline and title text.                                                     |
-| `--typo-features-body`    | `ss02`, `ss04`, `cv01`         | Body and label text. Same as heading, but keeps full-width spaces for easier reading. |
-| `--typo-features-code`    | `ss01`, `zero`                 | Code. Keeps every character the same width, so columns and indentation line up.       |
+| Token                                  | Features                       | Use                                                                                   |
+| -------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| `--md-sys-typography-features-heading` | `ss02`, `ss03`, `ss04`, `cv01` | Display, headline and title text.                                                     |
+| `--md-sys-typography-features-body`    | `ss02`, `ss04`, `cv01`         | Body and label text. Same as heading, but keeps full-width spaces for easier reading. |
+| `--md-sys-typography-features-code`    | `ss01`, `zero`                 | Code. Keeps every character the same width, so columns and indentation line up.       |
 
 | Feature | Effect                                                                                                                                           |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -133,8 +133,8 @@ Paper Mono has optional OpenType features that change how some characters look. 
 
 `typography.css` already applies these to plain HTML:
 
-- `body` gets `--typo-body-medium` with the body features, and the rest of the page inherits them.
-- `h1` to `h6` get the heading features. They keep the browser's default heading sizes, so set a `--typo-*` font on headings yourself.
+- `body` gets `--md-sys-typography-body-medium` with the body features, and the rest of the page inherits them.
+- `h1` to `h6` get the heading features. They keep the browser's default heading sizes, so set a `--md-sys-typography-*` font on headings yourself.
 - `code` and `pre` get the code features.
 
 If you write your own token list, separate the features with commas, for example `"ss01", "zero"`. A space-separated list is invalid, and the browser ignores the whole declaration.
@@ -157,4 +157,4 @@ Stylelint only checks `.css` files, not inline styles in components. Oxlint, whi
 
 ## Changing the scale
 
-Edit the tokens in `typography.css`. Use a `--typo-weight-*` token for each weight, not a number, or that token won't get lighter in dark themes. If you add or remove a token, update the `scale` list in `typography.stories.tsx` and the table on this page.
+Edit the tokens in `typography.css`. Use a `--md-sys-typography-weight-*` token for each weight, not a number, or that token won't get lighter in dark themes. If you add or remove a token, update the `scale` list in `typography.stories.tsx` and the table on this page.

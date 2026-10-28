@@ -30,7 +30,7 @@
 }
 
 .shape-caption {
-  font: var(--typo-label-medium);
-  font-feature-settings: var(--typo-features-code);
+  font: var(--md-sys-typography-label-medium);
+  font-feature-settings: var(--md-sys-typography-features-code);
   color: var(--md-sys-color-on-surface-variant);
 }

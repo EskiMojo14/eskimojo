@@ -5,11 +5,11 @@
   color: var(--md-sys-color-on-surface);
 
   & text[fill="var(--gigs-venue-city-color)"] {
-    font: var(--typo-body-small);
+    font: var(--md-sys-typography-body-small);
   }
 
   & h2 {
-    font: var(--typo-title-large);
+    font: var(--md-sys-typography-title-large);
     margin-block: 0 1rem;
   }
 
@@ -52,7 +52,7 @@
 }
 
 .gigs-venues__support {
-  font: var(--typo-body-small);
+  font: var(--md-sys-typography-body-small);
   color: var(--md-sys-color-on-surface-variant);
 }
 

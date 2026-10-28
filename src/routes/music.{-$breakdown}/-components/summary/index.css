@@ -2,7 +2,7 @@
   container: music-summary / inline-size;
   padding: 16px;
   color: var(--md-sys-color-on-surface);
-  font: var(--typo-body-large);
+  font: var(--md-sys-typography-body-large);
 
   > p {
     margin: 0 0 16px;
@@ -35,14 +35,14 @@
     align-items: center;
     gap: 8px;
     color: var(--md-sys-color-on-surface-variant);
-    font: var(--typo-label-large);
+    font: var(--md-sys-typography-label-large);
   }
 
   dd {
     display: grid;
     margin: 8px 0 0;
     color: var(--md-sys-color-tertiary);
-    font: var(--typo-headline-small);
+    font: var(--md-sys-typography-headline-small);
     font-variant-numeric: tabular-nums;
   }
 

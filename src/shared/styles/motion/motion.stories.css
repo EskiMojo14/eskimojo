@@ -23,8 +23,8 @@
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
-  font: var(--typo-label-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-label-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
   cursor: pointer;
 }
 
@@ -36,8 +36,8 @@
 }
 
 .motion-label {
-  font: var(--typo-label-medium);
-  font-feature-settings: var(--typo-features-code);
+  font: var(--md-sys-typography-label-medium);
+  font-feature-settings: var(--md-sys-typography-features-code);
   color: var(--md-sys-color-on-surface-variant);
 }
 

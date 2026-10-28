@@ -29,8 +29,8 @@
   border-radius: var(--md-sys-shape-corner-extra-small);
   background-color: var(--md-sys-color-inverse-surface);
   color: var(--md-sys-color-inverse-on-surface);
-  font: var(--typo-body-small);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-small);
+  font-feature-settings: var(--md-sys-typography-features-body);
   overflow-wrap: anywhere;
   opacity: 0;
   transition:
@@ -108,8 +108,8 @@
   color: var(--md-sys-color-on-surface-variant);
   box-shadow: 0 0.125rem 0.375rem
     alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity));
-  font: var(--typo-body-medium);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-medium);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .ts-chart-tooltip {
@@ -119,26 +119,26 @@
 .tooltip__subhead {
   margin: 0 0 0.25rem;
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-title-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .tooltip--chart {
   > p {
-    font: var(--typo-label-large);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-label-large);
+    font-feature-settings: var(--md-sys-typography-features-body);
     font-variant-numeric: tabular-nums;
   }
 
   li > strong {
     color: var(--md-sys-color-on-surface);
-    font: var(--typo-title-small);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-title-small);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
   li > p {
-    font: var(--typo-body-small);
-    font-feature-settings: var(--typo-features-body);
+    font: var(--md-sys-typography-body-small);
+    font-feature-settings: var(--md-sys-typography-features-body);
   }
 }
 

@@ -77,8 +77,8 @@
 
 .preferences-dialog__label {
   margin: 0 0 0.5rem;
-  font: var(--typo-title-medium);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 
   @media (max-width: 37.5rem) {
     display: none;

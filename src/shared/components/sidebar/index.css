@@ -134,8 +134,8 @@
 
 .site-sidebar__title {
   margin: 0;
-  font: var(--typo-title-large);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-large);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .site-sidebar__palette-toggle {

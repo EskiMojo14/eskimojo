@@ -82,13 +82,13 @@
   translate: 0 -50%;
   background-color: var(--select-menu-label-background, var(--md-sys-color-surface));
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-body-small);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-small);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .select-menu__value {
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
 
 .select-menu__arrow {
@@ -125,8 +125,8 @@
     0 2px 6px 2px
       alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity)),
     0 1px 2px alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-key-opacity));
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
   opacity: 0;
   transition:
     opacity var(--md-sys-motion-spring-fast-effects-duration)

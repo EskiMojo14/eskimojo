@@ -7,7 +7,7 @@
   --button-icon-padding-start: 16px;
   --button-text-padding-inline: 12px;
   --button-border-width: 1px;
-  --button-font: var(--typo-label-large);
+  --button-font: var(--md-sys-typography-label-large);
   /* Avoid interpolating from a full-radius value far beyond the visible edge. */
   --button-corner-full: min(var(--md-sys-shape-corner-full), calc(var(--button-min-size) / 2));
 
@@ -25,7 +25,7 @@
   background-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
   font: var(--button-font);
-  font-feature-settings: var(--typo-features-body);
+  font-feature-settings: var(--md-sys-typography-features-body);
   text-align: center;
   text-decoration: none;
   cursor: pointer;
@@ -111,7 +111,7 @@
   --button-padding-block: 15px;
   --button-icon-padding-start: 24px;
   --button-text-padding-inline: 16px;
-  --button-font: var(--typo-title-medium);
+  --button-font: var(--md-sys-typography-title-medium);
 }
 
 .button--large {
@@ -123,7 +123,7 @@
   --button-icon-padding-start: 48px;
   --button-text-padding-inline: 32px;
   --button-border-width: 2px;
-  --button-font: var(--typo-headline-small);
+  --button-font: var(--md-sys-typography-headline-small);
 }
 
 .button--extra-large {
@@ -135,7 +135,7 @@
   --button-icon-padding-start: 64px;
   --button-text-padding-inline: 48px;
   --button-border-width: 3px;
-  --button-font: var(--typo-headline-large);
+  --button-font: var(--md-sys-typography-headline-large);
 }
 
 .button--filled {

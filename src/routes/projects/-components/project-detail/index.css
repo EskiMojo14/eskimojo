@@ -1,8 +1,8 @@
 @import "#/routes/projects/-shared.css";
 
 .project-title--detail {
-  font: var(--typo-display-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-display-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .project-detail {
@@ -20,18 +20,18 @@
 }
 
 .project-detail__body {
-  font: var(--typo-body-large);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-large);
+  font-feature-settings: var(--md-sys-typography-features-body);
 
   h2 {
     margin-block: 2rem 1rem;
-    font: var(--typo-headline-small);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-headline-small);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
   h3 {
-    font: var(--typo-title-large);
-    font-feature-settings: var(--typo-features-heading);
+    font: var(--md-sys-typography-title-large);
+    font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
   pre {

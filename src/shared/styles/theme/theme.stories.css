@@ -13,8 +13,8 @@
 
 .theme-group__title {
   margin: 0;
-  font: var(--typo-title-small);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-small);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .theme-group__swatches {
@@ -39,8 +39,8 @@
   border-radius: var(--md-sys-shape-corner-medium);
   background: var(--swatch-bg);
   color: var(--swatch-fg);
-  font: var(--typo-title-medium);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .theme-swatch__tile--border {
@@ -48,8 +48,8 @@
 }
 
 .theme-swatch__caption {
-  font: var(--typo-label-medium);
-  font-feature-settings: var(--typo-features-code);
+  font: var(--md-sys-typography-label-medium);
+  font-feature-settings: var(--md-sys-typography-features-code);
   color: var(--md-sys-color-on-surface-variant);
 }
 

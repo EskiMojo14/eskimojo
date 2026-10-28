@@ -29,14 +29,14 @@
 .empty-state__title {
   max-inline-size: 32rem;
   margin: 0;
-  font: var(--typo-title-large);
-  font-feature-settings: var(--typo-features-heading);
+  font: var(--md-sys-typography-title-large);
+  font-feature-settings: var(--md-sys-typography-features-heading);
 }
 
 .empty-state__description {
   max-inline-size: 32rem;
   margin: 0;
   color: var(--md-sys-color-on-surface-variant);
-  font: var(--typo-body-medium);
-  font-feature-settings: var(--typo-features-body);
+  font: var(--md-sys-typography-body-medium);
+  font-feature-settings: var(--md-sys-typography-features-body);
 }
