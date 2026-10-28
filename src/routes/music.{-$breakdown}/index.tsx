@@ -20,6 +20,8 @@ import { generatePageMetadata } from "#/shared/lib/document-head";
 import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css?url";
 import summaryCss from "#/routes/music.{-$breakdown}/-components/summary/index.css?url";
 
+const recentTracksRefreshInterval = 60_000;
+
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
     parse: v.parser(v.object({ breakdown: v.optional(musicBreakdownSchema) })),
@@ -47,7 +49,10 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     await queryClient.query({ ...getUserData(), staleTime: "static" });
     switch (breakdown) {
       case "recent":
-        await queryClient.query({ ...getRecentTracks({ limit: 10 }), staleTime: "static" });
+        await queryClient.query({
+          ...getRecentTracks({ limit: 10 }),
+          staleTime: recentTracksRefreshInterval,
+        });
         break;
       case "top-music":
         await Promise.all([
@@ -99,7 +104,10 @@ function RouteComponent() {
 function RecentTracksPanel() {
   const { data: recentTracks } = useSuspenseQuery({
     ...getRecentTracks({ limit: 10 }),
-    staleTime: "static",
+    staleTime: recentTracksRefreshInterval,
+    refetchInterval: recentTracksRefreshInterval,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: "always",
   });
   return <RecentTracks tracks={recentTracks} />;
 }
