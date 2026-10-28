@@ -15,7 +15,16 @@ export const Route = createFileRoute("/")({
     });
     return {
       ...metadata,
-      links: [...metadata.links, { rel: "stylesheet", href: styles }],
+      links: [
+        ...metadata.links,
+        { rel: "stylesheet", href: styles },
+        {
+          rel: "preload",
+          href: "/Mitzi-hero.webp",
+          as: "image",
+          fetchPriority: "high" as const,
+        },
+      ],
     };
   },
   component: Home,
