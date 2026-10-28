@@ -27,7 +27,7 @@ export const Default = meta.story({
     await expect(canvas.queryByRole("navigation")).not.toBeInTheDocument();
     await expect(canvas.queryByRole("link")).not.toBeInTheDocument();
     const introduction = canvas.getByText(
-      "I'm a web developer, open source contributor, Redux maintainer, musician, Overwatch casual, and cat dad.",
+      "I'm a web developer, an open source contributor, a Redux maintainer, a musician, an Overwatch player, and a cat dad.",
     );
     await expect(introduction).toBeInTheDocument();
 

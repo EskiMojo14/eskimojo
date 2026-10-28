@@ -6,12 +6,12 @@ import { MdSymbol } from "#/shared/components/symbol";
 
 const homeHeroBem = BEMHelper("home-hero");
 const roles = [
-  "web developer",
-  "open source contributor",
-  "Redux maintainer",
-  "musician",
-  "Overwatch casual",
-  "cat dad",
+  "a web developer",
+  "an open source contributor",
+  "a Redux maintainer",
+  "a musician",
+  "an Overwatch player",
+  "a cat dad",
 ];
 const roleList = new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(roles);
 
@@ -27,9 +27,9 @@ export function HomeHero() {
           Hi, I&apos;m eskimojo.
         </h1>
         <p {...homeHeroBem({ element: "description" })}>
-          <span {...homeHeroBem({ element: "static-description" })}>I'm a {roleList}.</span>
+          <span {...homeHeroBem({ element: "static-description" })}>I'm {roleList}.</span>
           <span {...homeHeroBem({ element: "animated-description" })} aria-hidden="true">
-            I'm a{" "}
+            I'm{" "}
             <span {...homeHeroBem({ element: "roles" })}>
               {roles.map((role) => (
                 <span key={role} {...homeHeroBem({ element: "role" })}>
