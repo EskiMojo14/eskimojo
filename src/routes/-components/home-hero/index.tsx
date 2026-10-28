@@ -10,7 +10,7 @@ const roles = [
   "an open source contributor",
   "a Redux maintainer",
   "a musician",
-  "an Overwatch player",
+  "an Overwatch casual",
   "a cat dad",
 ];
 const roleList = new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(roles);
