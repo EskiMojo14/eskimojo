@@ -28,7 +28,7 @@ function durationInMilliseconds(style: CSSStyleDeclaration, property: string) {
   return duration * (value.endsWith("ms") ? 1 : 1000);
 }
 
-export function useRipple<T extends HTMLElement>(props: RippleHandlers<T>, unbounded = false) {
+export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, unbounded = false) {
   const layerRef = useRef<HTMLSpanElement>(null);
   const activeRef = useRef<ActiveRipple | null>(null);
 

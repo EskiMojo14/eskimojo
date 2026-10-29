@@ -14,7 +14,7 @@ const siteSidebarBem = BEMHelper("site-sidebar");
 
 function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
   const { palette, setPalette } = usePalette();
-  const { handlers, ripple } = useRipple<HTMLButtonElement>({}, true);
+  const { handlers, ripple } = useRipple<HTMLButtonElement>(undefined, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";
   return (

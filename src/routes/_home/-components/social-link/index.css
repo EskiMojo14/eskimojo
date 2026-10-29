@@ -1,0 +1,70 @@
+.home-social-link {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  block-size: 100%;
+  border-radius: var(--md-sys-shape-corner-medium);
+  color: inherit;
+  text-decoration: none;
+
+  > .ripple {
+    z-index: 1;
+  }
+
+  &:hover .home-social-link__card {
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+}
+
+.home-social-link__card {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-content: center;
+  gap: 0.25rem 1rem;
+  min-block-size: 6rem;
+  transition: background-color 150ms ease;
+}
+
+.home-social-link__brand-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  inline-size: 2rem;
+  block-size: 2rem;
+  align-self: center;
+
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+    fill: currentColor;
+  }
+}
+
+.home-social-link__name {
+  grid-column: 2;
+  font: var(--md-sys-typography-title-medium);
+  font-feature-settings: var(--md-sys-typography-features-heading);
+}
+
+.home-social-link__handle {
+  grid-column: 2;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow-wrap: anywhere;
+}
+
+.home-social-link__external-icon {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-social-link__card {
+    transition: none;
+  }
+}

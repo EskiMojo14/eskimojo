@@ -32,6 +32,23 @@ Examples are available in Storybook under **Components/MdSymbol**.
 The global **Direction** toolbar sets the preview's text direction to LTR or RTL.
 The **RightToLeft** story defaults to RTL through that global.
 
+## Brand SVGs
+
+Use SVG React components for brand marks rather than wrapping them in
+`MdSymbol`, which accepts Material Symbols ligature names. The Vite configuration
+loads `vite-plugin-svgr`; import a source SVG with the `?react` suffix:
+
+```tsx
+import GitHubIcon from "./icons/github.svg?react";
+
+<GitHubIcon aria-hidden="true" />;
+```
+
+Keep route-specific icons alongside their consuming component, as with the
+homepage's [social icons](../src/routes/_home/-components/social-link/icons).
+Size them and set `fill: currentColor` in the component's stylesheet. Decorative
+brand marks should not repeat the containing link's accessible name.
+
 ## Font loading and production subsets
 
 The app and Storybook load Material Symbols Sharp from Google Fonts, so rendering

@@ -91,6 +91,6 @@ Animations API. The ripple browser tests cover the production representation.
 - Verify the Storybook deployment and HTTPS at `storybook.eskimojo.dev`.
 - Decide how unavailable Last.fm data is presented and whether the existing
   five-minute refresh cadence is retained.
-- Supply final About and project copy, project URLs, and any imagery.
+- Supply final project copy, project URLs, and any remaining project imagery.
 - Update the Neocities archive with a link to the new primary site.
 - Verify migrated Gigs data and accessibility of the city-view alternative.

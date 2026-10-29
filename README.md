@@ -1,8 +1,9 @@
 # eskimojo
 
 The source for a personal website about music, live gigs, and projects. The
-site is a work in progress; its Music and Gigs views are implemented, while
-Home and Projects are still being built.
+homepage introduces eskimojo and links to public profiles; Projects showcases
+selected work and open-source contributions, while Music and Gigs explore
+listening history and live events.
 
 ## Preview locally
 

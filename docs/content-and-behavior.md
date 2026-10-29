@@ -1,66 +1,30 @@
 # Content and behavior specification
 
 This document records the agreed content and behavior for the new personal
-website. Exact copy and final project descriptions still need to be supplied or
-written.
+website. The homepage design and introductory copy are established; project
+descriptions and other open decisions are noted in their relevant sections.
 
-## Home and About
+## Home
+
+The home page also serves as the site's About page; do not create a separate
+About destination. Its content is arranged as:
+
+- an illustrated hero introducing `eskimojo` through rotating roles;
+- a short biography and interests list authored in
+  [`-intro.mdx`](../src/routes/_home/-intro.mdx);
+- a "Find me elsewhere" section with larger social profile links.
 
 The home page should:
 
 - introduce `eskimojo` in a concise, friendly first-person voice;
-- make it immediately clear where visitors can find About, Projects, Music,
-  and Gigs;
+- rely on the persistent navigation for links to Projects, Music, and Gigs
+  rather than duplicating those links in the page content;
 - avoid opening with a dense dashboard of activity statistics.
 
-The home banner spans the main area, with its text aligned to the main content's
-responsive gutters and maximum width.
-It continuously rotates through its role list, with four seconds
-per descriptor, a pause/resume control, and a next-role button. The fallback sentence is generated
-from the role list with `Intl.ListFormat`.
-
-When adding or removing roles in
-[`HomeHero`](../src/routes/-components/home-hero/index.tsx), update `$role-count`
-at the top of
-[`animation.pcss`](../src/routes/-components/home-hero/animation.pcss) to match.
-Set `$role-duration` in that same file to change the per-role interval and
-progress duration together (currently `4s`).
-`postcss-advanced-variables` generates the per-role delays and `postcss-calc`
-resolves the keyframe percentages at build time. The site and Storybook share
-this pipeline through [`css.config.ts`](../config/css.config.ts).
-Keep calculations at full
-precision so keyframe selectors become bare percentages rather than unresolved
-`calc()` expressions. The template is Stylelint-checked but excluded from Oxfmt,
-which cannot parse calculations in keyframe selectors. The story checks the
-introduction and keyboard pause/resume controls. Check rotation, wraparound,
-and progress alignment visually when changing the timing template.
-
-A tertiary progress underline beneath the role section fills during each four-second
-interval and freezes alongside the text when paused.
-It smoothly resizes to the current phrase during each role transition, while the
-text section still reserves space for the longest phrase. A `ResizeObserver`
-supplies measured phrase widths (including font and viewport changes) to the
-generated CSS width keyframes; pause and skip seek those keyframes too.
-Pause and next sit together below the text.
-The next-role button seeks the existing CSS animations and progress underline together,
-wrapping back to the first role. During playback it starts the next transition
-with a fresh interval. While paused it seeks just past the entrance transition
-so the next role is fully visible; the underline reflects that position and both stay
-paused until resumed. Both controls are hidden for reduced motion.
-The descriptors share a grid cell so the text reserves space for the longest
-phrase instead of shifting the layout. Screen readers receive the complete
-static sentence, not repeated announcements. Reduced-motion preferences show
-that static sentence visually too, without animation or a pause control.
-
-The About section should cover:
-
-- interests and hobbies;
-- creative and technical work;
-- current role or professional background;
-- the fact that `eskimojo` is a Redux Toolkit maintainer.
-
-The site should not publish a direct email address. The exact biography and
-introductory copy are **Open**.
+The hero's rotating roles can be paused or advanced manually. Screen readers
+receive a complete static introduction rather than repeated announcements.
+Reduced-motion preferences show that static introduction without animation
+or playback controls.
 
 ## Projects and contributions
 
@@ -76,7 +40,7 @@ comprehensive repository catalogue. The agreed initial scope is:
    - `rad-event-listeners` — grouped event-listener management;
    - `mix-n-matchers` — custom Jest-compatible matchers.
 4. **Redux Toolkit:** feature the maintainer contribution separately and also
-   mention it in About.
+   mention it on the home page.
 5. **Valibot:** include a separate contribution entry; describe this as
    contributing, not maintaining or independently authoring the library.
 
@@ -98,18 +62,22 @@ unless that is confirmed.
 
 ## Contact and public links
 
-Provide a Contact destination with these selected public profiles:
+Contact links live in the homepage's "Find me elsewhere" section and the shared
+footer, not in a separate Contact page or primary-navigation destination:
 
 - GitHub profile: `https://github.com/EskiMojo14`
 - Twitter/X: `https://twitter.com/eskimojo`
 - Bluesky: `https://bsky.app/profile/eskimojo.bsky.social`
 
-Do not add a public email address. Link to Last.fm from Music, not from the
-general Contact group.
+The homepage uses profile cards showing each platform and handle. Links open
+in a new tab and communicate that behavior accessibly.
 
-The shared site footer also links to GitHub, Twitter/X, and Bluesky, with the
-transparent Mitzi illustration centered behind the profile links as decoration.
-It credits the artwork to [Popurri](https://x.com/popurri_arts).
+Do not add a public email address. Link to Last.fm from Music, not from the
+general social profile group.
+
+The shared footer retains its simpler GitHub, Twitter, and Bluesky text links
+on every page and credits the artwork to [Popurri](https://x.com/popurri_arts).
+The homepage does not repeat the hero's Mitzi illustration in the footer.
 
 ## Appearance preferences
 

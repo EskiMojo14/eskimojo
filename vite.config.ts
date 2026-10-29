@@ -118,6 +118,7 @@ const config = defineConfig({
       remarkGfm: { default: remarkGfm },
       remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
       materialSymbols: { default: materialSymbols },
+      svgr: { default: svgr },
     } = await promiseAllKeyed({
       contentCollections: import("@content-collections/vite"),
       mdx: import("@mdx-js/rollup"),
@@ -131,6 +132,7 @@ const config = defineConfig({
       remarkGfm: import("remark-gfm"),
       remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
       materialSymbols: import("./vite/symbols.ts"),
+      svgr: import("vite-plugin-svgr"),
     });
     return [
       devtools(),
@@ -145,6 +147,7 @@ const config = defineConfig({
         }),
       },
       viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
+      svgr(),
       materialSymbols({
         knownSymbolsModule: path.join(dirname, "vite/known-symbols.ts"),
       }),

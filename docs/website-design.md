@@ -12,15 +12,16 @@ The site is a personal home base for a broad mix of visitors: people who know
 `eskimojo`, people discovering the site, peers, and visitors interested in the
 work and interests represented there.
 
-The home page should quickly explain whose site it is and offer clear ways into
-the main areas. It should feel personal and welcoming without losing the
-recognizable monospace and data-oriented character of the current site.
+The home page should quickly explain whose site it is. It should feel personal
+and welcoming without losing the recognizable monospace and data-oriented
+character of the current site.
 
 ## Design principles
 
 1. **Personal first:** lead with a concise, friendly first-person introduction,
    not a statistics dashboard.
-2. **Clear paths:** make About, Projects, Music, and Gigs easy to find.
+2. **Clear paths:** keep Projects, Music, and Gigs easy to reach through the
+   persistent navigation.
 3. **Familiar, but more welcoming:** retain selected visual cues from the
    existing site while making content and navigation easier to approach.
 4. **Useful data, not data for its own sake:** keep the Music and Gigs details
@@ -51,17 +52,22 @@ The visual language should balance:
 
 The primary navigation should provide clear destinations for:
 
-- **Home:** introduction and links into the rest of the site.
-- **About:** interests, creative and technical work, and current role or
-  professional background.
+- **Home:** personal introduction and About content. The persistent navigation
+  provides the paths to the other sections; there is no separate About
+  destination.
 - **Projects:** a curated selection of work and open-source contributions.
 - **Music:** Last.fm listening summaries.
 - **Gigs:** an event archive and its artist, venue, and city views.
-- **Contact:** selected public profile links; no public email address.
 
-Exact URL paths, page titles, and final navigation labels are **Open**. The
-current application uses TanStack Router's file-based routing, but route
-structure should be chosen during implementation.
+Contact is provided by the homepage's "Find me elsewhere" profile cards and
+the shared footer links, not a separate page or navigation item. Do not publish
+a direct email address.
+
+The homepage combines an illustrated introduction, biography, interests list,
+and social profile cards without repeating the primary navigation.
+
+The current application uses TanStack Router's file-based routing, with Home at
+`/`, Projects at `/projects`, Music at `/music`, and Gigs at `/gigs`.
 
 ## Theme and contrast controls
 
