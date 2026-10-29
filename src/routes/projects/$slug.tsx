@@ -30,7 +30,7 @@ export const Route = createFileRoute("/projects/$slug")({
     const metadata = generatePageMetadata({
       title: loaderData?.title ?? "Project",
       description: loaderData?.summary ?? "Explore eskimojo's projects and contributions.",
-      image: loaderData?.logo
+      image: loaderData?.logo?.light
         ? {
             url: loaderData.logo.social ?? loaderData.logo.light,
             alt: `${loaderData.title} logo`,

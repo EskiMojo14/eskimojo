@@ -1,0 +1,40 @@
+---
+title: Vitest Browser Lit
+summary: Renderer for Lit in Vitest Browser mode
+order: 6
+logo:
+  symbol: experiment
+links:
+  - label: View source
+    href: https://github.com/EskiMojo14/vitest-browser-lit
+---
+
+A library for rendering Lit components in Vitest Browser mode.
+
+```ts
+import { render } from "vitest-browser-lit";
+import { expect, test } from "vitest";
+import { html } from "lit";
+
+test("counter button increments the count", async () => {
+  const screen = render(html`<counter-element count="1"></counter-element>`);
+
+  await screen.getByRole("button", { name: "Increment" }).click();
+
+  await expect.element(screen.getByText("Count is 2")).toBeVisible();
+});
+```
+
+Also extends `page` object with `render` method, and registers cleanup:
+
+```ts
+import { page } from "vitest/browser";
+import { test } from "vitest";
+import { html } from "lit";
+
+test("counter button increments the count", async () => {
+  const screen = page.render(html`<counter-element count="1"></counter-element>`);
+
+  // act, assert
+});
+```

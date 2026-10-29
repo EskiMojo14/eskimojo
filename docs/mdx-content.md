@@ -91,12 +91,22 @@ utility has its own entry rather than sharing a grouped detail page.
 image URLs and arbitrary nested directories under `public/` are also accepted.
 Content generation checks that each logo references an existing file.
 Use literal root-relative paths without query strings, fragments, or dot path
-segments. `light` is required when a logo is supplied;
+segments. `light` is required for an image logo;
 `dark` is optional and otherwise the same image is used in both themes.
 `social` optionally supplies a higher-resolution image for Open Graph and Twitter
 previews, independently of the card logo. It also accepts `/sources/<filename>`
-URLs. When omitted, previews use `light`; when `logo` is omitted entirely, they
+URLs. When omitted, previews use `light`; when `logo` is omitted or uses a symbol, they
 use the site's default portrait.
+To use a Material Symbol instead of an image, supply its name:
+
+```yaml
+logo:
+  symbol: stream
+```
+
+Symbol names use lowercase letters, digits, and underscores, starting with a
+letter. Content-defined symbols are automatically included in the production
+font subset, so no manual registration is needed.
 Card logos are decorative beside the project title and follow the site's
 selected theme, including its system setting. Entries without logos reserve
 no image space.

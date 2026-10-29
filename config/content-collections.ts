@@ -26,6 +26,19 @@ export const publicImageSchema = v.config(
   { abortPipeEarly: true },
 );
 
+export const projectLogoSchema = v.union([
+  v.object({
+    light: publicImageSchema,
+    dark: v.optional(publicImageSchema),
+    social: v.optional(publicImageSchema),
+    symbol: v.optional(v.never()),
+  }),
+  v.object({
+    symbol: v.pipe(v.string(), v.regex(/^[a-z][a-z0-9_]*$/)),
+    light: v.optional(v.never()),
+  }),
+]);
+
 const projects = defineCollection({
   name: "projects",
   directory: "../src/routes/projects/-content",
@@ -35,13 +48,7 @@ const projects = defineCollection({
     title: v.pipe(v.string(), v.nonEmpty()),
     summary: v.pipe(v.string(), v.nonEmpty()),
     order: v.pipe(v.number(), v.integer(), v.minValue(0)),
-    logo: v.optional(
-      v.object({
-        light: publicImageSchema,
-        dark: v.optional(publicImageSchema),
-        social: v.optional(publicImageSchema),
-      }),
-    ),
+    logo: projectLogoSchema,
     links: v.array(
       v.object({
         label: v.pipe(v.string(), v.nonEmpty()),

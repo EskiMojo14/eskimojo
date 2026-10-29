@@ -1,0 +1,33 @@
+---
+title: Required React Context
+summary: Enforcing required React context
+order: 5
+logo:
+  symbol: syringe
+links:
+  - label: View source
+    href: https://github.com/EskiMojo14/required-react-context
+---
+
+A wrapper around React context that enforces the presence of a context provider.
+
+```ts
+import { createRequiredContext } from "required-react-context";
+
+export const { CountContext, useCount, CountProvider, CountConsumer } =
+  createRequiredContext<number>().with({ name: "count" });
+
+function Child() {
+  // This will throw an error if used outside a CountProvider
+  const count = useCount();
+  return <div>{count}</div>;
+}
+
+function App() {
+  return (
+    <CountProvider count={5}>
+      <Child />
+    </CountProvider>
+  );
+}
+```

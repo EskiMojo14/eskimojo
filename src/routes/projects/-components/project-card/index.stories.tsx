@@ -73,3 +73,16 @@ export const WithoutLogo = meta.story({
     await expect(canvasElement.querySelector("img")).not.toBeInTheDocument();
   },
 });
+
+export const MaterialSymbol = meta.story({
+  args: { project: getProject("event-gen") },
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.getByRole("link", { name: "Event Generator" })).toHaveAttribute(
+      "href",
+      "/projects/event-gen",
+    );
+    await expect(canvas.getByText("stream")).toBeVisible();
+    await expect(canvas.getByText("stream").closest('[aria-hidden="true"]')).not.toBeNull();
+    await expect(canvasElement.querySelector("img")).not.toBeInTheDocument();
+  },
+});
