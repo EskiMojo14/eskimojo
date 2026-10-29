@@ -24,6 +24,23 @@ contributor guidance.
 - Preserve existing public interfaces and user-visible behavior unless the
   change explicitly requires otherwise.
 
+## Component state and logic
+
+- Prefer `useLocalSlice` over coordinating multiple `useState` calls or writing
+  a manual `useReducer` when component logic involves related state fields,
+  multi-field updates, or several meaningful state transitions.
+- Import `useLocalSlice` from `#/utils/use-local-slice`, not directly from the
+  package. The project wrapper uses Mutative for immutable updates.
+- Keep related state transitions together in named reducers that describe the
+  interaction or intent. Keep reducers synchronous and free of side effects;
+  perform network requests, DOM operations, and other effects outside them.
+- Keep `useState` for simple, independent values such as a visibility toggle or
+  selected tab. Do not introduce a slice solely because a component has more
+  than one state value, or convert existing simple state without a clarity benefit.
+- Keep state local to the component or its owning hook. Continue using TanStack
+  Query for server state and the router for URL state rather than copying either
+  into a local slice.
+
 ## TanStack Query options
 
 - Define query and mutation options in named options-creator functions using
