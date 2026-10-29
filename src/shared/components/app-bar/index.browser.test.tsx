@@ -11,6 +11,7 @@ import { beforeEach, expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { generateMetadata } from "#/shared/lib/document-head";
+import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { AppBar } from "./index";
 
@@ -39,6 +40,7 @@ test("primary navigation works with pointer and keyboard activation", async () =
   try {
     await projects.click();
     await expect.element(projects).toHaveAttribute("aria-current", "page");
+    await startTransition.mock.results.at(-1)?.value.finished;
 
     const home = nav.getByRole("link", { name: "Home", exact: true });
     home.element().focus();
@@ -144,7 +146,6 @@ test.each(["ltr", "rtl"])(
     });
     const router = createRouter({
       history: createMemoryHistory({ initialEntries: ["/music/artists"] }),
-      defaultViewTransition: true,
       routeTree: root.addChildren(
         ["/", "/projects", "/music/{-$breakdown}", "/gigs/{-$breakdown}"].map((path) =>
           createRoute({
@@ -156,6 +157,7 @@ test.each(["ltr", "rtl"])(
         ),
       ),
     });
+    addNavigationTransitions(router);
     const result = await page.renderWithProviders(<RouterProvider router={router} />);
     await expect.poll(() => router.state.status).toBe("idle");
     for (const animation of document.getAnimations()) animation.finish();
@@ -293,7 +295,7 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   await expect.poll(() => document.title).toBe("Site | eskimojo");
   await expect.element(siteSubtitle).toBeVisible();
 
-  await router.navigate({ to: "/music/{-$breakdown}", params: { breakdown: "artists" } });
+  await router.navigate({ to: "/music/{-$breakdown}", params: { breakdown: "recent" } });
   await expect
     .element(navigation.getByRole("link", { name: "Music", exact: true }))
     .toHaveAttribute("aria-current", "page");

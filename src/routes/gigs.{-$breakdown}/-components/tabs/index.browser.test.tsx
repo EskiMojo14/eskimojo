@@ -8,6 +8,8 @@ import {
 import { expect, test, vi } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
+import { addNavigationTransitions } from "#/shared/lib/view-transitions";
+
 import { GigsBreakdownTabs } from "./index";
 
 function Demo() {
@@ -31,6 +33,7 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
     ]),
     history: createMemoryHistory({ initialEntries: ["/gigs"] }),
   });
+  addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Gigs breakdown" })).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");

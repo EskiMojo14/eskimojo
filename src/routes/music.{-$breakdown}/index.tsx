@@ -24,7 +24,7 @@ const recentTracksRefreshInterval = 60_000;
 
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
-    parse: v.parser(v.object({ breakdown: v.optional(musicBreakdownSchema) })),
+    parse: (params) => v.parse(v.object({ breakdown: v.optional(musicBreakdownSchema) }), params),
   },
   staticData: {
     title: "Music",

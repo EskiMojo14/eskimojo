@@ -8,6 +8,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import type { ReactNode } from "react";
 
 import { ErrorPage, NotFoundPage } from "#/shared/components/page-state";
+import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { routeTree } from "./routeTree.gen";
 import { createQueryClient } from "./shared/lib/query";
@@ -24,22 +25,13 @@ export function getRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultViewTransition: {
-      types: ({ fromLocation, toLocation }) => {
-        const paths = [fromLocation?.pathname, toLocation.pathname];
-        const includesList = paths.some((path) => path === "/projects" || path === "/projects/");
-        const includesDetail = paths.some(
-          (path) => path !== undefined && /^\/projects\/[^/]+\/?$/.test(path),
-        );
-        return includesList && includesDetail ? ["project"] : [];
-      },
-    },
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: ErrorPage,
     defaultNotFoundComponent: NotFoundPage,
   });
 
+  addNavigationTransitions(router);
   setupRouterSsrQueryIntegration({ router, queryClient });
 
   return router;

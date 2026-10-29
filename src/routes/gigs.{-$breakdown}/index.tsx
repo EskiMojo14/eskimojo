@@ -20,7 +20,7 @@ const paramsSchema = v.object({
 
 export const Route = createFileRoute("/gigs/{-$breakdown}/")({
   params: {
-    parse: v.parser(paramsSchema),
+    parse: (params) => v.parse(paramsSchema, params),
   },
   staticData: { title: "Gigs" },
   component: RouteComponent,

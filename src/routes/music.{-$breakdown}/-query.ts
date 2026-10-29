@@ -9,11 +9,9 @@ import { unsafeEntries } from "#/utils/index.ts";
 import type { HasRequiredProps } from "#/utils/types";
 import * as vUtils from "#/utils/valibot";
 
-export const periodSchema = v.fallback(
-  v.picklist(["7day", "1month", "3month", "6month", "12month", "overall"]),
-  "overall",
-);
-export type Period = v.InferOutput<typeof periodSchema>;
+import { periodSchema, type Period } from "./-constants";
+
+export { periodSchema, type Period } from "./-constants";
 
 const lastfmMethodParams = {
   "user.getRecentTracks": v.object({

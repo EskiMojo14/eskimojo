@@ -45,7 +45,6 @@ export const WithBackLink = meta.story({
             backLink: {
               to: "/projects",
               label: "Back to projects",
-              viewTransition: { types: ["project"] },
             },
           },
         }),

@@ -1,4 +1,4 @@
-import { createLink, useMatches, useMatchRoute } from "@tanstack/react-router";
+import { createLink, useMatches } from "@tanstack/react-router";
 import { useState, type ComponentPropsWithRef } from "react";
 import BEMHelper from "react-bem-helper";
 
@@ -38,10 +38,6 @@ export interface AppBarProps {
 
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
-  const matchRoute = useMatchRoute();
-  const selectedIndex = destinations.findIndex((destination) =>
-    matchRoute({ ...destination, fuzzy: destination.to !== "/" }),
-  );
   const pageData = useMatches({
     select: (matches) =>
       matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
@@ -95,17 +91,12 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
         </div>
       </header>
       <nav {...appBarBem({ element: "bottom-navigation" })} aria-label="Primary">
-        {destinations.map(({ label, icon, ...link }, index) => (
+        {destinations.map(({ label, icon, ...link }) => (
           <DestinationLink
             {...link}
             key={label}
             icon={icon}
             activeOptions={{ exact: link.to === "/" }}
-            viewTransition={
-              selectedIndex < 0 || index === selectedIndex
-                ? false
-                : { types: [index > selectedIndex ? "page-forward" : "page-backward"] }
-            }
           >
             {label}
           </DestinationLink>

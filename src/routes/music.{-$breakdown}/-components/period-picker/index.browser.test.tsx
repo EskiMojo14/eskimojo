@@ -12,6 +12,7 @@ import { page } from "vite-plus/test/browser";
 
 import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs";
 import { periodSchema } from "#/routes/music.{-$breakdown}/-query";
+import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { MusicPeriodPicker } from "./index";
 
@@ -78,8 +79,8 @@ test.each(["ltr", "rtl"])(
         }),
       ]),
       history: createMemoryHistory({ initialEntries: ["/music/top-music?period=1month"] }),
-      defaultViewTransition: true,
     });
+    addNavigationTransitions(router);
     const result = await page.renderWithProviders(<RouterProvider router={router} />);
     const allTime = result.getByRole("link", { name: "All time" });
     await expect.element(allTime).toBeVisible();
@@ -121,10 +122,10 @@ test.each(["ltr", "rtl"])(
       const tabTransition = startTransition.mock.results[1];
       if (tabTransition?.type !== "return") throw new Error("Expected a tab view transition");
       await tabTransition.value.ready;
+      expectTabMotion(direction === "rtl" ? -24 : 24);
       await expect
         .element(result.getByRole("link", { name: "Recently played" }))
         .toHaveAttribute("aria-current", "page");
-      expectTabMotion(direction === "rtl" ? -24 : 24);
       await tabTransition.value.finished;
 
       await result.getByRole("link", { name: "Top music" }).click();
@@ -133,10 +134,10 @@ test.each(["ltr", "rtl"])(
       const backwards = startTransition.mock.results[2];
       if (backwards?.type !== "return") throw new Error("Expected a backwards tab transition");
       await backwards.value.ready;
+      expectTabMotion(direction === "rtl" ? 24 : -24);
       await expect
         .element(result.getByRole("link", { name: "Top music" }))
         .toHaveAttribute("aria-current", "page");
-      expectTabMotion(direction === "rtl" ? 24 : -24);
     } finally {
       for (const entry of startTransition.mock.results) {
         if (entry.type === "return") await entry.value.finished;

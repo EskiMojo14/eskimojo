@@ -127,12 +127,66 @@ tabs for its internal views.
 Client-side navigations, including browser Back and Forward, use the View
 Transitions API. Navigation between the projects list and a project detail
 page shares the project's title, summary, and links between views. The router
-selects this transition from the source and destination paths, so link clicks
-and browser history behave consistently. Project filters keep their own
-explicit transition types. Other navigations use a generic full-page crossfade
+selects transition types from the source and destination locations, so link
+clicks and browser history behave consistently. Top-level sections and the
+Music/Gigs breakdowns animate in destination order, not history direction.
+Music period changes and project filters use their own transition types.
+Default breakdown aliases share the same position; selecting an unchanged
+location does not animate. Switching directly between two project kinds uses
+the generic fade rather than animating the filtered cards.
+Other navigations use a generic full-page crossfade
 with the slow effects spring and its matching duration. Reduced-motion
 preferences disable the animation, and browsers without the API navigate
 normally without a fade.
+
+Call `addNavigationTransitions(router)` after constructing a router to install
+the transition selector from `src/shared/lib/view-transitions/index.ts`, preserving its other
+options. This injects the router's `matchRoutes` method into
+`createNavigationTransitionTypes`. It builds route matches and reuses Router's
+param parsing, search validation (including inherited validators), and
+loader-dependency calculation without executing route loaders. Unknown URLs,
+partial matches, and validation errors retain the generic fade.
+
+To add another set of route tabs, add its route pattern, parameter name,
+ordered tab values, and default tab to `tabGroups` using `defineTabGroup`.
+The factory checks the parameter against the route's parsed params and
+constrains both the ordered values and default to that parameter's string
+union. Reuse the route's existing schema options and fallback for those
+values. The shared logic reads the tab
+from the parsed params and uses its option order for direction. Keep
+route-specific search transitions, such as the music period, separate from
+the tab-group registry. Add transition cases beside the selector when
+registering a new group.
+
+For list/detail navigation, add the list and detail route patterns
+and transition type to `detailGroups` using `defineDetailGroup` in
+`src/shared/lib/view-transitions/constants.ts`. Both patterns must be registered routes, and the
+detail pattern must be beneath the list pattern. Patterns
+use Router's destination paths (for example, `/projects` and
+`/projects/$slug`). The shared matcher handles navigation in either
+direction, including filtered lists and trailing-slash URLs. Sibling
+details and unregistered nested routes do not match. The named transition still needs its corresponding CSS and shared
+element names; registering a group only selects the type.
+
+For query-parameter filters, add an entry to `filterGroups` in
+`src/shared/lib/view-transitions/constants.ts` using `defineFilterGroup` with a route pattern,
+parameter name, and transition-type callback. No duplicate filter schema is
+needed: the factory infers valid parameter names and both callback arguments
+from the route's generated `fullSearchSchema` type. It compares validated
+match search values, including route-validator defaults. Supply `defaultValue`
+only when an optional search value has a separate application-level default,
+such as the music period's loader default. With a defined default, both callback
+arguments are non-nullish; without one, they retain the route's optional type.
+Invalid values are left to route
+validation with a generic fade. Tab changes take precedence over filters.
+The type callback preserves filter-specific behavior, such as project
+kind variants and the generic fade between two selected kinds.
+
+Factory type checks live in `src/shared/lib/view-transitions/factories.test-d.ts`
+and run through `vp run test:types`. The types project uses
+`config/tsconfig.type-tests.json` without MDX content mappers because Vitest's
+compiler invocation does not enable `--runExternalCode`. The normal
+`vp run typecheck` still checks MDX through the main configuration.
 
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,

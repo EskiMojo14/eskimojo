@@ -52,12 +52,6 @@ function RouteComponent() {
               type: previous.type === kind ? undefined : kind,
             })}
             aria-current={selectedKind === kind ? "true" : undefined}
-            viewTransition={{
-              types:
-                selectedKind && selectedKind !== kind
-                  ? []
-                  : ["project-filter", `project-filter-${selectedKind === kind ? "all" : kind}`],
-            }}
             replace
             icon={<MdSymbol>{projectKindLabels[kind].icon}</MdSymbol>}
           >

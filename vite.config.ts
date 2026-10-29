@@ -194,6 +194,7 @@ const config = defineConfig({
           typecheck: {
             enabled: true,
             only: true,
+            tsconfig: "./config/tsconfig.type-tests.json",
             include: ["**/*.test-d.ts"],
           },
         },
