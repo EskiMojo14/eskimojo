@@ -31,7 +31,9 @@ export function GigsVenueChart({
             x: "count",
             y: "venue",
             key: "venue",
-            fill: "var(--md-sys-color-primary)",
+            fill: "var(--gigs-bar-main)",
+            stroke: "var(--md-sys-color-on-surface)",
+            strokeWidth: 1,
             inset: 4,
             states: [
               {

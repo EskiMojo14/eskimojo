@@ -239,6 +239,8 @@ navigation, and Enter/Escape retain tooltip pinning/dismissal.
 The artist view uses a horizontal stacked bar chart with Main and Support
 segments per artist, sorted by Main appearances descending, then Support
 appearances descending, then alphabetically for ties.
+Bar colours use existing primary and tertiary theme tones with contrasting
+outlines to keep the series distinct across themes and contrast settings.
 Each main/co-billed artist and each recorded support act counts once
 per event in its respective role. Support-only artists are included. Hovering or
 keyboard-focusing a segment shows both role counts, the total, and a chronological

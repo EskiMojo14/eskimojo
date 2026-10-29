@@ -1,3 +1,5 @@
+@import "#/routes/gigs.{-$breakdown}/-components/bar-colors.css";
+
 .gigs-artists {
   padding: 1rem;
   min-width: 0;
@@ -40,11 +42,11 @@
 }
 
 .gigs-artists__key--main {
-  background: var(--md-sys-color-primary);
+  background: var(--gigs-bar-main);
 }
 
 .gigs-artists__key--support {
-  background: var(--md-sys-color-tertiary);
+  background: var(--gigs-bar-support);
 }
 
 .gigs-artists__table {

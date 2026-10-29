@@ -59,6 +59,8 @@ export function GigsArtistChart({
               y: "artist",
               z: "role",
               color: "role",
+              stroke: "var(--md-sys-color-on-surface)",
+              strokeWidth: 1,
               key: (row) => `${row.artist}-${row.role}`,
               layout: stack({ order: ["Main", "Support"] }),
               inset: 4,
@@ -85,7 +87,7 @@ export function GigsArtistChart({
         },
         color: {
           domain: ["Main", "Support"],
-          range: ["var(--md-sys-color-primary)", "var(--md-sys-color-tertiary)"],
+          range: ["var(--gigs-bar-main)", "var(--gigs-bar-support)"],
         },
         tooltip: {
           use: tooltip,

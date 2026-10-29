@@ -1,0 +1,11 @@
+.gigs-artists,
+.gigs-venues {
+  --gigs-bar-main: light-dark(
+    var(--md-sys-color-tertiary-fixed-dim),
+    var(--md-sys-color-primary-fixed)
+  );
+  --gigs-bar-support: light-dark(
+    var(--md-sys-color-on-primary-fixed),
+    var(--md-sys-color-on-tertiary-fixed-variant)
+  );
+}
