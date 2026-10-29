@@ -45,6 +45,14 @@
   view-transition-class: project-card;
 }
 
+:root:is(:active-view-transition-type(project), :active-view-transition-type(project-filter)) {
+  .project-title,
+  .project-summary,
+  .project-links {
+    view-transition-name: var(--project-header-name);
+  }
+}
+
 /* Only during filtering: a card group that exists only in the new state stacks above the detail page's title and summary. */
 :root:active-view-transition-type(project-filter) .project-card {
   view-transition-name: var(--project-card-name);

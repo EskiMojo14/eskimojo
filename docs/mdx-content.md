@@ -119,7 +119,10 @@ and are invalidated by HMR. Their `preload()` method resolves the component
 before navigation commits, avoiding an extra Suspense frame in the transition.
 The title, overview description, and links each share unique View Transition
 names between the card and detail page, with matching timing and reduced-motion
-support. The full MDX body does not participate in this shared-element motion.
+support. These names are active only during project-detail and project-filter
+transitions. During bottom-navigation page slides, the card and detail contents
+stay in the page-content layer so their text and links move with the page.
+The full MDX body does not participate in this shared-element motion.
 The overview does not duplicate the app
 bar's Projects title.
 

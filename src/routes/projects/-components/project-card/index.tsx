@@ -23,7 +23,10 @@ export function ProjectCard({ project }: { project: Project }) {
               {project.logo.dark && <img src={project.logo.dark} alt="" width={40} height={40} />}
             </span>
           ))}
-        <h3 className="project-title" style={{ viewTransitionName: `project-${project.slug}` }}>
+        <h3
+          className="project-title"
+          style={{ "--project-header-name": `project-${project.slug}` }}
+        >
           <Link
             to="/projects/$slug"
             params={{ slug: project.slug }}
@@ -35,7 +38,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <p
         className="project-summary"
-        style={{ viewTransitionName: `project-summary-${project.slug}` }}
+        style={{ "--project-header-name": `project-summary-${project.slug}` }}
       >
         {project.summary}
       </p>

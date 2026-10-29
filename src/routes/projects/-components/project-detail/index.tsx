@@ -9,13 +9,13 @@ export function ProjectDetail({ project, children }: { project: Project; childre
       <header className="project-detail__header">
         <h1
           className="project-title project-title--detail"
-          style={{ viewTransitionName: `project-${project.slug}` }}
+          style={{ "--project-header-name": `project-${project.slug}` }}
         >
           {project.title}
         </h1>
         <p
           className="project-summary"
-          style={{ viewTransitionName: `project-summary-${project.slug}` }}
+          style={{ "--project-header-name": `project-summary-${project.slug}` }}
         >
           {project.summary}
         </p>

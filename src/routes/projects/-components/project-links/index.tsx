@@ -7,7 +7,7 @@ export function ProjectLinks({ project }: { project: Project }) {
     <ul
       className="project-links"
       aria-label={`${project.title} links`}
-      style={{ viewTransitionName: `project-links-${project.slug}` }}
+      style={{ "--project-header-name": `project-links-${project.slug}` }}
     >
       {project.links.map(({ label, href }) => (
         <li key={href}>
