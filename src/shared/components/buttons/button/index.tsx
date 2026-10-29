@@ -1,6 +1,7 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { CircularProgress } from "#/shared/components/progress/circular";
 import { useRipple } from "#/shared/components/ripple";
 import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
 
@@ -14,6 +15,7 @@ export type ButtonProps = ComponentPropsWithRef<"button"> &
     variant?: ButtonVariant;
     size?: ButtonSize;
     icon?: ReactNode;
+    loading?: boolean;
   };
 
 function ButtonBase({
@@ -23,15 +25,29 @@ function ButtonBase({
   className,
   icon,
   children,
+  loading = false,
+  onClick,
   ...props
 }: Omit<ButtonProps, keyof TooltipProps>) {
-  const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
+  const { handlers, ripple } = useRipple<HTMLButtonElement>({
+    ...props,
+    "aria-disabled": loading || props["aria-disabled"],
+  });
   return (
     <button
       {...props}
       {...handlers}
-      {...buttonBem({ modifier: [variant, size], extra: className })}
+      {...buttonBem({ modifier: [variant, size, loading ? "loading" : ""], extra: className })}
       type={type}
+      aria-busy={loading || props["aria-busy"]}
+      aria-disabled={loading || props["aria-disabled"]}
+      onClick={(event) => {
+        if (loading) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.(event);
+      }}
     >
       {ripple}
       {!!icon && (
@@ -39,7 +55,12 @@ function ButtonBase({
           {icon}
         </span>
       )}
-      {children}
+      <span {...buttonBem({ element: "label" })}>{children}</span>
+      {loading && (
+        <span {...buttonBem({ element: "progress" })} aria-hidden="true">
+          <CircularProgress label="Loading" track={false} />
+        </span>
+      )}
     </button>
   );
 }

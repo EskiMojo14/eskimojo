@@ -12,9 +12,11 @@
 @import "#/shared/components/buttons/icon-button/index.css";
 @import "#/shared/components/card/index.css";
 @import "#/shared/components/chips/index.css";
+@import "#/shared/components/progress/circular/index.css";
 @import "#/shared/components/empty-state/index.css";
 @import "#/shared/components/footer/index.css";
 @import "#/shared/components/list/index.css";
+@import "#/shared/components/progress/linear/index.css";
 @import "#/shared/components/page-state/index.css";
 @import "#/shared/components/sidebar/index.css";
 @import "#/shared/components/skeleton/index.css";

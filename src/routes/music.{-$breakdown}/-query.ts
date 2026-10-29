@@ -42,7 +42,7 @@ const lastfmRequestSchema = v.variant(
 
 const upfetch = up(fetch);
 
-const fetchLastfm = createServerFn({ method: "GET" })
+export const fetchLastfm = createServerFn({ method: "GET" })
   .middleware([withServerEnv])
   .validator(lastfmRequestSchema)
   .handler(({ data, context: { serverEnv } }) =>

@@ -25,6 +25,11 @@ const meta = preview.meta({
       description:
         "Optional decorative leading icon. Accepts MdSymbol or an SVG; the slot defaults to 20px and scales with size. Keep an accessible text label and do not place interactive controls in the slot.",
     },
+    loading: {
+      control: "boolean",
+      description:
+        "Shows a centered flat circular progress indicator without changing the label or button dimensions. Exposes aria-busy and aria-disabled, retains focus, and prevents duplicate activation.",
+    },
     "aria-pressed": { control: "select", options: [undefined, false, true, "mixed"] },
   },
   parameters: {
@@ -43,6 +48,21 @@ export const Default = meta.story({
   play: async ({ canvas, userEvent, args }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Save changes" }));
     await expect(args.onClick).toHaveBeenCalledOnce();
+  },
+});
+
+export const Loading = meta.story({
+  args: { loading: true, onClick: fn(), children: "Retry" },
+  play: async ({ canvas, userEvent, args }) => {
+    const button = canvas.getByRole("button", { name: "Retry" });
+    await expect(button).toHaveAttribute("aria-busy", "true");
+    await expect(button).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(button);
+    await userEvent.tab();
+    button.focus();
+    await userEvent.keyboard("{Enter} ");
+    await expect(args.onClick).not.toHaveBeenCalled();
+    await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
   },
 });
 

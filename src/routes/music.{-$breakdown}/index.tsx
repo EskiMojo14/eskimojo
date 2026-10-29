@@ -1,8 +1,12 @@
 import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Suspense } from "react";
+import { useEffect } from "react";
 import * as v from "valibot";
 
+import {
+  MusicDataBoundary,
+  MusicRefreshNotice,
+} from "#/routes/music.{-$breakdown}/-components/data-boundary";
 import { MusicPeriodPicker } from "#/routes/music.{-$breakdown}/-components/period-picker/index";
 import {
   RecentTracks,
@@ -27,6 +31,7 @@ import {
 } from "#/routes/music.{-$breakdown}/-query.ts";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
+import dataBoundaryCss from "#/routes/music.{-$breakdown}/-components/data-boundary/index.css?url";
 import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css?url";
 import skeletonCss from "#/routes/music.{-$breakdown}/-components/skeletons/index.css?url";
 import summaryCss from "#/routes/music.{-$breakdown}/-components/summary/index.css?url";
@@ -94,6 +99,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         { rel: "stylesheet", href: recentTracksCss },
         { rel: "stylesheet", href: summaryCss },
         { rel: "stylesheet", href: skeletonCss },
+        { rel: "stylesheet", href: dataBoundaryCss },
       ],
     };
   },
@@ -106,19 +112,25 @@ function RouteComponent() {
   const { period = periodSchema.fallback } = Route.useSearch();
   return (
     <>
-      <Suspense fallback={<MusicSummarySkeleton />}>
+      <MusicDataBoundary
+        loading={<MusicSummarySkeleton />}
+        errorTitle="Couldn't load listening statistics"
+      >
         <SummaryPanel />
-      </Suspense>
+      </MusicDataBoundary>
       <MusicBreakdownTabs />
       <div className="tabs__route-content">
         {breakdown !== "recent" && <MusicPeriodPicker />}
-        <Suspense
-          key={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
-          fallback={breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />}
+        <MusicDataBoundary
+          resetKey={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
+          loading={breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />}
+          errorTitle={
+            breakdown === "recent" ? "Couldn't load recent tracks" : "Couldn't load top music"
+          }
         >
           {breakdown === "recent" && <RecentTracksPanel />}
           {breakdown === "top-music" && <TopMusicPanel />}
-        </Suspense>
+        </MusicDataBoundary>
       </div>
     </>
   );
@@ -135,14 +147,37 @@ function SummaryPanel() {
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RecentTracksPanel() {
-  const { data: recentTracks } = useSuspenseQuery({
+  const {
+    data: recentTracks,
+    error,
+    isRefetchError,
+    isFetching,
+    refetch,
+  } = useSuspenseQuery({
     ...getRecentTracks({ limit: 10 }),
     staleTime: recentTracksRefreshInterval,
     refetchInterval: recentTracksRefreshInterval,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: "always",
   });
-  return <RecentTracks tracks={recentTracks} />;
+  useEffect(() => {
+    if (isRefetchError) console.error("Failed to refresh recent tracks.", error);
+  }, [error, isRefetchError]);
+  return (
+    <>
+      {isRefetchError && (
+        <MusicRefreshNotice
+          isFetching={isFetching}
+          onRetry={() => {
+            refetch().catch((retryError: unknown) =>
+              console.error("Failed to retry recent tracks.", retryError),
+            );
+          }}
+        />
+      )}
+      <RecentTracks tracks={recentTracks} />
+    </>
+  );
 }
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.

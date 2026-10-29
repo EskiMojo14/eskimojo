@@ -216,7 +216,7 @@
   }
 }
 
-.button:is(:disabled, [aria-disabled="true"]) {
+.button:is(:disabled, [aria-disabled="true"]:not(.button--loading)) {
   border-color: transparent;
   background-color: alpha(
     from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity)
@@ -232,6 +232,28 @@
 
   &.button--text {
     background-color: transparent;
+  }
+}
+
+.button--loading {
+  cursor: progress;
+
+  > :is(.button__label, .button__icon) {
+    opacity: 0;
+  }
+}
+
+.button__progress {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+
+  .circular-progress {
+    --circular-progress-size: 24px;
+
+    color: inherit;
   }
 }
 

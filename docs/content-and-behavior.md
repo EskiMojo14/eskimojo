@@ -239,8 +239,46 @@ navigation can display the tabs and period picker immediately. The summary and
 active tab have independent skeleton loaders; changing the listening
 period shows loading feedback for that period instead of the previous rankings.
 Cached results retain their existing freshness and recent-track polling behavior.
-Preload failures are logged and query failures surface through the route error
-boundary rather than appearing as empty listening history.
+Preload failures are logged. Independent `react-error-boundary` boundaries around
+the summary and active tab show contextual errors without hiding successful data,
+tabs, or period controls. Retry resets both the component boundary and TanStack
+Query's error state. Changing the tab or period resets the active-tab boundary.
+Initial query failures never appear as empty listening history. Failed
+recent-track background refreshes retain the last loaded results, log the error,
+and show a polite refresh notice with Retry; the action is busy while fetching
+and the notice clears after a successful refresh. The route-level error page
+remains the last resort for failures outside these boundaries.
+
+The shared `CircularProgress` component uses the flat MD3 shape. Where
+`corner-shape: bevel` is supported, its active and track strokes end in cut
+(pointed) caps to match the app's beveled corners, like the linear indicator;
+other browsers keep round caps.
+Circular and linear indicators live under `src/shared/components/progress`, with
+their stories grouped under `Components/Progress`.
+Omit `value` for indeterminate loading; supply `value` and optional `max`
+(default `1`) for determinate progress. Native progress semantics provide the
+accessible label and completion value; decorative SVG strokes provide rounded
+caps and a track gap. Values clamp to 0-max; non-finite values and invalid maxima
+throw explicitly. Styles load through the root stylesheet. Reduced motion
+disables rotation and sweeping and makes determinate updates immediate.
+
+`LinearProgress` uses the same `label`, `value`, and `max` API and shared numeric
+validation. It fills its container's inline width with a flat 4px track, a gap
+around the active segment, and a stop marker at the completion end for determinate
+progress. Empty progress shows the track and stop; complete progress fills the
+track and removes the stop. Indeterminate progress travels from inline start to
+inline end, automatically mirroring in RTL. Reduced motion shows a static segment
+instead. The root stylesheet includes its styles; `--linear-progress-thickness`
+can increase the track and stop size. Place linear progress along a loading
+container's edge rather than replacing the compact circular button indicator.
+
+`Button` accepts `loading` to center a flat, trackless circular indicator in place
+of its visible content, following
+[MD3 button progress guidance](https://m3.material.io/components/progress-indicators/guidelines).
+Its original label and dimensions are preserved. The indicator inherits the
+button text color rather than disabled coloring; `aria-busy` and `aria-disabled`
+communicate state, duplicate activation is blocked, and keyboard focus is retained.
+The recent-track retry uses this instead of changing its label to "Retrying...".
 
 Following [Material 3 skeleton-loader guidance](https://m3.material.io/styles/motion/transitions/transition-patterns),
 the placeholders reuse the summary card grid and ten-row list layouts, including
