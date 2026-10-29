@@ -62,8 +62,8 @@ unless that is confirmed.
 
 ## Contact and public links
 
-Contact links live in the homepage's "Find me elsewhere" section and the shared
-footer, not in a separate Contact page or primary-navigation destination:
+Contact links live in the homepage's "Find me elsewhere" section, not in the
+footer, a separate Contact page, or a primary-navigation destination:
 
 - GitHub profile: `https://github.com/EskiMojo14`
 - Twitter/X: `https://twitter.com/eskimojo`
@@ -75,8 +75,8 @@ in a new tab and communicate that behavior accessibly.
 Do not add a public email address. Link to Last.fm from Music, not from the
 general social profile group.
 
-The shared footer retains its simpler GitHub, Twitter, and Bluesky text links
-on every page and credits the artwork to [Popurri](https://x.com/popurri_arts).
+The shared footer links to the [site's source code](https://github.com/EskiMojo14/eskimojo)
+on GitHub and credits the artwork to [Popurri](https://x.com/popurri_arts).
 The homepage does not repeat the hero's Mitzi illustration in the footer.
 
 ## Appearance preferences

@@ -59,9 +59,9 @@ The primary navigation should provide clear destinations for:
 - **Music:** Last.fm listening summaries.
 - **Gigs:** an event archive and its artist, venue, and city views.
 
-Contact is provided by the homepage's "Find me elsewhere" profile cards and
-the shared footer links, not a separate page or navigation item. Do not publish
-a direct email address.
+Contact is provided by the homepage's "Find me elsewhere" profile cards, not a
+separate page or navigation item. The footer links to the site's source code
+and retains the artwork credit. Do not publish a direct email address.
 
 The homepage combines an illustrated introduction, biography, interests list,
 and social profile cards without repeating the primary navigation.

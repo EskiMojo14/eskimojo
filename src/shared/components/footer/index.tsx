@@ -5,30 +5,14 @@ const siteFooterBem = BEMHelper("site-footer");
 export function Footer() {
   return (
     <footer {...siteFooterBem()}>
-      <nav {...siteFooterBem({ element: "links" })} aria-label="Social profiles">
+      <nav {...siteFooterBem({ element: "links" })}>
         <a
           {...siteFooterBem({ element: "link" })}
-          href="https://github.com/EskiMojo14"
+          href="https://github.com/EskiMojo14/eskimojo"
           target="_blank"
           rel="noopener noreferrer"
         >
           GitHub
-        </a>
-        <a
-          {...siteFooterBem({ element: "link" })}
-          href="https://twitter.com/eskimojo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Twitter
-        </a>
-        <a
-          {...siteFooterBem({ element: "link" })}
-          href="https://bsky.app/profile/eskimojo.bsky.social"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Bluesky
         </a>
       </nav>
       <p {...siteFooterBem({ element: "credit" })}>
