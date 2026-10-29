@@ -24,7 +24,16 @@ export function getRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultViewTransition: true,
+    defaultViewTransition: {
+      types: ({ fromLocation, toLocation }) => {
+        const paths = [fromLocation?.pathname, toLocation.pathname];
+        const includesList = paths.some((path) => path === "/projects" || path === "/projects/");
+        const includesDetail = paths.some(
+          (path) => path !== undefined && /^\/projects\/[^/]+\/?$/.test(path),
+        );
+        return includesList && includesDetail ? ["project"] : [];
+      },
+    },
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: ErrorPage,

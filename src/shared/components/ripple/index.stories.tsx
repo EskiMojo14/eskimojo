@@ -11,9 +11,6 @@ import { MdSymbol } from "#/shared/components/symbol";
 const meta = preview.meta({
   title: "Components/Ripple",
   component: Button,
-  beforeEach: async () => {
-    await document.fonts.load('24px "Material Symbols Sharp"');
-  },
   parameters: {
     a11y: { test: "error" },
     docs: {

@@ -27,7 +27,7 @@ export const Default = meta.story({
     ),
   },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "history-adapter", level: 1 })).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "History Adapter", level: 1 })).toBeVisible();
     await expect(canvas.getByRole("heading", { name: "The full story" })).toBeVisible();
     await expect(canvas.getByRole("link", { name: "View source" })).toHaveAttribute(
       "href",

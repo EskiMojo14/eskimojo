@@ -5,7 +5,7 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
-import { expect, onTestFinished, test, vi } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { GigsBreakdownTabs } from "./index";
@@ -34,34 +34,30 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Gigs breakdown" })).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");
-  const startTransition = vi.spyOn(document, "startViewTransition");
-  onTestFinished(async () => {
-    try {
-      for (const entry of startTransition.mock.results) {
-        if (entry.type === "return") await entry.value.finished;
-      }
-    } finally {
-      startTransition.mockRestore();
+  using startTransition = vi.spyOn(document, "startViewTransition");
+  try {
+    for (const [index, label, destination, type] of [
+      [0, "Artist", "/gigs/by-artist", "tab-forward"],
+      [1, "City", "/gigs/by-city", "tab-forward"],
+      [2, "Venue", "/gigs/by-venue", "tab-backward"],
+      [3, "Month", "/gigs", "tab-backward"],
+    ] as const) {
+      const link = result.getByRole("link", { name: label, exact: true });
+      await expect.element(link).toHaveAttribute("href", destination);
+      await link.click();
+      await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
+      expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
+      const transition = startTransition.mock.results[index];
+      if (transition?.type !== "return") throw new Error("Expected a native tab transition");
+      await transition.value.ready;
+      await expect.element(link).toHaveAttribute("aria-current", "page");
+      expect(router.state.location.pathname).toBe(destination);
+      await expect.element(result.getByText("Gig breakdown content")).toBeVisible();
+      await transition.value.finished;
     }
-  });
-
-  for (const [index, label, destination, type] of [
-    [0, "Artist", "/gigs/by-artist", "tab-forward"],
-    [1, "City", "/gigs/by-city", "tab-forward"],
-    [2, "Venue", "/gigs/by-venue", "tab-backward"],
-    [3, "Month", "/gigs", "tab-backward"],
-  ] as const) {
-    const link = result.getByRole("link", { name: label, exact: true });
-    await expect.element(link).toHaveAttribute("href", destination);
-    await link.click();
-    await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
-    expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
-    const transition = startTransition.mock.results[index];
-    if (transition?.type !== "return") throw new Error("Expected a native tab transition");
-    await transition.value.ready;
-    await expect.element(link).toHaveAttribute("aria-current", "page");
-    expect(router.state.location.pathname).toBe(destination);
-    await expect.element(result.getByText("Gig breakdown content")).toBeVisible();
-    await transition.value.finished;
+  } finally {
+    for (const entry of startTransition.mock.results) {
+      if (entry.type === "return") await entry.value.finished;
+    }
   }
 });

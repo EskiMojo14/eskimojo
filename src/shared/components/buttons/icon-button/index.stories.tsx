@@ -12,9 +12,6 @@ const variants: Array<IconButtonVariant> = ["standard", "filled", "tonal", "outl
 const meta = preview.meta({
   title: "Components/Buttons/IconButton",
   component: IconButton,
-  beforeEach: async () => {
-    await document.fonts.load('24px "Material Symbols Sharp"');
-  },
   args: {
     "aria-label": "More options",
     icon: <MdSymbol>more_vert</MdSymbol>,

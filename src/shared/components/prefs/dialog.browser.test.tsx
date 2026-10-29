@@ -19,7 +19,7 @@ beforeEach(async () => {
   await page.viewport(1280, 800);
 });
 
-test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px", async (width) => {
+test.each([320, 390, 599])("mobile dropdowns fit and save preferences at %i px", async (width) => {
   await page.viewport(width, 568);
   const result = await page.renderWithProviders(<NavigationLayout />, {
     preferences: { theme: "dark", contrast: "high", palette: "arctic" },
@@ -88,7 +88,7 @@ test.each([320, 390, 600])("mobile dropdowns fit and save preferences at %i px",
   await expect.element(palette).toHaveAccessibleDescription("Arctic");
 
   await theme.click();
-  await page.viewport(601, 800);
+  await page.viewport(600, 800);
   await expect.element(dialog.getByRole("listbox")).not.toBeInTheDocument();
   await expect.element(dialog.getByRole("combobox")).not.toBeInTheDocument();
   for (const name of ["Dark", "High", "Arctic"]) {

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { createRef } from "react";
-import { expect, onTestFinished, test, vi } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { Button } from "#/shared/components/buttons/button";
@@ -293,8 +293,7 @@ test("preserves ripple timings when production CSS expresses durations in second
   button.style.setProperty("--md-comp-ripple-fade-in-duration", ".105s");
   button.style.setProperty("--md-comp-ripple-fade-duration", ".375s");
   button.style.setProperty("--md-comp-ripple-minimum-press-duration", ".225s");
-  const now = vi.spyOn(performance, "now").mockReturnValue(100);
-  onTestFinished(() => now.mockRestore());
+  using now = vi.spyOn(performance, "now").mockReturnValue(100);
   press(button);
   const ripple = wave(button);
   const [grow, fadeIn] = ripple.getAnimations();
@@ -419,17 +418,17 @@ test("cleans up interrupted presses, replaced waves, disabling, and unmount", as
 
 test("reduced motion uses static pressed feedback without animations", async () => {
   const original = window.matchMedia.bind(window);
-  const mock = vi.spyOn(window, "matchMedia").mockImplementation((query) => {
+  using matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((query) => {
     const result = original(query);
     if (query === "(prefers-reduced-motion: reduce)") {
       Object.defineProperty(result, "matches", { value: true });
     }
     return result;
   });
-  onTestFinished(() => mock.mockRestore());
   const result = await page.renderWithProviders(<Button>Reduced motion</Button>);
   const button = result.getByRole("button", { name: "Reduced motion" }).element();
   press(button);
+  expect(matchMedia).toHaveBeenCalledWith("(prefers-reduced-motion: reduce)");
   expect(wave(button).getAnimations()).toHaveLength(0);
   document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
   expect(button.querySelector(".ripple__wave")).toBeNull();

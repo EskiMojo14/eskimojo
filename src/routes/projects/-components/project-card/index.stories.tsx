@@ -33,8 +33,8 @@ export const Default = meta.story({
 export const Package = meta.story({
   args: { project: getProject("history-adapter") },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "history-adapter", level: 3 })).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "history-adapter" })).toHaveAttribute(
+    await expect(canvas.getByRole("heading", { name: "History Adapter", level: 3 })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "History Adapter" })).toHaveAttribute(
       "href",
       "/projects/history-adapter",
     );

@@ -10,9 +10,6 @@ import "./index.css";
 const meta = preview.meta({
   title: "Home/Hero",
   component: HomeHero,
-  beforeEach: async () => {
-    await document.fonts.load('20px "Material Symbols Sharp"');
-  },
   parameters: {
     layout: "fullscreen",
     docs: {

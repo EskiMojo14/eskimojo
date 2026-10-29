@@ -30,6 +30,10 @@ const globalsSchema = v.object({
 export default definePreview({
   addons: [addonDocs(), addonA11y(), addonMsw()],
 
+  beforeEach: async () => {
+    await document.fonts.load('24px "Material Symbols Sharp"');
+  },
+
   globalTypes: {
     direction: {
       description: "Text direction",

@@ -18,9 +18,6 @@ import { ExternalLinkIconButton, InternalLinkIconButton } from "./index";
 const meta = preview.meta({
   title: "Components/Buttons/LinkIconButton",
   component: ExternalLinkIconButton,
-  beforeEach: async () => {
-    await document.fonts.load('24px "Material Symbols Sharp"');
-  },
   parameters: {
     layout: "centered",
     a11y: { test: "error" },

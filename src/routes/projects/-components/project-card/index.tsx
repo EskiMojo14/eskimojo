@@ -27,11 +27,7 @@ export function ProjectCard({ project }: { project: Project }) {
           className="project-title"
           style={{ "--project-header-name": `project-${project.slug}` }}
         >
-          <Link
-            to="/projects/$slug"
-            params={{ slug: project.slug }}
-            viewTransition={{ types: ["project"] }}
-          >
+          <Link to="/projects/$slug" params={{ slug: project.slug }}>
             {project.title}
           </Link>
         </h3>

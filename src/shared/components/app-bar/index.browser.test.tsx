@@ -35,17 +35,24 @@ test("primary navigation works with pointer and keyboard activation", async () =
   const result = await renderPage();
   const nav = result.getByRole("navigation", { name: "Primary" });
   const projects = nav.getByRole("link", { name: "Projects", exact: true });
-  await projects.click();
-  await expect.element(projects).toHaveAttribute("aria-current", "page");
+  using startTransition = vi.spyOn(document, "startViewTransition");
+  try {
+    await projects.click();
+    await expect.element(projects).toHaveAttribute("aria-current", "page");
 
-  const home = nav.getByRole("link", { name: "Home", exact: true });
-  home.element().focus();
-  await userEvent.keyboard("{Enter>}");
-  await userEvent.keyboard("{/Enter}");
-  await expect.element(home).toHaveAttribute("aria-current", "page");
+    const home = nav.getByRole("link", { name: "Home", exact: true });
+    home.element().focus();
+    await userEvent.keyboard("{Enter>}");
+    await userEvent.keyboard("{/Enter}");
+    await expect.element(home).toHaveAttribute("aria-current", "page");
+  } finally {
+    for (const entry of startTransition.mock.results) {
+      if (entry.type === "return") await entry.value.finished;
+    }
+  }
 });
 
-test.each([320, 390, 599, 600, 768, 769, 1280])(
+test.each([320, 390, 599, 600, 904, 905, 1239, 1240, 1280])(
   "positions navigation responsively at %i px",
   async (width) => {
     await page.viewport(width, 844);
@@ -55,7 +62,7 @@ test.each([320, 390, 599, 600, 768, 769, 1280])(
     const menuButton = result.getByRole("button", { name: "Open navigation menu" });
     expect([Boolean(navigation.query()), Boolean(menuButton.query())]).toEqual([
       compact,
-      width >= 600 && width <= 768,
+      width >= 600 && width < 1240,
     ]);
   },
 );
@@ -152,68 +159,65 @@ test.each(["ltr", "rtl"])(
     const result = await page.renderWithProviders(<RouterProvider router={router} />);
     await expect.poll(() => router.state.status).toBe("idle");
     for (const animation of document.getAnimations()) animation.finish();
-    const startTransition = vi.spyOn(document, "startViewTransition");
-    onTestFinished(async () => {
-      try {
-        for (const entry of startTransition.mock.results) {
-          if (entry.type === "return") await entry.value.finished;
+    using startTransition = vi.spyOn(document, "startViewTransition");
+    try {
+      const nav = result.getByRole("navigation", { name: "Primary" });
+      for (const [index, { name, type, distance }] of [
+        { name: "Gigs", type: "page-forward", distance: 24 },
+        { name: "Projects", type: "page-backward", distance: -24 },
+      ].entries()) {
+        await nav.getByRole("link", { name, exact: true }).click();
+        await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
+        expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
+        const transition = startTransition.mock.results[index];
+        if (transition?.type !== "return") throw new Error("Expected a page view transition");
+        await transition.value.ready;
+        const navigationLayer = getComputedStyle(
+          document.documentElement,
+          "::view-transition-group(bottom-navigation)",
+        );
+        const contentLayer = getComputedStyle(
+          document.documentElement,
+          "::view-transition-group(page-content)",
+        );
+        expect(Number(navigationLayer.zIndex)).toBeGreaterThan(Number(contentLayer.zIndex));
+        expect(navigationLayer.animationName).toBe("none");
+        expect(
+          getComputedStyle(document.documentElement, "::view-transition-old(bottom-navigation)")
+            .display,
+        ).toBe("none");
+        const effects = document
+          .getAnimations()
+          .map((animation) => animation.effect)
+          .filter((effect): effect is KeyframeEffect => effect instanceof KeyframeEffect);
+        const signedDistance = direction === "rtl" ? -distance : distance;
+        for (const target of ["page-content", "page-heading"]) {
+          const incoming = effects.filter(
+            (effect) => effect.pseudoElement === `::view-transition-new(${target})`,
+          );
+          const outgoing = effects.filter(
+            (effect) => effect.pseudoElement === `::view-transition-old(${target})`,
+          );
+          expect(incoming.map((effect) => effect.getKeyframes()[0])).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ translate: `${signedDistance}px` }),
+              expect.objectContaining({ opacity: "0" }),
+            ]),
+          );
+          expect(outgoing.map((effect) => effect.getKeyframes().at(-1))).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ translate: `${-signedDistance}px` }),
+              expect.objectContaining({ opacity: "0" }),
+            ]),
+          );
         }
-      } finally {
-        startTransition.mockRestore();
+        expect(effects.some((effect) => effect.pseudoElement?.includes("(root)"))).toBe(false);
+        await transition.value.finished;
       }
-    });
-    const nav = result.getByRole("navigation", { name: "Primary" });
-    for (const [index, { name, type, distance }] of [
-      { name: "Gigs", type: "page-forward", distance: 24 },
-      { name: "Projects", type: "page-backward", distance: -24 },
-    ].entries()) {
-      await nav.getByRole("link", { name, exact: true }).click();
-      await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
-      expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
-      const transition = startTransition.mock.results[index];
-      if (transition?.type !== "return") throw new Error("Expected a page view transition");
-      await transition.value.ready;
-      const navigationLayer = getComputedStyle(
-        document.documentElement,
-        "::view-transition-group(bottom-navigation)",
-      );
-      const contentLayer = getComputedStyle(
-        document.documentElement,
-        "::view-transition-group(page-content)",
-      );
-      expect(Number(navigationLayer.zIndex)).toBeGreaterThan(Number(contentLayer.zIndex));
-      expect(navigationLayer.animationName).toBe("none");
-      expect(
-        getComputedStyle(document.documentElement, "::view-transition-old(bottom-navigation)")
-          .display,
-      ).toBe("none");
-      const effects = document
-        .getAnimations()
-        .map((animation) => animation.effect)
-        .filter((effect): effect is KeyframeEffect => effect instanceof KeyframeEffect);
-      const signedDistance = direction === "rtl" ? -distance : distance;
-      for (const target of ["page-content", "page-heading"]) {
-        const incoming = effects.filter(
-          (effect) => effect.pseudoElement === `::view-transition-new(${target})`,
-        );
-        const outgoing = effects.filter(
-          (effect) => effect.pseudoElement === `::view-transition-old(${target})`,
-        );
-        expect(incoming.map((effect) => effect.getKeyframes()[0])).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ translate: `${signedDistance}px` }),
-            expect.objectContaining({ opacity: "0" }),
-          ]),
-        );
-        expect(outgoing.map((effect) => effect.getKeyframes().at(-1))).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ translate: `${-signedDistance}px` }),
-            expect.objectContaining({ opacity: "0" }),
-          ]),
-        );
+    } finally {
+      for (const entry of startTransition.mock.results) {
+        if (entry.type === "return") await entry.value.finished;
       }
-      expect(effects.some((effect) => effect.pseudoElement?.includes("(root)"))).toBe(false);
-      await transition.value.finished;
     }
   },
 );

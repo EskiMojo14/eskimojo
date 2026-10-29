@@ -124,10 +124,15 @@ short screens. The small-screen modal drawer is unchanged.
 No breadcrumbs are needed for the current route hierarchy; Gigs uses
 tabs for its internal views.
 
-Client-side navigations, including browser Back and Forward, use a generic
-full-page crossfade through the View Transitions API. The fade uses the slow
-effects spring and its matching duration. Reduced-motion preferences disable
-the animation, and browsers without the API navigate normally without a fade.
+Client-side navigations, including browser Back and Forward, use the View
+Transitions API. Navigation between the projects list and a project detail
+page shares the project's title, summary, and links between views. The router
+selects this transition from the source and destination paths, so link clicks
+and browser history behave consistently. Project filters keep their own
+explicit transition types. Other navigations use a generic full-page crossfade
+with the slow effects spring and its matching duration. Reduced-motion
+preferences disable the animation, and browsers without the API navigate
+normally without a fade.
 
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,

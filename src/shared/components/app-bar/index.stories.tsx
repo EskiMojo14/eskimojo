@@ -10,9 +10,6 @@ import { AppBar } from "./index";
 const meta = preview.meta({
   title: "Components/AppBar",
   component: AppBar,
-  beforeEach: async () => {
-    await document.fonts.load('24px "Material Symbols Sharp"');
-  },
   args: {
     navigationOpen: false,
     onOpenNavigation: fn(),

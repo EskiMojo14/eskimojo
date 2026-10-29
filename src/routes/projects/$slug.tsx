@@ -10,7 +10,6 @@ import styles from "#/routes/projects/-components/project-detail/index.css?url";
 
 const backLink = linkOptions({
   to: "/projects",
-  viewTransition: { types: ["project"] },
 });
 
 export const Route = createFileRoute("/projects/$slug")({
