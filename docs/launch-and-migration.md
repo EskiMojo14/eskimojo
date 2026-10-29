@@ -38,9 +38,8 @@ certificate covers both `eskimojo.dev` and `www.eskimojo.dev`. Netlify manages
 certificate renewal.
 
 The Storybook subdomain's CNAME points to `storybook-eskimojo.netlify.app`.
-Its deployment remains pending verification after the Storybook build fix;
-the corrected build succeeds locally, but the deployed Storybook content and
-its HTTPS certificate still need checking.
+The site owner confirmed its deployed content and HTTPS were verified on
+2026-10-29.
 
 ## Relationship to the Neocities site
 
@@ -52,9 +51,8 @@ The archived site should link visitors to the new primary site.
 The archive and new site are intentionally separate destinations. A redirect
 from the old address is not part of the agreed plan.
 
-The Neocities homepage was reachable on 2026-10-26, but the fetched page did
-not show a link to the new primary site. Keep that migration item open until
-the archive is updated and checked.
+Adding the link to the new primary site is a separate follow-up, not a launch
+blocker.
 
 ## Migration references
 
@@ -76,8 +74,9 @@ Migration priorities:
 
 ## Deployment and secrets
 
-Verify the deployment environment configuration before launch.
-Last.fm credentials or other secrets must be supplied
+The site owner confirmed the deployment environment configuration, including
+Last.fm credentials, was verified on 2026-10-29.
+Credentials and other secrets must be supplied
 through the deployment's secret/environment configuration, never committed to
 the repository or written into these documents.
 
@@ -86,11 +85,19 @@ CSS minification can rewrite duration tokens from milliseconds to seconds
 convert either unit to milliseconds before passing values to the Web
 Animations API. The ripple browser tests cover the production representation.
 
-## Open before launch
+## Completion status
 
-- Verify the Storybook deployment and HTTPS at `storybook.eskimojo.dev`.
-- Decide how unavailable Last.fm data is presented and whether the existing
-  five-minute refresh cadence is retained.
-- Supply final project copy, project URLs, and any remaining project imagery.
-- Update the Neocities archive with a link to the new primary site.
-- Verify migrated Gigs data and accessibility of the city-view alternative.
+The site owner confirmed on 2026-10-29:
+
+- Storybook deployment and HTTPS are verified.
+- Current site copy, URLs, and imagery are final for now.
+- Migrated Gigs data and accessibility of the city-view alternative are verified.
+- Deployment environment configuration, including Last.fm credentials, is verified.
+- Recent Last.fm listening data is polled; the five-minute freshness window
+  is retained for top tracks.
+
+## Future improvements and separate follow-ups
+
+- Improve error states and loading feedback, including skeletons and spinners.
+- Add more projects when desired.
+- Update the Neocities archive with a link to the new primary site separately.

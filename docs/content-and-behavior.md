@@ -1,8 +1,8 @@
 # Content and behavior specification
 
 This document records the agreed content and behavior for the new personal
-website. The homepage design and introductory copy are established; project
-descriptions and other open decisions are noted in their relevant sections.
+website. Current site content, including project copy, links, and imagery, is
+final for now. Further projects may be added over time.
 
 ## Home
 
@@ -56,9 +56,9 @@ The detail page has a back-arrow link in the app bar that returns to Projects,
 including on direct visits; it replaces the menu action rather than adding a
 second control in the page content.
 
-The initial descriptions and destinations are drafts and remain **Open** for
-review. Do not imply that a project is currently maintained or production-ready
-unless that is confirmed.
+The current selection, descriptions, and destinations are final for now.
+Additional projects can be added later. Do not imply that a project is currently
+maintained or production-ready unless that is confirmed.
 
 ## Contact and public links
 
@@ -170,10 +170,10 @@ Current defaults:
 Link to the Last.fm profile from this section:
 `https://www.last.fm/user/eskimojo14`.
 
-The existing site queries Last.fm with a five-minute query freshness window.
-Whether to preserve that exact refresh cadence and how to handle unavailable
-Last.fm data are **Open implementation decisions**. Do not silently present
-stale or unavailable data as current.
+Poll recent listening data to keep it current; retain the five-minute freshness
+window for top tracks rather than applying it to all Last.fm data. Do not
+silently present unavailable data as current. Better error states and loading
+feedback, including skeletons and spinners, are future improvements.
 
 ## Gigs
 
