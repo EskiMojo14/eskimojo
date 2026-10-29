@@ -223,6 +223,9 @@ importers:
       interestfor:
         specifier: ^1.0.10
         version: 1.0.10
+      mutative:
+        specifier: ^2.0.1
+        version: 2.0.1
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -244,6 +247,9 @@ importers:
       up-fetch:
         specifier: ^2.6.1
         version: 2.6.1
+      use-local-slice:
+        specifier: ^2.0.0
+        version: 2.0.0(react@19.3.1)
       valibot:
         specifier: ^1.5.0
         version: 1.5.0(typescript@7.1.0-beta)
@@ -5136,6 +5142,9 @@ packages:
     resolution: {integrity: sha512-wCBiZ77u1tuWde6G/nfOtLaCTYcFDU5yCzARzK10y+rLhzYoL7a7yEemcopcc2Mzow7gZOIjnV2ym1NYmdiJOQ==}
     engines: {node: '>= 4'}
 
+  immer@11.2.9:
+    resolution: {integrity: sha512-IQ4UEtXjZjyefyWjtLEDXUSrF6T2hwjKPi6BIJl3bY/2XXW24d6cNGdXJSBOA/+KNnuiXkZY6DR0C3efolhitA==}
+
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
     engines: {node: '>=6'}
@@ -5971,6 +5980,10 @@ packages:
         optional: true
       vite:
         optional: true
+
+  mutative@2.0.1:
+    resolution: {integrity: sha512-GubGN7GnF7FH6+YEmpXwYTSJtHywh/oVa/J1pGVnffo/xea/DxejBxCR699FlCgLVt1l+uz5Jtd0SRfnvhQyAg==}
+    engines: {node: '>=14.0'}
 
   mute-stream@3.0.0:
     resolution: {integrity: sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==}
@@ -7237,6 +7250,11 @@ packages:
 
   urlpattern-polyfill@8.0.2:
     resolution: {integrity: sha512-Qp95D4TPJl1kC9SKigDcqgyM2VDVO4RiJc2d4qe5GrYm+zbIQCWWKAFaJNQ4BhdFeDGwBmAxqJBwWSJDb9T3BQ==}
+
+  use-local-slice@2.0.0:
+    resolution: {integrity: sha512-2s3IGzGxKCs+7O5mB02yYmqPIi+ewpsdiORWImdnOlLIA7bfvM2u6pjeHXOcm9MhQG2GuE2ttfATVjHFmkk7vg==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
@@ -12071,6 +12089,8 @@ snapshots:
 
   ignore@7.0.14: {}
 
+  immer@11.2.9: {}
+
   import-fresh@3.3.1:
     dependencies:
       parent-module: 1.0.1
@@ -13115,6 +13135,8 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
+
+  mutative@2.0.1: {}
 
   mute-stream@3.0.0: {}
 
@@ -14703,6 +14725,11 @@ snapshots:
   urlpattern-polyfill@10.1.0: {}
 
   urlpattern-polyfill@8.0.2: {}
+
+  use-local-slice@2.0.0(react@19.3.1):
+    dependencies:
+      immer: 11.2.9
+      react: 19.3.1
 
   use-sync-external-store@1.7.0(react@19.3.1):
     dependencies:
