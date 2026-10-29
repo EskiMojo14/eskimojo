@@ -114,6 +114,7 @@ export function HomeHero() {
               {...homeHeroBem({ element: "button" })}
               aria-label={animationAction}
               tooltip={animationAction}
+              tooltipAsLabel
               icon={<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>}
               onClick={togglePaused}
               variant="outlined"
@@ -122,6 +123,7 @@ export function HomeHero() {
               {...homeHeroBem({ element: "button" })}
               aria-label="Next role"
               tooltip="Next role"
+              tooltipAsLabel
               icon={<MdSymbol>skip_next</MdSymbol>}
               onClick={skipRole}
               variant="outlined"

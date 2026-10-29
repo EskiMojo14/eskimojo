@@ -24,8 +24,14 @@
 
 Use `withTooltip(Component, defaults?)` for other button or link components.
 They must forward their ref and HTML attributes to the interactive element.
-Keep that element's accessible name explicit; a tooltip is supplemental, not
-a substitute for a label. Disabled native buttons cannot invoke tooltips.
+Tooltips are supplemental by default and preserve the trigger's accessible name.
+Opt into `tooltipAsLabel` when a non-empty plain tooltip should supply that name
+through `aria-labelledby`, as with the sidebar palette toggle. This takes
+precedence over other naming attributes, so use text that accurately labels
+the action (and includes any visible trigger text). Rich, empty, and absent
+tooltips do not change the trigger's name; provide a separate label for them.
+The props union rejects `tooltipAsLabel: true` with a rich tooltip.
+Disabled native buttons cannot invoke tooltips.
 
 The approach follows [Schema Benchmarks' tooltip wrapper](https://github.com/open-circle/schema-benchmarks/blob/main/website/src/shared/components/tooltip/index.tsx).
 Plain hints use MD3 inverse-surface colors, body-small typography, 4px rounded

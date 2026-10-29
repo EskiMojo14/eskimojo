@@ -1,17 +1,83 @@
 import { createRef, type ComponentPropsWithRef } from "react";
-import { expect, test, vi } from "vite-plus/test";
+import { expect, expectTypeOf, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { Button } from "#/shared/components/buttons/button";
 import { IconButton } from "#/shared/components/buttons/icon-button";
 
-import { withTooltip } from "./index";
+import { withTooltip, type TooltipProps } from "./index";
 
 function Link({ children, ...props }: ComponentPropsWithRef<"a">) {
   return <a {...props}>{children}</a>;
 }
 
 const TooltipLink = withTooltip(Link);
+
+test("rich tooltips cannot opt into trigger labeling", () => {
+  expectTypeOf<{
+    tooltip: { supporting: string };
+    tooltipAsLabel: true;
+  }>().not.toExtend<TooltipProps>();
+  expectTypeOf<{
+    tooltip: { supporting: string };
+    tooltipAsLabel: false;
+  }>().toExtend<TooltipProps>();
+  expectTypeOf<{
+    tooltip: string;
+    tooltipAsLabel: true;
+  }>().toExtend<TooltipProps>();
+});
+
+test("opt-in tooltip labels name the trigger while hidden, open, and dismissed", async () => {
+  const result = await page.renderWithProviders(
+    <TooltipLink href="#palette" tooltip="Switch palette" tooltipAsLabel>
+      <span aria-hidden="true">Palette icon</span>
+    </TooltipLink>,
+  );
+  const link = result.getByRole("link", { name: "Switch palette", exact: true });
+  const linkElement = link.element();
+  const hint = result.getByText("Switch palette", { exact: true });
+  await expect.element(hint).not.toBeVisible();
+  await expect.element(link).toHaveAttribute("aria-labelledby", hint.element().id);
+  await userEvent.tab();
+  await expect.element(hint).toBeVisible();
+  await expect.element(link).toHaveAccessibleName("Switch palette");
+  await userEvent.keyboard("{Escape}");
+  await expect.element(hint).not.toBeVisible();
+  await expect.element(link).toHaveAccessibleName("Switch palette");
+  await result.rerender(
+    <TooltipLink href="#palette" tooltip="Switch to Goat" tooltipAsLabel>
+      <span aria-hidden="true">Palette icon</span>
+    </TooltipLink>,
+  );
+  await expect.element(linkElement).toHaveAccessibleName("Switch to Goat");
+});
+
+test("labeling is opt-in and does not leave references for missing or rich tooltips", async () => {
+  const result = await page.renderWithProviders(
+    <Button tooltip="Save changes" tooltipAsLabel>
+      Save
+    </Button>,
+  );
+  const button = result.getByRole("button", { name: "Save changes", exact: true }).element();
+  await result.rerender(<Button tooltip="Save changes">Save</Button>);
+  await expect.element(button).not.toHaveAttribute("aria-labelledby");
+  await expect.element(button).toHaveAccessibleName("Save");
+  await result.rerender(
+    <Button tooltip="" tooltipAsLabel>
+      Save
+    </Button>,
+  );
+  await expect.element(button).not.toHaveAttribute("aria-labelledby");
+  await expect.element(button).toHaveAccessibleName("Save");
+  await result.rerender(<Button tooltipAsLabel>Save</Button>);
+  await expect.element(button).not.toHaveAttribute("aria-labelledby");
+  await result.rerender(
+    <Button tooltip={{ subhead: "Storage", supporting: "Details" }}>Save</Button>,
+  );
+  await expect.element(button).not.toHaveAttribute("aria-labelledby");
+  await expect.element(button).toHaveAccessibleName("Save");
+});
 
 test("keyboard focus opens a hint, Escape dismisses it without activating the button", async () => {
   const onClick = vi.fn<() => void>();

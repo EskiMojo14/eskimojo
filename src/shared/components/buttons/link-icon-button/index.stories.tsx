@@ -39,6 +39,7 @@ export const External = meta.story({
     "aria-label": "Open YouTube",
     icon: <MdSymbol>open_in_new</MdSymbol>,
     tooltip: "Open YouTube",
+    tooltipAsLabel: true,
   },
 });
 
@@ -118,6 +119,7 @@ function createDemoRouter() {
           aria-label="View projects"
           icon={<MdSymbol>folder</MdSymbol>}
           tooltip="View projects"
+          tooltipAsLabel
         />
         <Outlet />
       </>

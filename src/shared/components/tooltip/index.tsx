@@ -24,11 +24,17 @@ export interface TooltipOptions {
   delay?: number;
 }
 
-export interface TooltipProps {
-  tooltip?: string | RichTooltipProps;
+export type TooltipProps = {
   tooltipOpts?: TooltipOptions;
   popoverRef?: Ref<HTMLDivElement>;
-}
+} & (
+  | {
+      tooltip?: string;
+      /** Use non-empty plain tooltip text as the trigger's accessible name. */
+      tooltipAsLabel?: boolean;
+    }
+  | { tooltip: RichTooltipProps; tooltipAsLabel?: false }
+);
 
 type TriggerProps = HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> };
 type TriggerStyle = CSSProperties & { "--tooltip-delay"?: string };
@@ -56,6 +62,7 @@ export function withTooltip<P extends TriggerProps>(
     const { tooltip, tooltipOpts, popoverRef, ref, id: idProp, style } = allProps;
     const componentProps = { ...allProps };
     delete componentProps.tooltip;
+    delete componentProps.tooltipAsLabel;
     delete componentProps.tooltipOpts;
     delete componentProps.popoverRef;
     const generatedId = useId();
@@ -95,6 +102,9 @@ export function withTooltip<P extends TriggerProps>(
           id={id}
           ref={ref}
           style={triggerStyle}
+          {...(hasTooltip && !rich && allProps.tooltipAsLabel
+            ? { "aria-labelledby": tooltipId }
+            : {})}
           {...(hasTooltip ? { interestfor: tooltipId, "data-tooltip-trigger": "" } : {})}
         />
         {hasTooltip && (

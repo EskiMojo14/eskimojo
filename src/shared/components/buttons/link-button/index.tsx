@@ -8,11 +8,12 @@ import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
 
 const buttonBem = BEMHelper("button");
 
-export interface ExternalLinkButtonProps extends ComponentPropsWithRef<"a">, TooltipProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  icon?: ReactNode;
-}
+export type ExternalLinkButtonProps = ComponentPropsWithRef<"a"> &
+  TooltipProps & {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    icon?: ReactNode;
+  };
 
 function LinkButtonBase({
   variant = "filled",

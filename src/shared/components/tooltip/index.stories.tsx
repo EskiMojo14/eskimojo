@@ -19,7 +19,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Plain and rich MD3 tooltips, inspired by Schema Benchmarks' withTooltip approach. Button and IconButton accept tooltip, tooltipOpts (placement and hover delay), and popoverRef. Current evergreen browsers must support native Popover and CSS anchor positioning; neither is polyfilled. Only interest invokers are conditionally polyfilled for browsers such as Firefox/Safari that still lack them. Hover waits 500ms by default; keyboard focus is immediate. Escape and light dismiss close the hint. Rich hints support a subhead, supporting content, and optional actions. Keep the trigger's accessible name explicit; hints supply supplementary information, not its only label.",
+          "Plain and rich MD3 tooltips, inspired by Schema Benchmarks' withTooltip approach. Button and IconButton accept tooltip, tooltipOpts (placement and hover delay), and popoverRef. Current evergreen browsers must support native Popover and CSS anchor positioning; neither is polyfilled. Only interest invokers are conditionally polyfilled for browsers such as Firefox/Safari that still lack them. Hover waits 500ms by default; keyboard focus is immediate. Escape and light dismiss close the hint. Rich hints support a subhead, supporting content, and optional actions. Hints preserve the trigger's accessible name by default; opt into tooltipAsLabel to name a trigger using non-empty plain tooltip text through aria-labelledby. Rich hints still need a separately named trigger.",
       },
     },
   },

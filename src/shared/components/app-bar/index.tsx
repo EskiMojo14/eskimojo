@@ -59,6 +59,7 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
               {...appBarBem({ element: "back" })}
               aria-label={backLabel ?? "Back"}
               tooltip={backLabel}
+              tooltipAsLabel
               icon={<MdSymbol flipRtl>arrow_back</MdSymbol>}
             />
           ) : (
@@ -80,6 +81,7 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
             }
             aria-label="Preferences"
             tooltip="Preferences"
+            tooltipAsLabel
             aria-haspopup="dialog"
             aria-expanded={preferencesOpen}
             onClick={() => setPreferencesOpen(true)}

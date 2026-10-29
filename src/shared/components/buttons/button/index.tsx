@@ -9,11 +9,12 @@ const buttonBem = BEMHelper("button");
 export type ButtonVariant = "filled" | "tonal" | "elevated" | "outlined" | "text";
 export type ButtonSize = "extra-small" | "small" | "medium" | "large" | "extra-large";
 
-export interface ButtonProps extends ComponentPropsWithRef<"button">, TooltipProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  icon?: ReactNode;
-}
+export type ButtonProps = ComponentPropsWithRef<"button"> &
+  TooltipProps & {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    icon?: ReactNode;
+  };
 
 function ButtonBase({
   variant = "filled",
