@@ -1,12 +1,22 @@
 import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import * as v from "valibot";
 
 import { MusicPeriodPicker } from "#/routes/music.{-$breakdown}/-components/period-picker/index";
-import { RecentTracks } from "#/routes/music.{-$breakdown}/-components/recent-tracks/index";
-import { MusicSummary } from "#/routes/music.{-$breakdown}/-components/summary/index";
+import {
+  RecentTracks,
+  RecentTracksSkeleton,
+} from "#/routes/music.{-$breakdown}/-components/recent-tracks/index";
+import {
+  MusicSummary,
+  MusicSummarySkeleton,
+} from "#/routes/music.{-$breakdown}/-components/summary/index";
 import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs/index";
-import { MusicTopMusic } from "#/routes/music.{-$breakdown}/-components/top-music/index";
+import {
+  MusicTopMusic,
+  MusicTopMusicSkeleton,
+} from "#/routes/music.{-$breakdown}/-components/top-music/index";
 import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
@@ -18,9 +28,14 @@ import {
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
 import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css?url";
+import skeletonCss from "#/routes/music.{-$breakdown}/-components/skeletons/index.css?url";
 import summaryCss from "#/routes/music.{-$breakdown}/-components/summary/index.css?url";
 
 const recentTracksRefreshInterval = 60_000;
+
+function reportPreloadError(error: unknown) {
+  console.error("Failed to preload music data.", error);
+}
 
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
@@ -41,24 +56,28 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     period: v.optional(periodSchema),
   }),
   loaderDeps: ({ search: { period } }) => ({ period }),
-  loader: async ({
+  loader: ({
     context: { queryClient },
     params: { breakdown = musicBreakdownSchema.fallback },
     deps: { period = periodSchema.fallback },
   }) => {
-    await queryClient.query({ ...getUserData(), staleTime: "static" });
+    queryClient.query({ ...getUserData(), staleTime: "static" }).catch(reportPreloadError);
     switch (breakdown) {
       case "recent":
-        await queryClient.query({
-          ...getRecentTracks({ limit: 10 }),
-          staleTime: recentTracksRefreshInterval,
-        });
+        queryClient
+          .query({
+            ...getRecentTracks({ limit: 10 }),
+            staleTime: recentTracksRefreshInterval,
+          })
+          .catch(reportPreloadError);
         break;
       case "top-music":
-        await Promise.all([
-          queryClient.query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" }),
-          queryClient.query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" }),
-        ]);
+        queryClient
+          .query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" })
+          .catch(reportPreloadError);
+        queryClient
+          .query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" })
+          .catch(reportPreloadError);
         break;
     }
   },
@@ -74,6 +93,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         ...metadata.links,
         { rel: "stylesheet", href: recentTracksCss },
         { rel: "stylesheet", href: summaryCss },
+        { rel: "stylesheet", href: skeletonCss },
       ],
     };
   },
@@ -83,21 +103,34 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
+  const { period = periodSchema.fallback } = Route.useSearch();
+  return (
+    <>
+      <Suspense fallback={<MusicSummarySkeleton />}>
+        <SummaryPanel />
+      </Suspense>
+      <MusicBreakdownTabs />
+      <div className="tabs__route-content">
+        {breakdown !== "recent" && <MusicPeriodPicker />}
+        <Suspense
+          key={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
+          fallback={breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />}
+        >
+          {breakdown === "recent" && <RecentTracksPanel />}
+          {breakdown === "top-music" && <TopMusicPanel />}
+        </Suspense>
+      </div>
+    </>
+  );
+}
+
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
+function SummaryPanel() {
   const { data: user, dataUpdatedAt } = useSuspenseQuery({
     ...getUserData(),
     staleTime: "static",
   });
-  return (
-    <>
-      <MusicSummary user={user} asOf={dataUpdatedAt} />
-      <MusicBreakdownTabs />
-      <div className="tabs__route-content">
-        {breakdown !== "recent" && <MusicPeriodPicker />}
-        {breakdown === "recent" && <RecentTracksPanel />}
-        {breakdown === "top-music" && <TopMusicPanel />}
-      </div>
-    </>
-  );
+  return <MusicSummary user={user} asOf={dataUpdatedAt} />;
 }
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.

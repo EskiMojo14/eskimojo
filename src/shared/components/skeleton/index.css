@@ -1,0 +1,36 @@
+.skeleton__progress {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:where(.skeleton) {
+  display: inline-block;
+  inline-size: min(100%, 18ch);
+  block-size: 0.75em;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background-color: var(--md-sys-color-surface-container-highest);
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton {
+    animation: skeleton-pulse calc(var(--md-sys-motion-spring-slow-effects-duration) * 4)
+      var(--md-sys-motion-spring-slow-effects) infinite both;
+    animation-delay: calc(var(--skeleton-delay, 0ms) + var(--skeleton-column-delay, 0ms));
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

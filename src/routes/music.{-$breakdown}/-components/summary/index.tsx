@@ -1,10 +1,18 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentPropsWithRef,
+  type ReactNode,
+} from "react";
 import BEMHelper from "react-bem-helper";
 
 import type { UserData } from "#/routes/music.{-$breakdown}/-query.ts";
+import { Skeleton, SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const summaryBem = BEMHelper("music-summary");
+const skeletonBem = BEMHelper("music-skeleton");
 const numberFormat = new Intl.NumberFormat("en-GB");
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -12,6 +20,74 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   timeZone: "UTC",
 });
+
+function MusicSummaryLayout({
+  counts,
+  registered,
+  average,
+  className,
+  ...props
+}: Omit<ComponentPropsWithRef<"section">, "children"> & {
+  counts: { scrobbles: ReactNode; artists: ReactNode; albums: ReactNode; tracks: ReactNode };
+  registered: ReactNode;
+  average: ReactNode;
+}) {
+  return (
+    <section {...props} {...summaryBem({ extra: className })} aria-label="Listening statistics">
+      <p>I love music! So far I've listened to:</p>
+      <dl {...summaryBem({ element: "stats" })}>
+        <div>
+          <dt>
+            <MdSymbol>music_history</MdSymbol>Scrobbles
+          </dt>
+          <dd>{counts.scrobbles}</dd>
+        </div>
+        <div>
+          <dt>
+            <MdSymbol>artist</MdSymbol>Artists
+          </dt>
+          <dd>{counts.artists}</dd>
+        </div>
+        <div>
+          <dt>
+            <MdSymbol>album</MdSymbol>Albums
+          </dt>
+          <dd>{counts.albums}</dd>
+        </div>
+        <div>
+          <dt>
+            <MdSymbol>music_note</MdSymbol>Tracks
+          </dt>
+          <dd>{counts.tracks}</dd>
+        </div>
+      </dl>
+      <p>
+        since {registered} (an average of {average} scrobbles per day), and that's just the ones
+        Last.fm knows about.
+      </p>
+    </section>
+  );
+}
+
+export function MusicSummarySkeleton() {
+  return (
+    <>
+      <SkeletonProgress label="Loading listening summary..." />
+      <MusicSummaryLayout
+        {...skeletonBem()}
+        aria-hidden="true"
+        counts={{
+          scrobbles: <Skeleton {...skeletonBem({ element: "line", modifier: "count" })} />,
+          artists: <Skeleton {...skeletonBem({ element: "line", modifier: "count" })} />,
+          albums: <Skeleton {...skeletonBem({ element: "line", modifier: "count" })} />,
+          tracks: <Skeleton {...skeletonBem({ element: "line", modifier: "count" })} />,
+        }}
+        registered={<Skeleton {...skeletonBem({ element: "line", modifier: "date" })} />}
+        average={<Skeleton {...skeletonBem({ element: "line", modifier: "average" })} />}
+      />
+    </>
+  );
+}
 
 export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   const summaryRef = useRef<HTMLElement>(null);
@@ -63,51 +139,28 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   const days = Math.max(1, Math.floor((asOf - registered.getTime()) / 86_400_000));
   const average = Math.round(user.playcount / days);
   return (
-    <section ref={summaryRef} {...summaryBem()} aria-label="Listening statistics">
-      <p>I love music! So far I've listened to:</p>
-      <dl {...summaryBem({ element: "stats" })}>
-        <div>
-          <dt>
-            <MdSymbol aria-hidden="true">music_history</MdSymbol>Scrobbles
-          </dt>
-          <SummaryCount value={user.playcount} progress={progress} />
-        </div>
-        <div>
-          <dt>
-            <MdSymbol aria-hidden="true">artist</MdSymbol>Artists
-          </dt>
-          <SummaryCount value={user.artist_count} progress={progress} />
-        </div>
-        <div>
-          <dt>
-            <MdSymbol aria-hidden="true">album</MdSymbol>Albums
-          </dt>
-          <SummaryCount value={user.album_count} progress={progress} />
-        </div>
-        <div>
-          <dt>
-            <MdSymbol aria-hidden="true">music_note</MdSymbol>Tracks
-          </dt>
-          <SummaryCount value={user.track_count} progress={progress} />
-        </div>
-      </dl>
-      <p>
-        since <time dateTime={registered.toISOString()}>{dateFormat.format(registered)}</time> (an
-        average of {numberFormat.format(average)} scrobbles per day), and that's just the ones
-        Last.fm knows about.
-      </p>
-    </section>
+    <MusicSummaryLayout
+      ref={summaryRef}
+      counts={{
+        scrobbles: <SummaryCount value={user.playcount} progress={progress} />,
+        artists: <SummaryCount value={user.artist_count} progress={progress} />,
+        albums: <SummaryCount value={user.album_count} progress={progress} />,
+        tracks: <SummaryCount value={user.track_count} progress={progress} />,
+      }}
+      registered={<time dateTime={registered.toISOString()}>{dateFormat.format(registered)}</time>}
+      average={numberFormat.format(average)}
+    />
   );
 }
 
 function SummaryCount({ value, progress }: { value: number; progress: number }) {
   const start = Math.ceil(value * 0.95);
   return (
-    <dd>
+    <>
       <span {...summaryBem({ element: "count-final" })}>{numberFormat.format(value)}</span>
       <span {...summaryBem({ element: "count-animated" })} aria-hidden="true">
         {numberFormat.format(Math.round(start + (value - start) * progress))}
       </span>
-    </dd>
+    </>
   );
 }

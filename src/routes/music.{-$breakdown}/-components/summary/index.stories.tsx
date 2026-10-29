@@ -2,9 +2,10 @@ import { expect, waitFor } from "storybook/test";
 
 import preview from "#.storybook/preview";
 
-import { MusicSummary } from "./index";
+import { MusicSummary, MusicSummarySkeleton } from "./index";
 
 import "./index.css";
+import "#/routes/music.{-$breakdown}/-components/skeletons/index.css";
 
 const meta = preview.meta({
   title: "Music/Summary",
@@ -98,8 +99,27 @@ export const BalancedRows = meta.story({
       if (!card) throw new Error("Statistic must have a card container");
       return card.getBoundingClientRect();
     });
+
     await expect(cards[0].top).toBe(cards[1].top);
     await expect(cards[2].top).toBe(cards[3].top);
     await expect(cards[2].top).toBeGreaterThan(cards[0].top);
+  },
+});
+
+export const Loading = meta.story({
+  render: () => <MusicSummarySkeleton />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Material 3 skeleton loading preserves the shared summary layout. Neutral surface placeholders pulse subtly, remain static with reduced motion, and expose one named indeterminate progress element instead of placeholder statistics.",
+      },
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("progressbar")).toHaveAccessibleName(
+      "Loading listening summary...",
+    );
+    await expect(canvas.queryByRole("definition")).not.toBeInTheDocument();
   },
 });

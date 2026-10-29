@@ -231,8 +231,42 @@ Link to the Last.fm profile from this section:
 
 Poll recent listening data to keep it current; retain the five-minute freshness
 window for top tracks rather than applying it to all Last.fm data. Do not
-silently present unavailable data as current. Better error states and loading
-feedback, including skeletons and spinners, are future improvements.
+silently present unavailable data as current.
+
+The route loader starts the summary and active tab's queries in parallel without
+waiting for them. Components consume the same cached queries with Suspense, so
+navigation can display the tabs and period picker immediately. The summary and
+active tab have independent skeleton loaders; changing the listening
+period shows loading feedback for that period instead of the previous rankings.
+Cached results retain their existing freshness and recent-track polling behavior.
+Preload failures are logged and query failures surface through the route error
+boundary rather than appearing as empty listening history.
+
+Following [Material 3 skeleton-loader guidance](https://m3.material.io/styles/motion/transitions/transition-patterns),
+the placeholders reuse the summary card grid and ten-row list layouts, including
+artwork, rankings, metadata, and the responsive top-music columns. Neutral surface
+tokens and a staggered opacity pulse indicate loading; reduced motion disables
+the pulse and content reveal. Each fallback has one named, indeterminate progress
+element for assistive technology, while decorative placeholders are hidden and
+never keyboard-focusable.
+
+Loaded content and skeletons share `MusicSummaryLayout`, `MusicListLayout`,
+`MusicListRow`, and `MusicTopMusicLayout`. These own the summary copy, card
+labels, heading/list structure, row slots, and responsive columns. Data formatting,
+count animation, interactive search links, and inert placeholders stay in their
+respective consumers, so loading states never need fake listening data.
+Each component's skeleton and layout live alongside its loaded implementation in
+the same file. Shared `Skeleton` and `SkeletonProgress` components live in
+`src/shared/components/skeleton`, with neutral placeholder styling, a
+reduced-motion-aware pulse, and a named indeterminate loading announcement.
+`Skeleton` accepts standard span props for sizing and classes; its decorative
+content is always hidden from assistive technology. The root stylesheet includes
+the shared skeleton styles. Music-specific widths, action sizing,
+row and column stagger timing, and content reveal remain local, as does the shared
+music-list structure. The pulse reads inherited `--skeleton-delay` and
+`--skeleton-column-delay` custom properties, both defaulting to zero.
+Loading stories live in each owning component's story file beside its loaded
+and empty states.
 
 ## Gigs
 

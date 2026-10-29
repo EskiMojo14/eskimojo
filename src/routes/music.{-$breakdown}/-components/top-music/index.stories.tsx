@@ -1,8 +1,11 @@
+import { expect } from "storybook/test";
+
 import preview from "#.storybook/preview";
 
-import { MusicTopMusic } from "./index";
+import { MusicTopMusic, MusicTopMusicSkeleton } from "./index";
 
 import "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css";
+import "#/routes/music.{-$breakdown}/-components/skeletons/index.css";
 
 const meta = preview.meta({
   title: "Music/Top Music",
@@ -52,3 +55,19 @@ export const Mobile = meta.story({
 });
 
 export const Empty = meta.story({ args: { tracks: [], artists: [] } });
+
+export const Loading = meta.story({
+  render: () => <MusicTopMusicSkeleton />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Track and artist skeletons reuse the loaded responsive columns and ranked rows. Neutral placeholders pulse with staggered timing, remain static with reduced motion, and contain no interactive controls. One named progress element describes the combined loading state.",
+      },
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("progressbar")).toHaveAccessibleName("Loading top music...");
+    await expect(canvas.queryByRole("list")).not.toBeInTheDocument();
+  },
+});

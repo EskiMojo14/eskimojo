@@ -1,11 +1,12 @@
-import { expect } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 
-import { RecentTracks } from "./index";
+import { RecentTracks, RecentTracksSkeleton } from "./index";
 
 import "./index.css";
+import "#/routes/music.{-$breakdown}/-components/skeletons/index.css";
 
 const tracks: Array<RecentTrack> = [
   {
@@ -43,7 +44,9 @@ const meta = preview.meta({
 
 export const Recent = meta.story({
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "Recently played" })).toBeVisible();
+    await waitFor(async () => {
+      await expect(canvas.getByRole("heading", { name: "Recently played" })).toBeVisible();
+    });
     await expect(canvas.getByText("Now playing")).toBeVisible();
     await expect(canvas.getByText("26 Oct 2026, 00:55 UTC")).toBeVisible();
   },
@@ -52,9 +55,11 @@ export const Recent = meta.story({
 export const Empty = meta.story({
   args: { tracks: [] },
   play: async ({ canvas }) => {
-    await expect(
-      canvas.getByRole("heading", { name: "No recently played tracks yet." }),
-    ).toBeVisible();
+    await waitFor(async () => {
+      await expect(
+        canvas.getByRole("heading", { name: "No recently played tracks yet." }),
+      ).toBeVisible();
+    });
     await expect(
       canvas.getByText("Your recently played tracks will appear here once you start listening."),
     ).toBeVisible();
@@ -102,4 +107,20 @@ export const LongContent = meta.story({
       </div>
     ),
   ],
+});
+
+export const Loading = meta.story({
+  render: () => <RecentTracksSkeleton />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Ten placeholder rows share the loaded list structure. Artwork, text, timestamps, and inert search-action placeholders pulse subtly; reduced motion keeps them static. Only the named progress element is exposed to assistive technology.",
+      },
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("progressbar")).toHaveAccessibleName("Loading recent tracks...");
+    await expect(canvas.queryByRole("link")).not.toBeInTheDocument();
+  },
 });
