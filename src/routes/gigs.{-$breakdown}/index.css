@@ -2,6 +2,7 @@
 @import "./-components/artist-chart/index.css";
 @import "./-components/venue-chart/index.css";
 @import "./-components/city-map/index.css";
+@import "./-components/filter-chips/index.css";
 
 .gigs-intro {
   padding: 0 1rem;

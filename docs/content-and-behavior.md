@@ -341,6 +341,10 @@ The optional `breakdown` path parameter selects the view:
 `/gigs` defaults to By month, with `/gigs/by-month` also selecting that tab;
 the other destinations are `/gigs/by-artist`, `/gigs/by-venue`, and
 `/gigs/by-city`. Selection follows the URL and browser Back/Forward history.
+The `artist`, `city`, and `venue` search filters combine across all breakdowns.
+Artist filters include both main and support appearances. Venue filters use the
+same "Venue, City" value as the venue chart so equally named venues in different
+cities remain distinct.
 The Year / month view uses TanStack Charts to display a heatmap with January
 through December as columns and ascending years as rows. It counts events, not
 artists, and includes all months and intervening years between the first and last

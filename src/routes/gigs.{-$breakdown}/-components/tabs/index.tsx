@@ -13,11 +13,13 @@ export function GigsBreakdownTabs() {
       {gigBreakdownSchema.options.map((value) => (
         <TabLink
           key={value}
+          from="/gigs/{-$breakdown}/"
           to="/gigs/{-$breakdown}"
           params={{
             breakdown: value === "by-month" && breakdown !== "by-month" ? undefined : value,
           }}
-          activeOptions={{ exact: true }}
+          search={(search) => search}
+          activeOptions={{ exact: true, includeSearch: false }}
           icon={<MdSymbol>{gigBreakdownLabels[value].icon}</MdSymbol>}
           replace
         >

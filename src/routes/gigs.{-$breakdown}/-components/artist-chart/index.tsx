@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
+import { InternalLinkButton } from "#/shared/components/buttons/link-button/index.tsx";
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
@@ -166,6 +167,15 @@ export function GigsArtistChart({
               </ul>
               {pinned && (
                 <div className="tooltip__actions">
+                  <InternalLinkButton
+                    from="/gigs/{-$breakdown}/"
+                    to="/gigs/{-$breakdown}"
+                    params={(params) => ({ ...params, breakdown: undefined })}
+                    search={(search) => ({ ...search, artist: primaryPoint?.datum.artist })}
+                    icon={<MdSymbol>filter_list</MdSymbol>}
+                  >
+                    Filter
+                  </InternalLinkButton>
                   <Button variant="text" onClick={dismiss}>
                     Close details
                   </Button>
