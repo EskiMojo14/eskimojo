@@ -192,7 +192,7 @@
       "venue": "The Exchange",
       "date": "2024-01-26",
       "city": "Bristol",
-      "support": ["Oli Howe"]
+      "support": ["Pocket Sun"]
     },
     {
       "artists": ["The Olllam"],
@@ -479,6 +479,13 @@
       "date": "2026-10-07",
       "city": "Bristol",
       "support": ["Hunny Buzz"]
+    },
+    {
+      "artists": ["Pocket Sun"],
+      "venue": "Strange Brew",
+      "date": "2026-10-31",
+      "city": "Bristol",
+      "support": ["Claudine"]
     }
   ]
 }
