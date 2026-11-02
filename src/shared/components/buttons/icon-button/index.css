@@ -16,7 +16,6 @@
   color: var(--md-sys-color-on-surface-variant);
   vertical-align: middle;
   text-decoration: none;
-  cursor: pointer;
   transition:
     border-color var(--md-sys-motion-spring-fast-effects-duration)
       var(--md-sys-motion-spring-fast-effects),

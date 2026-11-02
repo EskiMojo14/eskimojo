@@ -25,7 +25,6 @@
   color: var(--md-sys-color-on-primary);
   font: var(--md-sys-typography-label-large);
   font-feature-settings: var(--md-sys-typography-features-body);
-  cursor: pointer;
 }
 
 .motion-row {

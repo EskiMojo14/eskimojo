@@ -153,7 +153,6 @@
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
-  cursor: pointer;
   transition:
     color var(--md-sys-motion-spring-fast-effects-duration) var(--md-sys-motion-spring-fast-effects),
     background-color var(--md-sys-motion-spring-fast-effects-duration)

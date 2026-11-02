@@ -17,7 +17,6 @@
   background-color: transparent;
   color: var(--md-sys-color-on-surface);
   text-align: start;
-  cursor: pointer;
 
   &:hover:not(:disabled) {
     border-color: var(--md-sys-color-on-surface);
@@ -167,7 +166,6 @@
   font: inherit;
   text-align: start;
   overflow-wrap: anywhere;
-  cursor: pointer;
 
   &[aria-selected="true"] {
     background-color: var(--md-sys-color-secondary-container);

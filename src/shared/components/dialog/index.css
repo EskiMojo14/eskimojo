@@ -128,7 +128,6 @@
     border-radius: var(--md-sys-shape-corner-full);
     background: transparent;
     color: var(--md-sys-color-primary);
-    cursor: pointer;
     font: var(--md-sys-typography-label-large);
 
     &:hover {

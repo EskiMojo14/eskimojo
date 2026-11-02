@@ -131,7 +131,6 @@
       font: inherit;
       text-align: start;
       text-decoration: none;
-      cursor: pointer;
 
       &::before {
         position: absolute;

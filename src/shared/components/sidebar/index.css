@@ -150,7 +150,6 @@
   border: 0;
   border-radius: var(--md-sys-shape-corner-full);
   background-color: transparent;
-  cursor: pointer;
 
   &::before {
     position: absolute;

@@ -28,7 +28,6 @@
   font-feature-settings: var(--md-sys-typography-features-body);
   text-align: center;
   text-decoration: none;
-  cursor: pointer;
   vertical-align: middle;
   &[hidden] {
     display: none;
