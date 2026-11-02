@@ -30,6 +30,66 @@
   list-style: none;
 }
 
-.app-shell__content:has(> .home-hero) ~ .site-footer::before {
+.home-page {
+  position: relative;
+  isolation: isolate;
+
+  @media (--phone) {
+    --md-sys-artwork-opacity: 15%;
+    --md-sys-sidebar-image-overlay-opacity: 85%;
+
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+
+    &::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-color: var(--palette-artwork-background);
+      background-image: url("/Goat-sidebar.webp");
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      background-size: contain;
+      content: "";
+      opacity: var(--md-sys-artwork-opacity);
+      pointer-events: none;
+    }
+
+    [data-palette="arctic"] &::before {
+      background-image: none;
+    }
+
+    [data-palette="arctic"] &::after {
+      position: fixed;
+      inset-inline: 0;
+      inset-block-end: 0;
+      z-index: -1;
+      aspect-ratio: 2772 / 3508;
+      max-block-size: 100dvh;
+      background-image:
+        linear-gradient(
+          alpha(
+            from var(--md-sys-color-surface-container-low) /
+              var(--md-sys-sidebar-image-overlay-opacity)
+          ),
+          alpha(
+            from var(--md-sys-color-surface-container-low) /
+              var(--md-sys-sidebar-image-overlay-opacity)
+          )
+        ),
+        url("/OC-sidebar.webp");
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      background-size: contain;
+      content: "";
+      opacity: 1;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%);
+      mask-image: linear-gradient(to bottom, transparent, black 20%);
+    }
+  }
+}
+
+.app-shell__content:has(> .home-page) ~ .site-footer::before {
   display: none;
 }

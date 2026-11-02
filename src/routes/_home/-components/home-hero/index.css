@@ -1,6 +1,6 @@
 @import "./animation.pcss";
 
-.app-shell__content:has(> .home-hero) {
+.app-shell__content:has(> .home-page) {
   max-inline-size: none;
   padding-inline: 0;
 }

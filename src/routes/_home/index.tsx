@@ -62,7 +62,7 @@ export const Route = createFileRoute("/_home/")({
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function Home() {
   return (
-    <>
+    <div className="home-page">
       <HomeHero />
       <div className="home-intro">
         <Intro />
@@ -86,6 +86,6 @@ function Home() {
           </nav>
         </section>
       </div>
-    </>
+    </div>
   );
 }

@@ -12,7 +12,9 @@ About destination. Its content is arranged as:
 - an illustrated hero introducing `eskimojo` through rotating roles;
 - a short biography and interests list authored in
   [`-intro.mdx`](../src/routes/_home/-intro.mdx);
-- a "Find me elsewhere" section with larger social profile links.
+- a "Find me elsewhere" section with larger social profile links;
+- palette-aware sidebar artwork, fixed behind the content and bottom-aligned
+  on phone-sized screens, softened to 15% opacity for text readability.
 
 The home page should:
 
