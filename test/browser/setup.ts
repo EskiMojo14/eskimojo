@@ -1,9 +1,11 @@
-import "#/shared/styles/index.css";
 import { network } from "virtual:msw";
 import { afterAll, afterEach, beforeAll } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { renderWithProviders } from "./render";
+
+import "#/shared/styles/index.css";
+import "./setup.css";
 
 page.extend({ renderWithProviders });
 

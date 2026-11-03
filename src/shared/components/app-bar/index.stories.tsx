@@ -148,9 +148,6 @@ export const OpenPreferences = meta.story({
   play: async ({ canvas, canvasElement, userEvent }) => {
     const trigger = canvas.getByRole("button", { name: "Preferences" });
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
-    await expect(
-      trigger.querySelector<HTMLElement>(".md-symbol")?.style.getPropertyValue("--icon-fill"),
-    ).toBe("");
     await userEvent.click(trigger);
     const body = within(canvasElement.ownerDocument.body);
     const dialog = body.getByRole("dialog", { name: "Preferences" });

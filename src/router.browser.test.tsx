@@ -95,6 +95,39 @@ test("top-level navigation uses destination order", async () => {
   await startViewTransition.mock.results.at(-1)?.value.finished;
 });
 
+test("interrupted navigation transitions do not leave unhandled rejections", async () => {
+  const router = createTransitionRouter();
+  const result = await page.renderWithProviders(<RouterProvider router={router} />);
+  await expect.element(result.getByRole("link", { name: "Home" })).toBeVisible();
+  const original = document.startViewTransition.bind(document);
+  using startViewTransition = vi
+    .spyOn(document, "startViewTransition")
+    .mockImplementationOnce((update) => {
+      const transition = original(update);
+      // Navigating again before this transition is ready skips it.
+      void router.navigate({ to: "/projects/$slug", params: { slug: "history-adapter" } });
+      return transition;
+    });
+  const rejections: Array<unknown> = [];
+  const onRejection = (event: PromiseRejectionEvent) => {
+    rejections.push(event.reason);
+    event.preventDefault();
+  };
+  window.addEventListener("unhandledrejection", onRejection);
+  try {
+    await router.navigate({ to: "/" });
+    await expect.poll(() => startViewTransition.mock.calls.length).toBe(2);
+    for (const entry of startViewTransition.mock.results) {
+      if (entry.type === "return") await entry.value.finished;
+    }
+    // Unhandled rejection events are dispatched in a later task.
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(rejections).toEqual([]);
+  } finally {
+    window.removeEventListener("unhandledrejection", onRejection);
+  }
+});
+
 test("project filters derive their transition types from the URL", async () => {
   using startViewTransition = vi.spyOn(document, "startViewTransition");
   const router = createTransitionRouter();

@@ -218,6 +218,11 @@ const config = defineConfig({
           environment: "node",
           include: ["**/*.e2e.test.ts"],
           setupFiles: ["./test/common/setup.ts"],
+          // Match Playwright's default action timeout; pages may compile on first load.
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
+          // Match Playwright's default assertion timeout for `expect.locator`/`expect.page`.
+          expect: { poll: { timeout: 5_000 } },
           provide: {
             e2e: {
               launchOptions: { headless, channel: "chromium" },
