@@ -23,6 +23,10 @@ contributor guidance.
   imports. Use `#/` instead of paths such as `../../shared/lib/query`.
 - Preserve existing public interfaces and user-visible behavior unless the
   change explicitly requires otherwise.
+- Standard decorators are lowered by `@rollup/plugin-swc` in `vite.config.ts`,
+  filtered to JS/TS modules containing `@`, because Oxc does not yet lower them.
+  Exclude `node_modules` so optimized dependencies are not transformed again.
+  Keep the standard decorator semantics; do not enable `experimentalDecorators`.
 - Write code embedded in strings, such as CSS, HTML, or SQL in tests and
   fixtures, as a tagged template named for its language so editors can
   highlight it. When the code needs no processing, alias `String.raw`, for

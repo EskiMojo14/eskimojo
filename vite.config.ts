@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
 import eslintPluginRouter from "@tanstack/eslint-plugin-router";
 import { configs as eslintDependConfigs } from "eslint-plugin-depend";
-import { defineConfig, lazyPlugins } from "vite-plus";
+import { defineConfig, lazyPlugins, withFilter } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -60,7 +60,7 @@ const config = defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.e2e.test.ts"],
+        files: ["**/*.e2e.{test,model}.ts"],
         rules: {
           "no-restricted-imports": [
             "error",
@@ -139,6 +139,7 @@ const config = defineConfig({
       remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
       materialSymbols: { default: materialSymbols },
       svgr: { default: svgr },
+      swc: { default: swc },
     } = await promiseAllKeyed({
       contentCollections: import("@content-collections/vite"),
       mdx: import("@mdx-js/rollup"),
@@ -153,9 +154,26 @@ const config = defineConfig({
       remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
       materialSymbols: import("./vite/symbols.ts"),
       svgr: import("vite-plugin-svgr"),
+      swc: import("@rollup/plugin-swc"),
     });
     return [
       devtools(),
+      withFilter(
+        swc({
+          exclude: ["**/node_modules/**"],
+          swc: {
+            jsc: {
+              parser: {
+                syntax: "ecmascript",
+                decorators: true,
+                decoratorsBeforeExport: true,
+              },
+              transform: { decoratorVersion: "2023-11" },
+            },
+          },
+        }),
+        { transform: { id: /\.[cm]?[jt]sx?(?:\?|$)/, code: "@" } },
+      ),
       contentCollections({ configPath: "config/content-collections.ts" }),
       process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
       process.env.STORYBOOK !== "true" && tanstackStart(),
