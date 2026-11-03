@@ -174,7 +174,15 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
     onKeyDown(event) {
       props.onKeyDown?.(event);
       const activates =
-        event.key === "Enter" || (event.key === " " && event.currentTarget.tagName === "BUTTON");
+        event.key === "Enter" ||
+        (event.key === " " &&
+          (event.currentTarget.tagName === "BUTTON" ||
+            (event.currentTarget.getAttribute("role") === "tab" &&
+              !event.altKey &&
+              !event.ctrlKey &&
+              !event.metaKey &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing)));
       if (!event.defaultPrevented && !event.repeat && activates) {
         start(event.currentTarget, undefined, undefined, event.key);
       }

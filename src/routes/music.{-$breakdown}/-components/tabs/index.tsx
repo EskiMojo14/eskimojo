@@ -16,6 +16,8 @@ export function MusicBreakdownTabs() {
       {musicBreakdownSchema.options.map((value) => (
         <TabLink
           key={value}
+          id={`music-${value}-tab`}
+          panelId={`music-${value}-panel`}
           to="/music/{-$breakdown}"
           params={{
             breakdown:

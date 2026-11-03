@@ -177,6 +177,9 @@
 
     &:focus-visible {
       z-index: 1;
+      background: alpha(
+        from var(--md-sys-color-on-surface) / var(--md-sys-state-focus-state-layer-opacity)
+      );
       outline: 2px solid var(--md-sys-color-secondary);
       outline-offset: -2px;
     }

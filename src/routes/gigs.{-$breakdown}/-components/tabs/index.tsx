@@ -13,6 +13,8 @@ export function GigsBreakdownTabs() {
       {gigBreakdownSchema.options.map((value) => (
         <TabLink
           key={value}
+          id={`gigs-${value}-tab`}
+          panelId={`gigs-${value}-panel`}
           from="/gigs/{-$breakdown}/"
           to="/gigs/{-$breakdown}"
           params={{
