@@ -8,6 +8,7 @@ import type {
   Page,
 } from "playwright";
 import { chromium } from "playwright";
+import type { TestAPI } from "vite-plus/test";
 import { inject, test as baseTest } from "vite-plus/test";
 
 export interface E2EFixtures {
@@ -15,6 +16,7 @@ export interface E2EFixtures {
   context: BrowserContext;
   page: Page;
   network: NetworkFixture;
+  fontsLoaded: () => Promise<void>;
 }
 
 declare module "vitest" {
@@ -55,6 +57,14 @@ const extendedTest = baseTest.extend<E2EFixtures>({
     await use(page);
     await page.close();
   },
+  fontsLoaded: async ({ page }, use) => {
+    await use(() =>
+      page.evaluate(async () => {
+        await document.fonts.ready;
+        await document.fonts.load('24px "Material Symbols Sharp"');
+      }),
+    );
+  },
 });
 
 /**
@@ -69,11 +79,15 @@ const extendedTest = baseTest.extend<E2EFixtures>({
  *   await dialog.open();
  * });
  */
-export function createTest<T extends Record<string, new (page: Page) => unknown>>(models: T) {
-  return extendedTest.extend<{
+export function createTest<T extends Record<string, new (page: Page) => unknown>>(
+  models: T,
+): TestAPI<
+  E2EFixtures & {
     [K in keyof T]: InstanceType<T[K]>;
-  }>(
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  }
+> {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  return extendedTest.extend(
     Object.fromEntries(
       Object.entries(models).map(
         ([key, Model]): [
@@ -90,8 +104,8 @@ export function createTest<T extends Record<string, new (page: Page) => unknown>
           },
         ],
       ),
-    ) as never,
-  );
+    ),
+  ) as never;
 }
 
 export const test = createTest({});
