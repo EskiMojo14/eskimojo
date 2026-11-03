@@ -291,3 +291,11 @@ new conventions.
   after formatting to avoid concurrent edits to CSS files. It then runs
   `vpr typecheck` once for the project, without filenames, so TypeScript loads
   `tsconfig.json`.
+
+## Git history
+
+- Keep history linear: `main` is a straight line with no merge commits.
+- Land pull requests by rebasing or squashing onto `main`, and reconcile a
+  diverged branch by rebasing it onto its upstream.
+- Rebases and force pushes are human-only operations; agent constraints are in
+  [AGENTS.md](./AGENTS.md).

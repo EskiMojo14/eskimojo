@@ -34,6 +34,15 @@ release. Add a tool name to select part of the graph. For example, run
 
 Before writing or reviewing code, read [CODING_STANDARDS.md](./CODING_STANDARDS.md) and apply every rule that touches the change.
 
+## Git usage
+
+- Leave changes uncommitted unless the user explicitly asks for a commit, and
+  push only with the user's explicit permission.
+- Rewriting history (rebase, force push, amending pushed commits) is
+  human-only: prepare the work, then hand the exact commands to the user. This
+  includes the rebases that keep history linear per
+  [CODING_STANDARDS.md](./CODING_STANDARDS.md).
+
 ## Continuous integration
 
 Pre-commit runs non-overlapping staged tasks concurrently: JS/TS checks,
