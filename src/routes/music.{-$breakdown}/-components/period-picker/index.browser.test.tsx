@@ -19,7 +19,7 @@ import { MusicPeriodPicker } from "./index";
 const musicRoute = getRouteApi("/music/{-$breakdown}/");
 
 function Demo() {
-  const { period } = musicRoute.useSearch();
+  const { period = periodSchema.fallback } = musicRoute.useSearch();
   return (
     <>
       <MusicBreakdownTabs />
