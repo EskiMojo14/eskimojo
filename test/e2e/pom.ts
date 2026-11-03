@@ -24,7 +24,10 @@ export abstract class PageObjectModel extends ComponentObjectModel {
   async goto(...args: Tail<Parameters<Page["goto"]>>) {
     const response = await this.page.goto(this.url, ...args);
 
-    const suffixedTitle = this.title === "eskimojo" ? this.title : `${this.title} | eskimojo`;
+    const suffixedTitle =
+      typeof this.title === "string" && this.title !== "eskimojo"
+        ? `${this.title} | eskimojo`
+        : this.title;
 
     await expect.page(this.page).toHaveTitle(suffixedTitle);
 
