@@ -30,6 +30,10 @@ release. Add a tool name to select part of the graph. For example, run
 
 <!--VITE PLUS END-->
 
+## Coding standards
+
+Before writing or reviewing code, read [CODING_STANDARDS.md](./CODING_STANDARDS.md) and apply every rule that touches the change.
+
 ## Continuous integration
 
 Pre-commit runs non-overlapping staged tasks concurrently: JS/TS checks,
