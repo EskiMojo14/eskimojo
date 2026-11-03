@@ -18,7 +18,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-color: var(--md-sys-color-surface);
+  background-color: transparent;
 
   @media (prefers-reduced-motion: no-preference) {
     transition-property: background-color, box-shadow;
