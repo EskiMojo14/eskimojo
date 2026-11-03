@@ -78,7 +78,9 @@ test("chips and interactive list rows ripple without changing static rows or eve
         </TabList>
       </Tabs>
       <TabNav aria-label="Ripple navigation">
-        <TabLink to="/projects">Projects tab link</TabLink>
+        <TabLink id="ripple-projects-tab" panelId="ripple-projects-panel" to="/projects">
+          Projects tab link
+        </TabLink>
       </TabNav>
     </>,
   );
@@ -91,7 +93,7 @@ test("chips and interactive list rows ripple without changing static rows or eve
     ["link", "Row link"],
     ["link", "Projects navigation"],
     ["tab", "First tab"],
-    ["link", "Projects tab link"],
+    ["tab", "Projects tab link"],
   ] as const) {
     const element = result.getByRole(role, { name, exact: true }).element();
     press(element);

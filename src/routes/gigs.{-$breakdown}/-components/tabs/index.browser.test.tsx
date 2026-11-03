@@ -45,7 +45,7 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
       [2, "Venue", "/gigs/by-venue", "tab-backward"],
       [3, "Month", "/gigs", "tab-backward"],
     ] as const) {
-      const link = result.getByRole("link", { name: label, exact: true });
+      const link = result.getByRole("tab", { name: label, exact: true });
       await expect.element(link).toHaveAttribute("href", destination);
       await link.click();
       await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
@@ -54,6 +54,7 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
       if (transition?.type !== "return") throw new Error("Expected a native tab transition");
       await transition.value.ready;
       await expect.element(link).toHaveAttribute("aria-current", "page");
+      await expect.element(link).toHaveAttribute("aria-selected", "true");
       expect(router.state.location.pathname).toBe(destination);
       await expect.element(result.getByText("Gig breakdown content")).toBeVisible();
       await transition.value.finished;

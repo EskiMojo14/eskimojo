@@ -46,6 +46,7 @@ export function TabNav({
   ...props
 }: TabNavProps) {
   const anchorId = useId().replaceAll(":", "");
+  const { handleKeyDown, listRef } = useTabListNavigation(orientation);
   return (
     <nav
       {...props}
@@ -54,7 +55,14 @@ export function TabNav({
     >
       <div
         {...tabsBem({ element: "list" })}
+        role="tablist"
+        aria-label={props["aria-label"]}
+        aria-labelledby={props["aria-labelledby"]}
+        aria-orientation={orientation}
         data-orientation={orientation}
+        tabIndex={-1}
+        ref={listRef}
+        onKeyDown={handleKeyDown}
         style={{ "--tabs-active-label": `--tabs-label-${anchorId}` }}
       >
         {children}
@@ -67,11 +75,44 @@ function TabLinkBase({
   icon,
   className,
   children,
+  panelId,
+  onKeyDown,
   ...props
-}: ComponentPropsWithRef<"a"> & { icon?: ReactNode }) {
-  const { handlers, ripple } = useRipple<HTMLAnchorElement>(props);
+}: ComponentPropsWithRef<"a"> & {
+  icon?: ReactNode;
+  id: string;
+  panelId: string;
+  "data-status"?: "active";
+}) {
+  const { handlers, ripple } = useRipple<HTMLAnchorElement>({
+    ...props,
+    onKeyDown,
+  });
   return (
-    <a {...props} {...handlers} {...tabsBem({ element: "tab", extra: className })}>
+    <a
+      {...props}
+      {...handlers}
+      onKeyDown={(event) => {
+        handlers.onKeyDown?.(event);
+        if (
+          !event.defaultPrevented &&
+          !event.altKey &&
+          !event.ctrlKey &&
+          !event.metaKey &&
+          !event.shiftKey &&
+          !event.nativeEvent.isComposing &&
+          event.key === " "
+        ) {
+          event.preventDefault();
+          if (!event.repeat) event.currentTarget.click();
+        }
+      }}
+      {...tabsBem({ element: "tab", extra: className })}
+      role="tab"
+      tabIndex={props.tabIndex ?? (props["data-status"] === "active" ? 0 : -1)}
+      aria-controls={panelId}
+      aria-selected={props["data-status"] === "active"}
+    >
       {ripple}
       <TabContent icon={icon}>{children}</TabContent>
     </a>
@@ -142,7 +183,7 @@ export type TabListProps = Omit<ComponentPropsWithoutRef<"div">, "role"> & {
 } & ({ "aria-label": string } | { "aria-labelledby": string });
 
 function availableTabs(list: HTMLDivElement) {
-  return Array.from(list.querySelectorAll<HTMLButtonElement>(":scope > [role='tab']")).filter(
+  return Array.from(list.querySelectorAll<HTMLElement>(":scope > [role='tab']")).filter(
     (tab) =>
       !tab.matches(':disabled, [aria-disabled="true"], [hidden], [inert], [inert] *') &&
       tab.checkVisibility({ visibilityProperty: true }),
@@ -151,8 +192,8 @@ function availableTabs(list: HTMLDivElement) {
 
 function useTabListNavigation(
   orientation: TabListProps["orientation"],
-  select: (value: string) => void,
-  onKeyDown: TabListProps["onKeyDown"],
+  select?: (value: string) => void,
+  onKeyDown?: TabListProps["onKeyDown"],
 ) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -160,9 +201,9 @@ function useTabListNavigation(
     const list = listRef.current;
     if (!list) return undefined;
 
-    const originalTabIndexes = new Map<HTMLButtonElement, string | null>();
+    const originalTabIndexes = new Map<HTMLElement, string | null>();
     const synchronizeTabStops = () => {
-      const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>(":scope > [role='tab']"));
+      const tabs = Array.from(list.querySelectorAll<HTMLElement>(":scope > [role='tab']"));
       for (const tab of tabs) {
         if (!originalTabIndexes.has(tab)) {
           originalTabIndexes.set(tab, tab.getAttribute("tabindex"));
@@ -208,13 +249,13 @@ function useTabListNavigation(
 
     const list = event.currentTarget;
     const current = event.target;
-    if (!(current instanceof HTMLButtonElement) || current.getAttribute("role") !== "tab") return;
+    if (!(current instanceof HTMLElement) || current.getAttribute("role") !== "tab") return;
 
     const tabs = availableTabs(list);
     const index = tabs.indexOf(current);
     if (index === -1) return;
     const rtl = getComputedStyle(list).direction === "rtl";
-    let next: HTMLButtonElement | undefined;
+    let next: HTMLElement | undefined;
 
     switch (event.key) {
       case "ArrowRight":
@@ -244,12 +285,34 @@ function useTabListNavigation(
     if (!next || next === current) return;
     event.preventDefault();
     next.focus();
+    if (next instanceof HTMLAnchorElement) {
+      for (const tab of tabs) tab.tabIndex = tab === next ? 0 : -1;
+    }
     const nextValue = next.dataset.value;
-    if (nextValue !== undefined) select(nextValue);
+    if (nextValue !== undefined) select?.(nextValue);
     next.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
 
   return { handleKeyDown, listRef };
+}
+
+export function TabLinkPanel({
+  tabId,
+  className,
+  ...props
+}: Omit<ComponentPropsWithoutRef<"div">, "role" | "aria-labelledby"> & {
+  id: string;
+  tabId: string;
+}) {
+  return (
+    <div
+      {...props}
+      {...tabsBem({ element: "panel", extra: className })}
+      role="tabpanel"
+      aria-labelledby={tabId}
+      tabIndex={0}
+    />
+  );
 }
 
 export function TabList({

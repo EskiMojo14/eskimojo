@@ -152,7 +152,7 @@ test("period and tab changes show loading feedback without hiding music controls
     .element(result.getByRole("link", { name: "7 days", exact: true }))
     .toHaveAttribute("aria-current", "page");
   await expect.element(result.getByRole("region", { name: "Listening statistics" })).toBeVisible();
-  await result.getByRole("link", { name: "Recently played", exact: true }).click();
+  await result.getByRole("tab", { name: "Recently played", exact: true }).click();
   await expect
     .element(result.getByRole("progressbar", { name: "Loading recent tracks..." }))
     .toBeInTheDocument();
@@ -252,11 +252,11 @@ test("changing period or tab recovers the active-tab error boundary", async () =
       serverFnResponse({ error: new Error("Service unavailable") }, 503),
     ),
   );
-  await result.getByRole("link", { name: "Recently played", exact: true }).click();
+  await result.getByRole("tab", { name: "Recently played", exact: true }).click();
   await expect
     .element(result.getByRole("heading", { name: "Couldn't load recent tracks" }))
     .toBeVisible();
-  await result.getByRole("link", { name: "Top music", exact: true }).click();
+  await result.getByRole("tab", { name: "Top music", exact: true }).click();
   await expect
     .element(result.getByRole("heading", { name: "Top tracks", exact: true }))
     .toBeVisible();
@@ -307,7 +307,7 @@ test("failed recent-track refresh keeps cached tracks and retries in place", asy
   );
   const result = await renderMusic(queryClient);
   await result.getByRole("link", { name: "Music", exact: true }).click();
-  await result.getByRole("link", { name: "Recently played", exact: true }).click();
+  await result.getByRole("tab", { name: "Recently played", exact: true }).click();
   await expect.element(result.getByText("Let It Happen", { exact: true })).toBeVisible();
   network.use(
     http.get(fetchLastfm.url, () =>

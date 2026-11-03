@@ -115,7 +115,7 @@ test.each(["ltr", "rtl"])(
       ).toBe(true);
       await transition.finished;
 
-      await result.getByRole("link", { name: "Recently played" }).click();
+      await result.getByRole("tab", { name: "Recently played" }).click();
       await expect.poll(() => router.state.location.pathname).toBe("/music/recent");
       await expect.poll(() => startTransition.mock.results.length).toBe(2);
       expect(startTransition.mock.calls[1]?.[0]).toMatchObject({ types: ["tab-forward"] });
@@ -124,11 +124,11 @@ test.each(["ltr", "rtl"])(
       await tabTransition.value.ready;
       expectTabMotion(direction === "rtl" ? -24 : 24);
       await expect
-        .element(result.getByRole("link", { name: "Recently played" }))
+        .element(result.getByRole("tab", { name: "Recently played" }))
         .toHaveAttribute("aria-current", "page");
       await tabTransition.value.finished;
 
-      await result.getByRole("link", { name: "Top music" }).click();
+      await result.getByRole("tab", { name: "Top music" }).click();
       await expect.poll(() => startTransition.mock.results.length).toBe(3);
       expect(startTransition.mock.calls[2]?.[0]).toMatchObject({ types: ["tab-backward"] });
       const backwards = startTransition.mock.results[2];
@@ -136,7 +136,7 @@ test.each(["ltr", "rtl"])(
       await backwards.value.ready;
       expectTabMotion(direction === "rtl" ? 24 : -24);
       await expect
-        .element(result.getByRole("link", { name: "Top music" }))
+        .element(result.getByRole("tab", { name: "Top music" }))
         .toHaveAttribute("aria-current", "page");
     } finally {
       for (const entry of startTransition.mock.results) {
