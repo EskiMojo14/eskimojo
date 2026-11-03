@@ -79,6 +79,7 @@ contributor guidance.
 - Put tests and stories beside the file they cover:
   - `foo.node.test.ts` for Node-side tests (test React/DOM behavior in the browser);
   - `foo.browser.test.ts` or `foo.browser.test.tsx` for browser tests;
+  - `foo.e2e.test.ts` for Node-side Playwright E2E tests;
   - `foo.test-d.ts` for complex TypeScript type behavior;
   - `foo.stories.tsx` for Storybook stories;
   - `foo.doc.mdx` for Storybook documentation. Plain `.mdx` files are application
@@ -92,16 +93,25 @@ contributor guidance.
 - Register test cleanup with `onTestFinished` immediately after acquiring the
   resource, or use `using` / `await using` when the resource supports disposal.
   Never leave cleanup after assertions where a failure could skip it.
-- Run `vp test` for Node, Chromium browser, type, and Storybook tests. Select
+- Run `vp test` for Node, E2E, Chromium browser, type, and Storybook tests. Select
   a project with `--project node`, `--project browser`, `--project types`, or
-  `--project storybook`. Use `vp run coverage` for V8 text, HTML, and LCOV reports.
+  `--project storybook`, or select E2E tests with `--project e2e`. Use
+  `vp run coverage` for V8 text, HTML, and LCOV reports.
+- Configure E2E Playwright launch and context options through the `e2e` project's
+  `provide.e2e` in `vite.config.ts`; fixtures read them with `inject("e2e")`.
 - Import test APIs from `vite-plus/test` and browser APIs from
   `vite-plus/test/browser`. Shared setup registers `mix-n-matchers` and
   `expect.ref` for polling React refs.
+- In `.e2e.test.ts` files, import `expect`, `test`, and `it` from `#test/e2e`
+  instead of `vite-plus/test` so Playwright fixtures and assertions are available.
 - Use `page.renderWithProviders` in browser tests for isolated QueryClient and
   memory-router providers. Test helpers are available through `#test/`.
 - Mock network requests with `network` from `virtual:msw` and handlers from
   `msw`. Setup enables mocking and resets handlers after each test.
+- In E2E tests, use the per-test `network` fixture from `#test/e2e` with MSW
+  handlers instead of `virtual:msw`. It intercepts browser requests, not app-server
+  SSR requests or Node-side `fetch`. E2E contexts block service workers so they
+  cannot bypass Playwright routing.
 
 ## Errors and external data
 

@@ -60,7 +60,24 @@ const config = defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.{browser,node}.test.{ts,tsx}"],
+        files: ["**/*.e2e.test.ts"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              paths: [
+                {
+                  name: "vite-plus/test",
+                  importNames: ["expect", "test", "it"],
+                  message: 'Import expect, test, and it from "#test/e2e" in E2E tests.',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        files: ["**/*.{browser,node,e2e}.test.{ts,tsx}"],
         plugins: ["vitest"],
         rules: {
           "vitest/no-standalone-expect": [
@@ -94,13 +111,16 @@ const config = defineConfig({
         },
       },
       {
-        files: ["src/**/*.{browser,node}.test.{ts,tsx}", "src/**/*.stories.tsx"],
+        files: ["src/**/*.{browser,node,e2e}.test.{ts,tsx}", "src/**/*.stories.tsx"],
         rules: { "import/no-unassigned-import": "off" },
       },
     ],
   },
   resolve: {
-    alias: { "#": fileURLToPath(new URL("./src", import.meta.url)) },
+    alias: {
+      "#": fileURLToPath(new URL("./src", import.meta.url)),
+      "#test": fileURLToPath(new URL("./test", import.meta.url)),
+    },
     tsconfigPaths: true,
   },
   css: cssConfig,
@@ -169,6 +189,23 @@ const config = defineConfig({
           environment: "node",
           include: ["**/*.node.test.ts"],
           setupFiles: ["./test/common/setup.ts", "./test/node/setup.ts"],
+        },
+      },
+      {
+        test: {
+          name: "e2e",
+          environment: "node",
+          include: ["**/*.e2e.test.ts"],
+          setupFiles: ["./test/common/setup.ts"],
+          provide: {
+            e2e: {
+              launchOptions: { headless: true },
+              contextOptions: {
+                baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+                serviceWorkers: "block",
+              },
+            },
+          },
         },
       },
       {
