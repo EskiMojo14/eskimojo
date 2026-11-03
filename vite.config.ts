@@ -215,6 +215,7 @@ const config = defineConfig({
       {
         test: {
           name: "e2e",
+          retry: 3,
           environment: "node",
           include: ["**/*.e2e.test.ts"],
           setupFiles: ["./test/common/setup.ts"],

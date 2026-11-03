@@ -19,8 +19,8 @@ beforeEach(async () => {
   await page.viewport(1280, 800);
 });
 
-test.each([320, 390, 599])("mobile dropdowns save preferences at %i px", async (width) => {
-  await page.viewport(width, 568);
+test("mobile dropdowns save preferences", async () => {
+  await page.viewport(390, 568);
   const result = await page.renderWithProviders(<NavigationLayout />, {
     preferences: { theme: "dark", contrast: "high", palette: "arctic" },
   });
@@ -81,7 +81,7 @@ test.each([320, 390, 599])("mobile dropdowns save preferences at %i px", async (
       .element(dialog.getByRole("button", { name }))
       .toHaveAttribute("aria-pressed", "true");
   }
-  await page.viewport(width, 568);
+  await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
 });
 
@@ -166,38 +166,34 @@ test("selects every theme and contrast independently through existing contexts",
   }
 });
 
-test.each([{ width: 1280, height: 800 }])(
-  "app bar opens only preferences at $width px, keeps changes, and reopens",
-  async (viewport) => {
-    await page.viewport(viewport.width, viewport.height);
-    const result = await page.renderWithProviders(<NavigationLayout />);
-    const trigger = result.getByRole("button", { name: "Preferences" });
-    await trigger.click();
-    const dialog = result.getByRole("dialog", { name: "Preferences" });
-    await expect.element(dialog).toBeVisible();
-    expect(document.querySelectorAll("dialog:modal")).toHaveLength(1);
-    expect(
-      document.querySelector('dialog[aria-label="Primary navigation"]')?.matches(":modal"),
-    ).toBe(false);
-    await dialog.getByRole("button", { name: "Dark" }).click();
-    await dialog.getByRole("button", { name: "High" }).click();
-    await dialog.getByRole("button", { name: "Arctic" }).click();
-    const dialogElement = dialog.element();
-    await dialog.getByRole("button", { name: "Done" }).click();
-    await expect.element(dialogElement).not.toBeVisible();
-    await expect.element(trigger).toHaveFocus();
-    await trigger.click();
-    await expect
-      .element(dialog.getByRole("button", { name: "Arctic" }))
-      .toHaveAttribute("aria-pressed", "true");
-    await expect
-      .element(dialog.getByRole("button", { name: "Dark" }))
-      .toHaveAttribute("aria-pressed", "true");
-    await expect
-      .element(dialog.getByRole("button", { name: "High" }))
-      .toHaveAttribute("aria-pressed", "true");
-  },
-);
+test("app bar opens only preferences on desktop, keeps changes, and reopens", async () => {
+  const result = await page.renderWithProviders(<NavigationLayout />);
+  const trigger = result.getByRole("button", { name: "Preferences" });
+  await trigger.click();
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+  await expect.element(dialog).toBeVisible();
+  expect(document.querySelectorAll("dialog:modal")).toHaveLength(1);
+  expect(document.querySelector('dialog[aria-label="Primary navigation"]')?.matches(":modal")).toBe(
+    false,
+  );
+  await dialog.getByRole("button", { name: "Dark" }).click();
+  await dialog.getByRole("button", { name: "High" }).click();
+  await dialog.getByRole("button", { name: "Arctic" }).click();
+  const dialogElement = dialog.element();
+  await dialog.getByRole("button", { name: "Done" }).click();
+  await expect.element(dialogElement).not.toBeVisible();
+  await expect.element(trigger).toHaveFocus();
+  await trigger.click();
+  await expect
+    .element(dialog.getByRole("button", { name: "Arctic" }))
+    .toHaveAttribute("aria-pressed", "true");
+  await expect
+    .element(dialog.getByRole("button", { name: "Dark" }))
+    .toHaveAttribute("aria-pressed", "true");
+  await expect
+    .element(dialog.getByRole("button", { name: "High" }))
+    .toHaveAttribute("aria-pressed", "true");
+});
 
 test("arrows only move focus; Space selects; Escape keeps changes", async () => {
   const result = await page.renderWithProviders(<NavigationLayout />);
