@@ -15,6 +15,9 @@ import fmtConfig from "./config/fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
+// Set HEADLESS=false to watch browser, E2E, and Storybook tests run.
+const headless = process.env.HEADLESS !== "false";
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const config = defineConfig({
   staged: {
@@ -217,7 +220,7 @@ const config = defineConfig({
           setupFiles: ["./test/common/setup.ts"],
           provide: {
             e2e: {
-              launchOptions: { headless: true },
+              launchOptions: { headless, channel: "chromium" },
               contextOptions: {
                 baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
                 serviceWorkers: "block",
@@ -234,7 +237,7 @@ const config = defineConfig({
           setupFiles: ["./test/common/setup.ts", "./test/browser/setup.ts"],
           browser: {
             enabled: true,
-            headless: true,
+            headless,
             provider: playwright({
               launchOptions: { channel: "chromium" },
               contextOptions: { permissions: ["clipboard-read", "clipboard-write"] },
@@ -270,7 +273,7 @@ const config = defineConfig({
           name: "storybook",
           browser: {
             enabled: true,
-            headless: true,
+            headless,
             provider: playwright({ launchOptions: { channel: "chromium" } }),
             instances: [{ browser: "chromium" }],
           },
