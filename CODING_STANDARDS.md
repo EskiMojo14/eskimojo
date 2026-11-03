@@ -97,16 +97,23 @@ new conventions.
 - Register test cleanup with `onTestFinished` immediately after acquiring the
   resource, or use `using` / `await using` when the resource supports disposal.
   Never leave cleanup after assertions where a failure could skip it.
-- Run `vp test` for Node, E2E, Chromium browser, type, and Storybook tests. Select
+- Run `vp test` for Node, Chromium browser, type, and Storybook tests. Select
   a project with `--project node`, `--project browser`, `--project types`, or
-  `--project storybook`, or select E2E tests with `--project e2e`. Use
+  `--project storybook`. Run `vp run test:e2e` for Playwright E2E tests. Use
   `vp run coverage` for V8 text, HTML, and LCOV reports.
-- Configure E2E Playwright launch and context options through the `e2e` project's
-  `provide.e2e` in `vite.config.ts`; fixtures read them with `inject("e2e")`.
-- E2E tests need a running server. They use the dev server (`vp run dev`, port 3000) by default; set `E2E_BASE_URL` to test another server, such as
-  `vp run preview --port 4173` in CI.
+- Configure E2E browser, context, timeout, and artifact options in
+  `config/playwright.config.ts`. Playwright owns the browser/context/page fixtures.
+- E2E tests run in desktop and mobile Chromium projects. Tag desktop-only tests
+  with `@desktop` and mobile-only tests with `@mobile`; untagged tests run in both.
+  Select one with `vp run test:e2e --project "Desktop Chrome"` or
+  `--project "Mobile Chrome"`. CI uses one worker.
+- Build with `vp run build` before running E2E tests. Playwright starts and stops
+  the production preview on port 4173, reusing an existing server locally.
+  Set `E2E_BASE_URL` to test an external server instead; Playwright does not
+  start or stop that server.
 - Browser, E2E, and Storybook tests run headless by default. Set `HEADLESS=false`
-  to show the browser, e.g. `HEADLESS=false vp test run --project e2e`.
+  to show the browser, e.g. `HEADLESS=false vp run test:e2e`. Playwright also
+  supports `vp run test:e2e --headed`, `--debug`, and `--ui`.
 - Import test APIs from `vite-plus/test` and browser APIs from
   `vite-plus/test/browser`. Shared setup registers `mix-n-matchers` and
   `expect.ref` for polling React refs.
@@ -127,11 +134,13 @@ new conventions.
   Assertion polling still retries independently of whole-test retries.
   E2E browser contexts set 30-second action and navigation timeouts for all
   pages, including popups.
-- E2E contexts record Playwright traces and retain them with full-page screenshots
-  of open pages under `test-results/e2e/` when a test attempt fails. Passing
-  attempts discard their traces. The fixture logs the artifact directory, and CI
-  uploads failure artifacts for seven days, including failed attempts whose
-  retries pass, unless the job is cancelled. Open a trace with
+- Playwright records E2E traces on the first retry and captures full-page
+  screenshots of the default page on failure under `test-results/e2e/`.
+  Local runs do not retry by default; use `--trace on` to capture a local trace.
+  HTML reports are written to `playwright-report/`; open one with
+  `vp exec playwright show-report playwright-report`. CI also emits GitHub
+  annotations and uploads reports and failure artifacts for seven days,
+  including failed attempts whose retries pass, unless the job is cancelled. Open a trace with
   `vp exec playwright show-trace <path-to-trace.zip>`. These are debugging
   artifacts, not visual regression snapshots; they may contain page and network
   data, so do not commit them or use production credentials in tests.
@@ -153,16 +162,15 @@ new conventions.
   rather than leaking selector strings into tests.
 - Use the Playwright `expect` re-exported by `#test/e2e` for E2E assertions:
   `await expect(model.socialLink("GitHub")).toBeVisible()` and
-  `await expect(page).toHaveTitle(/Home/)`. Vitest still owns the test runner and
-  fixtures. Playwright's web assertions retry with a default five-second timeout;
+  `await expect(page).toHaveTitle(/Home/)`. Playwright owns the E2E runner and
+  fixtures. Its web assertions retry with a default five-second timeout;
   pass `{ timeout }` to individual matchers or use `expect.configure({ timeout })`
   for a configured instance. Vitest's `expect.poll` configuration does not apply.
   Use `toHaveText` for exact text and `toContainText` for partial text.
   Await assertions and interactions; avoid fixed sleeps or duplicate polling.
-  Linting rejects `.soft`, `toHaveScreenshot`, `toMatchSnapshot`, and
-  `toMatchAriaSnapshot` in E2E tests, models, and helpers because they depend on
-  the Playwright Test runner. Do not enable soft assertions through
-  `expect.configure({ soft: true })` either; Vitest cannot track their failures.
+  Playwright's runner features, including soft assertions, `test.step`, and
+  snapshot assertions, are available. Add visual regression snapshots only when
+  explicitly requested.
 
 #### Tabbed pages
 
@@ -272,7 +280,7 @@ new conventions.
   code, with Query's exhaustive-deps rule disabled.
   The dependency plugin also checks for packages with native or simpler
   alternatives.
-- Run `vpr check` and `vp test` for code changes. `vpr check` runs formatting,
+- Run `vpr check`, `vp test`, and `vp run test:e2e` for code changes. `vpr check` runs formatting,
   type-aware linting, Stylelint, and the separate TypeScript compiler check; use
   `vpr check:fix` to apply formatting and lint fixes before type checking.
   Run `vp run lint` for just JavaScript/TypeScript and CSS linting; run `vp run build` when changes

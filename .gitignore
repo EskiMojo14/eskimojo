@@ -28,3 +28,4 @@ storybook-static
 .vitest/
 .content-collections/
 test-results/
+playwright-report/

@@ -51,19 +51,14 @@ workspace catalog for Vite+, and `devEngines.packageManager` in
 by runner OS, architecture, and lockfile, and saved before tests so a test
 failure does not discard the cache. Linux browser system dependencies are
 installed on every run because they are not part of the browser cache.
-E2E tests run against the production build: CI starts `vp run preview` on port
-4173 as a `background` step, waits for it to respond, points the tests at it
-with `E2E_BASE_URL`, and stops it with a `cancel` step.
+E2E tests use Playwright Test directly through `vp run test:e2e`.
+Its `config/playwright.config.ts` starts and stops the production preview server.
 
 To reproduce its checks locally, run `vp run check`, `vp run build`,
-`vp run preview --port 4173`, and, in another terminal,
-`E2E_BASE_URL=http://localhost:4173 vp test run`. Without `E2E_BASE_URL`, E2E
-tests use the dev server on port 3000. Install the test browser first with
+`vp test run`, and `vp run test:e2e`. Set `E2E_BASE_URL` to use an external
+server instead of the managed preview on port 4173. Install the test browser first with
 `vp exec playwright install --with-deps chromium` on a fresh machine.
-When changing workflows, validate them with Actionlint and Zizmor. Actionlint
-1.7.12 does not yet recognise the `background`, `wait`, `wait-all`, `cancel`, or
-`parallel` step keys ([rhysd/actionlint#693](https://github.com/rhysd/actionlint/issues/693)),
-so ignore its syntax errors for those keys.
+When changing workflows, validate them with Actionlint and Zizmor.
 
 Vitest excludes the Netlify plugin so its Vite servers do not start platform
 emulation or race to install Deno. Keep Netlify enabled for normal dev and
