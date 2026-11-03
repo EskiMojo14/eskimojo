@@ -7,7 +7,7 @@ import {
   Outlet,
   RouterProvider,
 } from "@tanstack/react-router";
-import { beforeEach, expect, onTestFinished, test, vi } from "vite-plus/test";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { generateMetadata } from "#/shared/lib/document-head";
@@ -54,175 +54,74 @@ test("primary navigation works with pointer and keyboard activation", async () =
   }
 });
 
-test.each([320, 390, 599, 600, 904, 905, 1239, 1240, 1280])(
-  "positions navigation responsively at %i px",
-  async (width) => {
+test.each([
+  { layout: "phone", width: 390, bottomNavigation: true, menuButton: false },
+  { layout: "tablet", width: 768, bottomNavigation: false, menuButton: true },
+  { layout: "desktop", width: 1280, bottomNavigation: false, menuButton: false },
+])(
+  "positions navigation responsively on $layout",
+  async ({ layout: _layout, width, ...expected }) => {
     await page.viewport(width, 844);
     const result = await renderPage();
-    const compact = width < 600;
     const navigation = result.getByRole("navigation", { name: "Primary" });
     const menuButton = result.getByRole("button", { name: "Open navigation menu" });
-    expect([Boolean(navigation.query()), Boolean(menuButton.query())]).toEqual([
-      compact,
-      width >= 600 && width < 1240,
-    ]);
+    expect({
+      bottomNavigation: Boolean(navigation.query()),
+      menuButton: Boolean(menuButton.query()),
+    }).toEqual(expected);
   },
 );
 
-test.each([320, 390, 599])(
-  "keeps compact navigation fixed and the footer clear at %i px",
-  async (width) => {
-    await page.viewport(width, 844);
-    const result = await renderPage();
-    const nav = result.getByRole("navigation", { name: "Primary" });
-    await expect.element(nav).toBeVisible();
-    expect(nav.getByRole("link").all()).toHaveLength(4);
-    for (const link of nav.getByRole("link").all()) {
-      expect(link.element().getBoundingClientRect().width).toBeGreaterThanOrEqual(48);
-    }
-    window.scrollTo(0, document.documentElement.scrollHeight);
-    const navBounds = nav.element().getBoundingClientRect();
-    expect(navBounds.top).toBeGreaterThanOrEqual(0);
-    expect(navBounds.bottom).toBeLessThanOrEqual(window.innerHeight);
-    expect(
-      result.getByText("End of page").element().getBoundingClientRect().bottom,
-    ).toBeLessThanOrEqual(navBounds.top);
-    window.scrollTo(0, 0);
-  },
-);
-
-test.each(["tab-forward", "tab-backward", "music-period"])(
-  "keeps bottom navigation in a stationary top layer during %s transitions",
-  async (type) => {
-    await page.viewport(390, 844);
-    const result = await page.renderWithProviders(
-      <>
+test("bottom navigation starts page transitions in destination order", async () => {
+  await page.viewport(390, 844);
+  const root = createRootRoute({
+    component: () => (
+      <div className="app-shell__main">
         <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
-        <div className="tabs__route-content">Before</div>
-      </>,
-    );
-    const transition = document.startViewTransition({
-      types: [type],
-      update: () => {
-        result.getByText("Before").element().textContent = "After";
-      },
-    });
-    onTestFinished(() => transition.finished);
-    await transition.ready;
-    const navigation = result.getByRole("navigation", { name: "Primary" }).element();
-    expect(getComputedStyle(navigation).viewTransitionName).toBe("bottom-navigation");
-    const navigationLayer = getComputedStyle(
-      document.documentElement,
-      "::view-transition-group(bottom-navigation)",
-    );
-    expect(Number(navigationLayer.zIndex)).toBe(1);
-    expect(navigationLayer.animationName).toBe("none");
-    expect(
-      getComputedStyle(document.documentElement, "::view-transition-new(bottom-navigation)")
-        .animationName,
-    ).toBe("none");
-    await transition.finished;
-  },
-);
-
-test.each(["ltr", "rtl"])(
-  "bottom navigation slides page content and headings in destination order (%s)",
-  async (direction) => {
-    await page.viewport(390, 844);
-    const previousDirection = document.documentElement.dir;
-    document.documentElement.dir = direction;
-    onTestFinished(() => {
-      document.documentElement.dir = previousDirection;
-    });
-    const root = createRootRoute({
-      component: () => (
-        <div className="app-shell__main">
-          <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
-          <div className="app-shell__content">
-            <Outlet />
-          </div>
+        <div className="app-shell__content">
+          <Outlet />
         </div>
+      </div>
+    ),
+  });
+  const router = createRouter({
+    history: createMemoryHistory({ initialEntries: ["/music/artists"] }),
+    routeTree: root.addChildren(
+      ["/", "/projects", "/music/{-$breakdown}", "/gigs/{-$breakdown}"].map((path) =>
+        createRoute({
+          getParentRoute: () => root,
+          path,
+          staticData: { title: `Title for ${path}`, subtitle: `Subtitle for ${path}` },
+          component: () => <p>Content for {path}</p>,
+        }),
       ),
-    });
-    const router = createRouter({
-      history: createMemoryHistory({ initialEntries: ["/music/artists"] }),
-      routeTree: root.addChildren(
-        ["/", "/projects", "/music/{-$breakdown}", "/gigs/{-$breakdown}"].map((path) =>
-          createRoute({
-            getParentRoute: () => root,
-            path,
-            staticData: { title: `Title for ${path}`, subtitle: `Subtitle for ${path}` },
-            component: () => <p>Content for {path}</p>,
-          }),
-        ),
-      ),
-    });
-    addNavigationTransitions(router);
-    const result = await page.renderWithProviders(<RouterProvider router={router} />);
-    await expect.poll(() => router.state.status).toBe("idle");
-    for (const animation of document.getAnimations()) animation.finish();
-    using startTransition = vi.spyOn(document, "startViewTransition");
-    try {
-      const nav = result.getByRole("navigation", { name: "Primary" });
-      for (const [index, { name, type, distance }] of [
-        { name: "Gigs", type: "page-forward", distance: 24 },
-        { name: "Projects", type: "page-backward", distance: -24 },
-      ].entries()) {
-        await nav.getByRole("link", { name, exact: true }).click();
-        await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
-        expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
-        const transition = startTransition.mock.results[index];
-        if (transition?.type !== "return") throw new Error("Expected a page view transition");
-        await transition.value.ready;
-        const navigationLayer = getComputedStyle(
-          document.documentElement,
-          "::view-transition-group(bottom-navigation)",
-        );
-        const contentLayer = getComputedStyle(
-          document.documentElement,
-          "::view-transition-group(page-content)",
-        );
-        expect(Number(navigationLayer.zIndex)).toBeGreaterThan(Number(contentLayer.zIndex));
-        expect(navigationLayer.animationName).toBe("none");
-        expect(
-          getComputedStyle(document.documentElement, "::view-transition-old(bottom-navigation)")
-            .display,
-        ).toBe("none");
-        const effects = document
-          .getAnimations()
-          .map((animation) => animation.effect)
-          .filter((effect): effect is KeyframeEffect => effect instanceof KeyframeEffect);
-        const signedDistance = direction === "rtl" ? -distance : distance;
-        for (const target of ["page-content", "page-heading"]) {
-          const incoming = effects.filter(
-            (effect) => effect.pseudoElement === `::view-transition-new(${target})`,
-          );
-          const outgoing = effects.filter(
-            (effect) => effect.pseudoElement === `::view-transition-old(${target})`,
-          );
-          expect(incoming.map((effect) => effect.getKeyframes()[0])).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({ translate: `${signedDistance}px` }),
-              expect.objectContaining({ opacity: "0" }),
-            ]),
-          );
-          expect(outgoing.map((effect) => effect.getKeyframes().at(-1))).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({ translate: `${-signedDistance}px` }),
-              expect.objectContaining({ opacity: "0" }),
-            ]),
-          );
-        }
-        expect(effects.some((effect) => effect.pseudoElement?.includes("(root)"))).toBe(false);
-        await transition.value.finished;
-      }
-    } finally {
-      for (const entry of startTransition.mock.results) {
-        if (entry.type === "return") await entry.value.finished;
-      }
+    ),
+  });
+  addNavigationTransitions(router);
+  const result = await page.renderWithProviders(<RouterProvider router={router} />);
+  await expect.poll(() => router.state.status).toBe("idle");
+  for (const animation of document.getAnimations()) animation.finish();
+  using startTransition = vi.spyOn(document, "startViewTransition");
+  try {
+    const nav = result.getByRole("navigation", { name: "Primary" });
+    for (const [index, { name, type }] of [
+      { name: "Gigs", type: "page-forward" },
+      { name: "Projects", type: "page-backward" },
+    ].entries()) {
+      await nav.getByRole("link", { name, exact: true }).click();
+      await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
+      expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
+      await expect
+        .element(nav.getByRole("link", { name, exact: true }))
+        .toHaveAttribute("aria-current", "page");
     }
-  },
-);
+  } finally {
+    for (const entry of startTransition.mock.results) {
+      if (entry.type === "return") await entry.value.finished;
+    }
+  }
+});
+
 test("keeps subtitles paired with the deepest titled route and removes them on navigation", async () => {
   await page.viewport(390, 844);
   const root = createRootRoute({

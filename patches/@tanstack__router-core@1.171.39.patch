@@ -1,0 +1,34 @@
+diff --git a/dist/cjs/router.cjs b/dist/cjs/router.cjs
+index 68b6ef850a1e1cd10d492dff39b8542adcc372db..fb0a4c93fc21a54433603fa6c9e58c84322cc08d 100644
+--- a/dist/cjs/router.cjs
++++ b/dist/cjs/router.cjs
+@@ -503,7 +503,11 @@ var RouterCore = class {
+ 						types: resolvedViewTransitionTypes
+ 					};
+ 				} else startViewTransitionParams = fn;
+-				return document.startViewTransition(startViewTransitionParams).updateCallbackDone;
++				const transition = document.startViewTransition(startViewTransitionParams);
++				// Skipped transitions reject these promises without failing the update.
++				transition.ready?.catch(() => {});
++				transition.finished?.catch(() => {});
++				return transition.updateCallbackDone;
+ 			}
+ 			return fn();
+ 		};
+diff --git a/dist/esm/router.js b/dist/esm/router.js
+index a31886020d1dfff3c10ee27fea6ae781e6211f9a..21cf524293ba260523df2a21bf2cad84c958ebd3 100644
+--- a/dist/esm/router.js
++++ b/dist/esm/router.js
+@@ -503,7 +503,11 @@ var RouterCore = class {
+ 						types: resolvedViewTransitionTypes
+ 					};
+ 				} else startViewTransitionParams = fn;
+-				return document.startViewTransition(startViewTransitionParams).updateCallbackDone;
++				const transition = document.startViewTransition(startViewTransitionParams);
++				// Skipped transitions reject these promises without failing the update.
++				transition.ready?.catch(() => {});
++				transition.finished?.catch(() => {});
++				return transition.updateCallbackDone;
+ 			}
+ 			return fn();
+ 		};

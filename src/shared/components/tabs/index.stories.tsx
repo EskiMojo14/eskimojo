@@ -12,7 +12,16 @@ import { expect } from "storybook/test";
 import preview from "#.storybook/preview";
 import { MdSymbol } from "#/shared/components/symbol";
 
-import { Tab, TabLink, TabList, TabNav, TabPanel, Tabs, type TabNavProps } from "./index";
+import {
+  Tab,
+  TabLink,
+  TabLinkPanel,
+  TabList,
+  TabNav,
+  TabPanel,
+  Tabs,
+  type TabNavProps,
+} from "./index";
 
 const meta = preview.meta({
   title: "Components/Tabs",
@@ -22,7 +31,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Material 3 primary and secondary tabs with automatic activation. Tabs and router-link tabs use pointer-origin ripples with unbounded Enter/Space feedback (Enter only for links). Disabled tabs do not ripple; reduced motion uses static pressed feedback. Horizontal primary tabs stack 24px icons above their labels with a 2px gap and a 64px minimum height (48px without icons). They use the title-small type token. Horizontal lists share a spring-animated indicator. Primary indicators are 3px thick and match the icon-and-label content width, excluding button padding. Secondary indicators are 2px thick, square-ended, and span the entire tab button. Reduced motion disables the slide. Use a labelled TabList inside Tabs, and pair every Tab value with a TabPanel value. Left/Right arrows move through horizontal tabs and follow reading direction; Up/Down move through vertical tabs; Home/End jump to the ends. Disabled tabs are skipped and narrow tab lists scroll horizontally. Tabs supports controlled value/onValueChange and defaultValue.",
+          "Material 3 primary and secondary tabs. Button tabs activate automatically on arrow-key focus; router-link tabs activate with Enter or Space and retain real hrefs. Both use pointer-origin ripples. Disabled tabs do not ripple; reduced motion uses static pressed feedback. Horizontal primary tabs stack 24px icons above their labels with a 2px gap and a 64px minimum height (48px without icons). They use the title-small type token. Horizontal lists share a spring-animated indicator. Primary indicators are 3px thick and match the icon-and-label content width, excluding button padding. Secondary indicators are 2px thick, square-ended, and span the entire tab button. Reduced motion disables the slide. Use a labelled TabList inside Tabs, and pair every Tab value with a TabPanel value. For router links, use TabNav with TabLink and connect each tab to a TabLinkPanel. Left/Right arrows move through horizontal tabs and follow reading direction; Up/Down move through vertical tabs; Home/End jump to the ends. Disabled tabs are skipped and narrow tab lists scroll horizontally. Tabs supports controlled value/onValueChange and defaultValue.",
       },
     },
   },
@@ -161,13 +170,26 @@ function createDemoRouter({
     component: () => (
       <div style={{ minWidth: 280 }}>
         <TabNav aria-label="Site sections" variant={variant} orientation={orientation}>
-          <TabLink to="/" activeOptions={{ exact: true }} icon={<MdSymbol>home</MdSymbol>}>
+          <TabLink
+            id="demo-home-tab"
+            panelId="demo-home-panel"
+            to="/"
+            activeOptions={{ exact: true }}
+            icon={<MdSymbol>home</MdSymbol>}
+          >
             Home
           </TabLink>
-          <TabLink to="/projects" icon={<MdSymbol>work</MdSymbol>}>
+          <TabLink
+            id="demo-projects-tab"
+            panelId="demo-projects-panel"
+            to="/projects"
+            icon={<MdSymbol>work</MdSymbol>}
+          >
             Projects
           </TabLink>
           <TabLink
+            id="demo-music-tab"
+            panelId="demo-music-panel"
             to="/music/{-$breakdown}"
             params={{ breakdown: undefined }}
             icon={<MdSymbol>music_note</MdSymbol>}
@@ -182,17 +204,29 @@ function createDemoRouter({
   const home = createRoute({
     getParentRoute: () => root,
     path: "/",
-    component: () => <p>Welcome home.</p>,
+    component: () => (
+      <TabLinkPanel id="demo-home-panel" tabId="demo-home-tab">
+        Welcome home.
+      </TabLinkPanel>
+    ),
   });
   const projects = createRoute({
     getParentRoute: () => root,
     path: "/projects",
-    component: () => <p>Selected projects and contributions.</p>,
+    component: () => (
+      <TabLinkPanel id="demo-projects-panel" tabId="demo-projects-tab">
+        Selected projects and contributions.
+      </TabLinkPanel>
+    ),
   });
   const music = createRoute({
     getParentRoute: () => root,
     path: "/music/{-$breakdown}",
-    component: () => <p>Recently played music.</p>,
+    component: () => (
+      <TabLinkPanel id="demo-music-panel" tabId="demo-music-tab">
+        Recently played music.
+      </TabLinkPanel>
+    ),
   });
   return createRouter({
     routeTree: root.addChildren([home, projects, music]),
@@ -211,23 +245,20 @@ export const RouterLinks = meta.story({
     docs: {
       description: {
         story:
-          'Use TabNav with TabLink for router-backed navigation: no Tabs value, TabPanel, or navigate callback is needed. TabLink uses TanStack createLink, preserving typed to/params/search, activeOptions, preload, replace, and normal anchor behavior. TabLink defaults resetScroll to false so switching tabs preserves the current scroll position; pass resetScroll explicitly to override. The router supplies aria-current="page" and moves the indicator after navigation, including browser Back/Forward. Use activeOptions={{ exact: true }} for a root destination. Route navigation uses a labelled nav and links, not tab/tabpanel roles: Tab moves through links and Enter follows them. This demo uses isolated memory history.',
+          "Use TabNav with TabLink for URL-backed ARIA tabs. TabLink retains a real anchor through TanStack createLink, including typed destinations, search, preload, replace, and modifier-key clicks. The router supplies aria-selected and aria-current, including browser Back/Forward. Link each tab to a TabLinkPanel using id, panelId, and tabId. Arrow keys, Home, and End move focus without navigating; Enter or Space activates the focused tab. TabLink defaults resetScroll to false. Use activeOptions={{ exact: true }} for a root destination. This demo uses isolated memory history.",
       },
     },
   },
   play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByRole("link", { name: "Home" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    await userEvent.click(canvas.getByRole("link", { name: "Projects" }));
+    await expect(canvas.getByRole("tab", { name: "Home" })).toHaveAttribute("aria-current", "page");
+    await userEvent.click(canvas.getByRole("tab", { name: "Projects" }));
     await expect(canvas.getByText("Selected projects and contributions.")).toBeVisible();
-    await expect(canvas.getByRole("link", { name: "Projects" })).toHaveAttribute(
+    await expect(canvas.getByRole("tab", { name: "Projects" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await expect(canvas.getByRole("link", { name: "Home" })).not.toHaveAttribute("aria-current");
-    await userEvent.click(canvas.getByRole("link", { name: "Music" }));
+    await expect(canvas.getByRole("tab", { name: "Home" })).not.toHaveAttribute("aria-current");
+    await userEvent.click(canvas.getByRole("tab", { name: "Music" }));
     await expect(canvas.getByText("Recently played music.")).toBeVisible();
   },
 });
@@ -235,8 +266,8 @@ export const RouterLinks = meta.story({
 export const RouterSecondary = meta.story({
   render: () => <RouterTabsDemo variant="secondary" />,
   play: async ({ canvas, userEvent }) => {
-    await userEvent.click(canvas.getByRole("link", { name: "Music" }));
-    await expect(canvas.getByRole("link", { name: "Music" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("tab", { name: "Music" }));
+    await expect(canvas.getByRole("tab", { name: "Music" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -247,8 +278,8 @@ export const RouterSecondary = meta.story({
 export const RouterVertical = meta.story({
   render: () => <RouterTabsDemo orientation="vertical" />,
   play: async ({ canvas, userEvent }) => {
-    await userEvent.click(canvas.getByRole("link", { name: "Projects" }));
-    await expect(canvas.getByRole("link", { name: "Projects" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("tab", { name: "Projects" }));
+    await expect(canvas.getByRole("tab", { name: "Projects" })).toHaveAttribute(
       "aria-current",
       "page",
     );

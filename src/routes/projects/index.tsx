@@ -51,7 +51,6 @@ function RouteComponent() {
               ...previous,
               type: previous.type === kind ? undefined : kind,
             })}
-            aria-current={selectedKind === kind ? "true" : undefined}
             replace
             icon={<MdSymbol>{projectKindLabels[kind].icon}</MdSymbol>}
           >

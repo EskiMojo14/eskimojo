@@ -15,6 +15,9 @@ import fmtConfig from "./config/fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
+// Set HEADLESS=false to watch browser, E2E, and Storybook tests run.
+const headless = process.env.HEADLESS !== "false";
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const config = defineConfig({
   staged: {
@@ -60,7 +63,24 @@ const config = defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.{browser,node}.test.{ts,tsx}"],
+        files: ["**/*.e2e.{test,model}.ts"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              paths: [
+                {
+                  name: "vite-plus/test",
+                  importNames: ["expect", "test", "it"],
+                  message: 'Import expect, test, and it from "#test/e2e" in E2E tests.',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        files: ["**/*.{browser,node,e2e}.test.{ts,tsx}"],
         plugins: ["vitest"],
         rules: {
           "vitest/no-standalone-expect": [
@@ -94,13 +114,16 @@ const config = defineConfig({
         },
       },
       {
-        files: ["src/**/*.{browser,node}.test.{ts,tsx}", "src/**/*.stories.tsx"],
+        files: ["src/**/*.{browser,node,e2e}.test.{ts,tsx}", "src/**/*.stories.tsx"],
         rules: { "import/no-unassigned-import": "off" },
       },
     ],
   },
   resolve: {
-    alias: { "#": fileURLToPath(new URL("./src", import.meta.url)) },
+    alias: {
+      "#": fileURLToPath(new URL("./src", import.meta.url)),
+      "#test": fileURLToPath(new URL("./test", import.meta.url)),
+    },
     tsconfigPaths: true,
   },
   css: cssConfig,
@@ -173,13 +196,36 @@ const config = defineConfig({
       },
       {
         test: {
+          name: "e2e",
+          retry: 3,
+          environment: "node",
+          include: ["**/*.e2e.test.ts"],
+          setupFiles: ["./test/common/setup.ts"],
+          // Match Playwright's default action timeout; pages may compile on first load.
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
+          // Match Playwright's default assertion timeout for `expect.locator`/`expect.page`.
+          expect: { poll: { timeout: 5_000 } },
+          provide: {
+            e2e: {
+              launchOptions: { headless, channel: "chromium" },
+              contextOptions: {
+                baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+                serviceWorkers: "block",
+              },
+            },
+          },
+        },
+      },
+      {
+        test: {
           name: "browser",
           retry: 3,
           include: ["**/*.browser.test.ts", "**/*.browser.test.tsx"],
           setupFiles: ["./test/common/setup.ts", "./test/browser/setup.ts"],
           browser: {
             enabled: true,
-            headless: true,
+            headless,
             provider: playwright({
               launchOptions: { channel: "chromium" },
               contextOptions: { permissions: ["clipboard-read", "clipboard-write"] },
@@ -215,7 +261,7 @@ const config = defineConfig({
           name: "storybook",
           browser: {
             enabled: true,
-            headless: true,
+            headless,
             provider: playwright({ launchOptions: { channel: "chromium" } }),
             instances: [{ browser: "chromium" }],
           },

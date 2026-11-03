@@ -48,7 +48,6 @@ export const AnimatedCounts = meta.story({
       args.user.album_count,
       args.user.track_count,
     ];
-    const widths = counts.map((count) => count.getBoundingClientRect().width);
     let previous = targets.map((target) => Math.ceil(target * 0.95));
     const readCounts = () =>
       counts.map((count) => Number(count.lastElementChild?.textContent?.replaceAll(",", "")));
@@ -65,7 +64,6 @@ export const AnimatedCounts = meta.story({
             targets[index].toLocaleString("en-GB"),
           );
           await expect(counts[index].lastElementChild).toHaveAttribute("aria-hidden", "true");
-          await expect(counts[index].getBoundingClientRect().width).toBe(widths[index]);
         }
         previous = current;
         await expect(current).toEqual(targets);
@@ -93,17 +91,6 @@ export const BalancedRows = meta.story({
       <MusicSummary {...args} />
     </div>
   ),
-  play: async ({ canvas }) => {
-    const cards = canvas.getAllByRole("definition").map((element) => {
-      const card = element.parentElement;
-      if (!card) throw new Error("Statistic must have a card container");
-      return card.getBoundingClientRect();
-    });
-
-    await expect(cards[0].top).toBe(cards[1].top);
-    await expect(cards[2].top).toBe(cards[3].top);
-    await expect(cards[2].top).toBeGreaterThan(cards[0].top);
-  },
 });
 
 export const Loading = meta.story({

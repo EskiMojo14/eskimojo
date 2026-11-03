@@ -2,9 +2,7 @@
 
 Use these standards for application code, styles, tests, and project scripts.
 Prefer the existing repository patterns and automated tooling over introducing
-new conventions. These standards also draw on the
-[schema-benchmarks](https://github.com/open-circle/schema-benchmarks)
-contributor guidance.
+new conventions.
 
 ## TypeScript and React
 
@@ -79,6 +77,7 @@ contributor guidance.
 - Put tests and stories beside the file they cover:
   - `foo.node.test.ts` for Node-side tests (test React/DOM behavior in the browser);
   - `foo.browser.test.ts` or `foo.browser.test.tsx` for browser tests;
+  - `foo.e2e.test.ts` for Node-side Playwright E2E tests;
   - `foo.test-d.ts` for complex TypeScript type behavior;
   - `foo.stories.tsx` for Storybook stories;
   - `foo.doc.mdx` for Storybook documentation. Plain `.mdx` files are application
@@ -92,16 +91,79 @@ contributor guidance.
 - Register test cleanup with `onTestFinished` immediately after acquiring the
   resource, or use `using` / `await using` when the resource supports disposal.
   Never leave cleanup after assertions where a failure could skip it.
-- Run `vp test` for Node, Chromium browser, type, and Storybook tests. Select
+- Run `vp test` for Node, E2E, Chromium browser, type, and Storybook tests. Select
   a project with `--project node`, `--project browser`, `--project types`, or
-  `--project storybook`. Use `vp run coverage` for V8 text, HTML, and LCOV reports.
+  `--project storybook`, or select E2E tests with `--project e2e`. Use
+  `vp run coverage` for V8 text, HTML, and LCOV reports.
+- Configure E2E Playwright launch and context options through the `e2e` project's
+  `provide.e2e` in `vite.config.ts`; fixtures read them with `inject("e2e")`.
+- E2E tests need a running server. They use the dev server (`vp run dev`, port 3000) by default; set `E2E_BASE_URL` to test another server, such as
+  `vp run preview --port 4173` in CI.
+- Browser, E2E, and Storybook tests run headless by default. Set `HEADLESS=false`
+  to show the browser, e.g. `HEADLESS=false vp test run --project e2e`.
 - Import test APIs from `vite-plus/test` and browser APIs from
   `vite-plus/test/browser`. Shared setup registers `mix-n-matchers` and
   `expect.ref` for polling React refs.
+- In `.e2e.test.ts` files, import `expect`, `test`, and `it` from `#test/e2e`
+  instead of `vite-plus/test` so Playwright fixtures and assertions are available.
 - Use `page.renderWithProviders` in browser tests for isolated QueryClient and
   memory-router providers. Test helpers are available through `#test/`.
 - Mock network requests with `network` from `virtual:msw` and handlers from
   `msw`. Setup enables mocking and resets handlers after each test.
+- In E2E tests, use the per-test `network` fixture from `#test/e2e` with MSW
+  handlers instead of `virtual:msw`. It intercepts browser requests, not app-server
+  SSR requests or Node-side `fetch`. E2E contexts block service workers so they
+  cannot bypass Playwright routing.
+
+### E2E patterns
+
+- Use page object models (POMs) for application E2E tests rather than constructing
+  locators directly in test bodies. Keep selectors, locator composition, and
+  reusable interactions in the model; keep scenario-specific assertions in tests.
+  Tests for the E2E helpers themselves may use raw pages and locators.
+- Colocate models in `*.e2e.model.ts` files beside their route or component.
+  Use the shared `PageObjectModel`, `ComponentObjectModel`, and `TabObjectModel`
+  bases from `#test/e2e` as appropriate instead of duplicating their behavior.
+- Import `createTest` and `expect` from `#test/e2e`, register models with
+  `const test = createTest({ home: HomePage })`, and consume the resulting
+  per-test model fixtures rather than constructing models in individual tests.
+- Navigate through the model's `goto()` and use model methods for reusable
+  interactions such as selecting tabs. Put shared scenario setup in
+  `test.beforeEach`; use the `fontsLoaded` fixture when a test depends on fonts.
+- Prefer role and accessible-name locators inside models, scoped to the relevant
+  component or landmark. Expose meaningful names such as `socialLink(name)`
+  rather than leaking selector strings into tests.
+- Use `expect.locator(model.socialLink("GitHub"))` and `expect.page(page)` for
+  retrying DOM and page assertions. Await assertions and interactions; avoid
+  fixed sleeps or duplicating polling already provided by these helpers.
+
+#### Tabbed pages
+
+- The page owns the tablist and named tab models, while each tab owns its content
+  locators and interactions.
+- Expose a `tabs` locator for the relevant `tablist` on the parent page. Extend
+  `TabObjectModel<ParentPage>` for each tab and provide its route `url` and
+  accessible `tabName`. Construct child tabs with the same Playwright page and
+  parent model, for example `artists = new ArtistsTab(this.page, this)`.
+- Register the parent page with `createTest`, not each child tab independently.
+  Tests should read as a flow through that page:
+  `await music.goto(); await music.artists.select();`.
+- Use the inherited `select()` rather than clicking tab links directly in tests.
+  It verifies the destination URL, `aria-selected="true"` on the selected tab,
+  and visibility of its associated panel. Keep content-specific assertions in
+  the scenario after selection.
+- Scope tab-specific content locators to `this.tabPanel` so similarly named
+  controls in other panels cannot match. Keep controls shared across tabs on the
+  parent page, and extract genuinely shared tab behavior into a page-specific
+  tab base class rather than duplicating it in sibling tabs.
+- Use `@lazy` getters for locators or grouped handles that depend on subclass
+  fields or the parent model, such as a tab's accessible name. For different
+  desktop and mobile presentations, expose named groups on the tab model instead
+  of branching on selectors in tests.
+- Test tab navigation through `select()` when the interaction is the behavior
+  under test. Add separate direct-entry or reload scenarios when verifying that
+  a tab's URL restores the correct selection and content; navigating directly to
+  a URL is not a substitute for testing the tab interaction.
 
 ## Errors and external data
 
@@ -180,7 +242,7 @@ contributor guidance.
   a specific justification. Keep any necessary lint-disable directive narrow
   and ensure it is still needed.
 - Use the TanStack Router and Query recommended lint rules for application
-  code, with Query's exhaustive-deps rule disabled to match schema-benchmarks.
+  code, with Query's exhaustive-deps rule disabled.
   The dependency plugin also checks for packages with native or simpler
   alternatives.
 - Run `vpr check` and `vp test` for code changes. `vpr check` runs formatting,

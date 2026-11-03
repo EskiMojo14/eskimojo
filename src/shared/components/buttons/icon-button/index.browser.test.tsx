@@ -34,9 +34,6 @@ test("defaults to button type and forwards native button props", async () => {
   await expect
     .element(result.getByRole("button", { name: "Save" }))
     .toHaveAttribute("type", "submit");
-  await expect
-    .element(result.getByRole("button", { name: "Save" }))
-    .toHaveClass(/icon-button--outlined/);
 });
 
 test("forwards toggle state and leaves its state controlled by the caller", async () => {

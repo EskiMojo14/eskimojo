@@ -29,6 +29,7 @@ import {
   getUserData,
   periodSchema,
 } from "#/routes/music.{-$breakdown}/-query.ts";
+import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
 import styles from "./index.css?url";
@@ -102,7 +103,7 @@ function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
   const { period = periodSchema.fallback } = Route.useSearch();
   return (
-    <>
+    <main>
       <MusicDataBoundary
         loading={<MusicSummarySkeleton />}
         errorTitle="Couldn't load listening statistics"
@@ -110,20 +111,34 @@ function RouteComponent() {
         <SummaryPanel />
       </MusicDataBoundary>
       <MusicBreakdownTabs />
-      <div className="tabs__route-content">
-        {breakdown !== "recent" && <MusicPeriodPicker />}
-        <MusicDataBoundary
-          resetKey={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
-          loading={breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />}
-          errorTitle={
-            breakdown === "recent" ? "Couldn't load recent tracks" : "Couldn't load top music"
-          }
+      {musicBreakdownSchema.options.map((value) => (
+        <TabLinkPanel
+          key={value}
+          id={`music-${value}-panel`}
+          tabId={`music-${value}-tab`}
+          hidden={breakdown !== value}
+          className="tabs__route-content"
         >
-          {breakdown === "recent" && <RecentTracksPanel />}
-          {breakdown === "top-music" && <TopMusicPanel />}
-        </MusicDataBoundary>
-      </div>
-    </>
+          {breakdown === value && (
+            <>
+              {breakdown !== "recent" && <MusicPeriodPicker />}
+              <MusicDataBoundary
+                resetKey={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
+                loading={
+                  breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />
+                }
+                errorTitle={
+                  breakdown === "recent" ? "Couldn't load recent tracks" : "Couldn't load top music"
+                }
+              >
+                {breakdown === "recent" && <RecentTracksPanel />}
+                {breakdown === "top-music" && <TopMusicPanel />}
+              </MusicDataBoundary>
+            </>
+          )}
+        </TabLinkPanel>
+      ))}
+    </main>
   );
 }
 

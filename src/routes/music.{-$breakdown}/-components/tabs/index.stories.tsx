@@ -15,6 +15,7 @@ import {
   musicBreakdownLabels,
   musicBreakdownSchema,
 } from "#/routes/music.{-$breakdown}/-constants.ts";
+import { TabLinkPanel } from "#/shared/components/tabs";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { MusicBreakdownTabs } from "./index";
@@ -27,14 +28,26 @@ function MusicTabsContent() {
   return (
     <>
       <MusicBreakdownTabs />
-      <div className="tabs__route-content">
-        <h2>{musicBreakdownLabels[breakdown].label}</h2>
-        <p>
-          {breakdown === "recent"
-            ? "Your latest listening activity."
-            : "Your top tracks and artists for the selected period."}
-        </p>
-      </div>
+      {musicBreakdownSchema.options.map((value) => (
+        <TabLinkPanel
+          key={value}
+          id={`music-${value}-panel`}
+          tabId={`music-${value}-tab`}
+          hidden={value !== breakdown}
+          className="tabs__route-content"
+        >
+          {value === breakdown && (
+            <>
+              <h2>{musicBreakdownLabels[breakdown].label}</h2>
+              <p>
+                {breakdown === "recent"
+                  ? "Your latest listening activity."
+                  : "Your top tracks and artists for the selected period."}
+              </p>
+            </>
+          )}
+        </TabLinkPanel>
+      ))}
     </>
   );
 }
@@ -77,27 +90,27 @@ const meta = preview.meta({
 export const Navigation = meta.story({
   render: () => <MusicTabsDemo />,
   play: async ({ canvas, userEvent }) => {
-    await expect(await canvas.findByRole("link", { name: "Top music" })).toHaveAttribute(
+    await expect(await canvas.findByRole("tab", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     await waitFor(() =>
       expect(document.documentElement.matches(":active-view-transition")).toBe(false),
     );
-    await userEvent.click(canvas.getByRole("link", { name: "Recently played" }));
-    await expect(canvas.getByRole("link", { name: "Recently played" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("tab", { name: "Recently played" }));
+    await expect(canvas.getByRole("tab", { name: "Recently played" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
+    await expect(canvas.getByRole("tab", { name: "Top music" })).toHaveAttribute(
       "href",
       "/music?period=1month",
     );
     await waitFor(() =>
       expect(document.documentElement.matches(":active-view-transition")).toBe(false),
     );
-    await userEvent.click(canvas.getByRole("link", { name: "Top music" }));
-    await expect(canvas.getByRole("link", { name: "Top music" })).toHaveAttribute(
+    await userEvent.click(canvas.getByRole("tab", { name: "Top music" }));
+    await expect(canvas.getByRole("tab", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -110,7 +123,7 @@ export const Navigation = meta.story({
 export const DeepLink = meta.story({
   render: () => <MusicTabsDemo initialEntry="/music/top-music?period=7day" />,
   play: async ({ canvas }) => {
-    await expect(await canvas.findByRole("link", { name: "Top music" })).toHaveAttribute(
+    await expect(await canvas.findByRole("tab", { name: "Top music" })).toHaveAttribute(
       "aria-current",
       "page",
     );

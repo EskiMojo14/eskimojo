@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import * as v from "valibot";
 
 import { FilterChips } from "#/routes/gigs.{-$breakdown}/-components/filter-chips/index.tsx";
+import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
 import { GigsArtistChart } from "./-components/artist-chart";
@@ -62,18 +63,30 @@ function RouteComponent() {
     [artist, city, venue],
   );
   return (
-    <>
+    <main>
       <div className="gigs-intro">
         <GigsIntro />
       </div>
       <FilterChips {...{ artist, city, venue }} />
       <GigsBreakdownTabs />
-      <div className="tabs__route-content">
-        {breakdown === "by-month" && <GigsHeatmap events={filteredGigs} />}
-        {breakdown === "by-artist" && <GigsArtistChart events={filteredGigs} />}
-        {breakdown === "by-venue" && <GigsVenueChart events={filteredGigs} />}
-        {breakdown === "by-city" && <GigsCityMap events={filteredGigs} />}
-      </div>
-    </>
+      {gigBreakdownSchema.options.map((value) => (
+        <TabLinkPanel
+          key={value}
+          id={`gigs-${value}-panel`}
+          tabId={`gigs-${value}-tab`}
+          hidden={breakdown !== value}
+          className="tabs__route-content"
+        >
+          {breakdown === value && (
+            <>
+              {value === "by-month" && <GigsHeatmap events={filteredGigs} />}
+              {value === "by-artist" && <GigsArtistChart events={filteredGigs} />}
+              {value === "by-venue" && <GigsVenueChart events={filteredGigs} />}
+              {value === "by-city" && <GigsCityMap events={filteredGigs} />}
+            </>
+          )}
+        </TabLinkPanel>
+      ))}
+    </main>
   );
 }
