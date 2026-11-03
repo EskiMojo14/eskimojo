@@ -62,7 +62,7 @@ function RouteComponent() {
     [artist, city, venue],
   );
   return (
-    <>
+    <main>
       <div className="gigs-intro">
         <GigsIntro />
       </div>
@@ -74,6 +74,6 @@ function RouteComponent() {
         {breakdown === "by-venue" && <GigsVenueChart events={filteredGigs} />}
         {breakdown === "by-city" && <GigsCityMap events={filteredGigs} />}
       </div>
-    </>
+    </main>
   );
 }

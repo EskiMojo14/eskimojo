@@ -102,7 +102,7 @@ function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
   const { period = periodSchema.fallback } = Route.useSearch();
   return (
-    <>
+    <main>
       <MusicDataBoundary
         loading={<MusicSummarySkeleton />}
         errorTitle="Couldn't load listening statistics"
@@ -123,7 +123,7 @@ function RouteComponent() {
           {breakdown === "top-music" && <TopMusicPanel />}
         </MusicDataBoundary>
       </div>
-    </>
+    </main>
   );
 }
 
