@@ -1,0 +1,262 @@
+import { http, HttpResponse, passthrough } from "msw";
+import { fromJSON, toCrossJSONAsync } from "seroval";
+import * as v from "valibot";
+
+import { HomePage } from "#/routes/_home/-index.e2e.model";
+import { createTest, expect } from "#test/e2e";
+
+import { MusicPage } from "./-index.e2e.model";
+
+const test = createTest({ home: HomePage, music: MusicPage });
+
+/** A promise resolved manually, or on disposal so waiting handlers can finish. */
+function deferred() {
+  const p = Promise.withResolvers<void>();
+  return { ...p, [Symbol.dispose]: () => p.resolve() };
+}
+
+// Failed queries are retried with backoff before an error is shown.
+const errorTimeout = { timeout: 15_000 };
+const testTimeout = 60_000;
+
+const lastfmRequestSchema = v.object({
+  data: v.object({ method: v.string() }),
+});
+
+const response = {
+  result: {
+    user: {
+      playcount: "100",
+      artist_count: "10",
+      album_count: "20",
+      track_count: "30",
+      registered: { unixtime: "1506038400" },
+    },
+    toptracks: { track: [] },
+    topartists: { artist: [] },
+    recenttracks: { track: [] },
+  },
+};
+
+const recentResponse = {
+  result: {
+    ...response.result,
+    recenttracks: {
+      track: [
+        {
+          name: "Let It Happen",
+          artist: { "#text": "Tame Impala" },
+          album: { "#text": "Currents" },
+          image: [],
+          "@attr": { nowplaying: "true" },
+        },
+      ],
+    },
+  },
+};
+
+type LastfmResolver = (method: string) => Response | Promise<Response>;
+
+function lastfm(resolver: LastfmResolver) {
+  return http.get("*/_serverFn/*", ({ request }) => {
+    const payload = new URL(request.url).searchParams.get("payload");
+    const parsed = payload && v.safeParse(lastfmRequestSchema, fromJSON(JSON.parse(payload)));
+    if (!parsed || !parsed.success) return passthrough();
+    return resolver(parsed.output.data.method);
+  });
+}
+
+async function success(body: unknown = response) {
+  return HttpResponse.json(await toCrossJSONAsync(body), {
+    headers: { "x-tss-serialized": "true" },
+  });
+}
+
+async function failure() {
+  return HttpResponse.json(await toCrossJSONAsync({ error: new Error("Service unavailable") }), {
+    status: 503,
+    headers: { "x-tss-serialized": "true" },
+  });
+}
+
+const isSummary = (method: string) => method === "user.getInfo";
+
+test.beforeEach(async ({ network, home }) => {
+  network.use(lastfm(() => success()));
+  // Music data requests only reach the browser network fixture during client-side
+  // navigation, so let the home page finish loading before following links.
+  await home.goto({ waitUntil: "networkidle" });
+});
+
+test("shows music controls before independent requests finish", async ({ network, music }) => {
+  using summary = deferred();
+  using rankings = deferred();
+  network.use(
+    lastfm(async (method) => {
+      await (isSummary(method) ? summary.promise : rankings.promise);
+      return success();
+    }),
+  );
+
+  await music.navigate();
+  await expect.locator(music.tabs).toBeVisible();
+  await expect.locator(music.topMusic.periods).toBeVisible();
+  await expect.locator(music.summaryLoading).toBeVisible();
+  await expect.locator(music.topMusic.loading).toBeVisible();
+
+  rankings.resolve();
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
+  await expect.locator(music.summaryLoading).toBeVisible();
+
+  summary.resolve();
+  await expect.locator(music.summary).toBeVisible();
+  await expect.locator(music.progressbars).not.toBeVisible();
+});
+
+test("period and tab changes show loading feedback without hiding music controls", async ({
+  network,
+  music,
+}) => {
+  await music.navigate();
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
+
+  using pending = deferred();
+  network.use(
+    lastfm(async () => {
+      await pending.promise;
+      return success();
+    }),
+  );
+  await music.topMusic.period("7 days").click();
+  await expect.locator(music.topMusic.loading).toBeVisible();
+  await expect.locator(music.topMusic.period("7 days")).toHaveAttribute("aria-current", "page");
+  await expect.locator(music.summary).toBeVisible();
+
+  await music.recent.select();
+  await expect.locator(music.recent.loading).toBeVisible();
+  await expect.locator(music.tabs).toBeVisible();
+
+  pending.resolve();
+  await expect.locator(music.recent.emptyState).toBeVisible();
+});
+
+test(
+  "failed summary requests leave rankings usable and can be retried",
+  { timeout: testTimeout },
+  async ({ network, music }) => {
+    network.use(lastfm((method) => (isSummary(method) ? failure() : success())));
+
+    await music.navigate();
+    await expect.locator(music.summaryError, errorTimeout).toBeVisible();
+    await expect.locator(music.topMusic.topTracks).toBeVisible();
+    await expect.locator(music.tabs).toBeVisible();
+
+    using pending = deferred();
+    network.use(
+      lastfm(async () => {
+        await pending.promise;
+        return success();
+      }),
+    );
+    await music.summaryRetry.click();
+    await expect.locator(music.summaryLoading).toBeVisible();
+
+    pending.resolve();
+    await expect.locator(music.summary).toBeVisible();
+    await expect.locator(music.alerts).not.toBeVisible();
+  },
+);
+
+test(
+  "failed rankings preserve summary and retry without showing empty listening history",
+  { timeout: testTimeout },
+  async ({ network, music }) => {
+    network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+
+    await music.navigate();
+    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+    await expect.locator(music.summary).toBeVisible();
+    await expect.locator(music.topMusic.emptyState.first()).not.toBeVisible();
+
+    await music.topMusic.retry.click();
+    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+
+    network.use(lastfm(() => success()));
+    await music.topMusic.retry.click();
+    await expect.locator(music.topMusic.topTracks).toBeVisible();
+    await expect.locator(music.topMusic.topArtists).toBeVisible();
+  },
+);
+
+test(
+  "changing period or tab recovers the active tab after an error",
+  { timeout: testTimeout },
+  async ({ network, music }) => {
+    network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+
+    await music.navigate();
+    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+
+    network.use(lastfm(() => success()));
+    await music.topMusic.period("7 days").click();
+    await expect.locator(music.topMusic.topTracks).toBeVisible();
+
+    network.use(lastfm(() => failure()));
+    await music.recent.select();
+    await expect.locator(music.recent.error, errorTimeout).toBeVisible();
+
+    await music.topMusic.select();
+    await expect.locator(music.topMusic.topTracks).toBeVisible();
+    await expect.locator(music.alerts).not.toBeVisible();
+  },
+);
+
+test(
+  "simultaneous failures show independent retry controls",
+  { timeout: testTimeout },
+  async ({ network, music }) => {
+    network.use(lastfm(() => failure()));
+
+    await music.navigate();
+    await expect.locator(music.summaryError, errorTimeout).toBeVisible();
+    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+    await expect.poll(() => music.retryButtons.count()).toBe(2);
+    await expect.locator(music.topMusic.periods).toBeVisible();
+  },
+);
+
+test(
+  "failed recent-track refresh keeps cached tracks and retries in place",
+  { timeout: testTimeout },
+  async ({ network, page, music }) => {
+    await page.clock.install();
+    network.use(lastfm(() => success(recentResponse)));
+
+    await music.navigate();
+    await music.recent.select();
+    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+
+    network.use(lastfm(() => failure()));
+    // Recent tracks refresh every minute.
+    await page.clock.fastForward("01:00");
+    await expect.locator(music.recent.refreshNotice, errorTimeout).toBeVisible();
+    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+    await expect.locator(music.alerts).not.toBeVisible();
+
+    using pending = deferred();
+    network.use(
+      lastfm(async () => {
+        await pending.promise;
+        return success();
+      }),
+    );
+    await music.recent.refreshRetry.click();
+    await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-busy", "true");
+    await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-disabled", "true");
+    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+
+    pending.resolve();
+    await expect.locator(music.recent.refreshNotice).not.toBeVisible();
+    await expect.locator(music.recent.emptyState).toBeVisible();
+  },
+);
