@@ -130,6 +130,10 @@ contributor guidance.
   they cause a flash of unstyled content (FOUC) with TanStack SSR. Direct CSS
   imports are allowed in browser tests and Storybook (including story and
   preview styles), where SSR FOUC is not a concern.
+- Link exactly one route-level stylesheet per route (for example `index.css`
+  next to the route file, or `$slug.css` for `$slug.tsx`). Pull route component
+  styles into it with `@import` instead of linking each component stylesheet
+  individually in the route's head.
 - Use BEM-like class names: a component block such as `.music-list`, an element
   such as `.music-list__item`, and a modifier such as
   `.music-list--compact`.

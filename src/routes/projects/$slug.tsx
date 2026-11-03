@@ -6,7 +6,7 @@ import { generatePageMetadata } from "#/shared/lib/document-head";
 import { getProject } from "./-data";
 import { getProjectContent } from "./-mdx";
 
-import styles from "#/routes/projects/-components/project-detail/index.css?url";
+import styles from "./$slug.css?url";
 
 const backLink = linkOptions({
   to: "/projects",

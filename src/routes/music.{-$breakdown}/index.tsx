@@ -31,10 +31,7 @@ import {
 } from "#/routes/music.{-$breakdown}/-query.ts";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
-import dataBoundaryCss from "#/routes/music.{-$breakdown}/-components/data-boundary/index.css?url";
-import recentTracksCss from "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css?url";
-import skeletonCss from "#/routes/music.{-$breakdown}/-components/skeletons/index.css?url";
-import summaryCss from "#/routes/music.{-$breakdown}/-components/summary/index.css?url";
+import styles from "./index.css?url";
 
 const recentTracksRefreshInterval = 60_000;
 
@@ -94,13 +91,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     });
     return {
       ...metadata,
-      links: [
-        ...metadata.links,
-        { rel: "stylesheet", href: recentTracksCss },
-        { rel: "stylesheet", href: summaryCss },
-        { rel: "stylesheet", href: skeletonCss },
-        { rel: "stylesheet", href: dataBoundaryCss },
-      ],
+      links: [...metadata.links, { rel: "stylesheet", href: styles }],
     };
   },
   component: RouteComponent,

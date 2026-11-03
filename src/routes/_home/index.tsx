@@ -9,7 +9,6 @@ import GitHubIcon from "./-components/social-link/icons/github.svg?react";
 import TwitterIcon from "./-components/social-link/icons/twitter.svg?react";
 import Intro from "./-intro.mdx";
 
-import socialLinkStyles from "./-components/social-link/index.css?url";
 import styles from "./index.css?url";
 
 const socialProfiles = [
@@ -46,7 +45,6 @@ export const Route = createFileRoute("/_home/")({
       links: [
         ...metadata.links,
         { rel: "stylesheet", href: styles },
-        { rel: "stylesheet", href: socialLinkStyles },
         {
           rel: "preload",
           href: "/Mitzi-hero.webp",

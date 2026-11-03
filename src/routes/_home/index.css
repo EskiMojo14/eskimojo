@@ -1,4 +1,5 @@
 @import "./-components/home-hero/index.css";
+@import "./-components/social-link/index.css";
 
 .home-intro {
   inline-size: 100%;
