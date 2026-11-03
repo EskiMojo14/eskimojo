@@ -11,6 +11,8 @@ import { chromium } from "playwright";
 import type { TestAPI } from "vite-plus/test";
 import { inject, test as baseTest } from "vite-plus/test";
 
+import { bypassLocalRequests } from "../common/msw";
+
 export interface E2EFixtures {
   browser: Browser;
   context: BrowserContext;
@@ -45,7 +47,11 @@ const extendedTest = baseTest.extend<E2EFixtures>({
   },
   network: [
     async ({ context }, use) => {
-      const network = defineNetworkFixture({ context });
+      const { baseURL = "" } = inject("e2e").contextOptions;
+      const network = defineNetworkFixture({
+        context,
+        onUnhandledFrame: bypassLocalRequests(baseURL),
+      });
       await network.enable();
       await use(network);
       await network.disable();
