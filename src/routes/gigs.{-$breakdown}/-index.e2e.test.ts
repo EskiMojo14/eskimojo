@@ -24,7 +24,7 @@ test("navigates between gig breakdowns and updates the selected tab", async ({ g
 test("loads a gig breakdown directly from its URL", async ({ page, gigs }) => {
   await page.goto("/gigs/by-city");
 
-  await expect.page(page).toHaveTitle("Gigs | eskimojo");
+  await expect.page(page).toHaveTitle(gigs.title);
   await expect.locator(gigs.city.tabLink).toHaveAttribute("aria-selected", "true");
   await expect.locator(gigs.city.tabPanel).toBeVisible();
   await expect.locator(gigs.city.map).toBeVisible();

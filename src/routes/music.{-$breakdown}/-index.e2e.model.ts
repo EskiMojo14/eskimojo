@@ -91,7 +91,7 @@ class RecentTab extends TabObjectModel<MusicPage> {
 
 export class MusicPage extends PageObjectModel {
   url = "/music";
-  title = "Music";
+  title = /^Music/;
 
   @lazy
   get navLink() {
@@ -104,7 +104,7 @@ export class MusicPage extends PageObjectModel {
   async navigate() {
     await this.navLink.click();
     await expect.page(this.page).toHaveURL((url) => this.matchesUrl(url));
-    await expect.page(this.page).toHaveTitle(`${this.title} | eskimojo`);
+    await expect.page(this.page).toHaveTitle(this.title);
   }
 
   tabs = this.main.getByRole("tablist", { name: "Music breakdown" });

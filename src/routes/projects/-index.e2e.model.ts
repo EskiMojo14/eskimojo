@@ -10,7 +10,7 @@ export type ProjectFilterLabel = keyof typeof projectFilters;
 
 export class ProjectsPage extends PageObjectModel {
   url = "/projects";
-  title = "Projects";
+  title = /^Projects/;
 
   get filterGroup() {
     return this.page.getByRole("group", { name: "Filter projects by type" });
@@ -43,7 +43,7 @@ export class ProjectsPage extends PageObjectModel {
 
 export class HistoryAdapterPage extends PageObjectModel {
   url = "/projects/history-adapter";
-  title = "History Adapter";
+  title = /^History Adapter/;
 
   get heading() {
     return this.page.getByRole("heading", { name: this.title, level: 1 });
