@@ -20,16 +20,11 @@ export class ComponentObjectModel extends ObjectModel {
 
 export abstract class PageObjectModel extends ComponentObjectModel {
   abstract url: string;
-  abstract title: string | RegExp;
+  abstract title: RegExp;
   async goto(...args: Tail<Parameters<Page["goto"]>>) {
     const response = await this.page.goto(this.url, ...args);
 
-    const suffixedTitle =
-      typeof this.title === "string" && this.title !== "eskimojo"
-        ? `${this.title} | eskimojo`
-        : this.title;
-
-    await expect.page(this.page).toHaveTitle(suffixedTitle);
+    await expect.page(this.page).toHaveTitle(this.title);
 
     return response;
   }

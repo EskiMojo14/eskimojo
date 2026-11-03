@@ -43,7 +43,7 @@ class CityTab extends TabObjectModel<GigsPage> {
 
 export class GigsPage extends PageObjectModel {
   url = "/gigs";
-  title = "Gigs";
+  title = /^Gigs/;
 
   tabs = this.main.getByRole("tablist", { name: "Gigs breakdown" });
 
