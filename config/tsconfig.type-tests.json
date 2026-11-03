@@ -1,15 +1,4 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "../node_modules/.cache/tsconfig.type-tests.tsbuildinfo"
-  },
-  "include": ["../src/**/*.ts", "../src/**/*.tsx", "../types/**/*.ts"],
-  "exclude": [
-    "../types/postcss-extend-rule.d.ts",
-    "../**/*.browser.test.*",
-    "../**/*.e2e.*",
-    "../**/*.node.test.ts",
-    "../**/*.stories.*"
-  ],
+  "extends": "../tsconfig.json",
   "contentMappers": []
 }
