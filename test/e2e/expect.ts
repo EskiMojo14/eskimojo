@@ -153,22 +153,83 @@ expect.page = (page, options) => expect.poll(() => page, options);
 
 declare module "vitest" {
   interface ExpectStatic {
-    locator(locator: Locator, options?: ExpectPollOptions): ReturnType<typeof expect.poll<Locator>>;
-    page(page: Page, options?: ExpectPollOptions): ReturnType<typeof expect.poll<Page>>;
+    /**
+     * `expect.locator(locator)` retries assertions against a Playwright locator
+     * using the `expect.poll` timeout options.
+     * You can set the default timeout via the `expect.poll.timeout` config option.
+     * @see https://vitest.dev/api/expect#poll
+     * @example
+     * await expect.locator(home.socialLink("GitHub")).toBeVisible();
+     */
+    locator(locator: Locator, options?: ExpectPollOptions): Assertion<Promise<void>, Locator>;
+    /**
+     * `expect.page(page)` retries assertions against a Playwright page
+     * using the `expect.poll` timeout options.
+     * You can set the default timeout via the `expect.poll.timeout` config option.
+     * @see https://vitest.dev/api/expect#poll
+     * @example
+     * await expect.page(page).toHaveTitle("Home | eskimojo");
+     */
+    page(page: Page, options?: ExpectPollOptions): Assertion<Promise<void>, Page>;
   }
 
   interface Matchers<R, T> {
+    /**
+     * Asserts that a Playwright page's title equals a string or matches a regular
+     * expression. Use `expect.page()` to retry until the title matches.
+     * @example
+     * await expect.page(page).toHaveTitle(/Home/);
+     */
     toHaveTitle(expected: string | RegExp): Promise<void>;
+    /**
+     * Asserts that a Playwright page's full URL equals a string, matches a regular
+     * expression, or satisfies a predicate receiving a `URL` object.
+     * Use `expect.page()` to retry until the URL matches.
+     * @example
+     * await expect.page(page).toHaveURL((url) => url.pathname === "/projects");
+     */
     toHaveURL(expected: string | RegExp | ((url: URL) => boolean)): R;
+    /**
+     * Asserts that a Playwright locator resolves to a visible element.
+     * Use `expect.locator()` to retry until the element is visible.
+     * @example
+     * await expect.locator(home.socialLink("GitHub")).toBeVisible();
+     */
     toBeVisible(): Promise<void>;
+    /**
+     * Asserts that a Playwright locator's text content exactly equals the expected
+     * string or number. Omitting the expected value checks for nonempty content.
+     * Whitespace is collapsed and trimmed by default; set `normalizeWhitespace`
+     * to `false` to preserve it. Nonbreaking spaces are still converted to spaces.
+     * Use `expect.locator()` to retry; multiple matching elements are an error.
+     * @example
+     * await expect.locator(header.heading).toHaveTextContent("Projects");
+     */
     toHaveTextContent(
       text?: string | number,
       options?: { normalizeWhitespace: boolean },
     ): Promise<void>;
+    /**
+     * Asserts that a Playwright locator's text content contains the expected
+     * string or number, or matches a regular expression.
+     * Whitespace is collapsed and trimmed by default; set `normalizeWhitespace`
+     * to `false` to preserve it. Nonbreaking spaces are still converted to spaces.
+     * Use `expect.locator()` to retry; multiple matching elements are an error.
+     * @example
+     * await expect.locator(header.heading).toMatchTextContent(/Projects/i);
+     */
     toMatchTextContent(
       text: string | number | RegExp,
       options?: { normalizeWhitespace: boolean },
     ): Promise<void>;
+    /**
+     * Asserts that a Playwright locator's element has the named attribute.
+     * When an expected value is supplied, compares the attribute's string value
+     * using Vitest equality, including asymmetric matchers.
+     * Use `expect.locator()` to retry; multiple matching elements are an error.
+     * @example
+     * await expect.locator(tab.tabLink).toHaveAttribute("aria-selected", "true");
+     */
     toHaveAttribute(name: string, value?: unknown): Promise<void>;
   }
 }
