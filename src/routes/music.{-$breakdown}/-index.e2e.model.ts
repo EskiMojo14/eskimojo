@@ -1,0 +1,151 @@
+import { lazy } from "#/utils";
+import { expect, PageObjectModel, TabObjectModel } from "#test/e2e";
+
+class TopMusicTab extends TabObjectModel<MusicPage> {
+  url = "/music";
+  tabName = "Top music";
+
+  override matchesUrl(url: URL) {
+    return url.pathname === this.url || url.pathname === "/music/top-music";
+  }
+
+  @lazy
+  get periods() {
+    return this.tabPanel.getByRole("group", { name: "Listening period" });
+  }
+
+  period(name: string) {
+    return this.periods.getByRole("link", { name, exact: true });
+  }
+
+  @lazy
+  get loading() {
+    return this.tabPanel.getByRole("progressbar", { name: "Loading top music..." });
+  }
+
+  @lazy
+  get topTracks() {
+    return this.tabPanel.getByRole("heading", { name: "Top tracks", exact: true });
+  }
+
+  @lazy
+  get topArtists() {
+    return this.tabPanel.getByRole("heading", { name: "Top artists", exact: true });
+  }
+
+  @lazy
+  get emptyState() {
+    return this.tabPanel.getByText("No listening data for this period.");
+  }
+
+  @lazy
+  get error() {
+    return this.tabPanel.getByRole("alert").filter({
+      has: this.page.getByRole("heading", { name: "Couldn't load top music" }),
+    });
+  }
+
+  @lazy
+  get retry() {
+    return this.error.locator("..").getByRole("button", { name: "Retry", exact: true });
+  }
+}
+
+class RecentTab extends TabObjectModel<MusicPage> {
+  url = "/music/recent";
+  tabName = "Recently played";
+
+  @lazy
+  get loading() {
+    return this.tabPanel.getByRole("progressbar", { name: "Loading recent tracks..." });
+  }
+
+  @lazy
+  get emptyState() {
+    return this.tabPanel.getByRole("heading", { name: "No recently played tracks yet." });
+  }
+
+  track(name: string) {
+    return this.tabPanel.getByText(name, { exact: true });
+  }
+
+  @lazy
+  get error() {
+    return this.tabPanel.getByRole("alert").filter({
+      has: this.page.getByRole("heading", { name: "Couldn't load recent tracks" }),
+    });
+  }
+
+  @lazy
+  get refreshNotice() {
+    return this.tabPanel.getByRole("status").filter({
+      hasText: "Couldn't refresh recent tracks. Showing the last loaded results.",
+    });
+  }
+
+  @lazy
+  get refreshRetry() {
+    return this.tabPanel.getByRole("button", { name: "Retry", exact: true });
+  }
+}
+
+export class MusicPage extends PageObjectModel {
+  url = "/music";
+  title = "Music";
+
+  @lazy
+  get navLink() {
+    return this.page
+      .getByRole("navigation", { name: "Primary" })
+      .getByRole("link", { name: "Music", exact: true });
+  }
+
+  /** Navigate to the music page from the current page using the primary navigation. */
+  async navigate() {
+    await this.navLink.click();
+    await expect.page(this.page).toHaveURL((url) => this.matchesUrl(url));
+    await expect.page(this.page).toHaveTitle(`${this.title} | eskimojo`);
+  }
+
+  tabs = this.main.getByRole("tablist", { name: "Music breakdown" });
+
+  topMusic = new TopMusicTab(this.page, this);
+  recent = new RecentTab(this.page, this);
+
+  @lazy
+  get summary() {
+    return this.main.getByRole("region", { name: "Listening statistics" });
+  }
+
+  @lazy
+  get summaryLoading() {
+    return this.main.getByRole("progressbar", { name: "Loading listening summary..." });
+  }
+
+  @lazy
+  get summaryError() {
+    return this.main.getByRole("alert").filter({
+      has: this.page.getByRole("heading", { name: "Couldn't load listening statistics" }),
+    });
+  }
+
+  @lazy
+  get summaryRetry() {
+    return this.summaryError.locator("..").getByRole("button", { name: "Retry", exact: true });
+  }
+
+  @lazy
+  get progressbars() {
+    return this.main.getByRole("progressbar");
+  }
+
+  @lazy
+  get alerts() {
+    return this.main.getByRole("alert");
+  }
+
+  @lazy
+  get retryButtons() {
+    return this.main.getByRole("button", { name: "Retry", exact: true });
+  }
+}
