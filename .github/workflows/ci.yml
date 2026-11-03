@@ -55,5 +55,20 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ steps.chromium-cache.outputs.cache-primary-key }}
 
-      - name: Run node, browser, type, and Storybook tests
+      - name: Start preview server for E2E tests
+        id: preview
+        background: true
+        run: vp run preview --port 4173 --strictPort
+
+      - name: Wait for preview server
+        run: |
+          curl --retry 30 --retry-all-errors --retry-delay 1 --fail --silent --show-error \
+            --output /dev/null http://localhost:4173/
+
+      - name: Run node, E2E, browser, type, and Storybook tests
+        env:
+          E2E_BASE_URL: http://localhost:4173
         run: vp test run
+
+      - name: Stop preview server
+        cancel: preview

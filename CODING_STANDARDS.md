@@ -101,6 +101,8 @@ new conventions.
   `vp run coverage` for V8 text, HTML, and LCOV reports.
 - Configure E2E Playwright launch and context options through the `e2e` project's
   `provide.e2e` in `vite.config.ts`; fixtures read them with `inject("e2e")`.
+- E2E tests need a running server. They use the dev server (`vp run dev`, port 3000) by default; set `E2E_BASE_URL` to test another server, such as
+  `vp run preview --port 4173` in CI.
 - Browser, E2E, and Storybook tests run headless by default. Set `HEADLESS=false`
   to show the browser, e.g. `HEADLESS=false vp test run --project e2e`.
 - Import test APIs from `vite-plus/test` and browser APIs from
