@@ -1,5 +1,5 @@
 import { createLink, useMatches } from "@tanstack/react-router";
-import { useState, type ComponentPropsWithRef } from "react";
+import { useEffect, useRef, useState, type ComponentPropsWithRef } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
@@ -31,6 +31,40 @@ function DestinationLinkBase({
 
 const DestinationLink = createLink(DestinationLinkBase);
 
+/**
+ * Settles a scroll that ends partway through the title collapse at whichever end is
+ * nearer, so the title never rests half-morphed.
+ */
+function useSettleTitleCollapse() {
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const toolbar = toolbarRef.current;
+    if (
+      !toolbar ||
+      !CSS.supports("(animation-timeline: scroll()) and (animation-range: 0% 100%)")
+    ) {
+      return undefined;
+    }
+    const settle = () => {
+      // Scroll offsets can round to whole pixels, so round up to be sure the collapse finishes.
+      const distance = Math.ceil(
+        Number.parseFloat(
+          getComputedStyle(toolbar).getPropertyValue("--app-bar-collapse-distance"),
+        ),
+      );
+      const { scrollY } = window;
+      if (scrollY <= 0 || scrollY >= distance) return;
+      window.scrollTo({
+        top: scrollY < distance / 2 ? 0 : distance,
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      });
+    };
+    window.addEventListener("scrollend", settle);
+    return () => window.removeEventListener("scrollend", settle);
+  }, []);
+  return toolbarRef;
+}
+
 export interface AppBarProps {
   navigationOpen: boolean;
   onOpenNavigation: () => void;
@@ -38,6 +72,7 @@ export interface AppBarProps {
 
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const toolbarRef = useSettleTitleCollapse();
   const pageData = useMatches({
     select: (matches) =>
       matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
@@ -46,7 +81,11 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
 
   return (
     <>
-      <header {...appBarBem({ modifiers: { "with-subtitle": Boolean(pageData?.subtitle) } })}>
+      <div {...appBarBem({ element: "toolbar" })} ref={toolbarRef}>
+        <span {...appBarBem({ element: "surface" })} aria-hidden="true" />
+        <span {...appBarBem({ element: "small-title" })} aria-hidden="true">
+          {pageData?.title}
+        </span>
         <fieldset {...appBarBem({ element: "actions" })} aria-label="Page actions">
           {pageData?.backLink ? (
             <InternalLinkIconButton
@@ -83,12 +122,17 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
             onClick={() => setPreferencesOpen(true)}
           />
         </fieldset>
-        <div {...appBarBem({ element: "text" })}>
-          <span {...appBarBem({ element: "title" })}>{pageData?.title}</span>
-          {pageData?.subtitle && (
-            <span {...appBarBem({ element: "subtitle" })}>{pageData.subtitle}</span>
-          )}
-        </div>
+      </div>
+      <header
+        {...appBarBem({
+          element: "text",
+          modifiers: { "with-subtitle": Boolean(pageData?.subtitle) },
+        })}
+      >
+        <span {...appBarBem({ element: "title" })}>{pageData?.title}</span>
+        {pageData?.subtitle && (
+          <span {...appBarBem({ element: "subtitle" })}>{pageData.subtitle}</span>
+        )}
       </header>
       <nav {...appBarBem({ element: "bottom-navigation" })} aria-label="Primary">
         {destinations.map(({ label, icon, ...link }) => (

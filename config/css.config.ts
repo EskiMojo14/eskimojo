@@ -8,6 +8,8 @@ import postcssCustomMedia from "postcss-custom-media";
 import postcssExtendRule from "postcss-extend-rule";
 import type { CSSOptions } from "vite-plus";
 
+import { postcssAlphaToRgb } from "./postcss-alpha-to-rgb.ts";
+
 export const cssConfig = {
   postcss: {
     plugins: [
@@ -18,6 +20,7 @@ export const cssConfig = {
       }),
       postcssCustomMedia(),
       postcssExtendRule({ onUnusedExtend: "throw" }),
+      postcssAlphaToRgb(),
     ],
   },
   // Resolve light-dark() where tokens are used, not at :root.

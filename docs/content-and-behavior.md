@@ -89,7 +89,23 @@ Without a subtitle, it has a 120px minimum height, display-small title typograph
 and 16px title insets. An optional `staticData.subtitle` adds title-medium text
 below the title and increases the minimum height to 152px. Long titles and subtitles
 wrap and grow the bar rather than being clipped.
-The bar scrolls with the page; scroll-driven collapse is not enabled.
+The title and subtitle scroll with the page while the navigation/actions row stays
+sticky at the top, keeping Preferences available. As the title reaches the
+toolbar it collapses into an MD3 small app bar: a CSS scroll-driven animation
+scales it from display-small to title-large and moves it beside any leading
+icon, with lines after the first clipped away. Once it lines up, an
+`aria-hidden` single-line copy in the toolbar (truncated with an ellipsis) takes
+over, so the heading is announced once. Reduced motion skips the scaling and
+fades the copy in instead. Pages always have room to scroll through the
+collapse, and a scroll that ends partway through it settles to whichever end is
+nearer (a `scrollend` listener; CSS proximity snapping would also pull nearby
+scroll positions on long pages back to the collapse point). Browsers without
+scroll-driven animations let the title scroll away under the toolbar.
+The toolbar surface changes from `surface` to `surface-container-high` (matching
+the raised bottom navigation) and gains a level 1 elevation shadow when stuck,
+using CSS scroll-state queries. Both transition with the default effects spring;
+reduced motion switches instantly. Browsers without scroll-state query support
+keep the flat base surface; no JavaScript scroll listener is used.
 On small screens, its leading menu icon opens the
 modal navigation drawer; the desktop drawer remains permanent. Preferences is
 not available inside either drawer, so opening it never stacks mobile modals.

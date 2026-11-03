@@ -1,35 +1,53 @@
-.app-bar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: minmax(4rem, auto) minmax(3.5rem, auto);
+.app-bar__toolbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  container-type: scroll-state;
+  container-name: app-bar-toolbar;
+  display: flex;
   align-items: center;
+  flex: none;
+  min-inline-size: 0;
+  margin: 0;
   padding-inline: 0.25rem;
-  background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
+  min-block-size: 4rem;
+}
 
-  &.app-bar--with-subtitle {
-    grid-template-rows: minmax(4rem, auto) minmax(5.5rem, auto);
+.app-bar__surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--md-sys-color-surface);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, box-shadow;
+    transition-duration: var(--md-sys-motion-spring-default-effects-duration);
+    transition-timing-function: var(--md-sys-motion-spring-default-effects);
+  }
+}
+
+@container app-bar-toolbar scroll-state(stuck: top) {
+  .app-bar__surface {
+    background-color: var(--md-sys-color-surface-container-high);
+    box-shadow:
+      0 1px 2px alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-key-opacity)),
+      0 1px 3px 1px
+        alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity));
   }
 }
 
 .app-bar__actions {
+  position: relative;
+  z-index: 1;
+  flex: 1;
   min-inline-size: 0;
   margin: 0;
   padding: 0;
   border: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-column: 1 / -1;
-  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  min-block-size: 4rem;
-}
-
-.app-bar__back {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
-  color: inherit;
 }
 
 .app-bar__bottom-navigation {
@@ -158,7 +176,7 @@
     }
   }
 
-  .app-shell__main:has(> .app-bar) {
+  .app-shell__main:has(> .app-bar__toolbar) {
     padding-block-end: calc(5rem + env(safe-area-inset-bottom));
   }
 
@@ -249,18 +267,153 @@
 .app-bar__text {
   display: grid;
   gap: 0.5rem;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  align-self: end;
+  flex: none;
+  min-block-size: 3.5rem;
   min-inline-size: 0;
   margin-inline: 0.75rem;
   padding-block-end: 0.75rem;
   overflow-wrap: anywhere;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+
+  &.app-bar__text--with-subtitle {
+    min-block-size: 5.5rem;
+  }
 }
 
 .app-bar__title {
   font: var(--md-sys-typography-display-small);
   font-feature-settings: var(--md-sys-typography-features-heading);
+}
+
+/*
+ * Once scrolled, the large title collapses into a small app bar title: it scrolls up into the
+ * toolbar while scaling from display-small to title-large, then hands off to an aria-hidden copy
+ * that stays in the toolbar. The page scroll provides the vertical movement, so the range ends
+ * when the scaled title exactly covers the copy, centred in the 4rem toolbar. Lines after the
+ * first are clipped away on the way, since the copy is a single truncated line.
+ */
+/* Registered so the app bar's scroll settling can read it as a resolved length. */
+@property --app-bar-collapse-distance {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+:root {
+  --app-bar-title-scale: calc(1.375 / 2.25);
+  --app-bar-collapse-distance: calc(2rem + 1.375rem * var(--app-bar-title-scale));
+}
+
+.app-bar__toolbar,
+.app-bar__text {
+  --app-bar-small-title-start: 0.75rem;
+  --app-bar-direction: 1;
+
+  @media (--modal-sidebar) {
+    --app-bar-small-title-start: 3.5rem;
+  }
+
+  @media (--phone) {
+    --app-bar-small-title-start: 0.75rem;
+  }
+
+  &:dir(rtl) {
+    --app-bar-direction: -1;
+  }
+}
+
+.app-bar__toolbar:has(.app-bar__back),
+.app-bar__toolbar:has(.app-bar__back) + .app-bar__text {
+  --app-bar-small-title-start: 3.5rem;
+}
+
+.app-bar__small-title {
+  display: none;
+}
+
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+  /* Short pages still scroll far enough to finish the collapse. */
+  .app-shell__main:has(> .app-bar__toolbar) {
+    min-block-size: calc(100lvh + var(--app-bar-collapse-distance) + 1px);
+  }
+
+  .app-bar__small-title {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    inset-block-start: calc((4rem - 1.75rem) / 2);
+    inset-inline: var(--app-bar-small-title-start) 3.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    font: var(--md-sys-typography-title-large);
+    font-feature-settings: var(--md-sys-typography-features-heading);
+    animation: app-bar-small-title-in linear both;
+    animation-timeline: scroll();
+    animation-range: 0 var(--app-bar-collapse-distance);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .app-bar__small-title {
+      animation-name: app-bar-small-title-swap;
+    }
+
+    .app-bar__title {
+      position: relative;
+      z-index: 3;
+      pointer-events: none;
+      transform-origin: 0 0;
+      animation: app-bar-title-collapse linear both;
+      animation-timeline: scroll();
+      animation-range: 0 var(--app-bar-collapse-distance);
+
+      &:dir(rtl) {
+        transform-origin: 100% 0;
+      }
+    }
+  }
+}
+
+@keyframes app-bar-small-title-in {
+  0%,
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Swap only once the titles coincide; crossfading while they're apart shows a double image. */
+@keyframes app-bar-small-title-swap {
+  0%,
+  99.9% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes app-bar-title-collapse {
+  0% {
+    clip-path: inset(0);
+  }
+
+  99.9% {
+    opacity: 1;
+  }
+
+  100% {
+    translate: calc((var(--app-bar-small-title-start) - 0.75rem) * var(--app-bar-direction)) 0;
+    scale: var(--app-bar-title-scale);
+    clip-path: inset(0 0 calc(100% - 2.75rem) 0);
+    opacity: 0;
+  }
 }
 
 .app-bar__subtitle {
@@ -275,9 +428,6 @@
 }
 
 .app-bar__navigation.icon-button {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
   display: none;
   color: inherit;
 
@@ -291,8 +441,7 @@
 }
 
 .app-bar__preferences {
-  grid-column: 2;
-  grid-row: 1;
+  margin-inline-start: auto;
   --icon-fill: 0;
 
   &[aria-expanded="true"] {
