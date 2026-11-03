@@ -8,7 +8,6 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { promiseAllKeyed } from "#/utils/index.ts";
-import { getSystemColorScheme } from "#test/e2e/util.ts";
 
 import { cssConfig } from "./config/css.config.ts";
 import fmtConfig from "./config/fmt.config.ts";
@@ -16,7 +15,7 @@ import fmtConfig from "./config/fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
-// Set HEADLESS=false to watch browser, E2E, and Storybook tests run.
+// Set HEADLESS=false to watch browser and Storybook tests run.
 const headless = process.env.HEADLESS !== "false";
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
@@ -64,31 +63,6 @@ const config = defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.e2e.{test,model}.ts", "test/e2e/**/*.ts"],
-        rules: {
-          "no-restricted-properties": [
-            "error",
-            {
-              property: "soft",
-              message:
-                "Playwright soft assertions do not report failures to Vitest. Use hard assertions.",
-            },
-            {
-              property: "toHaveScreenshot",
-              message: "Screenshot assertions require the Playwright Test runner.",
-            },
-            {
-              property: "toMatchSnapshot",
-              message: "Playwright snapshot assertions require the Playwright Test runner.",
-            },
-            {
-              property: "toMatchAriaSnapshot",
-              message: "ARIA snapshot assertions require the Playwright Test runner.",
-            },
-          ],
-        },
-      },
-      {
         files: ["**/*.e2e.{test,model}.ts"],
         rules: {
           "no-restricted-imports": [
@@ -106,7 +80,7 @@ const config = defineConfig({
         },
       },
       {
-        files: ["**/*.{browser,node,e2e}.test.{ts,tsx}"],
+        files: ["**/*.{browser,node}.test.{ts,tsx}"],
         plugins: ["vitest"],
         rules: {
           "vitest/no-standalone-expect": [
@@ -218,28 +192,6 @@ const config = defineConfig({
           environment: "node",
           include: ["**/*.node.test.ts"],
           setupFiles: ["./test/common/setup.ts", "./test/node/setup.ts"],
-        },
-      },
-      {
-        test: {
-          name: "e2e",
-          retry: process.env.CI ? 2 : 0,
-          environment: "node",
-          include: ["**/*.e2e.test.ts"],
-          setupFiles: ["./test/common/setup.ts"],
-          // Allow pages to compile on first load.
-          testTimeout: 30_000,
-          hookTimeout: 30_000,
-          provide: {
-            e2e: {
-              launchOptions: { headless, channel: "chromium" },
-              contextOptions: {
-                baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
-                colorScheme: getSystemColorScheme(),
-                serviceWorkers: "block",
-              },
-            },
-          },
         },
       },
       {
