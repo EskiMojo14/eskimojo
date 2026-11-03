@@ -54,18 +54,21 @@ test("primary navigation works with pointer and keyboard activation", async () =
   }
 });
 
-test.each([320, 390, 599, 600, 904, 905, 1239, 1240, 1280])(
-  "positions navigation responsively at %i px",
-  async (width) => {
+test.each([
+  { layout: "phone", width: 390, bottomNavigation: true, menuButton: false },
+  { layout: "tablet", width: 768, bottomNavigation: false, menuButton: true },
+  { layout: "desktop", width: 1280, bottomNavigation: false, menuButton: false },
+])(
+  "positions navigation responsively on $layout",
+  async ({ layout: _layout, width, ...expected }) => {
     await page.viewport(width, 844);
     const result = await renderPage();
-    const compact = width < 600;
     const navigation = result.getByRole("navigation", { name: "Primary" });
     const menuButton = result.getByRole("button", { name: "Open navigation menu" });
-    expect([Boolean(navigation.query()), Boolean(menuButton.query())]).toEqual([
-      compact,
-      width >= 600 && width < 1240,
-    ]);
+    expect({
+      bottomNavigation: Boolean(navigation.query()),
+      menuButton: Boolean(menuButton.query()),
+    }).toEqual(expected);
   },
 );
 

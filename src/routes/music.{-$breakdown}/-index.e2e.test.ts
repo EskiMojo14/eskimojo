@@ -1,4 +1,5 @@
 import { http, HttpResponse, passthrough } from "msw";
+import type { Locator, Page } from "playwright";
 import { fromJSON, toCrossJSONAsync } from "seroval";
 import * as v from "valibot";
 
@@ -15,9 +16,15 @@ function deferred() {
   return { ...p, [Symbol.dispose]: () => p.resolve() };
 }
 
-// Failed queries are retried with backoff before an error is shown.
-const errorTimeout = { timeout: 15_000 };
-const testTimeout = 60_000;
+/** Fast-forwards through React Query's retry backoff until `locator` is visible. */
+async function skipRetryBackoff(page: Page, locator: Locator) {
+  await expect
+    .poll(async () => {
+      await page.clock.fastForward("00:05");
+      return locator.isVisible();
+    })
+    .toBe(true);
+}
 
 const lastfmRequestSchema = v.object({
   data: v.object({ method: v.string() }),
@@ -81,11 +88,12 @@ async function failure() {
 
 const isSummary = (method: string) => method === "user.getInfo";
 
-test.beforeEach(async ({ network, home }) => {
+test.beforeEach(async ({ network, page, home }) => {
   network.use(lastfm(() => success()));
   // Music data requests only reach the browser network fixture during client-side
   // navigation, so let the home page finish loading before following links.
   await home.goto({ waitUntil: "networkidle" });
+  await page.clock.install();
 });
 
 test("shows music controls before independent requests finish", async ({ network, music }) => {
@@ -140,123 +148,118 @@ test("period and tab changes show loading feedback without hiding music controls
   await expect.locator(music.recent.emptyState).toBeVisible();
 });
 
-test(
-  "failed summary requests leave rankings usable and can be retried",
-  { timeout: testTimeout },
-  async ({ network, music }) => {
-    network.use(lastfm((method) => (isSummary(method) ? failure() : success())));
+test("failed summary requests leave rankings usable and can be retried", async ({
+  network,
+  page,
+  music,
+}) => {
+  network.use(lastfm((method) => (isSummary(method) ? failure() : success())));
 
-    await music.navigate();
-    await expect.locator(music.summaryError, errorTimeout).toBeVisible();
-    await expect.locator(music.topMusic.topTracks).toBeVisible();
-    await expect.locator(music.tabs).toBeVisible();
+  await music.navigate();
+  await skipRetryBackoff(page, music.summaryError);
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
+  await expect.locator(music.tabs).toBeVisible();
 
-    using pending = deferred();
-    network.use(
-      lastfm(async () => {
-        await pending.promise;
-        return success();
-      }),
-    );
-    await music.summaryRetry.click();
-    await expect.locator(music.summaryLoading).toBeVisible();
+  using pending = deferred();
+  network.use(
+    lastfm(async () => {
+      await pending.promise;
+      return success();
+    }),
+  );
+  await music.summaryRetry.click();
+  await expect.locator(music.summaryLoading).toBeVisible();
 
-    pending.resolve();
-    await expect.locator(music.summary).toBeVisible();
-    await expect.locator(music.alerts).not.toBeVisible();
-  },
-);
+  pending.resolve();
+  await expect.locator(music.summary).toBeVisible();
+  await expect.locator(music.alerts).not.toBeVisible();
+});
 
-test(
-  "failed rankings preserve summary and retry without showing empty listening history",
-  { timeout: testTimeout },
-  async ({ network, music }) => {
-    network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+test("failed rankings preserve summary and retry without showing empty listening history", async ({
+  network,
+  page,
+  music,
+}) => {
+  network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
 
-    await music.navigate();
-    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
-    await expect.locator(music.summary).toBeVisible();
-    await expect.locator(music.topMusic.emptyState.first()).not.toBeVisible();
+  await music.navigate();
+  await skipRetryBackoff(page, music.topMusic.error);
+  await expect.locator(music.summary).toBeVisible();
+  await expect.locator(music.topMusic.emptyState.first()).not.toBeVisible();
 
-    await music.topMusic.retry.click();
-    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+  await music.topMusic.retry.click();
+  await skipRetryBackoff(page, music.topMusic.error);
 
-    network.use(lastfm(() => success()));
-    await music.topMusic.retry.click();
-    await expect.locator(music.topMusic.topTracks).toBeVisible();
-    await expect.locator(music.topMusic.topArtists).toBeVisible();
-  },
-);
+  network.use(lastfm(() => success()));
+  await music.topMusic.retry.click();
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
+  await expect.locator(music.topMusic.topArtists).toBeVisible();
+});
 
-test(
-  "changing period or tab recovers the active tab after an error",
-  { timeout: testTimeout },
-  async ({ network, music }) => {
-    network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+test("changing period or tab recovers the active tab after an error", async ({
+  network,
+  page,
+  music,
+}) => {
+  network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
 
-    await music.navigate();
-    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
+  await music.navigate();
+  await skipRetryBackoff(page, music.topMusic.error);
 
-    network.use(lastfm(() => success()));
-    await music.topMusic.period("7 days").click();
-    await expect.locator(music.topMusic.topTracks).toBeVisible();
+  network.use(lastfm(() => success()));
+  await music.topMusic.period("7 days").click();
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
 
-    network.use(lastfm(() => failure()));
-    await music.recent.select();
-    await expect.locator(music.recent.error, errorTimeout).toBeVisible();
+  network.use(lastfm(() => failure()));
+  await music.recent.select();
+  await skipRetryBackoff(page, music.recent.error);
 
-    await music.topMusic.select();
-    await expect.locator(music.topMusic.topTracks).toBeVisible();
-    await expect.locator(music.alerts).not.toBeVisible();
-  },
-);
+  await music.topMusic.select();
+  await expect.locator(music.topMusic.topTracks).toBeVisible();
+  await expect.locator(music.alerts).not.toBeVisible();
+});
 
-test(
-  "simultaneous failures show independent retry controls",
-  { timeout: testTimeout },
-  async ({ network, music }) => {
-    network.use(lastfm(() => failure()));
+test("simultaneous failures show independent retry controls", async ({ network, page, music }) => {
+  network.use(lastfm(() => failure()));
 
-    await music.navigate();
-    await expect.locator(music.summaryError, errorTimeout).toBeVisible();
-    await expect.locator(music.topMusic.error, errorTimeout).toBeVisible();
-    await expect.poll(() => music.retryButtons.count()).toBe(2);
-    await expect.locator(music.topMusic.periods).toBeVisible();
-  },
-);
+  await music.navigate();
+  await skipRetryBackoff(page, music.summaryError);
+  await skipRetryBackoff(page, music.topMusic.error);
+  await expect.poll(() => music.retryButtons.count()).toBe(2);
+  await expect.locator(music.topMusic.periods).toBeVisible();
+});
 
-test(
-  "failed recent-track refresh keeps cached tracks and retries in place",
-  { timeout: testTimeout },
-  async ({ network, page, music }) => {
-    await page.clock.install();
-    network.use(lastfm(() => success(recentResponse)));
+test("failed recent-track refresh keeps cached tracks and retries in place", async ({
+  network,
+  page,
+  music,
+}) => {
+  network.use(lastfm(() => success(recentResponse)));
 
-    await music.navigate();
-    await music.recent.select();
-    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+  await music.navigate();
+  await music.recent.select();
+  await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
 
-    network.use(lastfm(() => failure()));
-    // Recent tracks refresh every minute.
-    await page.clock.fastForward("01:00");
-    await expect.locator(music.recent.refreshNotice, errorTimeout).toBeVisible();
-    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
-    await expect.locator(music.alerts).not.toBeVisible();
+  network.use(lastfm(() => failure()));
+  // Recent tracks refresh every minute.
+  await page.clock.fastForward("01:00");
+  await skipRetryBackoff(page, music.recent.refreshNotice);
+  await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+  await expect.locator(music.alerts).not.toBeVisible();
 
-    using pending = deferred();
-    network.use(
-      lastfm(async () => {
-        await pending.promise;
-        return success();
-      }),
-    );
-    await music.recent.refreshRetry.click();
-    await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-busy", "true");
-    await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-disabled", "true");
-    await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
+  using pending = deferred();
+  network.use(
+    lastfm(async () => {
+      await pending.promise;
+      return success();
+    }),
+  );
+  await music.recent.refreshRetry.click();
+  await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-busy", "true");
+  await expect.locator(music.recent.refreshRetry).toHaveAttribute("aria-disabled", "true");
+  await expect.locator(music.recent.track("Let It Happen")).toBeVisible();
 
-    pending.resolve();
-    await expect.locator(music.recent.refreshNotice).not.toBeVisible();
-    await expect.locator(music.recent.emptyState).toBeVisible();
-  },
-);
+  pending.resolve();
+  await expect.locator(music.recent.refreshNotice).not.toBeVisible();
+  await expect.locator(music.recent.emptyState).toBeVisible();
+});
