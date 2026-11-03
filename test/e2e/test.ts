@@ -45,6 +45,8 @@ const extendedTest = baseTest.extend<E2EFixtures>({
   ],
   context: async ({ browser, task }, use) => {
     const context = await browser.newContext(inject("e2e").contextOptions);
+    context.setDefaultTimeout(30_000);
+    context.setDefaultNavigationTimeout(30_000);
     try {
       await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
       await use(context);
