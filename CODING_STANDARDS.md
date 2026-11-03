@@ -117,6 +117,13 @@ new conventions.
 
 ### E2E patterns
 
+- E2E contexts record Playwright traces and retain them with full-page screenshots
+  of open pages under `test-results/e2e/` when a test attempt fails. Passing
+  attempts discard their traces. The fixture logs the artifact directory, and CI
+  uploads failure artifacts for seven days. Open a trace with
+  `vp exec playwright show-trace <path-to-trace.zip>`. These are debugging
+  artifacts, not visual regression snapshots; they may contain page and network
+  data, so do not commit them or use production credentials in tests.
 - Use page object models (POMs) for application E2E tests rather than constructing
   locators directly in test bodies. Keep selectors, locator composition, and
   reusable interactions in the model; keep scenario-specific assertions in tests.

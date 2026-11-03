@@ -27,3 +27,4 @@ storybook-static
 .netlify
 .vitest/
 .content-collections/
+test-results/
