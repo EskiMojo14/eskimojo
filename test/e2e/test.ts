@@ -26,7 +26,7 @@ declare module "vitest" {
   }
 }
 
-export const test = baseTest.extend<E2EFixtures>({
+const extendedTest = baseTest.extend<E2EFixtures>({
   browser: [
     // oxlint-disable-next-line no-empty-pattern
     async ({}, use) => {
@@ -56,3 +56,42 @@ export const test = baseTest.extend<E2EFixtures>({
     await page.close();
   },
 });
+
+/**
+ * Create an extended test object with page object models.
+ * @param models An object mapping model names to their classes.
+ * @returns An extended test object with the models available.
+ *
+ * @example
+ * const test = createTest({ dialog: DialogModel })
+ *
+ * test("example test", async ({ dialog }) => {
+ *   await dialog.open();
+ * });
+ */
+export function createTest<T extends Record<string, new (page: Page) => unknown>>(models: T) {
+  return extendedTest.extend<{
+    [K in keyof T]: InstanceType<T[K]>;
+  }>(
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    Object.fromEntries(
+      Object.entries(models).map(
+        ([key, Model]): [
+          string,
+          (
+            args: { page: Page },
+            use: (instance: InstanceType<typeof Model>) => Promise<void>,
+          ) => Promise<void>,
+        ] => [
+          key,
+          async ({ page }, use) => {
+            const instance = new Model(page);
+            await use(instance);
+          },
+        ],
+      ),
+    ) as never,
+  );
+}
+
+export const test = createTest({});
