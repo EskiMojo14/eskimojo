@@ -1,6 +1,5 @@
 import type { Page, Locator } from "playwright";
 
-import { lazy } from "#/utils";
 import type { Tail } from "#/utils/types";
 
 import { expect } from "./expect";
@@ -52,12 +51,10 @@ export abstract class TabObjectModel<
 
   abstract tabName: string;
 
-  @lazy
   get tabLink() {
     return this.parent.tabs.getByRole("tab", { name: this.tabName });
   }
 
-  @lazy
   get tabPanel() {
     return this.page.getByRole("tabpanel", { name: this.tabName, includeHidden: true });
   }
