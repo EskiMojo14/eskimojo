@@ -1,5 +1,4 @@
 allowBuilds:
-  "@swc/core": false
   esbuild: false
   lightningcss: false
   sharp: false
