@@ -241,7 +241,7 @@ const config = defineConfig({
             enabled: true,
             only: true,
             tsconfig: "./config/tsconfig.type-tests.json",
-            include: ["**/*.test-d.ts"],
+            include: ["src/**/*.test-d.ts"],
           },
         },
       },

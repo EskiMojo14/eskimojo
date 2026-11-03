@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../node_modules/.cache/tsconfig.e2e.tsbuildinfo"
+  },
+  "include": [
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "../types/**/*.ts",
+    "../test/e2e/**/*",
+    "../test/common/**/*"
+  ],
+  "exclude": [
+    "../types/postcss-extend-rule.d.ts",
+    "../**/*.browser.test.*",
+    "../**/*.node.test.ts",
+    "../src/**/*.test-d.ts",
+    "../**/*.stories.*"
+  ]
+}

@@ -17,7 +17,10 @@ const typecheckInputs = new Set([
   "pnpm-workspace.yaml",
 ]);
 const needsTypecheck = files.some(
-  (file) => /\.(?:ts|tsx|mdx)$/.test(file) || typecheckInputs.has(file),
+  (file) =>
+    /\.(?:ts|tsx|mdx)$/.test(file) ||
+    /^config\/tsconfig\..*\.json$/.test(file) ||
+    typecheckInputs.has(file),
 );
 if (needsTypecheck) {
   const check = spawnSync("vp", ["run", "typecheck"], { stdio: "inherit" });
