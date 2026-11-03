@@ -30,10 +30,10 @@ export class ProjectsPage extends PageObjectModel {
   async filterBy(label: ProjectFilterLabel) {
     const link = this.filterLink(label);
     await link.click();
-    await expect
-      .page(this.page)
-      .toHaveURL((url) => url.searchParams.get("type") === projectFilters[label]);
-    await expect.locator(link).toHaveAttribute("aria-current", "page");
+    await expect(this.page).toHaveURL(
+      (url) => url.searchParams.get("type") === projectFilters[label],
+    );
+    await expect(link).toHaveAttribute("aria-current", "page");
   }
 
   async openProject(title: string) {

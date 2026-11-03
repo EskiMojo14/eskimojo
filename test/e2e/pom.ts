@@ -1,8 +1,7 @@
+import { expect } from "@playwright/test";
 import type { Page, Locator } from "playwright";
 
 import type { Tail } from "#/utils/types";
-
-import { expect } from "./expect";
 
 export abstract class ObjectModel {
   protected page: Page;
@@ -23,7 +22,7 @@ export abstract class PageObjectModel extends ComponentObjectModel {
   async goto(...args: Tail<Parameters<Page["goto"]>>) {
     const response = await this.page.goto(this.url, ...args);
 
-    await expect.page(this.page).toHaveTitle(this.title);
+    await expect(this.page).toHaveTitle(this.title);
 
     return response;
   }
@@ -61,8 +60,8 @@ export abstract class TabObjectModel<
 
   async select() {
     await this.tabLink.click();
-    await expect.page(this.page).toHaveURL((url) => this.matchesUrl(url));
-    await expect.locator(this.tabLink).toHaveAttribute("aria-selected", "true");
-    await expect.locator(this.tabPanel).toBeVisible();
+    await expect(this.page).toHaveURL((url) => this.matchesUrl(url));
+    await expect(this.tabLink).toHaveAttribute("aria-selected", "true");
+    await expect(this.tabPanel).toBeVisible();
   }
 }
