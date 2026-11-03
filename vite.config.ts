@@ -8,6 +8,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 import { promiseAllKeyed } from "#/utils/index.ts";
+import { getSystemColorScheme } from "#test/e2e/util.ts";
 
 import { cssConfig } from "./config/css.config.ts";
 import fmtConfig from "./config/fmt.config.ts";
@@ -234,6 +235,7 @@ const config = defineConfig({
               launchOptions: { headless, channel: "chromium" },
               contextOptions: {
                 baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+                colorScheme: getSystemColorScheme(),
                 serviceWorkers: "block",
               },
             },
