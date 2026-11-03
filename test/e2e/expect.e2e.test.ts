@@ -4,6 +4,10 @@ import { expect, test } from "#test/e2e";
 
 const html = String.raw;
 
+// Short enough to fail fast, but long enough for the first Playwright check to
+// finish under load so the matcher's own error is reported.
+const failFast = { timeout: 500 };
+
 describe("receiver validation", () => {
   test.each(["foo", null, undefined, 42, {}])(
     "page matchers reject invalid receiver %j",
@@ -118,9 +122,9 @@ describe("expect.locator", () => {
     await page.setContent(html`<main></main>`);
     const heading = page.getByRole("heading");
 
-    await expect(expect.locator(heading, { timeout: 50 }).toHaveTextContent("")).rejects.toThrow();
+    await expect(expect.locator(heading, failFast).toHaveTextContent("")).rejects.toThrow();
     await expect(
-      expect.locator(heading, { timeout: 50 }).toHaveAttribute("data-state", ""),
+      expect.locator(heading, failFast).toHaveAttribute("data-state", ""),
     ).rejects.toThrow();
   });
 
@@ -130,7 +134,7 @@ describe("expect.locator", () => {
         <h1>Two</h1>`,
     );
     await expect(
-      expect.locator(page.getByRole("heading"), { timeout: 50 }).not.toHaveTextContent("Three"),
+      expect.locator(page.getByRole("heading"), failFast).not.toHaveTextContent("Three"),
     ).rejects.toThrow("at most one element");
   });
 
@@ -204,11 +208,11 @@ describe("expect.page", () => {
   });
 
   test("page assertions honor polling timeouts and report actual values", async ({ page }) => {
-    await expect(expect.page(page, { timeout: 50 }).toHaveTitle("Missing title")).rejects.toThrow(
+    await expect(expect.page(page, failFast).toHaveTitle("Missing title")).rejects.toThrow(
       "Missing title",
     );
-    await expect(
-      expect.page(page, { timeout: 50 }).toHaveURL("https://example.test/"),
-    ).rejects.toThrow("about:blank");
+    await expect(expect.page(page, failFast).toHaveURL("https://example.test/")).rejects.toThrow(
+      "about:blank",
+    );
   });
 });

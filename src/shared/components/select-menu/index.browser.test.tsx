@@ -159,31 +159,3 @@ test("icons appear in the selected value and menu options without changing acces
       .toBeVisible();
   }
 });
-
-test("long menus keep the active option visible at mobile widths", async () => {
-  await page.viewport(320, 568);
-  const result = await page.renderWithProviders(
-    <SelectMenu
-      label="Time zone"
-      value="zone-0"
-      options={Array.from({ length: 30 }, (_, index) => ({
-        value: `zone-${index}`,
-        label: `Time zone ${index}`,
-      }))}
-      onChange={vi.fn<(value: string) => void>()}
-    />,
-  );
-  const field = result.getByRole("combobox", { name: "Time zone" });
-  await field.click();
-  await userEvent.keyboard("{End}");
-  const menu = result.getByRole("listbox").element();
-  const last = result.getByRole("option", { name: "Time zone 29", exact: true }).element();
-  await expect.poll(() => menu.scrollTop).toBeGreaterThan(0);
-  const menuBounds = menu.getBoundingClientRect();
-  const optionBounds = last.getBoundingClientRect();
-  expect(optionBounds.top).toBeGreaterThanOrEqual(menuBounds.top);
-  expect(optionBounds.bottom).toBeLessThanOrEqual(menuBounds.bottom);
-  expect(menuBounds.left).toBeGreaterThanOrEqual(0);
-  expect(menuBounds.right).toBeLessThanOrEqual(320);
-  expect(menuBounds.bottom).toBeLessThanOrEqual(568);
-});

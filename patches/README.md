@@ -18,6 +18,16 @@
   these tokens without an image resource, after verifying `vp run typecheck`
   on MDX containing both links and images without the patch.
 
+- [TanStack Router Core 1.171.39](@tanstack__router-core@1.171.39.patch):
+  Handle the `ready` and `finished` promises of navigation view transitions.
+  The router only returns `updateCallbackDone`, so when a navigation starts
+  before the previous transition is ready, the skipped transition's `ready`
+  rejection is unhandled. Browsers log it, and Vitest fails the run. Backports
+  the change from [the upstream pull request](https://github.com/TanStack/router/pull/8802)
+  for [the upstream issue](https://github.com/TanStack/router/issues/8776).
+  Remove when the installed router includes a fix, after verifying the
+  interrupted-navigation test in `src/router.browser.test.tsx` without the patch.
+
 - [Storybook Vitest addon 10.6.4](@storybook__addon-vitest@10.6.4.patch):
   Decode URL-encoded paths before the test-registration guard compares them
   with Vitest's filesystem paths. Without this, stories under TanStack route

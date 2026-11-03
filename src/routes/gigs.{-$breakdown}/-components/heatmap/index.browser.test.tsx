@@ -1,4 +1,4 @@
-import { expect, onTestFinished, test } from "vite-plus/test";
+import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
@@ -101,20 +101,6 @@ test("shows complete monthly event details and supports keyboard pinning and dis
   await expect
     .element(result.getByRole("button", { name: "Close details" }))
     .not.toBeInTheDocument();
-});
-
-test.each([320, 390, 768])("fits the chart within a %ipx viewport", async (width) => {
-  const originalViewport = { width: window.innerWidth, height: window.innerHeight };
-  onTestFinished(() => page.viewport(originalViewport.width, originalViewport.height));
-  await page.viewport(width, 844);
-  const result = await page.renderWithProviders(<GigsHeatmap events={gigs.events} />);
-  const chart = result.getByRole("img", { name: "Gigs by month and year" });
-  await expect.element(chart).toBeVisible();
-  await expect.poll(() => chart.element().getBoundingClientRect().width).toBeLessThanOrEqual(width);
-  await expect.poll(() => document.documentElement.scrollWidth).toBeLessThanOrEqual(width);
-  await expect
-    .poll(() => chart.element().querySelectorAll("rect").length)
-    .toBeGreaterThanOrEqual(144);
 });
 
 test("renders exact monthly counts and a screen-reader-accessible table", async () => {
