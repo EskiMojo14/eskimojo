@@ -37,3 +37,15 @@ export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unkno
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return unsafeFromEntries(results.map((result, i) => [keys[i], result])) as never;
 };
+
+/** Caches a getter's result on each instance after its first access. */
+export function lazy<T extends object, R>(
+  get: (this: T) => R,
+  { name }: ClassGetterDecoratorContext<T, R>,
+) {
+  return function decoratedGetter(this: T) {
+    const value = get.call(this);
+    Object.defineProperty(this, name, { value });
+    return value;
+  };
+}

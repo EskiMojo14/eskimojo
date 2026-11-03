@@ -1,5 +1,37 @@
-import type { Locator } from "playwright";
-import { expect } from "vite-plus/test";
+import type { Locator, Page } from "playwright";
+import { expect, type MatcherState } from "vite-plus/test";
+
+function hasMethods(value: unknown, methods: Array<string>) {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    methods.every((method) => method in value && typeof Reflect.get(value, method) === "function")
+  );
+}
+
+function assertPage(
+  value: unknown,
+  matcher: string,
+  utils: MatcherState["utils"],
+): asserts value is Page {
+  if (!hasMethods(value, ["title", "url", "context", "goto"])) {
+    throw new TypeError(
+      `${matcher} requires a Playwright Page, received ${utils.printReceived(value)}`,
+    );
+  }
+}
+
+function assertLocator(
+  value: unknown,
+  matcher: string,
+  utils: MatcherState["utils"],
+): asserts value is Locator {
+  if (!hasMethods(value, ["evaluateAll", "isVisible", "page", "locator"])) {
+    throw new TypeError(
+      `${matcher} requires a Playwright Locator, received ${utils.printReceived(value)}`,
+    );
+  }
+}
 
 async function getTextContent(locator: Locator, options = { normalizeWhitespace: true }) {
   const actual = await locator.evaluateAll((elements) =>
@@ -19,7 +51,35 @@ async function getTextContent(locator: Locator, options = { normalizeWhitespace:
 }
 
 expect.extend({
-  async toBeVisible(locator: Locator) {
+  async toHaveTitle(page: unknown, expected: string | RegExp) {
+    assertPage(page, "toHaveTitle", this.utils);
+    const actual = await page.title();
+    return {
+      pass: typeof expected === "string" ? actual === expected : new RegExp(expected).test(actual),
+      actual,
+      expected,
+      message: () =>
+        `Expected page ${this.isNot ? "not " : ""}to have title ${this.utils.printExpected(expected)}, received ${this.utils.printReceived(actual)}`,
+    };
+  },
+  toHaveURL(page: unknown, expected: string | RegExp | ((url: URL) => boolean)) {
+    assertPage(page, "toHaveURL", this.utils);
+    const actual = page.url();
+    return {
+      pass:
+        typeof expected === "function"
+          ? expected(new URL(actual))
+          : typeof expected === "string"
+            ? actual === expected
+            : new RegExp(expected).test(actual),
+      actual,
+      expected,
+      message: () =>
+        `Expected page ${this.isNot ? "not " : ""}to have URL ${this.utils.printExpected(expected)}, received ${this.utils.printReceived(actual)}`,
+    };
+  },
+  async toBeVisible(locator: unknown) {
+    assertLocator(locator, "toBeVisible", this.utils);
     const visible = await locator.isVisible();
     return {
       pass: visible,
@@ -29,10 +89,11 @@ expect.extend({
     };
   },
   async toHaveTextContent(
-    locator: Locator,
+    locator: unknown,
     expected?: string | number,
     options?: { normalizeWhitespace: boolean },
   ) {
+    assertLocator(locator, "toHaveTextContent", this.utils);
     const actual = await getTextContent(locator, options);
     return {
       pass:
@@ -45,10 +106,11 @@ expect.extend({
     };
   },
   async toMatchTextContent(
-    locator: Locator,
+    locator: unknown,
     expected: string | number | RegExp,
     options?: { normalizeWhitespace: boolean },
   ) {
+    assertLocator(locator, "toMatchTextContent", this.utils);
     const actual = await getTextContent(locator, options);
     return {
       pass:
@@ -62,7 +124,8 @@ expect.extend({
         `Expected ${locator.toString()} ${this.isNot ? "not " : ""}to match text content ${this.utils.printExpected(expected)}, received ${this.utils.printReceived(actual)}`,
     };
   },
-  async toHaveAttribute(locator: Locator, name: string, expected?: unknown) {
+  async toHaveAttribute(locator: unknown, name: string, expected?: unknown) {
+    assertLocator(locator, "toHaveAttribute", this.utils);
     const actual = await locator.evaluateAll(
       (elements, attribute) => elements.map((element) => element.getAttribute(attribute)),
       name,
@@ -86,13 +149,17 @@ expect.extend({
 });
 
 expect.locator = (locator, options) => expect.poll(() => locator, options);
+expect.page = (page, options) => expect.poll(() => page, options);
 
 declare module "vitest" {
   interface ExpectStatic {
     locator(locator: Locator, options?: ExpectPollOptions): ReturnType<typeof expect.poll<Locator>>;
+    page(page: Page, options?: ExpectPollOptions): ReturnType<typeof expect.poll<Page>>;
   }
 
   interface Matchers<R, T> {
+    toHaveTitle(expected: string | RegExp): Promise<void>;
+    toHaveURL(expected: string | RegExp | ((url: URL) => boolean)): R;
     toBeVisible(): Promise<void>;
     toHaveTextContent(
       text?: string | number,
