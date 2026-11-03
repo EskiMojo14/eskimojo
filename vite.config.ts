@@ -222,11 +222,11 @@ const config = defineConfig({
       {
         test: {
           name: "e2e",
-          retry: 3,
+          retry: process.env.CI ? 2 : 0,
           environment: "node",
           include: ["**/*.e2e.test.ts"],
           setupFiles: ["./test/common/setup.ts"],
-          // Match Playwright's default action timeout; pages may compile on first load.
+          // Allow pages to compile on first load.
           testTimeout: 30_000,
           hookTimeout: 30_000,
           provide: {
@@ -243,7 +243,7 @@ const config = defineConfig({
       {
         test: {
           name: "browser",
-          retry: 3,
+          retry: process.env.CI ? 2 : 0,
           include: ["**/*.browser.test.ts", "**/*.browser.test.tsx"],
           setupFiles: ["./test/common/setup.ts", "./test/browser/setup.ts"],
           browser: {

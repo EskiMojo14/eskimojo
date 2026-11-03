@@ -123,10 +123,15 @@ new conventions.
 
 ### E2E patterns
 
+- E2E and Browser Mode tests retry twice in CI and do not retry locally.
+  Assertion polling still retries independently of whole-test retries.
+  E2E browser contexts set 30-second action and navigation timeouts for all
+  pages, including popups.
 - E2E contexts record Playwright traces and retain them with full-page screenshots
   of open pages under `test-results/e2e/` when a test attempt fails. Passing
   attempts discard their traces. The fixture logs the artifact directory, and CI
-  uploads failure artifacts for seven days. Open a trace with
+  uploads failure artifacts for seven days, including failed attempts whose
+  retries pass, unless the job is cancelled. Open a trace with
   `vp exec playwright show-trace <path-to-trace.zip>`. These are debugging
   artifacts, not visual regression snapshots; they may contain page and network
   data, so do not commit them or use production credentials in tests.
