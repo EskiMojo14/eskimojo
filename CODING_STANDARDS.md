@@ -74,6 +74,17 @@ new conventions.
 
 ## Tests and stories
 
+- The root `tsconfig.json` is a solution referencing separate application/Node,
+  Browser/Storybook, E2E, and type-test projects under `config/`. Shared compiler
+  options live in `config/tsconfig.base.json`; run `vp run typecheck` to check all
+  projects. Keep browser and E2E setup imports within their own project so
+  assertion augmentations do not leak across environments.
+- The PostCSS ambient declaration imports build-tool types that transitively
+  load Vitest Browser Mode augmentations. Keep it excluded from E2E and
+  type-test projects. Compile-time checks in `test/browser/assertion-types.test-d.ts`
+  and `test/e2e/assertion-types.test-d.ts` guard the assertion boundary through
+  their environment's TypeScript project. The Vitest type-test project discovers
+  only `src/**/*.test-d.ts` so it does not merge these environment-specific checks.
 - Put tests and stories beside the file they cover:
   - `foo.node.test.ts` for Node-side tests (test React/DOM behavior in the browser);
   - `foo.browser.test.ts` or `foo.browser.test.tsx` for browser tests;
