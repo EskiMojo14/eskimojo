@@ -1,4 +1,7 @@
 // oxlint-disable react-hooks/rules-of-hooks
+import { mkdir, mkdtemp } from "node:fs/promises";
+import path from "node:path";
+
 import { defineNetworkFixture, type NetworkFixture } from "@msw/playwright";
 import type {
   Browser,
@@ -40,10 +43,38 @@ const extendedTest = baseTest.extend<E2EFixtures>({
     },
     { scope: "worker" },
   ],
-  context: async ({ browser }, use) => {
+  context: async ({ browser, task }, use) => {
     const context = await browser.newContext(inject("e2e").contextOptions);
-    await use(context);
-    await context.close();
+    try {
+      await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+      await use(context);
+      if (task.result?.state === "fail") {
+        const outputRoot = path.resolve("test-results/e2e");
+        await mkdir(outputRoot, { recursive: true });
+        const outputDir = await mkdtemp(path.join(outputRoot, `${task.id}-`));
+        console.error(`E2E failure artifacts for "${task.name}": ${outputDir}`);
+        try {
+          await Promise.all(
+            context
+              .pages()
+              .filter((page) => !page.isClosed())
+              .map((page, index) =>
+                page.screenshot({
+                  path: path.join(outputDir, `page-${index + 1}.png`),
+                  fullPage: true,
+                  timeout: 5_000,
+                }),
+              ),
+          );
+        } finally {
+          await context.tracing.stop({ path: path.join(outputDir, "trace.zip") });
+        }
+      } else {
+        await context.tracing.stop();
+      }
+    } finally {
+      await context.close();
+    }
   },
   network: [
     async ({ context }, use) => {
@@ -60,8 +91,8 @@ const extendedTest = baseTest.extend<E2EFixtures>({
   ],
   page: async ({ context }, use) => {
     const page = await context.newPage();
+    // The context closes pages after capturing failure artifacts.
     await use(page);
-    await page.close();
   },
   fontsLoaded: async ({ page }, use) => {
     await use(() =>
