@@ -63,6 +63,31 @@ const config = defineConfig({
     },
     overrides: [
       {
+        files: ["**/*.e2e.{test,model}.ts", "test/e2e/**/*.ts"],
+        rules: {
+          "no-restricted-properties": [
+            "error",
+            {
+              property: "soft",
+              message:
+                "Playwright soft assertions do not report failures to Vitest. Use hard assertions.",
+            },
+            {
+              property: "toHaveScreenshot",
+              message: "Screenshot assertions require the Playwright Test runner.",
+            },
+            {
+              property: "toMatchSnapshot",
+              message: "Playwright snapshot assertions require the Playwright Test runner.",
+            },
+            {
+              property: "toMatchAriaSnapshot",
+              message: "ARIA snapshot assertions require the Playwright Test runner.",
+            },
+          ],
+        },
+      },
+      {
         files: ["**/*.e2e.{test,model}.ts"],
         rules: {
           "no-restricted-imports": [
@@ -204,8 +229,6 @@ const config = defineConfig({
           // Match Playwright's default action timeout; pages may compile on first load.
           testTimeout: 30_000,
           hookTimeout: 30_000,
-          // Match Playwright's default assertion timeout for `expect.locator`/`expect.page`.
-          expect: { poll: { timeout: 5_000 } },
           provide: {
             e2e: {
               launchOptions: { headless, channel: "chromium" },

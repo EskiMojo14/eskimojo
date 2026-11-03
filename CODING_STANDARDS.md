@@ -151,9 +151,18 @@ new conventions.
 - Prefer role and accessible-name locators inside models, scoped to the relevant
   component or landmark. Expose meaningful names such as `socialLink(name)`
   rather than leaking selector strings into tests.
-- Use `expect.locator(model.socialLink("GitHub"))` and `expect.page(page)` for
-  retrying DOM and page assertions. Await assertions and interactions; avoid
-  fixed sleeps or duplicating polling already provided by these helpers.
+- Use the Playwright `expect` re-exported by `#test/e2e` for E2E assertions:
+  `await expect(model.socialLink("GitHub")).toBeVisible()` and
+  `await expect(page).toHaveTitle(/Home/)`. Vitest still owns the test runner and
+  fixtures. Playwright's web assertions retry with a default five-second timeout;
+  pass `{ timeout }` to individual matchers or use `expect.configure({ timeout })`
+  for a configured instance. Vitest's `expect.poll` configuration does not apply.
+  Use `toHaveText` for exact text and `toContainText` for partial text.
+  Await assertions and interactions; avoid fixed sleeps or duplicate polling.
+  Linting rejects `.soft`, `toHaveScreenshot`, `toMatchSnapshot`, and
+  `toMatchAriaSnapshot` in E2E tests, models, and helpers because they depend on
+  the Playwright Test runner. Do not enable soft assertions through
+  `expect.configure({ soft: true })` either; Vitest cannot track their failures.
 
 #### Tabbed pages
 

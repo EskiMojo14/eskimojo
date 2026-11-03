@@ -1,3 +1,3 @@
-export { expect } from "./expect";
+export { expect } from "@playwright/test";
 export { test, test as it, createTest } from "./test";
 export { ComponentObjectModel, PageObjectModel, TabObjectModel } from "./pom";

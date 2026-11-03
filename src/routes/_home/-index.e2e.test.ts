@@ -10,7 +10,7 @@ test.beforeEach(async ({ home, fontsLoaded }) => {
 });
 
 test("Social links display correctly", async ({ home }) => {
-  await expect.locator(home.socialLink("GitHub")).toBeVisible();
-  await expect.locator(home.socialLink("Twitter")).toBeVisible();
-  await expect.locator(home.socialLink("Bluesky")).toBeVisible();
+  await expect(home.socialLink("GitHub")).toBeVisible();
+  await expect(home.socialLink("Twitter")).toBeVisible();
+  await expect(home.socialLink("Bluesky")).toBeVisible();
 });

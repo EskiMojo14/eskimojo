@@ -89,8 +89,8 @@ export class MusicPage extends PageObjectModel {
   /** Navigate to the music page from the current page using the primary navigation. */
   async navigate() {
     await this.navLink.click();
-    await expect.page(this.page).toHaveURL((url) => this.matchesUrl(url));
-    await expect.page(this.page).toHaveTitle(this.title);
+    await expect(this.page).toHaveURL((url) => this.matchesUrl(url));
+    await expect(this.page).toHaveTitle(this.title);
   }
 
   tabs = this.main.getByRole("tablist", { name: "Music breakdown" });
