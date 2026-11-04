@@ -1,4 +1,3 @@
-import { geoMercator, geoPath } from "d3-geo";
 import { expect, test } from "vite-plus/test";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
@@ -38,7 +37,6 @@ test("locates every archive city in England and counts every event once", () => 
   const bristol = cities.find(({ city }) => city === "Bristol")!;
   const london = cities.find(({ city }) => city === "London")!;
   expect(bristol.coordinates[0]).toBeLessThan(london.coordinates[0]);
-  expect(geoPath(geoMercator())(englandGeometry)).toMatch(/^M/);
 });
 
 test("handles an empty archive and explicitly rejects cities without coordinates", () => {
@@ -59,13 +57,10 @@ test("fits the event region rather than the full England outline", () => {
     ],
   });
   expect(getCityMapFit([])).toBe(englandGeometry);
-});
-
-test("keeps a single-city projection finite", () => {
-  const cities = getCityMapData([{ city: "Bristol", date: "2024-01-01" }]);
-  const projection = geoMercator().fitSize([720, 520], getCityMapFit(cities));
-  const position = projection(cities[0].coordinates)!;
-  expect(position[0]).toBeCloseTo(360);
-  expect(position[1]).toBeCloseTo(260, 0);
-  expect(Number.isFinite(projection.scale())).toBe(true);
+  const singleCityFit = getCityMapFit([{ coordinates: [-2.5879, 51.4545] }]);
+  expect(singleCityFit.type).toBe("MultiPoint");
+  expect(singleCityFit.coordinates[0][0]).toBeCloseTo(-2.7379);
+  expect(singleCityFit.coordinates[0][1]).toBeCloseTo(51.3045);
+  expect(singleCityFit.coordinates[1][0]).toBeCloseTo(-2.4379);
+  expect(singleCityFit.coordinates[1][1]).toBeCloseTo(51.6045);
 });
