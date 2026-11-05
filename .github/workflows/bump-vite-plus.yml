@@ -1,0 +1,68 @@
+name: Bump Vite+
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-vite-plus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
+        with:
+          node-version-file: .node-version
+          run-install: false
+
+      - name: Compute 24h cutoff (UTC)
+        id: cutoff
+        run: |
+          cutoff="$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)"
+          echo "value=$cutoff" >> "$GITHUB_OUTPUT"
+
+      - name: Pick latest stable Vite+ release older than 24h
+        id: pick
+        env:
+          CUTOFF: ${{ steps.cutoff.outputs.value }}
+        run: vpx .github/scripts/pick-vite-plus-release.ts
+
+      - name: Upgrade global Vite+
+        if: steps.pick.outputs.version != ''
+        run: vp upgrade "${{ steps.pick.outputs.version }}"
+
+      - name: Migrate project toolchain
+        if: steps.pick.outputs.version != ''
+        run: vp migrate --no-interactive
+
+      - name: Install migrated dependencies
+        if: steps.pick.outputs.version != ''
+        run: vp install
+
+      - name: Create Pull Request
+        if: steps.pick.outputs.version != ''
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.BOT_GH_TOKEN }}
+          commit-message: "chore: bump Vite+ to ${{ steps.pick.outputs.version }}"
+          title: "chore: bump Vite+ to ${{ steps.pick.outputs.version }}"
+          body: |
+            Automated Vite+ toolchain update.
+
+            Version metadata:
+            - Previous: ${{ steps.pick.outputs.current_version }}
+            - New: ${{ steps.pick.outputs.version }}
+            - Published at: ${{ steps.pick.outputs.published_at }}
+            - Cooldown: at least 24 hours old
+            - Channel: stable releases only
+
+            The workflow ran `vp upgrade`, `vp migrate --no-interactive`, and `vp install`, then aligned the Rolldown override with Vite+'s bundled version, matched `@vitest/expect` to the `vitest` catalog version, and refreshed the lockfile. The pull request's CI runs the project builds, checks, and tests.
+          branch: chore/bump-vite-plus
+          delete-branch: true
