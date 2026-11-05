@@ -1,0 +1,42 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "0 9 * * *"
+    cooldown:
+      default-days: 1
+    ignore:
+      # Keep Node types pinned to match .node-version
+      - dependency-name: "@types/node"
+      # Keep the Vite+ package, Vite core alias, and Vitest ecosystem pins aligned via vp migrate.
+      - dependency-name: "vite-plus"
+      - dependency-name: "vite"
+      - dependency-name: "@voidzero-dev/vite-plus-core"
+      - dependency-name: "vitest"
+      - dependency-name: "@vitest/browser-playwright"
+      - dependency-name: "@vitest/coverage-v8"
+    groups:
+      npm:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "0 9 * * *"
+    cooldown:
+      default-days: 1
+    groups:
+      actions:
+        patterns:
+          - "*"

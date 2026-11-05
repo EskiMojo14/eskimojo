@@ -1,0 +1,59 @@
+name: Bump pnpm (Vite+)
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump-pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
+        with:
+          node-version-file: .node-version
+          run-install: false
+
+      - name: Compute 24h cutoff (UTC)
+        id: cutoff
+        run: |
+          cutoff="$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)"
+          echo "value=$cutoff" >> "$GITHUB_OUTPUT"
+
+      - name: Pick pnpm version older than 24h
+        id: pick
+        env:
+          CUTOFF: ${{ steps.cutoff.outputs.value }}
+        run: vpx .github/scripts/pick-pnpm-version.ts
+
+      - name: Update pnpm pin
+        run: vp env pin --target package-manager --force pnpm@${{ steps.pick.outputs.version }}
+
+      - name: Refresh lockfile metadata
+        run: vp install --lockfile-only
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.BOT_GH_TOKEN }}
+          commit-message: "chore: bump pnpm via Vite+"
+          title: "chore: bump pnpm via Vite+"
+          body: |
+            Automated update of the pnpm toolchain pin using Vite+.
+
+            Command run:
+            - vp env pin --target package-manager --force pnpm@${{ steps.pick.outputs.version }}
+
+            Version metadata:
+            - Published at: ${{ steps.pick.outputs.published_at }}
+            - Cooldown: at least 24 hours old
+            - Channel: stable only (no prereleases)
+          branch: chore/bump-pnpm
+          delete-branch: true
