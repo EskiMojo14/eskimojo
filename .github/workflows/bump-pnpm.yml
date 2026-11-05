@@ -34,7 +34,7 @@ jobs:
         run: vpx .github/scripts/pick-pnpm-version.ts
 
       - name: Update pnpm pin
-        run: vp env pin --target package-manager --force pnpm@${{ steps.pick.outputs.version }}
+        run: vp env pin --target dev-engines --force pnpm@${{ steps.pick.outputs.version }}
 
       - name: Refresh lockfile metadata
         run: vp install --lockfile-only
@@ -49,7 +49,7 @@ jobs:
             Automated update of the pnpm toolchain pin using Vite+.
 
             Command run:
-            - vp env pin --target package-manager --force pnpm@${{ steps.pick.outputs.version }}
+            - vp env pin --target dev-engines --force pnpm@${{ steps.pick.outputs.version }}
 
             Version metadata:
             - Published at: ${{ steps.pick.outputs.published_at }}
