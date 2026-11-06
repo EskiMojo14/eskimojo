@@ -1,149 +1,42 @@
-import type { QueryKey, UnusedSkipTokenOptions, WithRequired } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
-import { up } from "up-fetch";
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import * as v from "valibot";
 
-import { withServerEnv } from "#/utils/env.ts";
-import { unsafeEntries } from "#/utils/index.ts";
-import type { HasRequiredProps } from "#/utils/types";
+import { getServerEnv } from "#/utils/env.ts";
+import { anyAbortSignal, upfetch } from "#/utils/index.ts";
 import * as vUtils from "#/utils/valibot";
 
 import { periodSchema, type Period } from "./-constants";
 
 export { periodSchema, type Period } from "./-constants";
 
-const lastfmMethodParams = {
-  "user.getRecentTracks": v.object({
-    limit: v.optional(v.number()),
-  }),
-  "user.getTopTracks": v.object({
-    period: periodSchema,
-    limit: v.optional(v.number()),
-  }),
-  "user.getTopArtists": v.object({
-    period: periodSchema,
-    limit: v.optional(v.number()),
-  }),
-  "user.getInfo": v.object({}),
-};
-
-type LastfmMethod = keyof typeof lastfmMethodParams;
-
-const lastfmRequestSchema = v.variant(
-  "method",
-  unsafeEntries(lastfmMethodParams).map(([method, schema]) =>
-    v.object({
-      method: v.literal(method),
-      params: schema,
-    }),
-  ),
-);
-
-const upfetch = up(fetch);
-
-export const fetchLastfm = createServerFn({ method: "GET" })
-  .middleware([withServerEnv])
-  .validator(lastfmRequestSchema)
-  .handler(({ data, context: { serverEnv } }) =>
-    upfetch("https://ws.audioscrobbler.com/2.0/", {
+export const fetchLastfm = createServerOnlyFn(
+  <T extends v.GenericSchema>({
+    method,
+    params,
+    schema,
+    signal,
+  }: {
+    method: string;
+    params?: Record<string, unknown>;
+    schema: T;
+    signal?: AbortSignal;
+  }) => {
+    const { LASTFM_API_KEY, LASTFM_USER } = getServerEnv();
+    return upfetch("https://ws.audioscrobbler.com/2.0/", {
       params: {
-        api_key: serverEnv.LASTFM_API_KEY,
+        api_key: LASTFM_API_KEY,
         format: "json",
-        user: serverEnv.LASTFM_USER,
-        ...data.params,
-        method: data.method,
+        user: LASTFM_USER,
+        ...params,
+        method,
       },
-    }),
-  );
-
-type ParamsSchema = v.ObjectSchema<
-  Record<string, v.GenericSchema<unknown, string | number | boolean | undefined>>,
-  v.ErrorMessage<v.ObjectIssue> | undefined
->;
-
-type ParamsArgs<TParamsSchema extends ParamsSchema> = HasRequiredProps<
-  v.InferInput<TParamsSchema>,
-  [params: v.InferInput<TParamsSchema>],
-  [params?: v.InferInput<TParamsSchema>]
->;
-
-interface EndpointOptions<
-  TMethod extends LastfmMethod,
-  TResponseSchema extends v.GenericSchema,
-  TQueryKey extends QueryKey,
-  Selected,
-  TMultiParams extends keyof v.InferInput<(typeof lastfmMethodParams)[TMethod]>,
-> {
-  method: TMethod;
-  responseSchema: TResponseSchema;
-  getQueryKey: (params: v.InferInput<(typeof lastfmMethodParams)[TMethod]>) => TQueryKey;
-  select: (output: v.InferOutput<TResponseSchema>) => Selected;
-  multiParams?: Array<TMultiParams>;
-}
-
-interface Endpoint<
-  TMethod extends LastfmMethod,
-  TResponseSchema extends v.GenericSchema,
-  TQueryKey extends QueryKey,
-  Selected,
-  TMultiParams extends keyof v.InferInput<(typeof lastfmMethodParams)[TMethod]>,
-> {
-  (
-    ...args: ParamsArgs<(typeof lastfmMethodParams)[TMethod]>
-  ): WithRequired<
-    UnusedSkipTokenOptions<Selected, Error, Selected, readonly ["lastfm", ...TQueryKey]>,
-    "queryKey"
-  >;
-  method: TMethod;
-  paramsSchema: (typeof lastfmMethodParams)[TMethod];
-  multiParams: Array<TMultiParams>;
-  responseSchema: TResponseSchema;
-}
-
-const buildEndpoint = <
-  const TMethod extends LastfmMethod,
-  TResponseSchema extends v.GenericSchema,
-  const TQueryKey extends QueryKey,
-  Selected = v.InferOutput<TResponseSchema>,
-  TMultiParams extends keyof v.InferInput<(typeof lastfmMethodParams)[TMethod]> = never,
->({
-  method,
-  responseSchema,
-  getQueryKey,
-  multiParams = [] as Array<TMultiParams>,
-  select,
-}: EndpointOptions<TMethod, TResponseSchema, TQueryKey, Selected, TMultiParams>): Endpoint<
-  TMethod,
-  TResponseSchema,
-  TQueryKey,
-  Selected,
-  TMultiParams
-> => {
-  const paramsSchema = lastfmMethodParams[method];
-  return Object.assign(
-    function endpointOptions(params: Record<string, unknown> = {}) {
-      const parsed = v.parse(paramsSchema, params);
-      return queryOptions({
-        queryKey: ["lastfm", ...getQueryKey(parsed)] as const,
-        queryFn: ({ signal }) =>
-          fetchLastfm({
-            data: {
-              method,
-              params: parsed,
-            },
-            signal,
-          }).then((response) => select(v.parse(responseSchema, response))),
-      });
-    },
-    {
-      method,
-      paramsSchema,
-      multiParams,
-      responseSchema,
-    },
-  );
-};
+      signal,
+      schema,
+    });
+  },
+);
 
 const imageSizeSchema = v.picklist(["small", "medium", "large", "extralarge", "mega"]);
 type ImageSize = v.InferOutput<typeof imageSizeSchema>;
@@ -215,16 +108,35 @@ const recentTrackSchema = v.union([
 
 export type RecentTrack = v.InferOutput<typeof recentTrackSchema>;
 
-export const getRecentTracks = buildEndpoint({
-  method: "user.getRecentTracks",
-  responseSchema: v.object({
-    recenttracks: v.object({
-      track: v.array(recentTrackSchema),
-    }),
-  }),
-  getQueryKey: ({ limit }) => ["recent-tracks", { limit }],
-  select: (res) => res.recenttracks.track,
+const getRecentTracksParams = v.object({
+  limit: v.optional(v.number()),
 });
+
+export const getRecentTracksFn = createServerFn({ method: "GET" })
+  .validator(getRecentTracksParams)
+  .handler(({ data }) =>
+    fetchLastfm({
+      method: "user.getRecentTracks",
+      params: data,
+      signal: getRequest().signal,
+      schema: v.object({
+        recenttracks: v.object({
+          track: v.array(recentTrackSchema),
+        }),
+      }),
+    }),
+  );
+
+export const getRecentTracks = (
+  params: v.InferInput<typeof getRecentTracksParams>,
+  signalOpt?: AbortSignal,
+) =>
+  queryOptions({
+    queryKey: ["recent-tracks", params],
+    queryFn: ({ signal }) =>
+      getRecentTracksFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    select: (res) => res.recenttracks.track,
+  });
 
 export const fullPeriodLabels: Record<Period, string> = {
   "7day": "7 days",
@@ -255,16 +167,36 @@ const topTrackSchema = v.pipe(
 
 export type TopTrack = v.InferOutput<typeof topTrackSchema>;
 
-export const getTopTracks = buildEndpoint({
-  method: "user.getTopTracks",
-  responseSchema: v.object({
-    toptracks: v.object({
-      track: v.array(topTrackSchema),
-    }),
-  }),
-  getQueryKey: ({ period, limit }) => ["top-tracks", { period, limit }],
-  select: (res) => res.toptracks.track,
+const getTopTracksParams = v.object({
+  period: periodSchema,
+  limit: v.optional(v.number()),
 });
+
+export const getTopTracksFn = createServerFn({ method: "GET" })
+  .validator(getTopTracksParams)
+  .handler(({ data }) =>
+    fetchLastfm({
+      method: "user.getTopTracks",
+      params: data,
+      signal: getRequest().signal,
+      schema: v.object({
+        toptracks: v.object({
+          track: v.array(topTrackSchema),
+        }),
+      }),
+    }),
+  );
+
+export const getTopTracks = (
+  params: v.InferInput<typeof getTopTracksParams>,
+  signalOpt?: AbortSignal,
+) =>
+  queryOptions({
+    queryKey: ["top-tracks", params],
+    queryFn: ({ signal }) =>
+      getTopTracksFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    select: (res) => res.toptracks.track,
+  });
 
 const topArtistSchema = v.pipe(
   v.object({
@@ -289,12 +221,32 @@ const topArtistsResponseSchema = v.object({
   }),
 });
 
-export const getTopArtists = buildEndpoint({
-  method: "user.getTopArtists",
-  responseSchema: topArtistsResponseSchema,
-  getQueryKey: ({ period, limit }) => ["top-artists", { period, limit }],
-  select: (res) => res.topartists.artist,
+const getTopArtistsParams = v.object({
+  period: periodSchema,
+  limit: v.optional(v.number()),
 });
+
+export const getTopArtistsFn = createServerFn({ method: "GET" })
+  .validator(getTopArtistsParams)
+  .handler(({ data }) =>
+    fetchLastfm({
+      method: "user.getTopArtists",
+      params: data,
+      signal: getRequest().signal,
+      schema: topArtistsResponseSchema,
+    }),
+  );
+
+export const getTopArtists = (
+  params: v.InferInput<typeof getTopArtistsParams>,
+  signalOpt?: AbortSignal,
+) =>
+  queryOptions({
+    queryKey: ["top-artists", params],
+    queryFn: ({ signal }) =>
+      getTopArtistsFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    select: (res) => res.topartists.artist,
+  });
 
 const userDataSchema = v.object({
   playcount: vUtils.coerceNumber,
@@ -308,11 +260,19 @@ const userDataSchema = v.object({
 
 export type UserData = v.InferOutput<typeof userDataSchema>;
 
-export const getUserData = buildEndpoint({
-  method: "user.getInfo",
-  responseSchema: v.object({
-    user: userDataSchema,
+export const getUserDataFn = createServerFn({ method: "GET" }).handler(() =>
+  fetchLastfm({
+    method: "user.getInfo",
+    signal: getRequest().signal,
+    schema: v.object({
+      user: userDataSchema,
+    }),
   }),
-  getQueryKey: () => ["user"],
-  select: (res) => res.user,
-});
+);
+
+export const getUserData = (signalOpt?: AbortSignal) =>
+  queryOptions({
+    queryKey: ["user"],
+    queryFn: ({ signal }) => getUserDataFn({ signal: anyAbortSignal(signal, signalOpt) }),
+    select: (res) => res.user,
+  });

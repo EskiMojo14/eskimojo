@@ -1,3 +1,5 @@
+import { up } from "up-fetch";
+
 export function capitalize<T extends string>(str: T): Capitalize<T> {
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
@@ -37,3 +39,8 @@ export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unkno
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return unsafeFromEntries(results.map((result, i) => [keys[i], result])) as never;
 };
+
+export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): AbortSignal =>
+  AbortSignal.any(signals.filter((x) => !!x));
+
+export const upfetch = up(fetch);

@@ -1,4 +1,4 @@
-import { createMiddleware } from "@tanstack/react-start";
+import { createMiddleware, createServerOnlyFn } from "@tanstack/react-start";
 import * as v from "valibot";
 
 function parseEnv<T extends v.GenericSchema>(
@@ -14,15 +14,20 @@ export const serverEnvSchema = v.object({
   // LASTFM_SECRET: v.string(),
   LASTFM_USER: v.string(),
 });
+export type ServerEnv = v.InferOutput<typeof serverEnvSchema>;
+
+export const getServerEnv = createServerOnlyFn(() =>
+  parseEnv(serverEnvSchema, {
+    LASTFM_API_KEY: process.env.LASTFM_API_KEY,
+    // LASTFM_SECRET: process.env.LASTFM_SECRET,
+    LASTFM_USER: process.env.LASTFM_USER,
+  }),
+);
 
 export const withServerEnv = createMiddleware().server(({ next }) =>
   next({
     context: {
-      serverEnv: parseEnv(serverEnvSchema, {
-        LASTFM_API_KEY: process.env.LASTFM_API_KEY,
-        // LASTFM_SECRET: process.env.LASTFM_SECRET,
-        LASTFM_USER: process.env.LASTFM_USER,
-      }),
+      serverEnv: getServerEnv(),
     },
   }),
 );
