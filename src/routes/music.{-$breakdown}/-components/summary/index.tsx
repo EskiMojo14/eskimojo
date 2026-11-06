@@ -92,6 +92,7 @@ export function MusicSummarySkeleton() {
 export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   const summaryRef = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(1);
+  const frameRef = useRef(-1);
   useLayoutEffect(() => {
     const element = summaryRef.current;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -108,10 +109,9 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
     });
     const effect = animation.effect;
     if (!effect) throw new Error("Summary count animation requires an animation effect");
-    let frame: number;
     setProgress(0);
     function finish() {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frameRef.current);
       animation.cancel();
       setProgress(1);
     }
@@ -122,15 +122,15 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
       }
       const eased = effect.getComputedTiming().progress;
       if (typeof eased === "number") setProgress(Math.min(1, Math.max(0, eased)));
-      frame = requestAnimationFrame(tick);
+      frameRef.current = requestAnimationFrame(tick);
     };
     function onMotionChange() {
       if (reducedMotion.matches) finish();
     }
-    frame = requestAnimationFrame(tick);
+    frameRef.current = requestAnimationFrame(tick);
     reducedMotion.addEventListener("change", onMotionChange);
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frameRef.current);
       animation.cancel();
       reducedMotion.removeEventListener("change", onMotionChange);
     };

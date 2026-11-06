@@ -90,10 +90,10 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
       requestRef.current = null;
     }
   }, []);
+  const disposedRef = useRef(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    let disposed = false;
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const closeDialog: DialogClose = (returnValue) => {
       if (!dialog?.open || dialog.hasAttribute("data-closing")) return;
@@ -105,7 +105,7 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
       dialog.setAttribute("data-closing", "");
       const finishClosing = () => {
         clearTimeout(timeout);
-        if (!disposed) {
+        if (!disposedRef.current) {
           dialog.close(returnValue);
           dialog.removeAttribute("data-closing");
         }
@@ -146,7 +146,7 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
     }
 
     return () => {
-      disposed = true;
+      disposedRef.current = true;
       closeRef.current = null;
       clearTimeout(timeout);
       if (dialog) {
