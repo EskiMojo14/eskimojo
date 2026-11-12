@@ -9,6 +9,11 @@ export class PreferencesDialogModel extends ComponentObjectModel {
     await expect(this.dialog).toBeVisible();
   }
 
+  async close() {
+    await this.page.keyboard.press("Escape");
+    await expect(this.dialog).not.toBeVisible();
+  }
+
   async select(name: string, option: string) {
     const select = this.dialog.getByRole("combobox", { name });
     if (await select.isVisible()) {

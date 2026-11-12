@@ -121,7 +121,24 @@ height, including safe-area padding. Without navigation, the anchor fallback
 places it one rem above the bottom safe area.
 
 Use snackbars only for short, non-critical feedback; keep the information and
-any action available elsewhere in the UI. Action callbacks are synchronous;
+any action available elsewhere in the UI.
+
+### Snackbar wording
+
+Follow [Material Design 3's text-label guidance](https://m3.material.io/components/snackbar/guidelines):
+write short, clear updates about the process, ideally one line and no more than
+two on mobile. Use plain, user-facing verbs such as "save" rather than technical
+terms such as "sync", and name the affected item when it clarifies the message.
+For example, prefer "Couldn't save theme preference" to
+"Couldn't sync your theme preference. Please try again."
+Avoid filler such as "Please try again"; if retry is offered in the snackbar,
+use a separate, concise "Retry" action button. Do not imply that an action is
+available when it is not. These wording choices are project conventions based
+on Material's brevity guidance, not prescribed Material strings.
+
+### Snackbar actions and runtime
+
+Action callbacks are synchronous;
 handle asynchronous work and its errors in the caller. A successful callback
 dismisses the message; thrown errors propagate rather than appearing successful.
 The API uses TanStack Start's `createIsomorphicFn().client(...)`. Server calls
@@ -263,7 +280,9 @@ High), and Palette (Goat, Arctic). Each group permits one selection. Changes use
 preference providers and apply optimistically to the controls and page without
 waiting for the cookie save or loader refresh. Rapid changes to each preference
 are saved in selection order. A failed update rolls back to the saved value and
-is logged to the console without displaying a UI error; selecting again retries.
+is logged to the console and queues a dismissible snackbar naming the preference;
+selecting again retries. The snackbar appears after the modal closes, following
+the shared notification host's modal behavior.
 There is no separate Save action.
 
 Arrow keys move focus without selecting; Enter or Space selects the focused
