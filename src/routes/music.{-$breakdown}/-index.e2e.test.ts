@@ -4,17 +4,12 @@ import { fromJSON, toCrossJSONAsync } from "seroval";
 import * as v from "valibot";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";
+import { disposablePromise } from "#/utils";
 import { createTest, expect } from "#test/e2e";
 
 import { MusicPage } from "./-index.e2e.model";
 
 const test = createTest({ home: HomePage, music: MusicPage });
-
-/** A promise resolved manually, or on disposal so waiting handlers can finish. */
-function deferred() {
-  const p = Promise.withResolvers<void>();
-  return { ...p, [Symbol.dispose]: () => p.resolve() };
-}
 
 /** Fast-forwards through React Query's retry backoff until `locator` is visible. */
 async function skipRetryBackoff(page: Page, locator: Locator) {
@@ -97,8 +92,8 @@ test.beforeEach(async ({ network, page, home }) => {
 });
 
 test("shows music controls before independent requests finish", async ({ network, music }) => {
-  using summary = deferred();
-  using rankings = deferred();
+  using summary = disposablePromise();
+  using rankings = disposablePromise();
   network.use(
     lastfm(async (method) => {
       await (isSummary(method) ? summary.promise : rankings.promise);
@@ -128,7 +123,7 @@ test("period and tab changes show loading feedback without hiding music controls
   await music.navigate();
   await expect(music.topMusic.topTracks).toBeVisible();
 
-  using pending = deferred();
+  using pending = disposablePromise();
   network.use(
     lastfm(async () => {
       await pending.promise;
@@ -160,7 +155,7 @@ test("failed summary requests leave rankings usable and can be retried", async (
   await expect(music.topMusic.topTracks).toBeVisible();
   await expect(music.tabs).toBeVisible();
 
-  using pending = deferred();
+  using pending = disposablePromise();
   network.use(
     lastfm(async () => {
       await pending.promise;
@@ -247,7 +242,7 @@ test("failed recent-track refresh keeps cached tracks and retries in place", asy
   await expect(music.recent.track("Let It Happen")).toBeVisible();
   await expect(music.alerts).not.toBeVisible();
 
-  using pending = deferred();
+  using pending = disposablePromise();
   network.use(
     lastfm(async () => {
       await pending.promise;
