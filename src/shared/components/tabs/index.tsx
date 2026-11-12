@@ -1,4 +1,4 @@
-import { createLink, type LinkComponent } from "@tanstack/react-router";
+import { createLink, useRouter, type LinkComponent } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -9,11 +9,13 @@ import {
   type ComponentPropsWithRef,
   type ComponentPropsWithoutRef,
   type KeyboardEvent,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { useRipple } from "#/shared/components/ripple";
+import { triggerHapticFeedback, triggerSelectionLinkHaptic } from "#/shared/lib/haptics";
 
 const tabsBem = BEMHelper("tabs");
 
@@ -121,9 +123,19 @@ function TabLinkBase({
 
 const RouterTabLink = createLink(TabLinkBase);
 
-export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => (
-  <RouterTabLink resetScroll={false} {...props} />
-);
+export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
+  const router = useRouter();
+  const linkProps = Object.assign({}, props, {
+    onClick: (event: MouseEvent<HTMLAnchorElement>) => {
+      props.onClick?.(event);
+      triggerSelectionLinkHaptic(
+        event,
+        router.history.createHref(router.state.location.publicHref),
+      );
+    },
+  });
+  return <RouterTabLink resetScroll={false} {...linkProps} />;
+};
 
 interface TabsContextValue {
   value: string | undefined;
@@ -164,6 +176,7 @@ export function Tabs({
     select: (nextValue) => {
       if (nextValue === value) return;
       if (controlledValue === undefined) setUncontrolledValue(nextValue);
+      triggerHapticFeedback("selection");
       onValueChange?.(nextValue);
     },
     idFor: (tabValue, part) => `tabs-${id}-${encodeURIComponent(tabValue)}-${part}`,

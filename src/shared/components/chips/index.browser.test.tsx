@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { expect, test } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
+import { haptics } from "#/shared/lib/haptics";
 
-import { ExternalLinkChip, FilterChip } from "./index";
+import { ExternalLinkChip, FilterChip, InternalLinkChip } from "./index";
 
 function ToggleDemo() {
   const [selected, setSelected] = useState(false);
@@ -20,6 +21,8 @@ function ToggleDemo() {
 }
 
 test("toggles with pointer and keyboard without changing its accessible name", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(<ToggleDemo />);
   const chip = result.getByRole("button", { name: "Favourite", exact: true });
   await expect.element(chip).toHaveAttribute("type", "button");
@@ -28,6 +31,8 @@ test("toggles with pointer and keyboard without changing its accessible name", a
   await expect.element(chip).toHaveAttribute("aria-pressed", "true");
   await userEvent.keyboard(" ");
   await expect.element(chip).toHaveAttribute("aria-pressed", "false");
+  expect(triggerHaptic).toHaveBeenCalledTimes(2);
+  expect(triggerHaptic).toHaveBeenCalledWith("selection");
   await expect.element(chip).toHaveAccessibleName("Favourite");
   expect(result.getByRole("img").query()).toBeNull();
 });
@@ -64,4 +69,60 @@ test("link chips update their current state and preserve link semantics", async 
   await expect.element(chip).toHaveAttribute("aria-current", "false");
   await expect.element(chip).not.toHaveAttribute("aria-pressed");
   await expect.element(chip).toHaveAccessibleName("Period");
+});
+
+test("link filters confirm query changes and clearing filters, but not unchanged destinations", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(
+    <>
+      <InternalLinkChip to="/projects" search={{ type: "package" }}>
+        Packages
+      </InternalLinkChip>
+      <InternalLinkChip to="/projects" search={{}} activeOptions={{ includeSearch: false }}>
+        Clear filters
+      </InternalLinkChip>
+    </>,
+    { historyOpts: { initialEntries: ["/projects?type=package"] } },
+  );
+  const packages = result.getByRole("link", { name: "Packages" });
+  const clear = result.getByRole("link", { name: "Clear filters" });
+  await packages.click();
+  expect(triggerHaptic).not.toHaveBeenCalled();
+
+  await expect.element(clear).toHaveAttribute("aria-current", "page");
+  await clear.click();
+  await expect.poll(() => result.router.state.location.search.type).toBeUndefined();
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+
+  await packages.click();
+  await expect.poll(() => result.router.state.location.search.type).toBe("package");
+  expect(triggerHaptic).toHaveBeenCalledTimes(2);
+});
+
+test("canceled, disabled, and new-tab link filters do not produce feedback", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(
+    <>
+      <InternalLinkChip to="/projects" onClick={(event) => event.preventDefault()}>
+        Canceled
+      </InternalLinkChip>
+      <InternalLinkChip to="/projects" disabled>
+        Disabled
+      </InternalLinkChip>
+      <InternalLinkChip to="/projects" target="_blank">
+        New tab
+      </InternalLinkChip>
+    </>,
+  );
+  await result.getByRole("link", { name: "Canceled" }).click();
+  const disabled = result.getByRole("link", { name: "Disabled" }).element();
+  expect(disabled).toHaveAttribute("aria-disabled", "true");
+  disabled.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  const newTab = result.getByRole("link", { name: "New tab" }).element();
+  // Suppress native navigation after the link handler runs.
+  document.addEventListener("click", (event) => event.preventDefault(), { once: true });
+  newTab.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  expect(triggerHaptic).not.toHaveBeenCalled();
 });

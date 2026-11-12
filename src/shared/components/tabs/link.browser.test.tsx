@@ -11,6 +11,7 @@ import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
+import { haptics } from "#/shared/lib/haptics";
 
 import { TabLink, TabLinkPanel, TabNav } from "./index";
 
@@ -107,6 +108,8 @@ function createTabRouter(
 }
 
 test("router links navigate and track active state through history without manual state", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const router = createTabRouter();
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Sections" })).toBeVisible();
@@ -114,11 +117,14 @@ test("router links navigate and track active state through history without manua
   const projects = result.getByRole("tab", { name: "Projects" });
   await expect.element(home).toHaveAttribute("aria-current", "page");
   await expect.element(projects).toHaveAttribute("href", "/projects");
+  await home.click();
+  expect(triggerHaptic).not.toHaveBeenCalled();
   await projects.click();
   await expect.element(result.getByText("Project content")).toBeVisible();
   await expect.element(projects).toHaveAttribute("aria-current", "page");
   await expect.element(home).not.toHaveAttribute("aria-current");
   expect(router.state.location.pathname).toBe("/projects");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
   router.history.back();
   await expect.element(home).toHaveAttribute("aria-current", "page");
   await expect.element(result.getByText("Home content")).toBeVisible();
@@ -130,9 +136,12 @@ test("router links navigate and track active state through history without manua
     .toHaveTextContent("Project content");
   await expect.element(projects).toHaveAttribute("aria-selected", "true");
   await expect.element(home).toHaveAttribute("aria-selected", "false");
+  expect(triggerHaptic).toHaveBeenCalledOnce();
 });
 
 test("deep links, typed params, and keyboard navigation use native anchors", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const router = createTabRouter("/music");
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect
@@ -146,6 +155,7 @@ test("deep links, typed params, and keyboard navigation use native anchors", asy
   await userEvent.keyboard("{Home}{ArrowRight}");
   await expect.element(result.getByRole("tab", { name: "Projects" })).toHaveFocus();
   expect(router.state.location.pathname).toBe("/music");
+  expect(triggerHaptic).not.toHaveBeenCalled();
   await userEvent.keyboard("{Enter}");
   await expect.element(result.getByText("Project content")).toBeVisible();
   await expect
@@ -163,6 +173,8 @@ test("deep links, typed params, and keyboard navigation use native anchors", asy
   await expect
     .element(result.getByRole("tabpanel", { name: "Artists" }))
     .toHaveAttribute("aria-labelledby", "gigs-tab");
+  expect(triggerHaptic).toHaveBeenCalledTimes(2);
+  expect(triggerHaptic).toHaveBeenCalledWith("selection");
 });
 
 test("tab navigation preserves the current scroll position", async () => {
@@ -216,6 +228,8 @@ test("horizontal linked tabs follow RTL reading direction", async () => {
 });
 
 test("cancelled and modified clicks do not navigate the current router", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const router = createTabRouter();
   const onClick = vi.fn<() => void>();
   const result = await page.renderWithProviders(
@@ -263,4 +277,5 @@ test("cancelled and modified clicks do not navigate the current router", async (
   document.addEventListener("click", (event) => event.preventDefault(), { once: true });
   music.dispatchEvent(click);
   expect(router.state.location.pathname).toBe("/");
+  expect(triggerHaptic).not.toHaveBeenCalled();
 });

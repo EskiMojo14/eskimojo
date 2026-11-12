@@ -1,10 +1,11 @@
-import { createLink } from "@tanstack/react-router";
-import type { ComponentPropsWithRef, ReactNode } from "react";
+import { createLink, useRouter, type LinkComponent } from "@tanstack/react-router";
+import type { ComponentPropsWithRef, MouseEvent, ReactNode } from "react";
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
+import { triggerHapticFeedback, triggerSelectionLinkHaptic } from "#/shared/lib/haptics";
 
 const chipBem = BEMHelper("chip");
 const chipGroupBem = BEMHelper("chip-group");
@@ -79,6 +80,7 @@ export function FilterChip({
   type = "button",
   className,
   children,
+  onClick,
   ...props
 }: FilterChipProps) {
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
@@ -89,6 +91,16 @@ export function FilterChip({
       type={type}
       {...chipBem({ extra: className })}
       aria-pressed={selected}
+      onClick={(event) => {
+        onClick?.(event);
+        if (
+          !event.defaultPrevented &&
+          !event.currentTarget.disabled &&
+          event.currentTarget.getAttribute("aria-disabled") !== "true"
+        ) {
+          triggerHapticFeedback("selection");
+        }
+      }}
     >
       {ripple}
       <SelectionIcon icon={icon} />
@@ -116,7 +128,21 @@ export function ExternalLinkChip(props: ExternalLinkChipProps) {
   return <LinkChipBase target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-export const InternalLinkChip = createLink(LinkChipBase);
+const RouterLinkChip = createLink(LinkChipBase);
+
+export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
+  const router = useRouter();
+  const linkProps = Object.assign({}, props, {
+    onClick: (event: MouseEvent<HTMLAnchorElement>) => {
+      props.onClick?.(event);
+      triggerSelectionLinkHaptic(
+        event,
+        router.history.createHref(router.state.location.publicHref),
+      );
+    },
+  });
+  return <RouterLinkChip {...linkProps} />;
+};
 
 export type ChipGroupProps = Omit<ComponentPropsWithRef<"fieldset">, "role"> &
   ({ "aria-label": string } | { "aria-labelledby": string });

@@ -77,6 +77,12 @@ production builds.
 
 For UI work, use the `storybook` MCP server when it is available and Storybook is running. Use its docs tools to discover documented components and their APIs before creating or changing UI, and its development and testing tools to preview and validate story changes.
 
+## Haptics
+
+When adding or changing haptic feedback, follow [the haptics guide](docs/haptics.md)
+for interaction selection, shared-component ownership, browser limitations, and
+verification.
+
 ## Writing tests
 
 Permanent tests should assert on observable behaviour and outcomes, not implementation details. Unless specifically stated, avoid asserting on computed styles or class names. This restriction does not apply to "probe" tests, which are written temporarily to verify some work and deleted once the verification is complete.

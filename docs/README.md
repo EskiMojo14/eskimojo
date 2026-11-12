@@ -16,6 +16,8 @@ application before assuming a feature is implemented.
 
 ## Technical guides
 
+- [Haptic feedback](./haptics.md): Choosing meaningful interactions, shared
+  patterns, browser limitations, and verification.
 - [Material Symbols](./material-symbols.md): Icon component usage,
   accessibility, font loading, and production symbol extraction.
 - [MDX content](./mdx-content.md): Authoring and type-checking MDX in route

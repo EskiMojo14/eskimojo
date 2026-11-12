@@ -8,6 +8,7 @@ import { usePalette } from "#/shared/components/prefs/context";
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 import { withTooltip } from "#/shared/components/tooltip";
+import { triggerHapticFeedback } from "#/shared/lib/haptics";
 
 import { links } from "./groups";
 
@@ -31,7 +32,10 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
           type="button"
           tooltip={`Switch to ${nextPaletteLabel} palette`}
           tooltipAsLabel
-          onClick={() => setPalette(nextPalette)}
+          onClick={() => {
+            setPalette(nextPalette);
+            triggerHapticFeedback("selection");
+          }}
         >
           {ripple}
           <span
