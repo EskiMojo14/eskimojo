@@ -20,6 +20,7 @@
 @import "#/shared/components/page-state/index.css";
 @import "#/shared/components/sidebar/index.css";
 @import "#/shared/components/skeleton/index.css";
+@import "#/shared/components/snackbar/index.css";
 @import "#/shared/components/symbol/index.css";
 @import "#/shared/components/dialog/index.css";
 @import "#/shared/components/prefs/dialog.css";

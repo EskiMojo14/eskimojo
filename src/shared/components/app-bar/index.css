@@ -54,6 +54,7 @@
   display: none;
 
   @media (--phone) {
+    anchor-name: --app-bottom-navigation;
     view-transition-name: bottom-navigation;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
