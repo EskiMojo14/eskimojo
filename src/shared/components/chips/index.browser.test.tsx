@@ -1,5 +1,12 @@
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { useState } from "react";
-import { expect, test, vi } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -98,6 +105,35 @@ test("link filters confirm query changes and clearing filters, but not unchanged
   await packages.click();
   await expect.poll(() => result.router.state.location.search.type).toBe("package");
   expect(triggerHaptic).toHaveBeenCalledTimes(2);
+});
+
+test("link filters preserve scroll when changing the query", async () => {
+  const root = createRootRoute({
+    component: () => (
+      <div style={{ minBlockSize: "3000px" }}>
+        <InternalLinkChip to="/projects" search={{ type: "package" }}>
+          Packages
+        </InternalLinkChip>
+      </div>
+    ),
+  });
+  const router = createRouter({
+    history: createMemoryHistory({ initialEntries: ["/projects"] }),
+    scrollRestoration: true,
+    routeTree: root.addChildren([createRoute({ getParentRoute: () => root, path: "/projects" })]),
+  });
+  const result = await page.renderWithProviders(<RouterProvider router={router} />);
+  const packages = result.getByRole("link", { name: "Packages" }).element();
+  if (!(packages instanceof HTMLAnchorElement)) throw new Error("Filter chip must be an anchor.");
+  onTestFinished(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  window.scrollTo({ top: 200, behavior: "instant" });
+  expect(window.scrollY).toBe(200);
+
+  packages.click();
+
+  await expect.poll(() => router.state.location.search.type).toBe("package");
+  await expect.poll(() => router.state.status).toBe("idle");
+  expect(window.scrollY).toBe(200);
 });
 
 test("canceled, disabled, and new-tab link filters do not produce feedback", async () => {
