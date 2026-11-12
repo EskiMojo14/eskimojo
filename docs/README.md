@@ -20,3 +20,5 @@ application before assuming a feature is implemented.
   accessibility, font loading, and production symbol extraction.
 - [MDX content](./mdx-content.md): Authoring and type-checking MDX in route
   content.
+- [Mocking server functions](./e2e-server-functions.md): Separate browser and
+  Playwright mock helpers, typed registry generation, and transport limitations.

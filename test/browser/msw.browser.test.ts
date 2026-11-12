@@ -7,7 +7,7 @@ import { mockServerFn } from "./msw";
 
 const getPost = createServerFn({ method: "GET" })
   .validator(v.object({ id: v.string() }))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<{ id: string; title: string }> => {
     return { id: data.id, title: "Sample Title" };
   });
 
