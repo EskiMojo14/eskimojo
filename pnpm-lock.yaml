@@ -318,6 +318,12 @@ importers:
       '@types/d3-geo':
         specifier: ^3.1.1
         version: 3.1.1
+      '@types/esquery':
+        specifier: ^1.5.4
+        version: 1.5.4
+      '@types/estree':
+        specifier: ^1.0.10
+        version: 1.0.10
       '@types/mdx':
         specifier: 2.0.14
         version: 2.0.14
@@ -351,6 +357,9 @@ importers:
       eslint-plugin-no-relative-import-paths:
         specifier: ^1.7.3
         version: 1.7.3
+      esquery:
+        specifier: ^1.7.0
+        version: 1.7.0
       json-schema-to-typescript:
         specifier: ^16.0.0
         version: 16.0.0
@@ -3278,6 +3287,9 @@ packages:
 
   '@types/doctrine@0.0.9':
     resolution: {integrity: sha512-eOIHzCUSH7SMfonMG1LsC2f8vxBFtho6NGBznK41R84YzPuvSBzrhEps33IsQiOW9+VL6NQ9DbjQJznk/S4uRA==}
+
+  '@types/esquery@1.5.4':
+    resolution: {integrity: sha512-yYO4Q8H+KJHKW1rEeSzHxcZi90durqYgWVfnh5K6ZADVBjBv2e1NEveYX5yT2bffgN7RqzH3k9930m+i2yBoMA==}
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -10078,6 +10090,10 @@ snapshots:
   '@types/deep-eql@4.0.2': {}
 
   '@types/doctrine@0.0.9': {}
+
+  '@types/esquery@1.5.4':
+    dependencies:
+      '@types/estree': 1.0.10
 
   '@types/esrecurse@4.3.1': {}
 

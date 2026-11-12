@@ -141,6 +141,7 @@ const config = defineConfig({
       remarkGfm: { default: remarkGfm },
       remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
       materialSymbols: { default: materialSymbols },
+      serverFnRegistry: { default: serverFnRegistry },
       svgr: { default: svgr },
     } = await promiseAllKeyed({
       contentCollections: import("@content-collections/vite"),
@@ -155,6 +156,7 @@ const config = defineConfig({
       remarkGfm: import("remark-gfm"),
       remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
       materialSymbols: import("./vite/symbols.ts"),
+      serverFnRegistry: import("./vite/server-fn-registry.ts"),
       svgr: import("vite-plugin-svgr"),
     });
     return [
@@ -162,6 +164,9 @@ const config = defineConfig({
       contentCollections({ configPath: "config/content-collections.ts" }),
       process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
       process.env.STORYBOOK !== "true" && tanstackStart(),
+      process.env.VITEST !== "true" &&
+        process.env.STORYBOOK !== "true" &&
+        serverFnRegistry({ output: new URL("./test/e2e/server-fns.gen.ts", import.meta.url) }),
       process.env.STORYBOOK !== "true" && {
         enforce: "pre",
         ...mdx({

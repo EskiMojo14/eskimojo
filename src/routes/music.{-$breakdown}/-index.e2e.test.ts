@@ -1,13 +1,13 @@
-import { http, HttpResponse, passthrough } from "msw";
 import type { Locator, Page } from "playwright";
-import { fromJSON, toCrossJSONAsync } from "seroval";
-import * as v from "valibot";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";
 import { disposablePromise } from "#/utils";
 import { createTest, expect } from "#test/e2e";
+import { mockServerFn } from "#test/e2e/msw";
+import { serverFns } from "#test/e2e/server-fns.gen";
 
 import { MusicPage } from "./-index.e2e.model";
+import type { RecentTrack, TopArtist, TopTrack, UserData } from "./-query";
 
 const test = createTest({ home: HomePage, music: MusicPage });
 
@@ -21,70 +21,65 @@ async function skipRetryBackoff(page: Page, locator: Locator) {
     .toBe(true);
 }
 
-const lastfmRequestSchema = v.object({
-  data: v.object({ method: v.string() }),
-});
-
-const response = {
-  result: {
-    user: {
-      playcount: "100",
-      artist_count: "10",
-      album_count: "20",
-      track_count: "30",
-      registered: { unixtime: "1506038400" },
-    },
-    toptracks: { track: [] },
-    topartists: { artist: [] },
-    recenttracks: { track: [] },
-  },
+const user: UserData = {
+  playcount: 100,
+  artist_count: 10,
+  album_count: 20,
+  track_count: 30,
+  registered: { unixtime: 1506038400 },
 };
 
-const recentResponse = {
-  result: {
-    ...response.result,
-    recenttracks: {
-      track: [
-        {
-          name: "Let It Happen",
-          artist: { "#text": "Tame Impala" },
-          album: { "#text": "Currents" },
-          image: [],
-          "@attr": { nowplaying: "true" },
-        },
-      ],
-    },
+const recentTracks: Array<RecentTrack> = [
+  {
+    name: "Let It Happen",
+    artist: "Tame Impala",
+    album: "Currents",
+    image: {},
+    nowPlaying: true,
   },
-};
+];
 
-type LastfmResolver = (method: string) => Response | Promise<Response>;
+type LastfmMethod =
+  | "user.getInfo"
+  | "user.getTopTracks"
+  | "user.getTopArtists"
+  | "user.getRecentTracks";
 
-function lastfm(resolver: LastfmResolver) {
-  return http.get("*/_serverFn/*", ({ request }) => {
-    const payload = new URL(request.url).searchParams.get("payload");
-    const parsed = payload && v.safeParse(lastfmRequestSchema, fromJSON(JSON.parse(payload)));
-    if (!parsed || !parsed.success) return passthrough();
-    return resolver(parsed.output.data.method);
-  });
+function lastfm(
+  before: (method: LastfmMethod) => void | Promise<void> = () => {},
+  tracks: Array<RecentTrack> = [],
+) {
+  const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+  const topTracks: Array<TopTrack> = [];
+  const topArtists: Array<TopArtist> = [];
+  return [
+    mockServerFn(music.getUserDataFn, async () => {
+      await before("user.getInfo");
+      return { user };
+    }),
+    mockServerFn(music.getTopTracksFn, async () => {
+      await before("user.getTopTracks");
+      return { toptracks: { track: topTracks } };
+    }),
+    mockServerFn(music.getTopArtistsFn, async () => {
+      await before("user.getTopArtists");
+      return { topartists: { artist: topArtists } };
+    }),
+    mockServerFn(music.getRecentTracksFn, async () => {
+      await before("user.getRecentTracks");
+      return { recenttracks: { track: tracks } };
+    }),
+  ];
 }
 
-async function success(body: unknown = response) {
-  return HttpResponse.json(await toCrossJSONAsync(body), {
-    headers: { "x-tss-serialized": "true" },
-  });
-}
-
-async function failure() {
-  return HttpResponse.json(await toCrossJSONAsync({ error: new Error("Service unavailable") }), {
-    status: 503,
-    headers: { "x-tss-serialized": "true" },
-  });
+function failure(): never {
+  throw new Error("Service unavailable");
 }
 
 const isSummary = (method: string) => method === "user.getInfo";
 
 test.beforeEach(async ({ network, page, home }) => {
-  network.use(lastfm(() => success()));
+  network.use(...lastfm());
   // Music data requests only reach the browser network fixture during client-side
   // navigation, so let the home page finish loading before following links.
   await home.goto({ waitUntil: "networkidle" });
@@ -95,9 +90,8 @@ test("shows music controls before independent requests finish", async ({ network
   using summary = disposablePromise();
   using rankings = disposablePromise();
   network.use(
-    lastfm(async (method) => {
+    ...lastfm(async (method) => {
       await (isSummary(method) ? summary.promise : rankings.promise);
-      return success();
     }),
   );
 
@@ -125,9 +119,8 @@ test("period and tab changes show loading feedback without hiding music controls
 
   using pending = disposablePromise();
   network.use(
-    lastfm(async () => {
+    ...lastfm(async () => {
       await pending.promise;
-      return success();
     }),
   );
   await music.topMusic.period("7 days").click();
@@ -148,7 +141,11 @@ test("failed summary requests leave rankings usable and can be retried", async (
   page,
   music,
 }) => {
-  network.use(lastfm((method) => (isSummary(method) ? failure() : success())));
+  network.use(
+    ...lastfm((method) => {
+      if (isSummary(method)) failure();
+    }),
+  );
 
   await music.navigate();
   await skipRetryBackoff(page, music.summaryError);
@@ -157,9 +154,8 @@ test("failed summary requests leave rankings usable and can be retried", async (
 
   using pending = disposablePromise();
   network.use(
-    lastfm(async () => {
+    ...lastfm(async () => {
       await pending.promise;
-      return success();
     }),
   );
   await music.summaryRetry.click();
@@ -175,7 +171,11 @@ test("failed rankings preserve summary and retry without showing empty listening
   page,
   music,
 }) => {
-  network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+  network.use(
+    ...lastfm((method) => {
+      if (!isSummary(method)) failure();
+    }),
+  );
 
   await music.navigate();
   await skipRetryBackoff(page, music.topMusic.error);
@@ -185,7 +185,7 @@ test("failed rankings preserve summary and retry without showing empty listening
   await music.topMusic.retry.click();
   await skipRetryBackoff(page, music.topMusic.error);
 
-  network.use(lastfm(() => success()));
+  network.use(...lastfm());
   await music.topMusic.retry.click();
   await expect(music.topMusic.topTracks).toBeVisible();
   await expect(music.topMusic.topArtists).toBeVisible();
@@ -196,16 +196,20 @@ test("changing period or tab recovers the active tab after an error", async ({
   page,
   music,
 }) => {
-  network.use(lastfm((method) => (isSummary(method) ? success() : failure())));
+  network.use(
+    ...lastfm((method) => {
+      if (!isSummary(method)) failure();
+    }),
+  );
 
   await music.navigate();
   await skipRetryBackoff(page, music.topMusic.error);
 
-  network.use(lastfm(() => success()));
+  network.use(...lastfm());
   await music.topMusic.period("7 days").click();
   await expect(music.topMusic.topTracks).toBeVisible();
 
-  network.use(lastfm(() => failure()));
+  network.use(...lastfm(failure));
   await music.recent.select();
   await skipRetryBackoff(page, music.recent.error);
 
@@ -215,7 +219,7 @@ test("changing period or tab recovers the active tab after an error", async ({
 });
 
 test("simultaneous failures show independent retry controls", async ({ network, page, music }) => {
-  network.use(lastfm(() => failure()));
+  network.use(...lastfm(failure));
 
   await music.navigate();
   await skipRetryBackoff(page, music.summaryError);
@@ -229,13 +233,13 @@ test("failed recent-track refresh keeps cached tracks and retries in place", asy
   page,
   music,
 }) => {
-  network.use(lastfm(() => success(recentResponse)));
+  network.use(...lastfm(undefined, recentTracks));
 
   await music.navigate();
   await music.recent.select();
   await expect(music.recent.track("Let It Happen")).toBeVisible();
 
-  network.use(lastfm(() => failure()));
+  network.use(...lastfm(failure));
   // Recent tracks refresh every minute.
   await page.clock.fastForward("01:00");
   await skipRetryBackoff(page, music.recent.refreshNotice);
@@ -244,9 +248,8 @@ test("failed recent-track refresh keeps cached tracks and retries in place", asy
 
   using pending = disposablePromise();
   network.use(
-    lastfm(async () => {
+    ...lastfm(async () => {
       await pending.promise;
-      return success();
     }),
   );
   await music.recent.refreshRetry.click();

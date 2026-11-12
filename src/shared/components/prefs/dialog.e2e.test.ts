@@ -1,27 +1,29 @@
-import { http, HttpResponse, passthrough } from "msw";
-import { fromJSON, toCrossJSONAsync } from "seroval";
-import * as v from "valibot";
+import { passthrough } from "msw";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";
 import { disposablePromise } from "#/utils";
 import { createTest, expect } from "#test/e2e";
+import { mockServerFn } from "#test/e2e/msw";
+import { serverFns } from "#test/e2e/server-fns.gen";
 
 import { PreferencesDialogModel } from "./dialog.e2e.model";
 
 const test = createTest({ home: HomePage, preferences: PreferencesDialogModel });
 
-const preferenceRequestSchema = v.object({ data: v.string() });
+const prefs = serverFns["src/shared/lib/prefs.ts"];
 
 function preferenceRequests(
   resolver: (value: string) => Response | Promise<Response>,
   refresh: () => Response | Promise<Response> = passthrough,
 ) {
-  return http.get("*/_serverFn/*", ({ request }) => {
-    const payload = new URL(request.url).searchParams.get("payload");
-    const parsed = payload && v.safeParse(preferenceRequestSchema, fromJSON(JSON.parse(payload)));
-    if (!parsed || !parsed.success) return refresh();
-    return resolver(parsed.output.data);
-  });
+  return [
+    mockServerFn(prefs.setThemeFn, resolver),
+    mockServerFn(prefs.setContrastFn, resolver),
+    mockServerFn(prefs.setPaletteFn, resolver),
+    mockServerFn(prefs.getThemeFn, refresh),
+    mockServerFn(prefs.getContrastFn, refresh),
+    mockServerFn(prefs.getPaletteFn, refresh),
+  ];
 }
 
 test.beforeEach(async ({ home, preferences }) => {
@@ -38,7 +40,7 @@ test("preferences update the controls and page before cookies are saved", async 
   using save = disposablePromise();
   using refresh = disposablePromise();
   network.use(
-    preferenceRequests(
+    ...preferenceRequests(
       async () => {
         await save.promise;
         return passthrough();
@@ -92,7 +94,7 @@ test("rapid changes keep the latest selection and persist in order", async ({
 }) => {
   using save = disposablePromise();
   network.use(
-    preferenceRequests(async (value) => {
+    ...preferenceRequests(async (value) => {
       if (value === "dark") await save.promise;
       return passthrough();
     }),
@@ -119,13 +121,10 @@ test("rapid changes keep the latest selection and persist in order", async ({
 test("a failed save rolls back and allows retrying", async ({ preferences, network, page }) => {
   using save = disposablePromise();
   network.use(
-    preferenceRequests(async (value) => {
+    mockServerFn(prefs.setThemeFn, async (value) => {
       if (value !== "dark") return passthrough();
       await save.promise;
-      return HttpResponse.json(
-        await toCrossJSONAsync({ error: new Error("Unable to save cookie") }),
-        { status: 503, headers: { "x-tss-serialized": "true" } },
-      );
+      throw new Error("Unable to save cookie");
     }),
   );
 
