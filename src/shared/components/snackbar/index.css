@@ -1,0 +1,108 @@
+.snackbar {
+  position: fixed;
+  position-anchor: --app-bottom-navigation;
+  inset: auto 0;
+  inset-block-end: calc(anchor(--app-bottom-navigation top, env(safe-area-inset-bottom)) + 1rem);
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  inline-size: fit-content;
+  min-inline-size: min(21.5rem, calc(100% - 2rem));
+  max-inline-size: min(42rem, calc(100% - 2rem));
+  min-block-size: 3rem;
+  max-block-size: calc(
+    100dvh - 2rem - anchor-size(--app-bottom-navigation height, env(safe-area-inset-bottom))
+  );
+  margin-inline: auto;
+  padding: 0 0.25rem 0 1rem;
+  overflow: auto;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background-color: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  font: var(--md-sys-typography-body-medium);
+  box-shadow:
+    0 3px 3px alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-key-opacity)),
+    0 3px 4px 2px
+      alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity));
+  opacity: 0;
+  translate: 0 1rem;
+  transition:
+    opacity var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects),
+    translate var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial);
+
+  &:popover-open {
+    display: flex;
+    opacity: 1;
+    translate: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    translate: none;
+  }
+
+  @media (forced-colors: active) {
+    border: 1px solid CanvasText;
+  }
+}
+
+@starting-style {
+  .snackbar:popover-open {
+    opacity: 0;
+    translate: 0 1rem;
+
+    @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      translate: none;
+    }
+  }
+}
+
+.snackbar__message {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+  padding-block: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.snackbar__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  max-inline-size: 100%;
+  margin-inline-start: auto;
+  gap: 0.25rem;
+}
+
+.snackbar__action {
+  max-inline-size: 100%;
+  color: var(--md-sys-color-inverse-primary);
+  overflow-wrap: anywhere;
+
+  &:focus-visible {
+    outline-color: var(--md-sys-color-inverse-primary);
+  }
+}
+
+.snackbar__close {
+  color: var(--md-sys-color-inverse-on-surface);
+
+  &:focus-visible {
+    outline-color: var(--md-sys-color-inverse-primary);
+  }
+}
+
+.snackbar__announcement {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}

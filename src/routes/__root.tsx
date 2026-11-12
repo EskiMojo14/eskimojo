@@ -16,6 +16,7 @@ import {
 } from "#/shared/components/prefs/provider";
 import { Providers } from "#/shared/components/providers.tsx";
 import { Sidebar } from "#/shared/components/sidebar";
+import { SnackbarHost } from "#/shared/components/snackbar";
 import { getDocumentHead } from "#/shared/lib/document-head";
 import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -94,6 +95,7 @@ function PreferenceDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
+        <SnackbarHost />
         <Scripts />
       </body>
     </html>

@@ -81,6 +81,57 @@ The shared footer links to the [site's source code](https://github.com/EskiMojo1
 on GitHub and credits the artwork to [Popurri](https://x.com/popurri_arts).
 The homepage does not repeat the hero's Mitzi illustration in the footer.
 
+## Snackbars
+
+The app shell mounts one `SnackbarHost`. Import `showSnackbar`,
+`dismissSnackbar`, and `clearSnackbars` from `#/shared/lib/snackbar` in any
+client-side module; no hook or provider is required:
+
+```ts
+const id = showSnackbar("Changes saved.");
+showSnackbar({
+  message: "Item removed.",
+  action: { label: "Undo", onClick: restoreItem },
+});
+if (id !== undefined) dismissSnackbar(id);
+```
+
+Calls queue in arrival order, with only one MD3 snackbar visible at a time.
+Plain messages dismiss after five seconds of visible, unhovered, unfocused
+time. Action messages persist until acted on or dismissed. `duration` can be
+`null` for persistence or 4000-10000 milliseconds for an explicit timeout;
+queued messages start their timeout only when displayed. `dismissSnackbar(id)`
+also removes queued messages; `clearSnackbars()` clears the queue.
+Timed messages hide their close button by default. Set `showCloseButton: true`
+to opt in, for example `showSnackbar({ message: "Changes saved.", showCloseButton: true })`.
+Persistent messages always show a close button, even if `showCloseButton: false`
+is supplied.
+
+Messages use inverse surface colors, body-medium text, an optional inverse-primary
+text action, and an optional close affordance. Entry motion uses spring tokens and is
+disabled for reduced motion. The manual popover never steals focus or
+light-dismisses; keyboard dismissal restores the previous focus. Hidden tabs
+and open modal dialogs suspend display and timing. Announcements use
+`ariaNotify` when available, with a persistent polite live-region fallback.
+`rad-event-listeners` groups document and surface listeners with unsubscribe
+functions that run on cleanup.
+When compact bottom navigation is present, the snackbar anchors one rem above
+its actual top edge. Its maximum height reserves the navigation's measured
+height, including safe-area padding. Without navigation, the anchor fallback
+places it one rem above the bottom safe area.
+
+Use snackbars only for short, non-critical feedback; keep the information and
+any action available elsewhere in the UI. Action callbacks are synchronous;
+handle asynchronous work and its errors in the caller. A successful callback
+dismisses the message; thrown errors propagate rather than appearing successful.
+The API uses TanStack Start's `createIsomorphicFn().client(...)`. Server calls
+are no-ops, return `undefined`, and never queue notifications. `showSnackbar`
+returns a message ID in the browser; guard the returned value before passing it
+to `dismissSnackbar` in isomorphic code. Empty text and invalid durations throw
+in the browser.
+Messages queued before hydration wait until the host is hydrated, preserving
+the empty server markup and its persistent announcement region.
+
 ## Appearance preferences
 
 An MD3 large flexible top app bar displays the current page title below a

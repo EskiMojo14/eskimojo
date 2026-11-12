@@ -218,6 +218,12 @@ importers:
       '@tanstack/react-start':
         specifier: 1.169.4
         version: 1.169.4(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-dev.20261105.1)(yaml@2.9.1))(esbuild@0.28.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rollup@4.67.4)(supports-color@7.2.0)
+      '@tanstack/react-store':
+        specifier: 0.11.2
+        version: 0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/store':
+        specifier: 0.11.2
+        version: 0.11.2
       d3-geo:
         specifier: ^3.1.2
         version: 3.1.2
@@ -230,6 +236,9 @@ importers:
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
+      rad-event-listeners:
+        specifier: ^1.1.0
+        version: 1.1.0
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -6375,6 +6384,9 @@ packages:
 
   quote-unquote@1.0.0:
     resolution: {integrity: sha512-twwRO/ilhlG/FIgYeKGFqyHhoEhqgnKVkcmqMKi2r524gz3ZbDTcyFt38E9xjJI2vT+KbRNHVbnJ/e0I25Azwg==}
+
+  rad-event-listeners@1.1.0:
+    resolution: {integrity: sha512-xtFgWOQLovaExWIvhfF2OiuXvKwwV3fL5/qp5fAJHvIX1/uxNFfvaRcvGI1WQjPx/p0NEqib5PDDXwyQve+SSA==}
 
   react-bem-helper@1.4.1:
     resolution: {integrity: sha512-TQD6WfT5fPgr48v8GLmP8ldc7D5iT75VZ6B4nC05uTvPuaDf64m5FrCEHNY3R1u90wdCxtC2J5OvY8Z1hfwyJw==}
@@ -13601,6 +13613,8 @@ snapshots:
   queue-microtask@1.2.3: {}
 
   quote-unquote@1.0.0: {}
+
+  rad-event-listeners@1.1.0: {}
 
   react-bem-helper@1.4.1:
     dependencies:
