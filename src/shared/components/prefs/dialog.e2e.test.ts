@@ -1,6 +1,7 @@
 import { passthrough } from "msw";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";
+import { SnackbarModel } from "#/shared/components/snackbar/index.e2e.model";
 import { disposablePromise } from "#/utils";
 import { createTest, expect } from "#test/e2e";
 import { mockServerFn } from "#test/e2e/msw";
@@ -8,7 +9,11 @@ import { serverFns } from "#test/e2e/server-fns.gen";
 
 import { PreferencesDialogModel } from "./dialog.e2e.model";
 
-const test = createTest({ home: HomePage, preferences: PreferencesDialogModel });
+const test = createTest({
+  home: HomePage,
+  preferences: PreferencesDialogModel,
+  snackbar: SnackbarModel,
+});
 
 const prefs = serverFns["src/shared/lib/prefs.ts"];
 
@@ -118,7 +123,12 @@ test("rapid changes keep the latest selection and persist in order", async ({
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
 });
 
-test("a failed save rolls back and allows retrying", async ({ preferences, network, page }) => {
+test("a failed save rolls back and allows retrying", async ({
+  preferences,
+  snackbar,
+  network,
+  page,
+}) => {
   using save = disposablePromise();
   network.use(
     mockServerFn(prefs.setThemeFn, async (value) => {
@@ -135,6 +145,12 @@ test("a failed save rolls back and allows retrying", async ({ preferences, netwo
   await preferences.expectSelected("Theme", "System");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "system");
 
+  await preferences.close();
+  await expect(snackbar.notifications).toContainText("Couldn't save theme preference");
+  await expect(snackbar.dismissButton).toBeVisible();
+  await snackbar.dismiss();
+  await expect(snackbar.notifications).not.toContainText("Couldn't save theme preference");
+  await preferences.open();
   await preferences.select("Theme", "Light");
   await page.waitForLoadState("networkidle");
   await page.reload();

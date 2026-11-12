@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import { setThemeFn, setContrastFn, setPaletteFn } from "#/shared/lib/prefs";
+import { showSnackbar } from "#/shared/lib/snackbar";
 import { capitalize } from "#/utils";
 import type { Compute } from "#/utils/types";
 
@@ -36,6 +37,10 @@ function createPrefProvider<Name extends string, Value extends string>(
         });
       } catch (error) {
         console.error(`Unable to update ${name} preference`, error);
+        showSnackbar({
+          message: `Couldn't save ${name} preference`,
+          showCloseButton: true,
+        });
       }
       return null;
     }, null);
