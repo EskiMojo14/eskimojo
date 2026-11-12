@@ -3,6 +3,7 @@ import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
+import { haptics } from "#/shared/lib/haptics";
 
 import { SelectMenu } from "./index";
 
@@ -57,6 +58,8 @@ test("pointer selection updates the controlled value, form value, and focus", as
 });
 
 test("arrows explore without changing selection; Escape cancels and Enter commits", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const onChange = vi.fn<(value: string) => void>();
   const result = await page.renderWithProviders(<Example onChange={onChange} />);
   const field = result.getByRole("combobox", { name: "Contrast" });
@@ -75,9 +78,11 @@ test("arrows explore without changing selection; Escape cancels and Enter commit
   await userEvent.keyboard("{Escape}");
   await expect.element(field).toHaveAttribute("aria-expanded", "false");
   expect(onChange).not.toHaveBeenCalled();
+  expect(triggerHaptic).not.toHaveBeenCalled();
   await userEvent.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}{Enter}");
   await expect.element(field).toHaveAccessibleDescription("Medium");
   expect(onChange).toHaveBeenCalledExactlyOnceWith("medium");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
 });
 
 test("Home/End stop at boundaries and Space commits", async () => {

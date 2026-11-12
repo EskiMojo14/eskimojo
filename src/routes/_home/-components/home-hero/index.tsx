@@ -3,6 +3,7 @@ import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { MdSymbol } from "#/shared/components/symbol";
+import { triggerHapticFeedback } from "#/shared/lib/haptics";
 
 import { roles } from "./constants";
 
@@ -75,6 +76,7 @@ function useHomeHeroRoleAnimation() {
       target += visibleFrame.computedOffset * duration + 1;
     }
     for (const animation of animations) animation.currentTime = target;
+    triggerHapticFeedback("light");
   }
 
   return { heroRef, paused, skipRole, togglePaused };
@@ -116,7 +118,10 @@ export function HomeHero() {
               tooltip={animationAction}
               tooltipAsLabel
               icon={<MdSymbol>{paused ? "play_arrow" : "pause"}</MdSymbol>}
-              onClick={togglePaused}
+              onClick={() => {
+                togglePaused();
+                triggerHapticFeedback("selection");
+              }}
               variant="outlined"
             />
             <IconButton

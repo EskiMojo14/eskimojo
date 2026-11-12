@@ -14,6 +14,7 @@ import {
   paletteSchema,
   paletteLabels,
 } from "#/shared/constants/prefs";
+import { triggerHapticFeedback } from "#/shared/lib/haptics";
 
 import { useTheme, useContrast, usePalette } from "./context";
 
@@ -65,7 +66,11 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                     variant="tonal"
                     icon={<MdSymbol>{themeLabels[value].icon}</MdSymbol>}
                     aria-pressed={theme === value}
-                    onClick={() => setTheme(value)}
+                    onClick={() => {
+                      if (theme === value) return;
+                      setTheme(value);
+                      triggerHapticFeedback("selection");
+                    }}
                   >
                     {themeLabels[value].label}
                   </Button>
@@ -95,7 +100,11 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                     variant="tonal"
                     icon={<MdSymbol>{contrastLabels[value].icon}</MdSymbol>}
                     aria-pressed={contrast === value}
-                    onClick={() => setContrast(value)}
+                    onClick={() => {
+                      if (contrast === value) return;
+                      setContrast(value);
+                      triggerHapticFeedback("selection");
+                    }}
                   >
                     {contrastLabels[value].label}
                   </Button>
@@ -127,7 +136,11 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                     data-palette={value}
                     data-contrast={contrast}
                     aria-pressed={palette === value}
-                    onClick={() => setPalette(value)}
+                    onClick={() => {
+                      if (palette === value) return;
+                      setPalette(value);
+                      triggerHapticFeedback("selection");
+                    }}
                   >
                     {paletteLabels[value].label}
                   </Button>

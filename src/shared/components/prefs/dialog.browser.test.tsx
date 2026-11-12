@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { beforeEach, expect, test } from "vite-plus/test";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { AppBar } from "#/shared/components/app-bar";
@@ -12,6 +12,7 @@ import {
   paletteSchema,
   paletteLabels,
 } from "#/shared/constants/prefs";
+import { haptics } from "#/shared/lib/haptics";
 
 import { PreferencesDialog } from "./dialog";
 
@@ -196,18 +197,22 @@ test("app bar opens only preferences on desktop, keeps changes, and reopens", as
 });
 
 test("arrows only move focus; Space selects; Escape keeps changes", async () => {
+  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
+  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(<NavigationLayout />);
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   const theme = dialog.getByRole("toolbar", { name: "Theme" });
   await theme.getByRole("button", { name: "System" }).click();
+  expect(triggerHaptic).not.toHaveBeenCalled();
   await userEvent.keyboard("{ArrowRight}");
   const light = theme.getByRole("button", { name: "Light" });
   await expect.element(light).toHaveFocus();
   await expect.element(light).toHaveAttribute("aria-pressed", "false");
   await userEvent.keyboard(" ");
   await expect.element(light).toHaveAttribute("aria-pressed", "true");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
   const dialogElement = dialog.element();
   await userEvent.keyboard("{Escape}");
   await expect.element(dialogElement).not.toBeVisible();

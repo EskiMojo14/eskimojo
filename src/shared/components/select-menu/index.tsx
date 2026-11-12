@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode 
 import BEMHelper from "react-bem-helper";
 
 import { MdSymbol } from "#/shared/components/symbol";
+import { triggerHapticFeedback } from "#/shared/lib/haptics";
 
 const selectBem = BEMHelper("select-menu");
 
@@ -74,7 +75,10 @@ function useSelectMenuInteraction<Value extends string>({
 
   function commit(index: number) {
     const option = options[index];
-    if (option && option.value !== value) onChange(option.value);
+    if (option && option.value !== value) {
+      onChange(option.value);
+      triggerHapticFeedback("selection");
+    }
     close();
   }
 
