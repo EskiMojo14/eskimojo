@@ -8,6 +8,7 @@ import BEMHelper from "react-bem-helper";
 
 import { AppBar } from "#/shared/components/app-bar";
 import { Footer } from "#/shared/components/footer";
+import { useTheme, useContrast, usePalette } from "#/shared/components/prefs/context";
 import {
   ThemeProvider,
   ContrastProvider,
@@ -40,6 +41,24 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette } = Route.useLoaderData();
+  return (
+    <Providers
+      providers={[
+        [ThemeProvider, { theme }],
+        [ContrastProvider, { contrast }],
+        [PaletteProvider, { palette }],
+      ]}
+    >
+      <PreferenceDocument>{children}</PreferenceDocument>
+    </Providers>
+  );
+}
+
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
+function PreferenceDocument({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
+  const { contrast } = useContrast();
+  const { palette } = usePalette();
   const [navigationOpen, setNavigationOpen] = useState(false);
   return (
     <html lang="en" data-theme={theme} data-contrast={contrast} data-palette={palette}>
@@ -47,25 +66,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Providers
-          providers={[
-            [ThemeProvider, { theme }],
-            [ContrastProvider, { contrast }],
-            [PaletteProvider, { palette }],
-          ]}
-        >
-          <div {...appShellBem()}>
-            <Sidebar open={navigationOpen} onClose={() => setNavigationOpen(false)} />
-            <div {...appShellBem({ element: "main" })}>
-              <AppBar
-                navigationOpen={navigationOpen}
-                onOpenNavigation={() => setNavigationOpen(true)}
-              />
-              <div {...appShellBem({ element: "content" })}>{children}</div>
-              <Footer />
-            </div>
+        <div {...appShellBem()}>
+          <Sidebar open={navigationOpen} onClose={() => setNavigationOpen(false)} />
+          <div {...appShellBem({ element: "main" })}>
+            <AppBar
+              navigationOpen={navigationOpen}
+              onOpenNavigation={() => setNavigationOpen(true)}
+            />
+            <div {...appShellBem({ element: "content" })}>{children}</div>
+            <Footer />
           </div>
-        </Providers>
+        </div>
         <TanStackDevtools
           config={{
             position: "bottom-right",

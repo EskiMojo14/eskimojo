@@ -209,7 +209,11 @@ compiler invocation does not enable `--runExternalCode`. The normal
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,
 High), and Palette (Goat, Arctic). Each group permits one selection. Changes use the existing cookie-backed
-preference providers and apply without a separate Save action.
+preference providers and apply optimistically to the controls and page without
+waiting for the cookie save or loader refresh. Rapid changes to each preference
+are saved in selection order. A failed update rolls back to the saved value and
+is logged to the console without displaying a UI error; selecting again retries.
+There is no separate Save action.
 
 Arrow keys move focus without selecting; Enter or Space selects the focused
 option. Done, Escape, and clicking the backdrop close the dialog without

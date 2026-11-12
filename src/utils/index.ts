@@ -19,6 +19,12 @@ export const unsafeFromEntries: <
 const enumerableKeys = (obj: object) =>
   Reflect.ownKeys(obj).filter((key) => Object.getOwnPropertyDescriptor(obj, key)?.enumerable);
 
+/** A manually resolved promise that also resolves on disposal to release waiting work. */
+export function disposablePromise() {
+  const promise = Promise.withResolvers<void>();
+  return { ...promise, [Symbol.dispose]: () => promise.resolve() };
+}
+
 export const promiseAllKeyed = async <T extends Record<PropertyKey, unknown>>(
   keyed: T,
 ): Promise<{
