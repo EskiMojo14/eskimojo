@@ -141,7 +141,7 @@ export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
       );
     },
   });
-  return <RouterLinkChip {...linkProps} />;
+  return <RouterLinkChip resetScroll={false} {...linkProps} />;
 };
 
 export type ChipGroupProps = Omit<ComponentPropsWithRef<"fieldset">, "role"> &
