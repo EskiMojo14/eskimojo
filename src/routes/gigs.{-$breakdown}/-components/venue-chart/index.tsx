@@ -13,8 +13,15 @@ import { InternalLinkButton } from "#/shared/components/buttons/link-button/inde
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
+import { assert } from "#/utils";
 
 import { getVenueChartData } from "./data";
+
+function firstEvent(row: ReturnType<typeof getVenueChartData>[number]) {
+  const event = row.events[0];
+  assert(event, `Venue chart row has no events: ${row.venue}`);
+  return event;
+}
 
 export function GigsVenueChart({
   events,
@@ -47,7 +54,7 @@ export function GigsVenueChart({
             text(venues, {
               x: () => 0,
               y: "venue",
-              text: (row) => row.events[0].venue,
+              text: (row) => firstEvent(row).venue,
               anchor: "end",
               dx: -10,
               dy: -7,
@@ -58,7 +65,7 @@ export function GigsVenueChart({
             text(venues, {
               x: () => 0,
               y: "venue",
-              text: (row) => row.events[0].city,
+              text: (row) => firstEvent(row).city,
               anchor: "end",
               dx: -10,
               dy: 9,
@@ -71,8 +78,10 @@ export function GigsVenueChart({
             scale: () => scaleBand().domain(venues.map(({ venue }) => venue)),
             axis: {
               ticks: {
-                format: (value) =>
-                  venues.find(({ venue }) => venue === value)?.events[0].venue ?? value,
+                format: (value) => {
+                  const row = venues.find(({ venue }) => venue === value);
+                  return row ? firstEvent(row).venue : value;
+                },
               },
               tickLabels: { opacity: 0, thin: false },
             },

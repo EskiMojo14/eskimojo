@@ -1,6 +1,8 @@
 import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import { assert } from "#/utils";
+
 import { GigsVenueChart } from "./index";
 
 import "./index.css";
@@ -38,10 +40,12 @@ test("shows venue counts and chronological event details with keyboard pinning a
   await expect.element(result.getByText("Support: Joey Dosik")).toBeVisible();
   const entries = result.getByRole("listitem").all();
   expect(entries).toHaveLength(2);
-  expect(entries[0].element().textContent).toContain("Jacob Collier");
-  expect(entries[0].element().textContent).toContain("1 Jan 2024");
-  expect(entries[0].element().textContent).not.toContain("Support:");
-  expect(entries[1].element().textContent).toContain("29 Dec 2024");
+  const [earlier, later] = entries;
+  assert(earlier && later, "Expected both gigs at the selected venue.");
+  expect(earlier.element().textContent).toContain("Jacob Collier");
+  expect(earlier.element().textContent).toContain("1 Jan 2024");
+  expect(earlier.element().textContent).not.toContain("Support:");
+  expect(later.element().textContent).toContain("29 Dec 2024");
   await result.getByRole("button", { name: "Close details" }).click();
   await expect
     .element(result.getByRole("button", { name: "Close details" }))

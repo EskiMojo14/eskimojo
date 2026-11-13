@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
+import { assert } from "#/utils";
 
 import { getVenueChartData } from "./data";
 
@@ -16,7 +17,9 @@ test("groups events by venue, sorts counts and ties, and retains events in date 
     { venue: "A, London", count: 1, events: [events[1]] },
     { venue: "C, London", count: 1, events: [events[3]] },
   ]);
-  expect(events[0].date).toBe("2024-12-01");
+  const [firstEvent] = events;
+  assert(firstEvent, "Expected the first venue-chart fixture.");
+  expect(firstEvent.date).toBe("2024-12-01");
 });
 
 test("keeps identically named venues in different cities separate", () => {

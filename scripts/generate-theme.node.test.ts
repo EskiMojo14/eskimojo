@@ -8,13 +8,20 @@ import { promisify } from "node:util";
 import { argbFromRgb, Contrast, Hct } from "@material/material-color-utilities";
 import { expect, onTestFinished, test } from "vite-plus/test";
 
+import { assert } from "#/utils";
+
 const exec = promisify(execFile);
 const root = new URL("../", import.meta.url);
 const themePath = "src/shared/styles/theme";
 
 function tone(value: string) {
   const channels = [...value.matchAll(/\d+/g)].map(([channel]) => Number(channel));
-  return Hct.fromInt(argbFromRgb(channels[0], channels[1], channels[2])).tone;
+  const [red, green, blue] = channels;
+  assert(
+    red !== undefined && green !== undefined && blue !== undefined && channels.length === 3,
+    `Expected three RGB channels in ${value}`,
+  );
+  return Hct.fromInt(argbFromRgb(red, green, blue)).tone;
 }
 
 async function fixture() {
@@ -24,6 +31,8 @@ async function fixture() {
   await mkdir(join(dir, "config"));
   await cp(new URL("config/fmt.config.ts", root), join(dir, "config/fmt.config.ts"));
   await cp(new URL("package.json", root), join(dir, "package.json"));
+  await mkdir(join(dir, "src/utils"), { recursive: true });
+  await cp(new URL("src/utils/index.ts", root), join(dir, "src/utils/index.ts"));
   await cp(new URL(`${themePath}/exports/`, root), join(dir, themePath, "exports"), {
     recursive: true,
   });
@@ -96,6 +105,10 @@ test("generates a separate palette for every theme and preserves the goat Storyb
         expect(backgrounds).not.toBeNull();
         if (!backgrounds) throw new Error(`Missing ${theme}/${level} syntax backgrounds`);
         const [, lightBackground, darkBackground] = backgrounds;
+        assert(
+          light && dark && lightBackground && darkBackground,
+          `Malformed ${theme}/${level} syntax colours`,
+        );
         expect(Contrast.ratioOfTones(tone(light), tone(lightBackground))).toBeGreaterThanOrEqual(
           target,
         );
@@ -112,9 +125,9 @@ test("generates a separate palette for every theme and preserves the goat Storyb
     ["number", "goat", "tertiary"],
     ["type", "arctic", "primary"],
     ["parameter", "goat", "error"],
-  ]) {
+  ] as const) {
     const values = await Promise.all(
-      ["light", "dark"].map(async (scheme) => {
+      (["light", "dark"] as const).map(async (scheme) => {
         const css = await readFile(join(dir, themePath, `exports/${theme}/${scheme}.css`), "utf8");
         return new RegExp(`--md-sys-color-${role}: ([^;]+);`).exec(css)?.[1];
       }),

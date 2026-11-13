@@ -42,8 +42,13 @@ export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unkno
 }> => {
   const keys = enumerableKeys(keyed);
   const results = await Promise.allSettled(keys.map((key) => keyed[key]));
+  const entries = keys.map((key, index) => {
+    const result = results[index];
+    assert(result, "Missing settled result for enumerable key.");
+    return [key, result] as const;
+  });
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  return unsafeFromEntries(results.map((result, i) => [keys[i], result])) as never;
+  return unsafeFromEntries(entries) as never;
 };
 
 export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): AbortSignal =>
@@ -51,16 +56,26 @@ export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): Abor
 
 export const upfetch = up(fetch);
 
+type CodeLanguage = "css" | "esquery" | "js" | "regex" | "ts";
+
+// The proxy getter supplies every supported key while keeping the target empty.
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- The get trap below guarantees every language key.
+const codeTarget = {} as Record<CodeLanguage, typeof String.raw>;
+
 /**
  * A utility object for generating code strings, particularly for regular expressions.
- * Accessing any property on this object returns `String.raw`.
+ * Accessing a supported language key on this object returns `String.raw`.
  * The main benefit is IDEs will use the key to achieve syntax highlighting and autocompletion for the code strings.
  * @example
  * const code = code.ts`const foo = "bar"`;
  * const styles = code.css`body { color: red; }`;
  */
-export const code = new Proxy({} as Record<string, typeof String.raw>, {
+export const code = new Proxy(codeTarget, {
   get() {
     return String.raw;
   },
 });
+
+export function assert(condition: unknown, message = "Assertion failed"): asserts condition {
+  if (!condition) throw new Error(message);
+}
