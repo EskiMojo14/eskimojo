@@ -1,0 +1,100 @@
+:is(
+  [data-project-palette],
+  [data-project-page] > :is(.app-bar__toolbar, .app-bar__text, .site-footer)
+) {
+  --md-sys-color-surface: var(--project-standard-surface);
+  --md-sys-color-surface-container-low: var(--project-standard-surface-container-low);
+  --md-sys-color-surface-container-high: var(--project-standard-surface-container-high);
+  --md-sys-color-surface-container-highest: var(--project-standard-surface-container-highest);
+  --md-sys-color-outline-variant: var(--project-standard-outline-variant);
+  --md-sys-color-outline: var(--project-standard-outline);
+  --md-sys-color-on-surface: var(--project-standard-on-surface);
+  --md-sys-color-on-surface-variant: var(--project-standard-on-surface-variant);
+  --md-sys-color-primary: var(--project-standard-primary);
+  --md-sys-color-secondary: var(--project-standard-secondary);
+  --md-sys-color-tertiary: var(--project-standard-tertiary);
+  --md-sys-color-error: var(--project-standard-error);
+  --syntax-keyword: var(--project-standard-syntax-keyword);
+  --syntax-string: var(--project-standard-syntax-string);
+  --syntax-function: var(--project-standard-syntax-function);
+  --syntax-number: var(--project-standard-syntax-number);
+  --syntax-type: var(--project-standard-syntax-type);
+  --syntax-parameter: var(--project-standard-syntax-parameter);
+}
+
+[data-contrast="medium"]
+  :is(
+    [data-project-palette],
+    [data-project-page] > :is(.app-bar__toolbar, .app-bar__text, .site-footer)
+  ) {
+  --md-sys-color-surface: var(--project-medium-surface);
+  --md-sys-color-surface-container-low: var(--project-medium-surface-container-low);
+  --md-sys-color-surface-container-high: var(--project-medium-surface-container-high);
+  --md-sys-color-surface-container-highest: var(--project-medium-surface-container-highest);
+  --md-sys-color-outline-variant: var(--project-medium-outline-variant);
+  --md-sys-color-outline: var(--project-medium-outline);
+  --md-sys-color-on-surface: var(--project-medium-on-surface);
+  --md-sys-color-on-surface-variant: var(--project-medium-on-surface-variant);
+  --md-sys-color-primary: var(--project-medium-primary);
+  --md-sys-color-secondary: var(--project-medium-secondary);
+  --md-sys-color-tertiary: var(--project-medium-tertiary);
+  --md-sys-color-error: var(--project-medium-error);
+  --syntax-keyword: var(--project-medium-syntax-keyword);
+  --syntax-string: var(--project-medium-syntax-string);
+  --syntax-function: var(--project-medium-syntax-function);
+  --syntax-number: var(--project-medium-syntax-number);
+  --syntax-type: var(--project-medium-syntax-type);
+  --syntax-parameter: var(--project-medium-syntax-parameter);
+}
+
+[data-contrast="high"]
+  :is(
+    [data-project-palette],
+    [data-project-page] > :is(.app-bar__toolbar, .app-bar__text, .site-footer)
+  ) {
+  --md-sys-color-surface: var(--project-high-surface);
+  --md-sys-color-surface-container-low: var(--project-high-surface-container-low);
+  --md-sys-color-surface-container-high: var(--project-high-surface-container-high);
+  --md-sys-color-surface-container-highest: var(--project-high-surface-container-highest);
+  --md-sys-color-outline-variant: var(--project-high-outline-variant);
+  --md-sys-color-outline: var(--project-high-outline);
+  --md-sys-color-on-surface: var(--project-high-on-surface);
+  --md-sys-color-on-surface-variant: var(--project-high-on-surface-variant);
+  --md-sys-color-primary: var(--project-high-primary);
+  --md-sys-color-secondary: var(--project-high-secondary);
+  --md-sys-color-tertiary: var(--project-high-tertiary);
+  --md-sys-color-error: var(--project-high-error);
+  --syntax-keyword: var(--project-high-syntax-keyword);
+  --syntax-string: var(--project-high-syntax-string);
+  --syntax-function: var(--project-high-syntax-function);
+  --syntax-number: var(--project-high-syntax-number);
+  --syntax-type: var(--project-high-syntax-type);
+  --syntax-parameter: var(--project-high-syntax-parameter);
+}
+
+@media (prefers-contrast: more) {
+  :root:is(:not([data-contrast]), [data-contrast="system"])
+    :is(
+      [data-project-palette],
+      [data-project-page] > :is(.app-bar__toolbar, .app-bar__text, .site-footer)
+    ) {
+    --md-sys-color-surface: var(--project-high-surface);
+    --md-sys-color-surface-container-low: var(--project-high-surface-container-low);
+    --md-sys-color-surface-container-high: var(--project-high-surface-container-high);
+    --md-sys-color-surface-container-highest: var(--project-high-surface-container-highest);
+    --md-sys-color-outline-variant: var(--project-high-outline-variant);
+    --md-sys-color-outline: var(--project-high-outline);
+    --md-sys-color-on-surface: var(--project-high-on-surface);
+    --md-sys-color-on-surface-variant: var(--project-high-on-surface-variant);
+    --md-sys-color-primary: var(--project-high-primary);
+    --md-sys-color-secondary: var(--project-high-secondary);
+    --md-sys-color-tertiary: var(--project-high-tertiary);
+    --md-sys-color-error: var(--project-high-error);
+    --syntax-keyword: var(--project-high-syntax-keyword);
+    --syntax-string: var(--project-high-syntax-string);
+    --syntax-function: var(--project-high-syntax-function);
+    --syntax-number: var(--project-high-syntax-number);
+    --syntax-type: var(--project-high-syntax-type);
+    --syntax-parameter: var(--project-high-syntax-parameter);
+  }
+}

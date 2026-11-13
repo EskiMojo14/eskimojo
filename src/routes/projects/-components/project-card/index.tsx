@@ -9,7 +9,11 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Card
       className="project-card"
-      style={{ "--project-card-name": `project-card-${project.slug}` }}
+      data-project-palette={project.palette ? "" : undefined}
+      style={{
+        ...project.palette,
+        "--project-card-name": `project-card-${project.slug}`,
+      }}
     >
       <div className="project-card__heading">
         {project.logo &&

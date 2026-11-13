@@ -1,5 +1,40 @@
 @import "#/routes/projects/-shared.css";
 
+[data-project-page] > .app-bar__toolbar {
+  background-color: var(--md-sys-color-surface);
+}
+
+[data-project-page] > .app-bar__text {
+  margin-inline: 0;
+  padding-inline: 0.75rem;
+}
+
+.app-shell__content:has(> .projects-page[data-project-palette]) {
+  display: flex;
+  flex-direction: column;
+  max-inline-size: none;
+  padding-inline: 0;
+}
+
+.projects-page[data-project-palette] {
+  flex: 1;
+  padding-inline: 0;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+
+  > .project-detail {
+    inline-size: 100%;
+    max-inline-size: 64rem;
+    margin: 0 auto;
+    padding-block-start: 1.5rem;
+    padding-inline: 2rem;
+
+    @media not (--phone) {
+      padding-inline: 2.5rem;
+    }
+  }
+}
+
 .project-title--detail {
   font: var(--md-sys-typography-display-small);
   font-feature-settings: var(--md-sys-typography-features-heading);

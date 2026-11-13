@@ -6,6 +6,8 @@ import * as v from "valibot";
 
 import { projectKindSchema } from "#/routes/projects/-schema.ts";
 
+import { generateProjectPalette } from "./project-palette";
+
 export const publicImageSchema = v.config(
   v.pipe(
     v.string(),
@@ -56,8 +58,12 @@ const projects = defineCollection({
       }),
     ),
   }),
-  transform: ({ _meta: meta, ...document }) => ({
+  transform: async ({ _meta: meta, ...document }) => ({
     ...document,
+    palette:
+      typeof document.logo.light === "string"
+        ? await generateProjectPalette(document.logo)
+        : undefined,
     kind: v.parse(projectKindSchema, posix.dirname(meta.path)),
     filePath: meta.filePath,
     slug: v.parse(

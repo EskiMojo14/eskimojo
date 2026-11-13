@@ -1,7 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import { HeadContent, Scripts, createRootRouteWithContext, useMatch } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useState } from "react";
 import BEMHelper from "react-bem-helper";
@@ -73,6 +73,11 @@ function PreferenceDocument({
   const { theme } = useTheme();
   const { contrast } = useContrast();
   const { palette } = usePalette();
+  const projectPalette = useMatch({
+    from: "/projects/$slug",
+    shouldThrow: false,
+    select: (match) => match.loaderData?.palette,
+  });
   const [navigationOpen, setNavigationOpen] = useState(false);
   return (
     <html
@@ -92,7 +97,11 @@ function PreferenceDocument({
             onClose={() => setNavigationOpen(false)}
             christmas={christmas}
           />
-          <div {...appShellBem({ element: "main" })}>
+          <div
+            {...appShellBem({ element: "main" })}
+            data-project-page={projectPalette ? "" : undefined}
+            style={projectPalette}
+          >
             <AppBar
               navigationOpen={navigationOpen}
               onOpenNavigation={() => setNavigationOpen(true)}
