@@ -1,7 +1,51 @@
+import { QueryClient, QueryObserver } from "@tanstack/react-query";
 import * as v from "valibot";
-import { expect, test } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 
-import { addLastfmArtworkFallback, bestLastfmArtwork, imageSchema } from "./-query";
+import {
+  addLastfmArtworkFallback,
+  bestLastfmArtwork,
+  getSpotifyArtwork,
+  imageSchema,
+} from "./-query";
+
+test("keeps artwork fresh throughout a retry cooldown when the tab remounts", async () => {
+  const initialTime = Date.now();
+  let now = initialTime;
+  const dateNow = vi.spyOn(Date, "now").mockImplementation(() => now);
+  onTestFinished(() => dateNow.mockRestore());
+  const client = new QueryClient();
+  onTestFinished(() => client.clear());
+  const response = {
+    tracks: [{ name: "Retry Song", artist: "Example Artist", artwork: undefined }],
+    artists: [],
+    retryAfterMs: 30_000,
+  };
+  const queryFn = vi.fn<() => Promise<typeof response>>().mockResolvedValue(response);
+  const options = {
+    ...getSpotifyArtwork({
+      tracks: [{ name: "Retry Song", artist: "Example Artist" }],
+      artists: [],
+    }),
+    queryFn,
+  };
+  client.setQueryData(options.queryKey, response);
+
+  now += 20_000;
+  const observer = new QueryObserver(client, options);
+  const unsubscribe = observer.subscribe(() => {});
+  onTestFinished(unsubscribe);
+
+  expect(observer.getCurrentResult().isStale).toBe(false);
+  expect(queryFn).not.toHaveBeenCalled();
+
+  unsubscribe();
+  now = initialTime + 30_001;
+  const afterCooldown = new QueryObserver(client, options);
+  const unsubscribeAfterCooldown = afterCooldown.subscribe(() => {});
+  onTestFinished(unsubscribeAfterCooldown);
+  await vi.waitFor(() => expect(queryFn).toHaveBeenCalledOnce());
+});
 
 test("filters unsafe and placeholder Last.fm image URLs", () => {
   const image = v.parse(imageSchema, [
