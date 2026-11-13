@@ -23,7 +23,7 @@ function track(src?: string): {
 test.each([
   { background: "#ca2020", src: "https://i.scdn.co/image/palette-red" },
   { background: "#2040ca", src: "https://i.scdn.co/image/palette-blue" },
-  { background: "#777777", src: "https://example.com/cover-gray.png" },
+  { background: "#777777", src: "https://i.scdn.co/image/palette-gray" },
 ])("generates and caches readable artwork palettes from $src", async ({ background, src }) => {
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background },
@@ -112,9 +112,15 @@ test("keeps tracks with missing or failed artwork and reports extraction errors"
 });
 
 test.each([
+  "https://example.com/image.png",
   "http://example.com/image.png",
   "https://user:password@example.com/image.png",
   "https://example.com:8443/image.png",
+  "https://127.0.0.1/image.png",
+  "https://10.0.0.1/image.png",
+  "https://[::1]/image.png",
+  "https://localhost/image.png",
+  "https://i.scdn.co.evil.example/image.png",
 ])("does not fetch an unsupported artwork URL: %s", async (src) => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
   onTestFinished(() => warning.mockRestore());
