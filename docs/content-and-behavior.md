@@ -391,6 +391,10 @@ resolution inside its existing Suspense boundary; the summary, tabs, and period
 picker remain independent and usable. Incomplete provider lookups
 retry after at least thirty seconds, respecting longer Spotify rate limits;
 completed lookups remain fresh for six hours.
+If the artwork server-function request fails, log the failure and recover with
+validated Last.fm images or icons, retaining successfully loaded listening data.
+Retry enrichment after thirty seconds rather than caching this fallback for six
+hours. Cancellation still propagates instead of producing fallback data.
 
 Current defaults:
 

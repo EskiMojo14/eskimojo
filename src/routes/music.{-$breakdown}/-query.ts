@@ -271,10 +271,23 @@ export const getMusicArtwork = (
 ) =>
   queryOptions({
     queryKey: ["music-artwork", params],
-    queryFn: ({ signal }) =>
-      params.tracks.length === 0 && params.artists.length === 0
-        ? Promise.resolve({ tracks: [], artists: [], retryAfterMs: undefined })
-        : getMusicArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    queryFn: async ({ signal }): Promise<Awaited<ReturnType<typeof getMusicArtworkFn>>> => {
+      if (params.tracks.length === 0 && params.artists.length === 0) {
+        return { tracks: [], artists: [], retryAfterMs: undefined };
+      }
+      const requestSignal = anyAbortSignal(signal, signalOpt);
+      try {
+        return await getMusicArtworkFn({ data: params, signal: requestSignal });
+      } catch (error) {
+        requestSignal.throwIfAborted();
+        console.error("Failed to load music artwork; using Last.fm artwork or icons.", error);
+        return {
+          tracks: addLastfmArtworkFallback(params.tracks),
+          artists: addLastfmArtworkFallback(params.artists),
+          retryAfterMs: musicArtworkRetryDelay,
+        };
+      }
+    },
     staleTime: (query) => query.state.data?.retryAfterMs ?? musicArtworkCacheDuration,
     refetchInterval: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
