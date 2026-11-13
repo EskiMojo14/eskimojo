@@ -1,4 +1,5 @@
 @import "#/routes/projects/-components/project-links/index.css";
+@import "./-palette.css";
 
 :root,
 [data-theme="light"],

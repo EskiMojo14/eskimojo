@@ -67,6 +67,16 @@ export const DarkLogo = meta.story({
   },
 });
 
+export const HighContrast = meta.story({
+  args: { project: getProject("redux") },
+  globals: { theme: "light", contrast: "high" },
+});
+
+export const MediumContrastDark = meta.story({
+  args: { project: getProject("valibot") },
+  globals: { theme: "dark", contrast: "medium" },
+});
+
 export const WithoutLogo = meta.story({
   args: { project: getProject("rad-event-listeners") },
   play: async ({ canvasElement }) => {

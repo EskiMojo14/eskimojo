@@ -49,7 +49,11 @@ function RouteComponent() {
   const project = Route.useLoaderData();
   const Content = getProjectContent(project.filePath);
   return (
-    <main className="projects-page">
+    <main
+      className="projects-page"
+      data-project-palette={project.palette ? "" : undefined}
+      style={project.palette}
+    >
       <ProjectDetail project={project}>
         {/* oxlint-disable-next-line react/static-components -- Lookup returns a stable, module-level lazy component; it does not create one. */}
         <Content />

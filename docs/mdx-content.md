@@ -111,6 +111,26 @@ Card logos are decorative beside the project title and follow the site's
 selected theme, including its system setting. Entries without logos reserve
 no image space.
 
+Image logos also supply each card's local color palette. Content generation
+decodes the logo with Sharp and uses Material Color Utilities to generate a
+subtle surface tint and readable text, links, and focus colors for light/dark
+and standard/medium/high contrast. A separate `dark` logo supplies the dark
+scheme's seed; otherwise both schemes use `light`. Grayscale logos produce
+neutral palettes, and symbol-only entries retain the site palette.
+The detail page uses the same palette within its main content, including page
+and code-block surfaces, links, and dividers. Its background fills the content
+area while the text stays in a centered, width-constrained column. Syntax
+highlighting retains the site's distinct accent hues, adjusting their tones
+against each project's code background to meet the selected contrast target.
+These accents are derived from the checked-in
+[syntax.gen.css](../src/shared/styles/syntax.gen.css); regenerate
+project content after running `vp run theme:generate` to refresh them.
+The top app bar and footer also use the project palette. The sidebar, bottom
+navigation, and preferences dialog keep the selected site palette.
+Only the generated colors ship to the browser, not the image-processing libraries.
+Run `vp run content:generate` after changing logo files (or rebuild the site);
+logo-only edits do not necessarily trigger content HMR.
+
 The detail route loads the body with Vite's lazy MDX imports. Project cards
 use the router's intent preloading, warming the selected detail page and MDX
 body on hover or focus without eagerly importing every description. Module-level
