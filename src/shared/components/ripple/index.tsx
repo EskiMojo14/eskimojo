@@ -163,7 +163,11 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
   const handlers: RippleHandlers<T> = {
     onPointerDown(event) {
       props.onPointerDown?.(event);
-      if (!event.defaultPrevented && event.button === 0 && event.isPrimary) {
+      const middleClickLink =
+        event.button === 1 &&
+        event.pointerType === "mouse" &&
+        event.currentTarget.matches("a[href]");
+      if (!event.defaultPrevented && event.isPrimary && (event.button === 0 || middleClickLink)) {
         start(event.currentTarget, { x: event.clientX, y: event.clientY }, event.pointerId);
       }
     },

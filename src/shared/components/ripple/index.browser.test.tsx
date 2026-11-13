@@ -3,6 +3,7 @@ import { createRef } from "react";
 import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import { SocialLink } from "#/routes/_home/-components/social-link";
 import { Button } from "#/shared/components/buttons/button";
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { ExternalLinkButton } from "#/shared/components/buttons/link-button";
@@ -16,14 +17,15 @@ import {
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { Tab, TabLink, TabList, TabNav, Tabs } from "#/shared/components/tabs";
 
-function press(element: Element, x = 8, y = 8, pointerId = 1) {
+function press(element: Element, x = 8, y = 8, pointerId = 1, button = 0) {
   const rect = element.getBoundingClientRect();
-  element.dispatchEvent(
+  return element.dispatchEvent(
     new PointerEvent("pointerdown", {
       bubbles: true,
       cancelable: true,
       isPrimary: true,
-      button: 0,
+      button,
+      pointerType: "mouse",
       pointerId,
       clientX: rect.left + x,
       clientY: rect.top + y,
@@ -228,6 +230,41 @@ test("labelled buttons, links, and icon controls ripple on press", async () => {
     press(element);
     expect(wave(element).isConnected).toBe(true);
     document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
+    expect(element.querySelector(".ripple__wave")).toBeNull();
+  }
+});
+
+test("middle presses ripple on links without preventing navigation or affecting buttons", async () => {
+  const result = await page.renderWithProviders(
+    <>
+      <SocialLink name="Social" handle="@social" href="https://example.com" icon={<svg />} />
+      <ExternalLinkButton href="#project">Project</ExternalLinkButton>
+      <ExternalLinkButton href="#disabled" aria-disabled="true">
+        Disabled link
+      </ExternalLinkButton>
+      <ExternalLinkButton href="#prevented" onPointerDown={(event) => event.preventDefault()}>
+        Prevented link
+      </ExternalLinkButton>
+      <Button>Action</Button>
+    </>,
+  );
+  for (const name of ["Social profile, @social, opens in a new tab", "Project"]) {
+    const link = result.getByRole("link", { name }).element();
+    expect(press(link, 8, 8, 1, 1)).toBe(true);
+    const ripple = wave(link);
+    document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+    for (const animation of ripple.getAnimations()) animation.finish();
+    await expect.poll(() => link.querySelector(".ripple__wave")).toBeNull();
+    press(link, 8, 8, 1, 2);
+    expect(link.querySelector(".ripple__wave")).toBeNull();
+  }
+  for (const [role, name] of [
+    ["link", "Disabled link"],
+    ["link", "Prevented link"],
+    ["button", "Action"],
+  ] as const) {
+    const element = result.getByRole(role, { name }).element();
+    press(element, 8, 8, 1, 1);
     expect(element.querySelector(".ripple__wave")).toBeNull();
   }
 });
