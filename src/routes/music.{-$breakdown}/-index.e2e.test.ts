@@ -169,10 +169,15 @@ test("shows Last.fm results while Spotify artwork is still loading", async ({ ne
   using recentArtworkPending = disposablePromise();
   using topArtworkStarted = disposablePromise();
   using recentArtworkStarted = disposablePromise();
-  const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  const imageData = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  const fallbackImageUrl = `${imageData}#lastfm`;
+  const imageUrl = `${imageData}#spotify`;
+  const recentTracksWithFallback = recentTracksWithNowPlaying.map((track, index) =>
+    index === 0 ? { ...track, lastfmArtworkUrl: fallbackImageUrl } : track,
+  );
   let artworkRequests = 0;
   network.use(
-    ...lastfm(undefined, recentTracksWithNowPlaying, topTracks, topArtists),
+    ...lastfm(undefined, recentTracksWithFallback, topTracks, topArtists),
     spotifyArtwork(async () => {
       artworkRequests++;
       if (artworkRequests === 1) {
@@ -203,6 +208,10 @@ test("shows Last.fm results while Spotify artwork is still loading", async ({ ne
   await music.recent.select();
   await recentArtworkStarted.promise;
   await expect(music.recent.track("Let It Happen")).toBeVisible();
+  await expect(music.recent.artworkImage("Let It Happen", fallbackImageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
   await expect(music.recent.artworkImage("Let It Happen", imageUrl)).not.toBeVisible();
 
   recentArtworkPending.resolve();

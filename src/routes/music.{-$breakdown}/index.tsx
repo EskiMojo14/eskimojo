@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import * as v from "valibot";
@@ -41,6 +41,10 @@ function reportPreloadError(error: unknown) {
   console.error("Failed to preload music data.", error);
 }
 
+function reportArtworkPreloadError(error: unknown) {
+  console.error("Failed to preload music artwork.", error);
+}
+
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
     parse: (params) => v.parse(v.object({ breakdown: v.optional(musicBreakdownSchema) }), params),
@@ -68,21 +72,57 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     queryClient.query({ ...getUserData(), staleTime: "static" }).catch(reportPreloadError);
     switch (breakdown) {
       case "recent":
-        queryClient
+        void queryClient
           .query({
             ...getRecentTracks({ limit: 10 }),
             staleTime: recentTracksRefreshInterval,
           })
+          .then((tracks) =>
+            queryClient
+              .query(
+                getSpotifyArtwork({
+                  tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                    name,
+                    artist,
+                    lastfmArtworkUrl,
+                  })),
+                  artists: [],
+                }),
+              )
+              .catch(reportArtworkPreloadError),
+          )
           .catch(reportPreloadError);
         break;
-      case "top-music":
-        queryClient
-          .query({ ...getTopTracks({ limit: 10, period }), staleTime: "static" })
-          .catch(reportPreloadError);
-        queryClient
-          .query({ ...getTopArtists({ limit: 10, period }), staleTime: "static" })
+      case "top-music": {
+        const tracks = queryClient.query({
+          ...getTopTracks({ limit: 10, period }),
+          staleTime: "static",
+        });
+        const artists = queryClient.query({
+          ...getTopArtists({ limit: 10, period }),
+          staleTime: "static",
+        });
+        void Promise.all([tracks, artists])
+          .then(([topTracks, topArtists]) =>
+            queryClient
+              .query(
+                getSpotifyArtwork({
+                  tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                    name,
+                    artist,
+                    lastfmArtworkUrl,
+                  })),
+                  artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
+                    name,
+                    lastfmArtworkUrl,
+                  })),
+                }),
+              )
+              .catch(reportArtworkPreloadError),
+          )
           .catch(reportPreloadError);
         break;
+      }
     }
   },
   head: () => {
@@ -167,7 +207,7 @@ function RecentTracksPanel() {
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: "always",
   });
-  const artworkQuery = useQuery(
+  const artworkQuery = useSuspenseQuery(
     getSpotifyArtwork({
       tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
         name,
@@ -213,7 +253,7 @@ function TopMusicPanel() {
       { ...getTopArtists({ limit: 10, period }), staleTime: "static" },
     ],
   });
-  const artworkQuery = useQuery(
+  const artworkQuery = useSuspenseQuery(
     getSpotifyArtwork({
       tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
         name,
