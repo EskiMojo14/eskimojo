@@ -56,9 +56,32 @@ type SearchCacheEntry = {
 const market = "GB";
 const cacheDuration = 6 * 60 * 60 * 1000;
 const maxCacheEntries = 256;
+const enrichmentTimeoutMs = 10_000;
 const artworkCache = new Map<string, SearchCacheEntry>();
 let tokenCache: { value: string; expiresAt: number } | undefined;
 let tokenRequest: Promise<string> | undefined;
+
+function waitWithSignal<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
+  signal.throwIfAborted();
+  return new Promise<T>((resolve, reject) => {
+    const cleanup = () => signal.removeEventListener("abort", onAbort);
+    const onAbort = () => {
+      cleanup();
+      reject(signal.reason);
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (value) => {
+        cleanup();
+        resolve(value);
+      },
+      (error: unknown) => {
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
 
 function normalizedName(value: string) {
   return value
@@ -128,9 +151,7 @@ async function accessToken(signal: AbortSignal) {
   tokenRequest ??= requestAccessToken().finally(() => {
     tokenRequest = undefined;
   });
-  const token = await tokenRequest;
-  signal.throwIfAborted();
-  return token;
+  return waitWithSignal(tokenRequest, signal);
 }
 
 async function spotifySearch<T extends v.GenericSchema>(
@@ -247,22 +268,45 @@ async function addArtwork<T extends { artwork?: SpotifyArtwork }>(
   });
 }
 
+async function addArtworkWithDeadline<T extends { artwork?: SpotifyArtwork }>(
+  items: Array<T>,
+  signal: AbortSignal,
+  enrich: (signal: AbortSignal) => Promise<Array<T & { artwork?: SpotifyArtwork }>>,
+) {
+  const timeoutSignal = AbortSignal.timeout(enrichmentTimeoutMs);
+  const enrichmentSignal = AbortSignal.any([signal, timeoutSignal]);
+  try {
+    return await enrich(enrichmentSignal);
+  } catch (error) {
+    if (signal.aborted) signal.throwIfAborted();
+    if (!timeoutSignal.aborted) throw error;
+    console.warn(
+      "Spotify artwork enrichment timed out; Last.fm listening data is still available.",
+    );
+    return items;
+  }
+}
+
 export function addSpotifyTrackArtwork<
   T extends Pick<RecentTrack | TopTrack, "name" | "artist"> & { artwork?: SpotifyArtwork },
 >(items: Array<T>, signal: AbortSignal): Promise<Array<T & { artwork?: SpotifyArtwork }>> {
-  return addArtwork(
-    items,
-    (item, requestSignal) => findTrackArtwork(item.name, item.artist, requestSignal),
-    signal,
+  return addArtworkWithDeadline(items, signal, (enrichmentSignal) =>
+    addArtwork(
+      items,
+      (item, requestSignal) => findTrackArtwork(item.name, item.artist, requestSignal),
+      enrichmentSignal,
+    ),
   );
 }
 
 export function addSpotifyArtistArtwork<
   T extends Pick<TopArtist, "name"> & { artwork?: SpotifyArtwork },
 >(items: Array<T>, signal: AbortSignal): Promise<Array<T & { artwork?: SpotifyArtwork }>> {
-  return addArtwork(
-    items,
-    (item, requestSignal) => findArtistArtwork(item.name, requestSignal),
-    signal,
+  return addArtworkWithDeadline(items, signal, (enrichmentSignal) =>
+    addArtwork(
+      items,
+      (item, requestSignal) => findArtistArtwork(item.name, requestSignal),
+      enrichmentSignal,
+    ),
   );
 }
