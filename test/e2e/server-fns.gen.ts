@@ -5,6 +5,9 @@ export const serverFns = {
     getRecentTracksFn: serverFnRef<
       (typeof import("#/routes/music.{-$breakdown}/-query.ts"))["getRecentTracksFn"]
     >("*/_serverFn/b4799791f9a34ceb9f37452af0eeeecbaca894d879265b98904dc88695e33b2a"),
+    getSpotifyArtworkFn: serverFnRef<
+      (typeof import("#/routes/music.{-$breakdown}/-query.ts"))["getSpotifyArtworkFn"]
+    >("*/_serverFn/95443d028b1e1815f01165b7e2d95a592e04b2d0e61b8dfea33aef96fefe68eb"),
     getTopArtistsFn: serverFnRef<
       (typeof import("#/routes/music.{-$breakdown}/-query.ts"))["getTopArtistsFn"]
     >("*/_serverFn/6ebc3f3d9743930dcf2bb37ca462058fdcb2ea9c53ba58840398ae31cc9131c8"),

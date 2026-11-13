@@ -345,3 +345,58 @@ test("falls back to listening data when Spotify authentication exceeds its deadl
   expect(searchRequests).toBe(0);
   expect(warning).toHaveBeenCalledOnce();
 });
+
+test("honors Spotify Retry-After before sending another catalog request", async () => {
+  configureCredentials();
+  const tokenRequests = mockTokenRequest();
+  const initialTime = Date.now();
+  let now = initialTime;
+  const dateNow = vi.spyOn(Date, "now").mockImplementation(() => now);
+  onTestFinished(() => dateNow.mockRestore());
+
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  onTestFinished(() => error.mockRestore());
+
+  let searchRequests = 0;
+  network.use(
+    http.get("https://api.spotify.com/v1/search", () => {
+      searchRequests++;
+      if (searchRequests === 1) {
+        return new HttpResponse(null, { status: 429, headers: { "Retry-After": "30" } });
+      }
+      return HttpResponse.json({
+        tracks: {
+          items: [
+            {
+              name: "Rate Limited Song",
+              artists: [{ name: "Example Artist" }],
+              album: { images: [{ url: "https://i.scdn.co/image/rate-limited-song" }] },
+              external_urls: { spotify: "https://open.spotify.com/track/rate-limited-song" },
+            },
+          ],
+        },
+      });
+    }),
+  );
+
+  const item = { name: "Rate Limited Song", artist: "Example Artist" };
+  const signal = new AbortController().signal;
+  const [firstResult] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+  const [duringCooldown] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+
+  expect(firstResult).toEqual(item);
+  expect(duringCooldown).toEqual(item);
+  expect(spotifyModule.getSpotifyRateLimitRetryAfter()).toBe(30_000);
+  expect(searchRequests).toBe(1);
+
+  now += 30_001;
+  expect(spotifyModule.getSpotifyRateLimitRetryAfter()).toBeUndefined();
+  const [afterCooldown] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+
+  expect(afterCooldown?.artwork).toEqual({
+    imageUrl: "https://i.scdn.co/image/rate-limited-song",
+    spotifyUrl: "https://open.spotify.com/track/rate-limited-song",
+  });
+  expect(tokenRequests()).toBe(1);
+  expect(searchRequests).toBe(2);
+});

@@ -1,4 +1,4 @@
-import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import * as v from "valibot";
@@ -24,6 +24,7 @@ import {
 import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
+  getSpotifyArtwork,
   getTopTracks,
   getTopArtists,
   getUserData,
@@ -166,9 +167,26 @@ function RecentTracksPanel() {
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: "always",
   });
+  const artworkQuery = useQuery(
+    getSpotifyArtwork({
+      tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+        name,
+        artist,
+        lastfmArtworkUrl,
+      })),
+      artists: [],
+    }),
+  );
+  const tracks = recentTracks.map((track, index) => {
+    const artwork = artworkQuery.data?.tracks[index];
+    return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
+  });
   useEffect(() => {
     if (isRefetchError) console.error("Failed to refresh recent tracks.", error);
-  }, [error, isRefetchError]);
+    if (artworkQuery.isError) {
+      console.error("Failed to load artwork for recent tracks.", artworkQuery.error);
+    }
+  }, [artworkQuery.error, artworkQuery.isError, error, isRefetchError]);
   return (
     <>
       {isRefetchError && (
@@ -181,7 +199,7 @@ function RecentTracksPanel() {
           }}
         />
       )}
-      <RecentTracks tracks={recentTracks} />
+      <RecentTracks tracks={tracks} />
     </>
   );
 }
@@ -195,5 +213,28 @@ function TopMusicPanel() {
       { ...getTopArtists({ limit: 10, period }), staleTime: "static" },
     ],
   });
-  return <MusicTopMusic tracks={tracks.data} artists={artists.data} />;
+  const artworkQuery = useQuery(
+    getSpotifyArtwork({
+      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
+        name,
+        artist,
+        lastfmArtworkUrl,
+      })),
+      artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
+    }),
+  );
+  const topTracks = tracks.data.map((track, index) => {
+    const artwork = artworkQuery.data?.tracks[index];
+    return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
+  });
+  const topArtists = artists.data.map((artist, index) => {
+    const artwork = artworkQuery.data?.artists[index];
+    return artwork ? { ...artist, artwork: artwork.artwork, palette: artwork.palette } : artist;
+  });
+  useEffect(() => {
+    if (artworkQuery.isError) {
+      console.error("Failed to load artwork for top music.", artworkQuery.error);
+    }
+  }, [artworkQuery.error, artworkQuery.isError]);
+  return <MusicTopMusic tracks={topTracks} artists={topArtists} />;
 }

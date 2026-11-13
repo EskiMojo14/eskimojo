@@ -2,23 +2,27 @@ import { hexFromArgb } from "@material/material-color-utilities";
 
 import { imageSourceColor, imageColorScheme, readableImageColor } from "#/shared/lib/image-palette";
 
-import type { ArtworkPalette, SpotifyArtwork } from "./-query";
+import type { Artwork, ArtworkPalette } from "./-query";
 
 const cache = new Map<string, { palette: ArtworkPalette; expires: number }>();
-const artworkHost = "i.scdn.co";
+const artworkHosts = new Set([
+  "i.scdn.co",
+  "lastfm-img.freetls.fastly.net",
+  "lastfm.freetls.fastly.net",
+]);
 const maxArtworkBytes = 1_000_000;
 
 async function downloadArtwork(src: string, signal: AbortSignal) {
   const url = new URL(src);
   if (
     url.protocol !== "https:" ||
-    url.hostname !== artworkHost ||
+    !artworkHosts.has(url.hostname) ||
     url.port ||
     url.username ||
     url.password
   ) {
     throw new Error(
-      `Artwork palette requires an HTTPS image URL hosted on ${artworkHost} without credentials or a custom port`,
+      "Artwork palette requires an HTTPS image URL hosted on a supported provider without credentials or a custom port",
     );
   }
   const response = await fetch(url, { signal, redirect: "error" });
@@ -99,9 +103,10 @@ async function artworkPalette(src: string, signal: AbortSignal) {
   return palette;
 }
 
-export async function addArtworkPalettes<
-  T extends { artwork?: SpotifyArtwork; palette?: ArtworkPalette },
->(items: Array<T>, signal: AbortSignal): Promise<Array<T & { palette?: ArtworkPalette }>> {
+export async function addArtworkPalettes<T extends { artwork?: Artwork; palette?: ArtworkPalette }>(
+  items: Array<T>,
+  signal: AbortSignal,
+): Promise<Array<T & { palette?: ArtworkPalette }>> {
   const extractionSignal = AbortSignal.any([signal, AbortSignal.timeout(5000)]);
   const pending = new Map<string, Promise<ArtworkPalette | undefined>>();
   const palettes: Array<ArtworkPalette | undefined> = Array.from(

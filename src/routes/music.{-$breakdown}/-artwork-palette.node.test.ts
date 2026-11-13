@@ -5,11 +5,11 @@ import { network } from "virtual:msw";
 import { expect, onTestFinished, test, vi } from "vite-plus/test";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
-import type { ArtworkPalette, SpotifyArtwork } from "./-query";
+import type { Artwork, ArtworkPalette } from "./-query";
 
 function track(src?: string): {
   name: string;
-  artwork?: SpotifyArtwork;
+  artwork?: Artwork;
   palette?: ArtworkPalette;
 } {
   return {
@@ -24,6 +24,10 @@ test.each([
   { background: "#ca2020", src: "https://i.scdn.co/image/palette-red" },
   { background: "#2040ca", src: "https://i.scdn.co/image/palette-blue" },
   { background: "#777777", src: "https://i.scdn.co/image/palette-gray" },
+  {
+    background: "#2040ca",
+    src: "https://lastfm.freetls.fastly.net/i/u/300x300/palette-blue",
+  },
 ])("generates and caches readable artwork palettes from $src", async ({ background, src }) => {
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background },
@@ -121,6 +125,7 @@ test.each([
   "https://[::1]/image.png",
   "https://localhost/image.png",
   "https://i.scdn.co.evil.example/image.png",
+  "https://lastfm.freetls.fastly.net.evil.example/image.png",
 ])("does not fetch an unsupported artwork URL: %s", async (src) => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
   onTestFinished(() => warning.mockRestore());
