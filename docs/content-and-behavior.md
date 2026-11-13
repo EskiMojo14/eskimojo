@@ -152,9 +152,9 @@ the empty server markup and its persistent announcement region.
 ### Recent-track cover palettes
 
 Each recently played track with cover art uses an image-derived surface, text,
-link, and now-playing accent palette. The Last.fm server function fetches only
-HTTPS artwork URLs supplied by the music provider (not restricted to Last.fm's
-CDN, so Spotify cover art can also be used) and generates light/dark colors for all
+link, and now-playing accent palette. The artwork server function fetches only
+HTTPS images from the supported Spotify, Last.fm, and Cover Art Archive hosts,
+including Internet Archive image servers, and generates light/dark colors for all
 three contrast settings with Sharp and Material Color Utilities. The same
 decoder, deterministic seed selection, and readable-color helpers support
 build-time project palettes. Image processing libraries remain server-only;
@@ -350,14 +350,37 @@ snapshot as live. Keep these period choices for Top Tracks and Top Artists:
 - 12 months (`12month`);
 - all time (`overall`).
 
-Use Last.fm for listening data and Spotify's GB catalog for artist and track
-cover art. Match track artwork only when both the normalized track and artist
-names match; use the existing icon fallback when there is no exact catalog
-match, no image is available, or image loading fails. When Spotify credentials
-are missing or a catalog lookup fails, keep the Last.fm listening data and show
-the icon fallback.
-Link matched rows directly to their Spotify catalog item and apply a readable
-palette derived from the artwork.
+Use Last.fm for listening data. For track artwork, try Cover Art Archive first:
+use the album's release MBID when available (also trying it as a release-group
+ID if the release has no cover), or resolve the track's recording
+MBID to releases through MusicBrainz. Recording and artist MBIDs are not release
+IDs. Try up to three releases per recording, with a shared twelve-second lookup
+deadline and up to three concurrent cover lookups. Serialize MusicBrainz requests
+with at least one second between requests and identify the application with a
+contactable User-Agent. Release mappings and cover hits/misses use bounded
+256-entry, six-hour per-process caches; transient errors are not cached.
+Merged recording IDs follow at most five redirects, restricted to HTTPS
+MusicBrainz recording endpoints; every hop goes through the same rate limiter.
+MusicBrainz 429/503 responses pause queued lookups for at least thirty seconds,
+or a longer `Retry-After`, and the remaining cooldown contributes to the client
+artwork retry delay. Cached mappings and direct cover lookups remain usable.
+The original service failure is logged; skips during its cooldown stay marked
+incomplete without emitting additional failure logs.
+
+Cover lookups use HEAD requests to verify a 250px front thumbnail exists, following
+at most five redirects and validating each HTTPS destination against the Cover Art
+Archive / Internet Archive host allowlist. Palette downloads still reject redirects.
+If there is no usable MBID or cover, try Spotify's GB catalog, matching both the
+normalized track and artist names. Only tracks still missing artwork reach Spotify.
+Artist portraits use Spotify directly because Cover Art Archive stores release
+covers, not artist portraits.
+
+If Spotify has no match or fails, use valid Last.fm artwork. Missing or broken
+images use the existing icon fallback. Every provider's artwork can supply a
+readable palette; only Spotify matches link directly to Spotify. Listening data
+and fallback art remain visible while enrichment runs. Incomplete provider lookups
+retry after at least thirty seconds, respecting longer Spotify rate limits;
+completed lookups remain fresh for six hours.
 
 Current defaults:
 

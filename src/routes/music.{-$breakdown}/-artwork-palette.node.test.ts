@@ -28,6 +28,14 @@ test.each([
     background: "#2040ca",
     src: "https://lastfm.freetls.fastly.net/i/u/300x300/palette-blue",
   },
+  {
+    background: "#2040ca",
+    src: "https://ia800500.us.archive.org/0/items/mbid-example/palette-blue.jpg",
+  },
+  {
+    background: "#ca2020",
+    src: "https://dn711103.ca.archive.org/0/items/mbid-example/palette-red.jpg",
+  },
 ])("generates and caches readable artwork palettes from $src", async ({ background, src }) => {
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background },

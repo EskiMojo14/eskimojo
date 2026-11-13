@@ -5,9 +5,48 @@ import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import {
   addLastfmArtworkFallback,
   bestLastfmArtwork,
-  getSpotifyArtwork,
+  getMusicArtwork,
   imageSchema,
+  recentTrackSchema,
+  topTrackSchema,
 } from "./-query";
+
+test("retains recording and album release MBIDs without treating artist IDs as cover IDs", () => {
+  const recordingMbid = "b1a9c0e9-d987-4042-ae91-78d6a3267d69";
+  const releaseMbid = "76df3287-6cda-33eb-8e9a-044b5e15ffdd";
+  const recent = v.parse(recentTrackSchema, {
+    name: "Example Song",
+    mbid: recordingMbid,
+    artist: { "#text": "Example Artist", mbid: releaseMbid },
+    album: { "#text": "Example Album", mbid: releaseMbid },
+    "@attr": { nowplaying: "true" },
+  });
+  expect(recent).toMatchObject({
+    name: "Example Song",
+    artist: "Example Artist",
+    album: "Example Album",
+    recordingMbid,
+    releaseMbid,
+  });
+  const ranked = v.parse(topTrackSchema, {
+    name: "Example Song",
+    mbid: recordingMbid,
+    artist: { name: "Example Artist", mbid: releaseMbid },
+    playcount: "10",
+    "@attr": { rank: "1" },
+  });
+  expect(ranked.recordingMbid).toBe(recordingMbid);
+  expect(ranked.releaseMbid).toBeUndefined();
+  const noIds = v.parse(recentTrackSchema, {
+    name: "Example Song",
+    mbid: "",
+    artist: { "#text": "Example Artist", mbid: releaseMbid },
+    album: { "#text": "Example Album", mbid: "not-an-mbid" },
+    date: { uts: "1700000000" },
+  });
+  expect(noIds.recordingMbid).toBeUndefined();
+  expect(noIds.releaseMbid).toBeUndefined();
+});
 
 test("keeps artwork fresh throughout a retry cooldown when the tab remounts", async () => {
   const initialTime = Date.now();
@@ -23,7 +62,7 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
   };
   const queryFn = vi.fn<() => Promise<typeof response>>().mockResolvedValue(response);
   const options = {
-    ...getSpotifyArtwork({
+    ...getMusicArtwork({
       tracks: [{ name: "Retry Song", artist: "Example Artist" }],
       artists: [],
     }),

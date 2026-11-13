@@ -2,6 +2,7 @@ import { hexFromArgb } from "@material/material-color-utilities";
 
 import { imageSourceColor, imageColorScheme, readableImageColor } from "#/shared/lib/image-palette";
 
+import { isCoverArtHost } from "./-cover-art.server";
 import type { Artwork, ArtworkPalette } from "./-query";
 
 const cache = new Map<string, { palette: ArtworkPalette; expires: number }>();
@@ -16,7 +17,7 @@ async function downloadArtwork(src: string, signal: AbortSignal) {
   const url = new URL(src);
   if (
     url.protocol !== "https:" ||
-    !artworkHosts.has(url.hostname) ||
+    (!artworkHosts.has(url.hostname) && !isCoverArtHost(url.hostname)) ||
     url.port ||
     url.username ||
     url.password
