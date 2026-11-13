@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -11,16 +12,24 @@ export function MusicArtwork({
   imageUrl?: string;
   fallbackIcon: "artist" | "music_note";
 }) {
-  return imageUrl ? (
-    <img
-      {...recentTracksBem({ element: "artwork" })}
-      src={imageUrl}
-      alt=""
-      width={56}
-      height={56}
-      loading="lazy"
-    />
-  ) : (
+  const [failedImageUrl, setFailedImageUrl] = useState<string>();
+  const showArtwork = imageUrl && imageUrl !== failedImageUrl;
+
+  if (showArtwork) {
+    return (
+      <img
+        {...recentTracksBem({ element: "artwork" })}
+        src={imageUrl}
+        alt=""
+        width={56}
+        height={56}
+        loading="lazy"
+        onError={() => setFailedImageUrl(imageUrl)}
+      />
+    );
+  }
+
+  return (
     <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
       {fallbackIcon === "artist" ? <MdSymbol>artist</MdSymbol> : <MdSymbol>music_note</MdSymbol>}
     </span>

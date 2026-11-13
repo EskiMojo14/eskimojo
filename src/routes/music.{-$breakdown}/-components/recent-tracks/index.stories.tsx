@@ -41,7 +41,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Recent Last.fm tracks use Spotify-matched cover art. Each row receives a server-generated cover-art palette for its surface, text, links, and now-playing accent, respecting light/dark and all contrast settings. Missing or unavailable artwork keeps the site palette. Stories reuse build-generated image palettes without loading the decoder in the browser. Headline-small headings and title-medium track names lead the hierarchy; artist details use body-medium, timestamps body-small, and status/search actions label-medium. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. The decorative five-bar equalizer uses spatial springs through a closed sequence of heights, with independent cycle lengths and phases to avoid a synchronized restart. Bar positions and widths match Material Symbols Sharp graphic_eq at 24px; reduced motion restores its exact static geometry. The visible Now playing label conveys status without motion. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
+          "Recent Last.fm tracks use Spotify-matched cover art. Each row receives a server-generated cover-art palette for its surface, text, links, and now-playing accent, respecting light/dark and all contrast settings. Missing artwork or failed image loads use the icon fallback. Stories reuse build-generated image palettes without loading the decoder in the browser. Headline-small headings and title-medium track names lead the hierarchy; artist details use body-medium, timestamps body-small, and status/search actions label-medium. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. The decorative five-bar equalizer uses spatial springs through a closed sequence of heights, with independent cycle lengths and phases to avoid a synchronized restart. Bar positions and widths match Material Symbols Sharp graphic_eq at 24px; reduced motion restores its exact static geometry. The visible Now playing label conveys status without motion. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
       },
     },
   },
@@ -88,6 +88,29 @@ export const MissingArtwork = meta.story({
     });
     await expect(canvas.queryByRole("img", { hidden: true })).not.toBeInTheDocument();
     await expect(canvas.getByText("Now playing")).toBeVisible();
+  },
+});
+
+export const FailedArtwork = meta.story({
+  args: {
+    tracks: [
+      {
+        name: "Unavailable cover",
+        artist: "Example artist",
+        album: "Example album",
+        artwork: {
+          imageUrl: "data:image/png;base64,bm90LWFuLWltYWdl",
+          spotifyUrl: "https://open.spotify.com/track/unavailable-cover",
+        },
+        nowPlaying: true,
+      },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await waitFor(async () => {
+      await expect(canvas.getByText("music_note")).toBeVisible();
+    });
+    await expect(canvas.queryByRole("img", { hidden: true })).not.toBeInTheDocument();
   },
 });
 
