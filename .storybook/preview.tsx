@@ -25,6 +25,7 @@ const globalsSchema = v.object({
   theme: themeSchema,
   contrast: contrastSchema,
   motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
+  christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
 
 export default definePreview({
@@ -98,6 +99,18 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    christmas: {
+      description: "Christmas artwork",
+      toolbar: {
+        title: "Christmas",
+        icon: "sun",
+        items: [
+          { value: "off", title: "Christmas off" },
+          { value: "on", title: "Christmas on" },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     direction: "ltr",
@@ -105,16 +118,26 @@ export default definePreview({
     theme: "system",
     contrast: "system",
     motion: "expressive",
+    christmas: "off",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const { direction, palette, theme, contrast, motion } = v.parse(globalsSchema, globals);
+      const { direction, palette, theme, contrast, motion, christmas } = v.parse(
+        globalsSchema,
+        globals,
+      );
       const root = document.documentElement;
       root.dir = direction;
       // Set on <html> so the tokens also reach the body background.
-      Object.assign(root.dataset, { theme, contrast, palette, motion });
+      Object.assign(root.dataset, {
+        theme,
+        contrast,
+        palette,
+        motion,
+        christmas: christmas === "on" ? "true" : "false",
+      });
       return (
         <Providers
           providers={[

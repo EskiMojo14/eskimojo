@@ -236,7 +236,8 @@ function WelcomePage() {
               Preview settings
             </h2>
             <p {...welcomeBem({ element: "toolbar-summary" })}>
-              Use the toolbar to preview palettes, themes, contrast, text direction, and motion.
+              Use the toolbar to preview palettes, themes, contrast, text direction, motion, and
+              Christmas artwork.
             </p>
           </div>
         </aside>
