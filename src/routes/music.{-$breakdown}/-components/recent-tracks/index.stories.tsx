@@ -1,7 +1,8 @@
 import { expect, waitFor } from "storybook/test";
+import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
+import { imageSchema, type RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { getProject } from "#/routes/projects/-data";
 
 import { RecentTracks, RecentTracksSkeleton } from "./index";
@@ -90,6 +91,33 @@ export const Empty = meta.story({
     await expect(
       canvas.getByText("Your recently played tracks will appear here once you start listening."),
     ).toBeVisible();
+  },
+});
+
+export const LastfmPlaceholder = meta.story({
+  args: {
+    tracks: [
+      {
+        name: "Mama Say",
+        artist: "Vulfmon",
+        album: "Mama Say",
+        image: v.parse(imageSchema, [
+          {
+            size: "extralarge",
+            "#text":
+              "https://lastfm-img.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png",
+          },
+        ]),
+        nowPlaying: true,
+      },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await waitFor(async () => {
+      await expect(canvas.getByText("Mama Say", { exact: true })).toBeVisible();
+    });
+    await expect(canvas.queryByRole("img", { hidden: true })).not.toBeInTheDocument();
+    await expect(canvas.getByText("Now playing")).toBeVisible();
   },
 });
 
