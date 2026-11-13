@@ -57,11 +57,7 @@
 
 .home-social-link__handle {
   grid-column: 2;
-  color: color-mix(
-    in srgb,
-    var(--md-sys-color-on-primary-fixed) 60%,
-    var(--md-sys-color-primary-fixed)
-  );
+  color: var(--md-sys-color-on-primary-fixed-variant);
   overflow-wrap: anywhere;
 }
 
