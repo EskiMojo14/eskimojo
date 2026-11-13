@@ -1,3 +1,4 @@
+import { http, HttpResponse } from "msw";
 import type { Locator, Page } from "playwright";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";
@@ -344,6 +345,60 @@ test("retries incomplete artwork after its cooldown without refetching early on 
   expect(artworkRequests).toBe(2);
 
   await page.clock.fastForward(30_000);
+  expect(artworkRequests).toBe(2);
+});
+
+test("artwork POST failures preserve music data and retry enrichment after the cooldown", async ({
+  network,
+  music,
+  page,
+}) => {
+  // The network fixture skips static asset extensions before matching handlers.
+  const lastfmArtworkUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/available-cover";
+  const imageData = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+  const recoveredImageUrl = `data:image/gif;base64,${imageData}`;
+  const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+  let artworkRequests = 0;
+  network.use(
+    ...lastfm(
+      undefined,
+      [],
+      topTracks.map((track) => ({ ...track, lastfmArtworkUrl })),
+      topArtists,
+    ),
+    http.get(lastfmArtworkUrl, () =>
+      HttpResponse.redirect(new URL("/favicon.png", page.url()).href),
+    ),
+    mockServerFn(musicFns.getMusicArtworkFn, (data) => {
+      artworkRequests++;
+      if (artworkRequests === 1) return HttpResponse.text("Service unavailable", { status: 503 });
+      return {
+        tracks: data.tracks.map((track) => mockedArtwork(track, "track", recoveredImageUrl)),
+        artists: data.artists.map((artist) => mockedArtwork(artist, "artist", recoveredImageUrl)),
+        retryAfterMs: undefined,
+      };
+    }),
+  );
+  await music.navigate();
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.topMusic.artworkImage("Lost Chapter", lastfmArtworkUrl)).toHaveJSProperty(
+    "naturalWidth",
+    64,
+  );
+  await expect(music.alerts).not.toBeVisible();
+  expect(artworkRequests).toBe(1);
+
+  await page.clock.fastForward(20_000);
+  await music.recent.select();
+  await music.topMusic.select();
+  expect(artworkRequests).toBe(1);
+
+  await page.clock.fastForward(10_000);
+  await expect(music.topMusic.artworkImage("Radiohead", recoveredImageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
   expect(artworkRequests).toBe(2);
 });
 
