@@ -32,6 +32,7 @@ import {
 } from "#/routes/music.{-$breakdown}/-query.ts";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
+import { preloadImage } from "#/shared/lib/query";
 
 import styles from "./index.css?url";
 
@@ -69,6 +70,27 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     params: { breakdown = musicBreakdownSchema.fallback },
     deps: { period = periodSchema.fallback },
   }) => {
+    const preloadedImages = new Set<string>();
+    const preloadImages = (urls: Array<string | undefined>) => {
+      for (const url of urls) {
+        if (!url || preloadedImages.has(url)) continue;
+        preloadedImages.add(url);
+        void preloadImage(url).catch((error: unknown) =>
+          console.error("Failed to preload music artwork image.", url, error),
+        );
+      }
+    };
+    const preloadArtwork = (params: Parameters<typeof getSpotifyArtwork>[0]) => {
+      preloadImages(
+        [...params.tracks, ...params.artists].map(({ lastfmArtworkUrl }) => lastfmArtworkUrl),
+      );
+      void queryClient
+        .query(getSpotifyArtwork(params))
+        .then(({ tracks, artists }) =>
+          preloadImages([...tracks, ...artists].map(({ artwork }) => artwork?.imageUrl)),
+        )
+        .catch(reportArtworkPreloadError);
+    };
     queryClient.query({ ...getUserData(), staleTime: "static" }).catch(reportPreloadError);
     switch (breakdown) {
       case "recent":
@@ -78,18 +100,14 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
             staleTime: recentTracksRefreshInterval,
           })
           .then((tracks) =>
-            queryClient
-              .query(
-                getSpotifyArtwork({
-                  tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                    name,
-                    artist,
-                    lastfmArtworkUrl,
-                  })),
-                  artists: [],
-                }),
-              )
-              .catch(reportArtworkPreloadError),
+            preloadArtwork({
+              tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                name,
+                artist,
+                lastfmArtworkUrl,
+              })),
+              artists: [],
+            }),
           )
           .catch(reportPreloadError);
         break;
@@ -104,21 +122,17 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         });
         void Promise.all([tracks, artists])
           .then(([topTracks, topArtists]) =>
-            queryClient
-              .query(
-                getSpotifyArtwork({
-                  tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                    name,
-                    artist,
-                    lastfmArtworkUrl,
-                  })),
-                  artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
-                    name,
-                    lastfmArtworkUrl,
-                  })),
-                }),
-              )
-              .catch(reportArtworkPreloadError),
+            preloadArtwork({
+              tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                name,
+                artist,
+                lastfmArtworkUrl,
+              })),
+              artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
+                name,
+                lastfmArtworkUrl,
+              })),
+            }),
           )
           .catch(reportPreloadError);
         break;
