@@ -13,6 +13,8 @@ export const serverEnvSchema = v.object({
   LASTFM_API_KEY: v.string(),
   // LASTFM_SECRET: v.string(),
   LASTFM_USER: v.string(),
+  SPOTIFY_CLIENT_ID: v.optional(v.string()),
+  SPOTIFY_CLIENT_SECRET: v.optional(v.string()),
 });
 export type ServerEnv = v.InferOutput<typeof serverEnvSchema>;
 
@@ -21,6 +23,8 @@ export const getServerEnv = createServerOnlyFn(() =>
     LASTFM_API_KEY: process.env.LASTFM_API_KEY,
     // LASTFM_SECRET: process.env.LASTFM_SECRET,
     LASTFM_USER: process.env.LASTFM_USER,
+    SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
+    SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
   }),
 );
 

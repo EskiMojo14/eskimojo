@@ -1,5 +1,6 @@
 import BEMHelper from "react-bem-helper";
 
+import { MusicArtwork } from "#/routes/music.{-$breakdown}/-components/artwork";
 import {
   MusicListLayout,
   MusicListRow,
@@ -42,25 +43,21 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
       }
     >
       {tracks.map((track, index) => {
-        const artwork =
-          track.image.extralarge || track.image.large || track.image.medium || track.image.small;
         return (
           <MusicListRow
             key={`${track.name}-${track.artist}-${track.date ?? "now"}-${index}`}
             data-artwork-palette={track.palette ? "" : undefined}
             style={track.palette}
-            artwork={
-              artwork ? (
-                <img src={artwork} alt="" width={56} height={56} loading="lazy" />
-              ) : (
-                <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
-                  <MdSymbol>music_note</MdSymbol>
-                </span>
-              )
-            }
+            artwork={<MusicArtwork imageUrl={track.artwork?.imageUrl} fallbackIcon="music_note" />}
             headline={track.name}
             supportingText={[track.artist, track.album].filter(Boolean).join(" / ")}
-            actions={<MusicSearchLinks name={track.name} artist={track.artist} />}
+            actions={
+              <MusicSearchLinks
+                name={track.name}
+                artist={track.artist}
+                spotifyUrl={track.artwork?.spotifyUrl}
+              />
+            }
             trailing={
               track.nowPlaying ? (
                 <span {...recentTracksBem({ element: "now-playing" })}>

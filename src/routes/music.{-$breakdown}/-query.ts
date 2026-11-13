@@ -11,6 +11,14 @@ import { periodSchema, type Period } from "./-constants";
 
 export { periodSchema, type Period } from "./-constants";
 
+const spotifyArtworkSchema = v.object({
+  imageUrl: v.string(),
+  spotifyUrl: v.string(),
+});
+export type SpotifyArtwork = v.InferOutput<typeof spotifyArtworkSchema>;
+
+export type ArtworkPalette = Record<`--artwork-${string}`, string>;
+
 export const fetchLastfm = createServerOnlyFn(
   <T extends v.GenericSchema>({
     method,
@@ -38,9 +46,6 @@ export const fetchLastfm = createServerOnlyFn(
   },
 );
 
-const imageSizeSchema = v.picklist(["small", "medium", "large", "extralarge", "mega"]);
-type ImageSize = v.InferOutput<typeof imageSizeSchema>;
-
 const itemSchema = v.pipe(
   v.object({
     "#text": v.string(),
@@ -48,38 +53,8 @@ const itemSchema = v.pipe(
   v.transform((item) => item["#text"]),
 );
 
-function isLastfmPlaceholder(src: string) {
-  if (!URL.canParse(src)) return false;
-  const url = new URL(src);
-  return (
-    ["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"].includes(url.hostname) &&
-    url.pathname.endsWith("/2a96cbd8b46e442fc41c2b86b821562f.png")
-  );
-}
-
-export const imageSchema = v.pipe(
-  v.array(
-    v.object({
-      size: imageSizeSchema,
-      "#text": v.string(),
-    }),
-  ),
-  v.transform((images) =>
-    images.reduce<Partial<Record<ImageSize, string>>>((acc, image) => {
-      const src = image["#text"];
-      if (src && !isLastfmPlaceholder(src)) acc[image.size] = src;
-      return acc;
-    }, {}),
-  ),
-);
-
-const baseTrackSchema = v.object({
-  name: v.string(),
-  image: imageSchema,
-});
-
 const commonRecentTrackSchema = v.object({
-  ...baseTrackSchema.entries,
+  name: v.string(),
   artist: itemSchema,
   album: itemSchema,
 });
@@ -117,7 +92,8 @@ const recentTrackSchema = v.union([
 ]);
 
 export type RecentTrack = v.InferOutput<typeof recentTrackSchema> & {
-  palette?: Record<`--artwork-${string}`, string>;
+  artwork?: SpotifyArtwork;
+  palette?: ArtworkPalette;
 };
 
 const getRecentTracksParams = v.object({
@@ -138,12 +114,14 @@ export const getRecentTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
+    const { addSpotifyTrackArtwork } = await import("./-spotify.server");
+    const tracks = await addSpotifyTrackArtwork(response.recenttracks.track, signal);
     const { addArtworkPalettes } = await import("./-artwork-palette.server");
     return {
       ...response,
       recenttracks: {
         ...response.recenttracks,
-        track: await addArtworkPalettes(response.recenttracks.track, signal),
+        track: await addArtworkPalettes(tracks, signal),
       },
     };
   });
@@ -170,7 +148,7 @@ export const fullPeriodLabels: Record<Period, string> = {
 
 const topTrackSchema = v.pipe(
   v.object({
-    ...baseTrackSchema.entries,
+    name: v.string(),
     artist: v.pipe(
       v.object({ name: v.string() }),
       v.transform(({ name }) => name),
@@ -186,7 +164,10 @@ const topTrackSchema = v.pipe(
   })),
 );
 
-export type TopTrack = v.InferOutput<typeof topTrackSchema>;
+export type TopTrack = v.InferOutput<typeof topTrackSchema> & {
+  artwork?: SpotifyArtwork;
+  palette?: ArtworkPalette;
+};
 
 const getTopTracksParams = v.object({
   period: periodSchema,
@@ -195,18 +176,31 @@ const getTopTracksParams = v.object({
 
 export const getTopTracksFn = createServerFn({ method: "GET" })
   .validator(getTopTracksParams)
-  .handler(({ data }) =>
-    fetchLastfm({
+  .handler(async ({ data }) => {
+    const signal = getRequest().signal;
+    const response = await fetchLastfm({
       method: "user.getTopTracks",
       params: data,
-      signal: getRequest().signal,
+      signal,
       schema: v.object({
         toptracks: v.object({
           track: v.array(topTrackSchema),
         }),
       }),
-    }),
-  );
+    });
+    const [{ addSpotifyTrackArtwork }, { addArtworkPalettes }] = await Promise.all([
+      import("./-spotify.server"),
+      import("./-artwork-palette.server"),
+    ]);
+    const tracks = await addSpotifyTrackArtwork(response.toptracks.track, signal);
+    return {
+      ...response,
+      toptracks: {
+        ...response.toptracks,
+        track: await addArtworkPalettes(tracks, signal),
+      },
+    };
+  });
 
 export const getTopTracks = (
   params: v.InferInput<typeof getTopTracksParams>,
@@ -223,7 +217,6 @@ const topArtistSchema = v.pipe(
   v.object({
     name: v.string(),
     playcount: vUtils.coerceNumber,
-    image: imageSchema,
     "@attr": v.object({
       rank: vUtils.coerceNumber,
     }),
@@ -234,7 +227,10 @@ const topArtistSchema = v.pipe(
   })),
 );
 
-export type TopArtist = v.InferOutput<typeof topArtistSchema>;
+export type TopArtist = v.InferOutput<typeof topArtistSchema> & {
+  artwork?: SpotifyArtwork;
+  palette?: ArtworkPalette;
+};
 
 const topArtistsResponseSchema = v.object({
   topartists: v.object({
@@ -249,14 +245,27 @@ const getTopArtistsParams = v.object({
 
 export const getTopArtistsFn = createServerFn({ method: "GET" })
   .validator(getTopArtistsParams)
-  .handler(({ data }) =>
-    fetchLastfm({
+  .handler(async ({ data }) => {
+    const signal = getRequest().signal;
+    const response = await fetchLastfm({
       method: "user.getTopArtists",
       params: data,
-      signal: getRequest().signal,
+      signal,
       schema: topArtistsResponseSchema,
-    }),
-  );
+    });
+    const [{ addSpotifyArtistArtwork }, { addArtworkPalettes }] = await Promise.all([
+      import("./-spotify.server"),
+      import("./-artwork-palette.server"),
+    ]);
+    const artists = await addSpotifyArtistArtwork(response.topartists.artist, signal);
+    return {
+      ...response,
+      topartists: {
+        ...response.topartists,
+        artist: await addArtworkPalettes(artists, signal),
+      },
+    };
+  });
 
 export const getTopArtists = (
   params: v.InferInput<typeof getTopArtistsParams>,

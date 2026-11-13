@@ -1,6 +1,8 @@
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import exampleCoverUrl from "#/routes/music.{-$breakdown}/-components/artwork/example-cover.svg?url";
+import { fixturePalette } from "#/routes/music.{-$breakdown}/-components/artwork/story-fixtures";
 
 import { MusicTopList } from "./index";
 
@@ -24,14 +26,25 @@ const meta = preview.meta({
 export const Artists = meta.story({
   args: {
     title: "Top artists",
-    items: [{ name: "Radiohead", rank: 1, playcount: 42, image: {} }],
+    items: [
+      {
+        name: "Radiohead",
+        rank: 1,
+        playcount: 42,
+        artwork: {
+          imageUrl: exampleCoverUrl,
+          spotifyUrl: "https://open.spotify.com/artist/radiohead",
+        },
+        palette: fixturePalette("eskimojo"),
+      },
+    ],
   },
 });
 
 export const Tracks = meta.story({
   args: {
     title: "Top tracks",
-    items: [{ name: "Let It Happen", artist: "Tame Impala", rank: 1, playcount: 1, image: {} }],
+    items: [{ name: "Let It Happen", artist: "Tame Impala", rank: 1, playcount: 1 }],
   },
 });
 
@@ -49,7 +62,7 @@ export const Empty = meta.story({
 export const NarrowTracks = meta.story({
   args: {
     title: "Top tracks",
-    items: [{ name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290, image: {} }],
+    items: [{ name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 }],
   },
   decorators: [
     (Story) => (
@@ -71,7 +84,7 @@ export const NarrowTracks = meta.story({
 export const NarrowArtists = meta.story({
   args: {
     title: "Top artists",
-    items: [{ name: "Scary Pockets", rank: 1, playcount: 4794, image: {} }],
+    items: [{ name: "Scary Pockets", rank: 1, playcount: 4794 }],
   },
   decorators: [
     (Story) => (

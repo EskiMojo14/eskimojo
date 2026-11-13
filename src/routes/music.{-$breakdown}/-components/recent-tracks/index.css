@@ -1,4 +1,4 @@
-.recent-tracks [data-artwork-palette] {
+:is(.recent-tracks, .music-top-list) [data-artwork-palette] {
   --md-sys-color-surface-container: var(--artwork-standard-surface);
   --md-sys-color-on-surface: var(--artwork-standard-on-surface);
   --md-sys-color-on-surface-variant: var(--artwork-standard-on-surface-variant);
@@ -7,7 +7,7 @@
   --md-sys-color-tertiary: var(--artwork-standard-tertiary);
 }
 
-[data-contrast="medium"] .recent-tracks [data-artwork-palette] {
+[data-contrast="medium"] :is(.recent-tracks, .music-top-list) [data-artwork-palette] {
   --md-sys-color-surface-container: var(--artwork-medium-surface);
   --md-sys-color-on-surface: var(--artwork-medium-on-surface);
   --md-sys-color-on-surface-variant: var(--artwork-medium-on-surface-variant);
@@ -16,7 +16,7 @@
   --md-sys-color-tertiary: var(--artwork-medium-tertiary);
 }
 
-[data-contrast="high"] .recent-tracks [data-artwork-palette] {
+[data-contrast="high"] :is(.recent-tracks, .music-top-list) [data-artwork-palette] {
   --md-sys-color-surface-container: var(--artwork-high-surface);
   --md-sys-color-on-surface: var(--artwork-high-on-surface);
   --md-sys-color-on-surface-variant: var(--artwork-high-on-surface-variant);
@@ -26,7 +26,9 @@
 }
 
 @media (prefers-contrast: more) {
-  :root:is(:not([data-contrast]), [data-contrast="system"]) .recent-tracks [data-artwork-palette] {
+  :root:is(:not([data-contrast]), [data-contrast="system"])
+    :is(.recent-tracks, .music-top-list)
+    [data-artwork-palette] {
     --md-sys-color-surface-container: var(--artwork-high-surface);
     --md-sys-color-on-surface: var(--artwork-high-on-surface);
     --md-sys-color-on-surface-variant: var(--artwork-high-on-surface-variant);
@@ -143,6 +145,14 @@
   border-radius: var(--md-sys-shape-corner-medium);
   background-color: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface-variant);
+}
+
+.recent-tracks__artwork {
+  display: block;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  object-fit: cover;
 }
 
 .music-top-list__leading {

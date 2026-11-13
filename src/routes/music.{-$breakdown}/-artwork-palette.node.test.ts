@@ -1,76 +1,27 @@
 import { argbFromHex, Contrast, Hct } from "@material/material-color-utilities";
 import { http, HttpResponse } from "msw";
 import sharp from "sharp";
-import * as v from "valibot";
 import { network } from "virtual:msw";
 import { expect, onTestFinished, test, vi } from "vite-plus/test";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
-import { imageSchema, type RecentTrack } from "./-query";
+import type { ArtworkPalette, SpotifyArtwork } from "./-query";
 
-function track(src?: string): RecentTrack {
+function track(src?: string): {
+  name: string;
+  artwork?: SpotifyArtwork;
+  palette?: ArtworkPalette;
+} {
   return {
     name: "Example song",
-    artist: "Example artist",
-    album: "Example album",
-    image: src ? { extralarge: src } : {},
-    nowPlaying: true,
+    artwork: src
+      ? { imageUrl: src, spotifyUrl: "https://open.spotify.com/track/example" }
+      : undefined,
   };
 }
 
-test.each(["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"])(
-  "treats Last.fm placeholder artwork from %s as missing before extraction",
-  async (host) => {
-    let requests = 0;
-    network.use(
-      http.get("*", () => {
-        requests++;
-        return new HttpResponse(null, { status: 500 });
-      }),
-    );
-    const image = v.parse(
-      imageSchema,
-      [
-        { size: "small", path: "34s" },
-        { size: "medium", path: "64s" },
-        { size: "large", path: "174s" },
-        { size: "extralarge", path: "300x300" },
-      ].map(({ size, path }) => ({
-        size,
-        "#text": `https://${host}/i/u/${path}/2a96cbd8b46e442fc41c2b86b821562f.png?cache=1`,
-      })),
-    );
-    expect(image).toEqual({});
-    const [result] = await addArtworkPalettes(
-      [{ ...track(), image }],
-      new AbortController().signal,
-    );
-    expect(result?.palette).toBeUndefined();
-    expect(requests).toBe(0);
-  },
-);
-
-test("preserves genuine artwork, including Spotify URLs, when other sizes are placeholders", () => {
-  const src = "https://i.scdn.co/image/album-cover";
-  const otherProvider = "https://example.com/2a96cbd8b46e442fc41c2b86b821562f.png";
-  const image = v.parse(imageSchema, [
-    {
-      size: "extralarge",
-      "#text":
-        "https://lastfm-img.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png",
-    },
-    { size: "large", "#text": src },
-    { size: "medium", "#text": otherProvider },
-    { size: "small", "#text": "" },
-  ]);
-  expect(image).toEqual({ large: src, medium: otherProvider });
-});
-
 test.each([
-  {
-    background: "#ca2020",
-    src: "https://lastfm-img.freetls.fastly.net/i/u/300x300/palette-red.png",
-  },
+  { background: "#ca2020", src: "https://i.scdn.co/image/palette-red" },
   { background: "#2040ca", src: "https://i.scdn.co/image/palette-blue" },
   { background: "#777777", src: "https://example.com/cover-gray.png" },
 ])("generates and caches readable artwork palettes from $src", async ({ background, src }) => {
@@ -116,10 +67,43 @@ test.each([
   }
 });
 
+test("generates artwork palettes for ranked artists", async () => {
+  const src = "https://i.scdn.co/image/radiohead-palette";
+  const image = await sharp({
+    create: { width: 8, height: 8, channels: 4, background: "#2040ca" },
+  })
+    .png()
+    .toBuffer();
+  network.use(
+    http.get(
+      src,
+      () =>
+        new HttpResponse(new Uint8Array(image), {
+          headers: { "Content-Type": "image/png" },
+        }),
+    ),
+  );
+
+  const [artist] = await addArtworkPalettes(
+    [
+      {
+        name: "Radiohead",
+        artwork: {
+          imageUrl: src,
+          spotifyUrl: "https://open.spotify.com/artist/radiohead",
+        },
+      },
+    ],
+    new AbortController().signal,
+  );
+
+  expect(artist?.palette).toBeDefined();
+});
+
 test("keeps tracks with missing or failed artwork and reports extraction errors", async () => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
   onTestFinished(() => warning.mockRestore());
-  const src = "https://lastfm.freetls.fastly.net/i/u/300x300/unavailable.png";
+  const src = "https://i.scdn.co/image/unavailable.png";
   network.use(http.get(src, () => new HttpResponse(null, { status: 404 })));
   const tracks = [track(), track(src)];
   expect(await addArtworkPalettes(tracks, new AbortController().signal)).toEqual(tracks);
@@ -151,7 +135,7 @@ test.each(["corrupt", "oversized", "redirect"])(
   async (kind) => {
     const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
     onTestFinished(() => warning.mockRestore());
-    const src = `https://lastfm.freetls.fastly.net/i/u/300x300/${kind}.png`;
+    const src = `https://i.scdn.co/image/${kind}.png`;
     network.use(
       http.get(src, () =>
         kind === "redirect"
