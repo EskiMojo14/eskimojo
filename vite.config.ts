@@ -163,7 +163,15 @@ const config = defineConfig({
       devtools(),
       contentCollections({ configPath: "config/content-collections.ts" }),
       process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
-      process.env.STORYBOOK !== "true" && tanstackStart(),
+      process.env.STORYBOOK !== "true" &&
+        tanstackStart({
+          importProtection: {
+            behavior: "error",
+            client: {
+              specifiers: [/^sharp(?:\/|$)/, /^@material\/material-color-utilities(?:\/|$)/],
+            },
+          },
+        }),
       process.env.VITEST !== "true" &&
         process.env.STORYBOOK !== "true" &&
         serverFnRegistry({ output: new URL("./test/e2e/server-fns.gen.ts", import.meta.url) }),

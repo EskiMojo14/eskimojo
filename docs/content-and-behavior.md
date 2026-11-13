@@ -160,6 +160,13 @@ decoder, deterministic seed selection, and readable-color helpers support
 build-time project palettes. Image processing libraries remain server-only;
 the browser receives color values.
 
+TanStack Start's import protection in [`vite.config.ts`](../vite.config.ts)
+rejects client imports of `sharp` and `@material/material-color-utilities`,
+including package subpaths, in both development and production builds. These
+rules extend Start's default environment boundaries, including `*.server.*`
+files. Keep runtime palette processing behind server functions and add any
+future server-only dependencies to the client specifier deny list.
+
 Successful palettes are cached by artwork URL for 24 hours in a bounded
 128-entry per-process cache. Requests process up to four covers concurrently,
 deduplicate repeated artwork, and share a five-second extraction deadline.
