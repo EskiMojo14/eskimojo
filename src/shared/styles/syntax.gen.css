@@ -6,7 +6,7 @@
   --syntax-function: light-dark(rgb(71 93 146), rgb(177 198 255));
   --syntax-number: light-dark(rgb(84 90 146), rgb(189 194 255));
   --syntax-type: light-dark(rgb(71 93 146), rgb(177 198 255));
-  --syntax-parameter: light-dark(rgb(144 74 72), rgb(255 179 175));
+  --syntax-parameter: light-dark(rgb(143 74 79), rgb(255 178 182));
 }
 
 %syntax-medium {
@@ -15,7 +15,7 @@
   --syntax-function: light-dark(rgb(69 91 144), rgb(177 198 255));
   --syntax-number: light-dark(rgb(82 88 144), rgb(189 194 255));
   --syntax-type: light-dark(rgb(69 91 144), rgb(177 198 255));
-  --syntax-parameter: light-dark(rgb(142 72 70), rgb(255 179 175));
+  --syntax-parameter: light-dark(rgb(141 72 77), rgb(255 178 182));
 }
 
 %syntax-high {
@@ -24,7 +24,7 @@
   --syntax-function: light-dark(rgb(57 79 131), rgb(177 198 255));
   --syntax-number: light-dark(rgb(70 76 131), rgb(189 194 255));
   --syntax-type: light-dark(rgb(57 79 131), rgb(177 198 255));
-  --syntax-parameter: light-dark(rgb(127 61 59), rgb(255 179 175));
+  --syntax-parameter: light-dark(rgb(126 61 66), rgb(255 178 182));
 }
 
 :root,

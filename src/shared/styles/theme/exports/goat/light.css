@@ -12,10 +12,10 @@
   --md-sys-color-on-tertiary: rgb(255 255 255);
   --md-sys-color-tertiary-container: rgb(224 224 255);
   --md-sys-color-on-tertiary-container: rgb(60 66 121);
-  --md-sys-color-error: rgb(144 74 72);
+  --md-sys-color-error: rgb(143 74 79);
   --md-sys-color-on-error: rgb(255 255 255);
-  --md-sys-color-error-container: rgb(255 218 216);
-  --md-sys-color-on-error-container: rgb(115 51 50);
+  --md-sys-color-error-container: rgb(255 218 219);
+  --md-sys-color-on-error-container: rgb(114 51 57);
   --md-sys-color-background: rgb(255 247 251);
   --md-sys-color-on-background: rgb(31 26 31);
   --md-sys-color-surface: rgb(255 247 251);
