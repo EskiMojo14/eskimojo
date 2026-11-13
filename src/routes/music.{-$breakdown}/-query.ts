@@ -7,7 +7,9 @@ import { getServerEnv } from "#/utils/env.ts";
 import { anyAbortSignal, upfetch } from "#/utils/index.ts";
 import * as vUtils from "#/utils/valibot";
 
+import { addArtworkPalettes } from "./-artwork-palette.server";
 import { periodSchema, type Period } from "./-constants";
+import { addSpotifyArtistArtwork, addSpotifyTrackArtwork } from "./-spotify.server";
 
 export { periodSchema, type Period } from "./-constants";
 
@@ -114,9 +116,7 @@ export const getRecentTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
-    const { addSpotifyTrackArtwork } = await import("./-spotify.server");
     const tracks = await addSpotifyTrackArtwork(response.recenttracks.track, signal);
-    const { addArtworkPalettes } = await import("./-artwork-palette.server");
     return {
       ...response,
       recenttracks: {
@@ -188,10 +188,6 @@ export const getTopTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
-    const [{ addSpotifyTrackArtwork }, { addArtworkPalettes }] = await Promise.all([
-      import("./-spotify.server"),
-      import("./-artwork-palette.server"),
-    ]);
     const tracks = await addSpotifyTrackArtwork(response.toptracks.track, signal);
     return {
       ...response,
@@ -253,10 +249,6 @@ export const getTopArtistsFn = createServerFn({ method: "GET" })
       signal,
       schema: topArtistsResponseSchema,
     });
-    const [{ addSpotifyArtistArtwork }, { addArtworkPalettes }] = await Promise.all([
-      import("./-spotify.server"),
-      import("./-artwork-palette.server"),
-    ]);
     const artists = await addSpotifyArtistArtwork(response.topartists.artist, signal);
     return {
       ...response,
