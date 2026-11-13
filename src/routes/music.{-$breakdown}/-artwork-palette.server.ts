@@ -5,13 +5,20 @@ import { imageSourceColor, imageColorScheme, readableImageColor } from "#/shared
 import type { ArtworkPalette, SpotifyArtwork } from "./-query";
 
 const cache = new Map<string, { palette: ArtworkPalette; expires: number }>();
+const artworkHost = "i.scdn.co";
 const maxArtworkBytes = 1_000_000;
 
 async function downloadArtwork(src: string, signal: AbortSignal) {
   const url = new URL(src);
-  if (url.protocol !== "https:" || url.port || url.username || url.password) {
+  if (
+    url.protocol !== "https:" ||
+    url.hostname !== artworkHost ||
+    url.port ||
+    url.username ||
+    url.password
+  ) {
     throw new Error(
-      "Artwork palette requires an HTTPS image URL without credentials or a custom port",
+      `Artwork palette requires an HTTPS image URL hosted on ${artworkHost} without credentials or a custom port`,
     );
   }
   const response = await fetch(url, { signal, redirect: "error" });
