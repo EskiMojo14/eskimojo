@@ -2,10 +2,14 @@ import { expect, within } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
+import { assert } from "#/utils";
 
 import { GigsHeatmap } from "./index";
 
 import "./index.css";
+
+const [firstArchiveEvent, secondArchiveEvent] = gigs.events;
+assert(firstArchiveEvent && secondArchiveEvent, "Expected archive events for the heatmap stories.");
 
 const meta = preview.meta({
   title: "Gigs/Heatmap",
@@ -56,7 +60,7 @@ export const KeyboardFocus = meta.story({
 });
 
 export const SingleGig = meta.story({
-  args: { events: [{ ...gigs.events[0], date: "2024-02-29" }] },
+  args: { events: [{ ...firstArchiveEvent, date: "2024-02-29" }] },
   play: async ({ canvas }) => {
     const row = canvas.getByRole("row", { name: /^2024 / });
     await expect(
@@ -70,8 +74,8 @@ export const SingleGig = meta.story({
 export const MissingYear = meta.story({
   args: {
     events: [
-      { ...gigs.events[0], date: "2022-12-31" },
-      { ...gigs.events[1], date: "2024-01-01" },
+      { ...firstArchiveEvent, date: "2022-12-31" },
+      { ...secondArchiveEvent, date: "2024-01-01" },
     ],
   },
   play: async ({ canvas }) => {

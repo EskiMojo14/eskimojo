@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vite-plus/test";
 
+import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
+import { assert } from "#/utils";
 
 import { getGigHeatmapData } from "./data";
 
@@ -43,17 +45,30 @@ describe("getGigHeatmapData", () => {
   });
 
   it("keeps complete event details sorted by date without mutating the input", () => {
-    const events = [
-      { ...gigs.events[4], date: "2024-02-29" },
-      { ...gigs.events[0], date: "2024-02-01" },
+    const later = gigs.events[4];
+    const earlier = gigs.events[0];
+    assert(later && earlier, "Expected archive events for the ordering test.");
+    const events: Array<
+      Pick<GigEvent, "date" | "venue" | "city"> & {
+        artists: ReadonlyArray<string>;
+        support?: ReadonlyArray<string>;
+      }
+    > = [
+      { ...later, date: "2024-02-29" },
+      { ...earlier, date: "2024-02-01" },
     ];
     const result = getGigHeatmapData(events);
     const february = result.cells.find(({ month }) => month === "Feb");
+    assert(february, "Expected February in the heatmap data.");
+    const lastFebruaryEvent = february.events[1];
+    assert(lastFebruaryEvent, "Expected two February events.");
 
-    expect(february?.events).toEqual([events[1], events[0]]);
-    expect(february?.count).toBe(2);
-    expect(events[0].date).toBe("2024-02-29");
-    expect(february?.events[1].support).toEqual(gigs.events[4].support);
+    expect(february.events).toEqual([events[1], events[0]]);
+    expect(february.count).toBe(2);
+    const firstEvent = events[0];
+    assert(firstEvent, "Expected the first unsorted event.");
+    expect(firstEvent.date).toBe("2024-02-29");
+    expect(lastFebruaryEvent.support).toEqual(later.support);
   });
 
   it("returns an empty domain for an empty archive", () => {

@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
+import { assert } from "#/utils";
 
 import { englandGeometry, getCityMapFit, getCityMapData } from "./data";
 
@@ -12,14 +13,18 @@ test("groups cities, sorts counts and events, and scales dot area with event cou
     { city: "Bath", date: "2024-03-01" },
   ];
   const cities = getCityMapData(events);
+  const [firstEvent, secondEvent, thirdEvent] = events;
+  assert(firstEvent && secondEvent && thirdEvent, "Expected four city-map event fixtures.");
   expect(cities.map(({ city, count }) => ({ city, count }))).toEqual([
     { city: "London", count: 2 },
     { city: "Bath", count: 1 },
     { city: "Bristol", count: 1 },
   ]);
-  expect(cities[0].events).toEqual([events[2], events[0]]);
-  expect(cities[0].radius ** 2 / cities[1].radius ** 2).toBeCloseTo(2);
-  expect(events[0].date).toBe("2024-12-01");
+  const [london, bath] = cities;
+  assert(london && bath, "Expected London and Bath city data.");
+  expect(london.events).toEqual([thirdEvent, firstEvent]);
+  expect(london.radius ** 2 / bath.radius ** 2).toBeCloseTo(2);
+  expect(firstEvent.date).toBe("2024-12-01");
 });
 
 test("locates every archive city in England and counts every event once", () => {
@@ -59,8 +64,10 @@ test("fits the event region rather than the full England outline", () => {
   expect(getCityMapFit([])).toBe(englandGeometry);
   const singleCityFit = getCityMapFit([{ coordinates: [-2.5879, 51.4545] }]);
   expect(singleCityFit.type).toBe("MultiPoint");
-  expect(singleCityFit.coordinates[0][0]).toBeCloseTo(-2.7379);
-  expect(singleCityFit.coordinates[0][1]).toBeCloseTo(51.3045);
-  expect(singleCityFit.coordinates[1][0]).toBeCloseTo(-2.4379);
-  expect(singleCityFit.coordinates[1][1]).toBeCloseTo(51.6045);
+  const [southWest, northEast] = singleCityFit.coordinates;
+  assert(southWest && northEast, "Expected two corners for the city-map fit.");
+  expect(southWest[0]).toBeCloseTo(-2.7379);
+  expect(southWest[1]).toBeCloseTo(51.3045);
+  expect(northEast[0]).toBeCloseTo(-2.4379);
+  expect(northEast[1]).toBeCloseTo(51.6045);
 });

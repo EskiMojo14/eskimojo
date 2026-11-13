@@ -7,6 +7,8 @@
  * analytically (mass 1, starting at rest), its duration is the time it takes to stay
  * within `settleThreshold` of the target, and the curve is sampled and simplified.
  */
+import { assert } from "#/utils/index.ts";
+
 import { writeFormatted } from "./write-formatted.ts";
 
 type Spring = { damping: number; stiffness: number };
@@ -63,19 +65,24 @@ type Point = [x: number, y: number];
 /** Ramer–Douglas–Peucker: drop points that linear interpolation reproduces within tolerance. */
 function simplify(points: Array<Point>): Array<Point> {
   if (points.length < 3) return points;
-  const [x0, y0] = points[0];
-  const [x1, y1] = points[points.length - 1];
+  const first = points[0];
+  const last = points.at(-1);
+  assert(first && last, "Cannot simplify a point list without endpoints.");
+  const [x0, y0] = first;
+  const [x1, y1] = last;
   let maxError = 0;
   let index = 0;
   for (let i = 1; i < points.length - 1; i++) {
-    const [x, y] = points[i];
+    const point = points[i];
+    assert(point, `Missing sampled point at index ${i}.`);
+    const [x, y] = point;
     const error = Math.abs(y - (y0 + ((y1 - y0) * (x - x0)) / (x1 - x0)));
     if (error > maxError) {
       maxError = error;
       index = i;
     }
   }
-  if (maxError <= tolerance) return [points[0], points[points.length - 1]];
+  if (maxError <= tolerance) return [first, last];
   return [...simplify(points.slice(0, index + 1)).slice(0, -1), ...simplify(points.slice(index))];
 }
 

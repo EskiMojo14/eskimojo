@@ -1,6 +1,8 @@
 import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import { assert } from "#/utils";
+
 import { GigsCityMap } from "./index";
 
 import "./index.css";
@@ -28,8 +30,10 @@ test("shows city counts in a table and chronological events in marker tooltips",
   await userEvent.keyboard("{Home}{Enter}");
   await expect.element(result.getByRole("heading", { name: "Bristol", exact: true })).toBeVisible();
   const entries = result.getByRole("listitem").all();
-  expect(entries[0].element().textContent).toContain("Earlier");
-  expect(entries[1].element().textContent).toContain("Support: Support act");
+  const [earlier, later] = entries;
+  assert(earlier && later, "Expected both Bristol gig entries.");
+  expect(earlier.element().textContent).toContain("Earlier");
+  expect(later.element().textContent).toContain("Support: Support act");
   await expect.element(result.getByText("Thekla, Bristol")).toBeVisible();
   await result.getByRole("button", { name: "Close details" }).click();
   await expect

@@ -2,14 +2,18 @@ import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
+import { assert } from "#/utils";
 
 import { GigsHeatmap } from "./index";
 
 import "#/routes/gigs.{-$breakdown}/index.css";
 
+const [firstArchiveEvent, secondArchiveEvent] = gigs.events;
+assert(firstArchiveEvent && secondArchiveEvent, "Expected archive events for the heatmap test.");
+
 test("moves to a different month on every horizontal arrow press", async () => {
   const result = await page.renderWithProviders(
-    <GigsHeatmap events={[{ ...gigs.events[0], date: "2024-01-01" }]} />,
+    <GigsHeatmap events={[{ ...firstArchiveEvent, date: "2024-01-01" }]} />,
   );
   const chart = result.getByRole("img", { name: "Gigs by month and year" });
   await expect.element(chart).toBeVisible();
@@ -107,8 +111,8 @@ test("renders exact monthly counts and a screen-reader-accessible table", async 
   const result = await page.renderWithProviders(
     <GigsHeatmap
       events={[
-        { ...gigs.events[0], date: "2024-02-01" },
-        { ...gigs.events[1], date: "2024-02-29" },
+        { ...firstArchiveEvent, date: "2024-02-01" },
+        { ...secondArchiveEvent, date: "2024-02-29" },
       ]}
     />,
   );
@@ -119,8 +123,10 @@ test("renders exact monthly counts and a screen-reader-accessible table", async 
   expect(table.getByRole("columnheader").all()).toHaveLength(13);
   const cells = table.getByRole("cell").all();
   expect(cells).toHaveLength(12);
-  await expect.element(cells[0]).toHaveTextContent("0");
-  await expect.element(cells[1]).toHaveTextContent("2");
+  const [january, february] = cells;
+  assert(january && february, "Expected monthly count cells.");
+  await expect.element(january).toHaveTextContent("0");
+  await expect.element(february).toHaveTextContent("2");
 });
 
 test("renders an explicit empty state without a chart", async () => {
