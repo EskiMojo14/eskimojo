@@ -42,6 +42,10 @@
     background-size: contain;
   }
 
+  [data-christmas="true"] &::before {
+    background-image: url("/Mitzi-hero-christmas.webp");
+  }
+
   &::after {
     background-image: linear-gradient(
       var(--home-hero-scrim-direction),

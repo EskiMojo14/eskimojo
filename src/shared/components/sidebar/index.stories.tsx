@@ -21,11 +21,11 @@ const meta = preview.meta({
   },
 });
 
-function NavigationLayout() {
+function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="app-shell">
-      <Sidebar open={open} onClose={() => setOpen(false)} />
+    <div className="app-shell" data-christmas={christmas ? "true" : undefined}>
+      <Sidebar open={open} onClose={() => setOpen(false)} christmas={christmas} />
       <div className="app-shell__main">
         <AppBar navigationOpen={open} onOpenNavigation={() => setOpen(true)} />
       </div>
@@ -34,6 +34,10 @@ function NavigationLayout() {
 }
 
 export const Default = meta.story({});
+
+export const Christmas = meta.story({
+  args: { christmas: true },
+});
 
 export const ScrollingPage = meta.story({
   render: () => (

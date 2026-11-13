@@ -46,7 +46,7 @@ export function generatePageMetadata({
   });
 }
 
-export function getDocumentHead(palette: Palette = "goat") {
+export function getDocumentHead(palette: Palette = "goat", christmas = false) {
   const metadata = generatePageMetadata({
     title: "eskimojo",
     description: "eskimojo's personal website: projects, music, and live gigs.",
@@ -63,13 +63,23 @@ export function getDocumentHead(palette: Palette = "goat") {
       // preload the opposite theme sidebar image, so it loads quickly when the user switches themes
       {
         rel: "preload",
-        href: palette === "goat" ? "/OC-sidebar.webp" : "/Goat-sidebar.webp",
+        href:
+          palette === "goat"
+            ? "/OC-sidebar.webp"
+            : christmas
+              ? "/Goat-sidebar-christmas.webp"
+              : "/Goat-sidebar.webp",
         as: "image",
         fetchPriority: "low" as const,
       },
       {
         rel: "icon",
-        href: palette === "goat" ? "/favicon.png" : "/favicon-arctic.png",
+        href:
+          palette === "arctic"
+            ? "/favicon-arctic.png"
+            : christmas
+              ? "/favicon-christmas.png"
+              : "/favicon.png",
         type: "image/png",
         sizes: "64x64",
       },

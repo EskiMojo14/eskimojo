@@ -18,7 +18,13 @@ const PaletteToggle = withTooltip(function PaletteToggle(props: ComponentPropsWi
   return <button {...props} />;
 });
 
-function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
+function SidebarContents({
+  onNavigate,
+  christmas,
+}: {
+  onNavigate: () => void;
+  christmas: boolean;
+}) {
   const { palette, setPalette } = usePalette();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(undefined, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
@@ -45,7 +51,7 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
           >
             <img
               {...siteSidebarBem({ element: "palette-avatar" })}
-              src="/Goat-avatar.webp"
+              src={christmas ? "/Goat-avatar-christmas.webp" : "/Goat-avatar.webp"}
               alt=""
               draggable={false}
             />
@@ -83,13 +89,14 @@ function SidebarContents({ onNavigate }: { onNavigate: () => void }) {
 export interface SidebarProps {
   open: boolean;
   onClose: () => void;
+  christmas?: boolean;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, christmas = false }: SidebarProps) {
   return (
     <>
       <aside {...siteSidebarBem({ modifier: "desktop" })} aria-label="Primary navigation">
-        <SidebarContents onNavigate={onClose} />
+        <SidebarContents onNavigate={onClose} christmas={christmas} />
       </aside>
       <Dialog
         open={open}
@@ -98,7 +105,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         onClose={onClose}
       >
         <aside {...siteSidebarBem({ modifier: "modal-content" })}>
-          <SidebarContents onNavigate={onClose} />
+          <SidebarContents onNavigate={onClose} christmas={christmas} />
         </aside>
       </Dialog>
     </>
