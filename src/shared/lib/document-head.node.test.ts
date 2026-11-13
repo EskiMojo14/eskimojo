@@ -89,7 +89,32 @@ test("uses the Arctic portrait as the favicon for the Arctic palette", () => {
     as: "image",
     fetchPriority: "low",
   });
+
   expect(links).toContainEqual({
+    rel: "icon",
+    href: "/favicon-arctic.png",
+    type: "image/png",
+    sizes: "64x64",
+  });
+});
+
+test("preloads the Christmas Goat artwork when the Arctic palette is active", () => {
+  expect(getDocumentHead("arctic", true).links).toContainEqual({
+    rel: "preload",
+    href: "/Goat-sidebar-christmas.webp",
+    as: "image",
+    fetchPriority: "low",
+  });
+});
+
+test("uses the Christmas favicon for Goat but keeps the Arctic favicon", () => {
+  expect(getDocumentHead("goat", true).links).toContainEqual({
+    rel: "icon",
+    href: "/favicon-christmas.png",
+    type: "image/png",
+    sizes: "64x64",
+  });
+  expect(getDocumentHead("arctic", true).links).toContainEqual({
     rel: "icon",
     href: "/favicon-arctic.png",
     type: "image/png",

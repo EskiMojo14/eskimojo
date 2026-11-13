@@ -34,7 +34,7 @@ const socialProfiles = [
 
 export const Route = createFileRoute("/_home/")({
   staticData: { title: "Home" },
-  head: () => {
+  head: ({ match }) => {
     const metadata = generatePageMetadata({
       title: "Home",
       description:
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/_home/")({
         { rel: "stylesheet", href: styles },
         {
           rel: "preload",
-          href: "/Mitzi-hero.webp",
+          href: match.context.christmas ? "/Mitzi-hero-christmas.webp" : "/Mitzi-hero.webp",
           as: "image",
           fetchPriority: "high" as const,
         },

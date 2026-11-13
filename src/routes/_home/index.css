@@ -56,6 +56,10 @@
       pointer-events: none;
     }
 
+    [data-christmas="true"] &::before {
+      background-image: url("/Goat-sidebar-christmas.webp");
+    }
+
     [data-palette="arctic"] &::before {
       background-image: none;
     }

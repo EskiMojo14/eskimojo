@@ -202,6 +202,11 @@ larger JPEG rather than the 144-by-144 avatar.
 Preview image URLs resolve against `https://eskimojo.dev`; Twitter uses a
 square-image summary card.
 
+During December (UTC), the Goat sidebar artwork, palette-switcher avatar and
+favicon, and the Mitzi home hero use their Christmas versions. Adding
+`?christmas=true` enables them at other times too; the Arctic palette continues
+to use its usual sidebar artwork, avatar and favicon.
+
 The sidebar retains the site
 identity. On desktop it stays anchored to the top of the viewport while the page
 scrolls, without overlapping the main content. It fills the viewport height;
