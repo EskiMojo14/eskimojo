@@ -12,12 +12,12 @@ const meta = preview.meta({
   component: MusicTopMusic,
   args: {
     tracks: [
-      { name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290, image: {} },
-      { name: "Let It Happen", artist: "Tame Impala", rank: 2, playcount: 200, image: {} },
+      { name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 },
+      { name: "Let It Happen", artist: "Tame Impala", rank: 2, playcount: 200 },
     ],
     artists: [
-      { name: "Scary Pockets", rank: 1, playcount: 4794, image: {} },
-      { name: "Radiohead", rank: 2, playcount: 4000, image: {} },
+      { name: "Scary Pockets", rank: 1, playcount: 4794 },
+      { name: "Radiohead", rank: 2, playcount: 4000 },
     ],
   },
   parameters: {

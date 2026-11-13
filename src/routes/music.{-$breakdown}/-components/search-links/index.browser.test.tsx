@@ -33,3 +33,12 @@ test("searches for just the artist when no track artist is supplied", async () =
     .element(result.getByRole("link", { name: "Search YouTube for Radiohead" }))
     .toHaveAttribute("href", "https://www.youtube.com/results?search_query=Radiohead");
 });
+
+test("links matched Spotify metadata directly instead of to search results", async () => {
+  const result = await page.renderWithProviders(
+    <MusicSearchLinks name="Radiohead" spotifyUrl="https://open.spotify.com/artist/radiohead" />,
+  );
+  await expect
+    .element(result.getByRole("link", { name: "Open Radiohead on Spotify" }))
+    .toHaveAttribute("href", "https://open.spotify.com/artist/radiohead");
+});

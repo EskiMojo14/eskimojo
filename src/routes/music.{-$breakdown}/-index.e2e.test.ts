@@ -34,7 +34,6 @@ const recentTracks: Array<RecentTrack> = [
     name: "Let It Happen",
     artist: "Tame Impala",
     album: "Currents",
-    image: {},
     nowPlaying: true,
   },
 ];

@@ -343,6 +343,14 @@ snapshot as live. Keep these period choices for Top Tracks and Top Artists:
 - 12 months (`12month`);
 - all time (`overall`).
 
+Use Last.fm for listening data and Spotify's GB catalog for artist and track
+cover art. Match track artwork only when both the normalized track and artist
+names match; use the existing icon fallback when no exact catalog match or
+image is available. When Spotify credentials are missing or a catalog lookup
+fails, keep the Last.fm listening data and show the icon fallback. Link matched
+rows directly to their Spotify catalog item and apply a readable palette
+derived from the artwork.
+
 Current defaults:
 
 - Top tracks and Top artists: all time, ten results each;

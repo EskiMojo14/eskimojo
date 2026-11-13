@@ -1,46 +1,24 @@
 import { expect, waitFor } from "storybook/test";
-import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import { imageSchema, type RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
-import { getProject } from "#/routes/projects/-data";
+import exampleCoverUrl from "#/routes/music.{-$breakdown}/-components/artwork/example-cover.svg?url";
+import { fixturePalette } from "#/routes/music.{-$breakdown}/-components/artwork/story-fixtures";
+import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 
 import { RecentTracks, RecentTracksSkeleton } from "./index";
 
 import "./index.css";
 import "#/routes/music.{-$breakdown}/-components/skeletons/index.css";
 
-// Reuse build-generated colors so browser stories never load the image decoder.
-function fixturePalette(slug: string): RecentTrack["palette"] {
-  const project = getProject(slug);
-  if (!project.palette) throw new Error(`Missing palette fixture for ${slug}`);
-  const palette: NonNullable<RecentTrack["palette"]> = {};
-  for (const level of ["standard", "medium", "high"]) {
-    for (const role of [
-      "surface",
-      "on-surface",
-      "on-surface-variant",
-      "primary",
-      "secondary",
-      "tertiary",
-    ]) {
-      const color =
-        project.palette[
-          `--project-${level}-${role === "surface" ? "surface-container-highest" : role}`
-        ];
-      if (!color) throw new Error(`Missing fixture color ${level}/${role}`);
-      palette[`--artwork-${level}-${role}`] = color;
-    }
-  }
-  return palette;
-}
-
 const tracks: Array<RecentTrack> = [
   {
     name: "Let It Happen",
     artist: "Tame Impala",
     album: "Currents",
-    image: { large: "/Goat-avatar.webp" },
+    artwork: {
+      imageUrl: exampleCoverUrl,
+      spotifyUrl: "https://open.spotify.com/track/let-it-happen",
+    },
     palette: fixturePalette("eskimojo"),
     nowPlaying: true,
   },
@@ -48,7 +26,6 @@ const tracks: Array<RecentTrack> = [
     name: "Everything In Its Right Place",
     artist: "Radiohead",
     album: "Kid A",
-    image: {},
     nowPlaying: false,
     date: "2026-10-26T00:55:00.000Z",
   },
@@ -64,7 +41,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Recent Last.fm tracks in the default expressive list. Each row receives a server-generated cover-art palette for its surface, text, links, and now-playing accent, respecting light/dark and all contrast settings. Missing or unavailable artwork keeps the site palette. Stories reuse build-generated image palettes without loading the decoder in the browser. Headline-small headings and title-medium track names lead the hierarchy; artist details use body-medium, timestamps body-small, and status/search actions label-medium. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. The decorative five-bar equalizer uses spatial springs through a closed sequence of heights, with independent cycle lengths and phases to avoid a synchronized restart. Bar positions and widths match Material Symbols Sharp graphic_eq at 24px; reduced motion restores its exact static geometry. The visible Now playing label conveys status without motion. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
+          "Recent Last.fm tracks use Spotify-matched cover art. Each row receives a server-generated cover-art palette for its surface, text, links, and now-playing accent, respecting light/dark and all contrast settings. Missing or unavailable artwork keeps the site palette. Stories reuse build-generated image palettes without loading the decoder in the browser. Headline-small headings and title-medium track names lead the hierarchy; artist details use body-medium, timestamps body-small, and status/search actions label-medium. Artwork is decorative, missing artwork uses a music symbol, and now-playing tracks have no timestamp. The decorative five-bar equalizer uses spatial springs through a closed sequence of heights, with independent cycle lengths and phases to avoid a synchronized restart. Bar positions and widths match Material Symbols Sharp graphic_eq at 24px; reduced motion restores its exact static geometry. The visible Now playing label conveys status without motion. Completed plays use explicit UTC timestamps for consistent server and client rendering. Styles load through the music route's head-linked stylesheet.",
       },
     },
   },
@@ -94,20 +71,13 @@ export const Empty = meta.story({
   },
 });
 
-export const LastfmPlaceholder = meta.story({
+export const MissingArtwork = meta.story({
   args: {
     tracks: [
       {
         name: "Mama Say",
         artist: "Vulfmon",
         album: "Mama Say",
-        image: v.parse(imageSchema, [
-          {
-            size: "extralarge",
-            "#text":
-              "https://lastfm-img.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png",
-          },
-        ]),
         nowPlaying: true,
       },
     ],
@@ -127,7 +97,10 @@ const coverTracks: Array<RecentTrack> = [
     name: "Another cover palette",
     artist: "Example artist",
     album: "Example album",
-    image: { large: "/projects/redux.png" },
+    artwork: {
+      imageUrl: exampleCoverUrl,
+      spotifyUrl: "https://open.spotify.com/track/example",
+    },
     palette: fixturePalette("redux"),
     nowPlaying: false,
     date: "2026-10-26T00:55:00.000Z",
@@ -150,7 +123,10 @@ export const NarrowNowPlaying = meta.story({
         name: "Would I Lie to You?",
         artist: "Charles & Eddie",
         album: "Duophonic",
-        image: { large: "/Goat-avatar.webp" },
+        artwork: {
+          imageUrl: exampleCoverUrl,
+          spotifyUrl: "https://open.spotify.com/track/would-i-lie-to-you",
+        },
         palette: fixturePalette("eskimojo"),
         nowPlaying: true,
       },
@@ -172,7 +148,6 @@ export const LongContent = meta.story({
         name: "A track with a very long title that wraps without hiding the rest of the listening history",
         artist: "An artist with a long name",
         album: "",
-        image: { large: "" },
         nowPlaying: false,
         date: "2026-10-25T23:30:00.000Z",
       },

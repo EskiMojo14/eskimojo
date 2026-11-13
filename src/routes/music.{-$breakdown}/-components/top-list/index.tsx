@@ -1,5 +1,6 @@
 import BEMHelper from "react-bem-helper";
 
+import { MusicArtwork } from "#/routes/music.{-$breakdown}/-components/artwork";
 import {
   MusicListLayout,
   MusicListRow,
@@ -10,7 +11,6 @@ import type { TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 
-const recentTracksBem = BEMHelper("recent-tracks");
 const topListBem = BEMHelper("music-top-list");
 
 export function MusicTopListSkeleton({
@@ -47,12 +47,15 @@ export function MusicTopList({
       {items.map((item) => (
         <MusicListRow
           key={item.rank}
+          data-artwork-palette={item.palette ? "" : undefined}
+          style={item.palette}
           rank={item.rank}
           rankLabel={`Rank ${item.rank}`}
           artwork={
-            <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
-              {"artist" in item ? <MdSymbol>music_note</MdSymbol> : <MdSymbol>artist</MdSymbol>}
-            </span>
+            <MusicArtwork
+              imageUrl={item.artwork?.imageUrl}
+              fallbackIcon={"artist" in item ? "music_note" : "artist"}
+            />
           }
           headline={item.name}
           supportingText={"artist" in item ? item.artist : undefined}
@@ -60,6 +63,7 @@ export function MusicTopList({
             <MusicSearchLinks
               name={item.name}
               artist={"artist" in item ? item.artist : undefined}
+              spotifyUrl={item.artwork?.spotifyUrl}
             />
           }
           trailing={`${item.playcount.toLocaleString("en-GB")} ${item.playcount === 1 ? "play" : "plays"}`}

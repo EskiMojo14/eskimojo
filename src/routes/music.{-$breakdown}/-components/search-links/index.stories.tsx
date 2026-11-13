@@ -12,7 +12,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Native Spotify and YouTube search links. Track searches include the artist; artist searches use the name alone. Destinations are URL-encoded and open in the current tab.",
+          "Spotify links open the matched catalog item when available and otherwise search by item name. YouTube links search for the item; both open in a new tab.",
       },
     },
   },

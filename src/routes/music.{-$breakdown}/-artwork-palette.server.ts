@@ -2,9 +2,8 @@ import { hexFromArgb } from "@material/material-color-utilities";
 
 import { imageSourceColor, imageColorScheme, readableImageColor } from "#/shared/lib/image-palette";
 
-import type { RecentTrack } from "./-query";
+import type { ArtworkPalette, SpotifyArtwork } from "./-query";
 
-type ArtworkPalette = Record<`--artwork-${string}`, string>;
 const cache = new Map<string, { palette: ArtworkPalette; expires: number }>();
 const maxArtworkBytes = 1_000_000;
 
@@ -93,29 +92,37 @@ async function artworkPalette(src: string, signal: AbortSignal) {
   return palette;
 }
 
-export async function addArtworkPalettes(tracks: Array<RecentTrack>, signal: AbortSignal) {
+export async function addArtworkPalettes<
+  T extends { artwork?: SpotifyArtwork; palette?: ArtworkPalette },
+>(items: Array<T>, signal: AbortSignal): Promise<Array<T & { palette?: ArtworkPalette }>> {
   const extractionSignal = AbortSignal.any([signal, AbortSignal.timeout(5000)]);
   const pending = new Map<string, Promise<ArtworkPalette | undefined>>();
-  const queue = tracks.values();
+  const palettes: Array<ArtworkPalette | undefined> = Array.from(
+    { length: items.length },
+    () => undefined,
+  );
+  const queue = items.entries();
   await Promise.all(
-    Array.from({ length: Math.min(4, tracks.length) }, async () => {
-      for (const track of queue) {
+    Array.from({ length: Math.min(4, items.length) }, async () => {
+      for (const [index, item] of queue) {
         signal.throwIfAborted();
-        const src =
-          track.image.extralarge || track.image.large || track.image.medium || track.image.small;
+        const src = item.artwork?.imageUrl;
         if (!src) continue;
         let palette = pending.get(src);
         if (!palette) {
           palette = artworkPalette(src, extractionSignal).catch((error: unknown) => {
             signal.throwIfAborted();
-            console.warn("Could not generate recent-track artwork palette.", error);
+            console.warn("Could not generate music artwork palette.", error);
             return undefined;
           });
           pending.set(src, palette);
         }
-        track.palette = await palette;
+        palettes[index] = await palette;
       }
     }),
   );
-  return tracks;
+  return items.map((item, index) => {
+    const palette = palettes[index];
+    return palette ? { ...item, palette } : item;
+  });
 }
