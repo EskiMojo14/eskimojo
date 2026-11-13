@@ -221,7 +221,22 @@ export const getSpotifyArtwork = (
   queryOptions({
     queryKey: ["spotify-artwork", params],
     queryFn: ({ signal }) =>
-      getSpotifyArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+      params.tracks.length === 0 && params.artists.length === 0
+        ? Promise.resolve({ tracks: [], artists: [], retryAfterMs: undefined })
+        : getSpotifyArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    initialData: {
+      tracks: params.tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+        name,
+        artist,
+        artwork: lastfmArtworkUrl ? { imageUrl: lastfmArtworkUrl } : undefined,
+      })),
+      artists: params.artists.map(({ name, lastfmArtworkUrl }) => ({
+        name,
+        artwork: lastfmArtworkUrl ? { imageUrl: lastfmArtworkUrl } : undefined,
+      })),
+      retryAfterMs: undefined,
+    },
+    initialDataUpdatedAt: 0,
     staleTime: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
       return retryAfterMs === undefined
@@ -235,7 +250,6 @@ export const getSpotifyArtwork = (
     },
     refetchIntervalInBackground: false,
     gcTime: spotifyArtworkCacheDuration,
-    enabled: params.tracks.length > 0 || params.artists.length > 0,
   });
 
 const getRecentTracksParams = v.object({
