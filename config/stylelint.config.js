@@ -1,5 +1,7 @@
 import stylelint from "stylelint";
 
+import { code } from "#/utils/index.ts";
+
 import {
   rule as noParentRelativePaths,
   ruleName as noParentRelativePathsName,
@@ -13,10 +15,10 @@ import {
   ruleName as useMotionTokenForEasingName,
 } from "./stylelint-rules/use-motion-token-for-easing.js";
 
-const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
-const colorMixArg = String.raw`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
-const colorMix = String.raw`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|longer|increasing|decreasing)\s+hue)?\s*,\s*${colorMixArg}\s*,\s*${colorMixArg}\s*\)$/i`;
-const alphaColor = String.raw`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-[a-z-]+-opacity\))\s*\)$/i`;
+const colorToken = code.regex`var\(--md-sys-color-[a-z-]+\)`;
+const colorMixArg = code.regex`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
+const colorMix = code.regex`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|longer|increasing|decreasing)\s+hue)?\s*,\s*${colorMixArg}\s*,\s*${colorMixArg}\s*\)$/i`;
+const alphaColor = code.regex`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-[a-z-]+-opacity\))\s*\)$/i`;
 
 const globalKeywords = ["inherit", "initial", "unset", "revert", "revert-layer"];
 const colorValues = [

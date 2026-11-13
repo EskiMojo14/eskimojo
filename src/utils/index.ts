@@ -50,3 +50,9 @@ export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): Abor
   AbortSignal.any(signals.filter((x) => !!x));
 
 export const upfetch = up(fetch);
+
+export const code = new Proxy({} as Record<string, typeof String.raw>, {
+  get() {
+    return String.raw;
+  },
+});

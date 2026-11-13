@@ -6,10 +6,9 @@ import { pathToFileURL } from "node:url";
 import { build, transformWithOxc } from "vite-plus";
 import { expect, onTestFinished, test } from "vite-plus/test";
 
-import serverFnRegistry from "./server-fn-registry";
+import { code } from "#/utils";
 
-const js = String.raw;
-const ts = String.raw;
+import serverFnRegistry from "./server-fn-registry";
 
 async function fixture() {
   const root = await mkdtemp(path.join(tmpdir(), "server-fn-registry-"));
@@ -17,7 +16,7 @@ async function fixture() {
   await mkdir(path.join(root, "src"));
   await writeFile(
     path.join(root, "src/functions.ts"),
-    ts`
+    code.ts`
       export const getPost = () => Promise.resolve({ title: "Post" });
       const save = () => Promise.resolve();
       export { save as savePost };
@@ -72,7 +71,7 @@ async function fixture() {
   return { compile, output };
 }
 
-const provider = js`
+const provider = code.js`
   import { createServerRpc as rpc } from "@tanstack/react-start/server-rpc";
   export const get = rpc({ filename: "src/functions.ts", name: "getPost", id: "get-id", futureField: true }, () => {});
   export const save = rpc({ name: "save", id: "save-id", filename: "src/functions.ts" }, () => {});
@@ -100,7 +99,7 @@ test("generates typed descriptors from imported RPC metadata, including export a
 
 test("ignores lookalike RPC calls from unrelated imports", async () => {
   const { compile } = await fixture();
-  const registry = await compile(js`
+  const registry = await compile(code.js`
     ${provider}
     import { createServerRpc } from "unrelated/server-rpc";
     export const unrelated = createServerRpc({ id: "unrelated" }, () => {});
@@ -110,7 +109,7 @@ test("ignores lookalike RPC calls from unrelated imports", async () => {
 
 test("ignores nested RPC calls whose bindings shadow the imported alias", async () => {
   const { compile } = await fixture();
-  const registry = await compile(js`
+  const registry = await compile(code.js`
     ${provider}
     export function nested(rpc) {
       const get = rpc({ id: "nested-id", name: "getPost", filename: "src/functions.ts" }, () => {});
@@ -122,18 +121,21 @@ test("ignores nested RPC calls whose bindings shadow the imported alias", async 
 });
 
 test.each([
-  [js`{ name: "getPost", filename: "src/functions.ts" }`, "Incomplete createServerRpc metadata"],
   [
-    js`{ id: globalThis.id, name: "getPost", filename: "src/functions.ts" }`,
+    code.js`{ name: "getPost", filename: "src/functions.ts" }`,
+    "Incomplete createServerRpc metadata",
+  ],
+  [
+    code.js`{ id: globalThis.id, name: "getPost", filename: "src/functions.ts" }`,
     "literal createServerRpc id",
   ],
-  [js`{ ...globalThis.meta }`, "Unsupported createServerRpc metadata property"],
+  [code.js`{ ...globalThis.meta }`, "Unsupported createServerRpc metadata property"],
 ])(
   "rejects unsupported metadata instead of generating partial mocks: %s",
   async (metadata, error) => {
     const { compile } = await fixture();
     await expect(
-      compile(js`
+      compile(code.js`
       import { createServerRpc } from "@tanstack/react-start/server-rpc";
       export const fn = createServerRpc(${metadata}, () => {});
     `),
@@ -143,14 +145,14 @@ test.each([
 
 test.each([
   [
-    js`{ id: "get-id", name: "save", filename: "src/functions.ts" }`,
+    code.js`{ id: "get-id", name: "save", filename: "src/functions.ts" }`,
     "Conflicting server-function ID",
   ],
-  [js`{ id: "another-id", name: "getPost", filename: "src/functions.ts" }`, "Conflicting IDs"],
+  [code.js`{ id: "another-id", name: "getPost", filename: "src/functions.ts" }`, "Conflicting IDs"],
 ])("rejects conflicting function identities: %s", async (metadata, error) => {
   const { compile } = await fixture();
   await expect(
-    compile(js`
+    compile(code.js`
       ${provider}
       export const conflicting = rpc(${metadata}, () => {});
     `),
@@ -159,7 +161,7 @@ test.each([
 
 test("fails explicitly when the compiler no longer exposes supported RPC metadata", async () => {
   const { compile } = await fixture();
-  await expect(compile(js`export const fn = () => {};`)).rejects.toThrow(
+  await expect(compile(code.js`export const fn = () => {};`)).rejects.toThrow(
     "No server functions collected",
   );
 });

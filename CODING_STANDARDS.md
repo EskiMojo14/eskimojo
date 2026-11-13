@@ -23,8 +23,8 @@ new conventions.
   change explicitly requires otherwise.
 - Write code embedded in strings, such as CSS, HTML, or SQL in tests and
   fixtures, as a tagged template named for its language so editors can
-  highlight it. When the code needs no processing, alias `String.raw`, for
-  example `const css = String.raw;` then `` css`a { color: red; }` ``.
+  highlight it. Import `code` from `#/utils` and use its language-specific
+  tags, for example ``code.css`a { color: red; }` ``.
 
 ## Component state and logic
 

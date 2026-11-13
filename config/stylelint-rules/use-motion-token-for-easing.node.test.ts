@@ -1,14 +1,14 @@
 import stylelint from "stylelint";
 import { expect, test } from "vite-plus/test";
 
-import { ruleName } from "./use-motion-token-for-easing.js";
+import { code } from "#/utils";
 
-const css = String.raw;
+import { ruleName } from "./use-motion-token-for-easing.js";
 
 test.each([
   [
     "transition shorthand",
-    css`
+    code.css`
       a {
         transition: color 150ms ease;
       }
@@ -16,7 +16,7 @@ test.each([
   ],
   [
     "animation shorthand",
-    css`
+    code.css`
       a {
         animation: pulse 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
@@ -24,7 +24,7 @@ test.each([
   ],
   [
     "transition timing function",
-    css`
+    code.css`
       a {
         transition-timing-function: ease-in;
       }
@@ -32,7 +32,7 @@ test.each([
   ],
   [
     "animation timing function",
-    css`
+    code.css`
       a {
         animation-timing-function: steps(4, end);
       }
@@ -40,7 +40,7 @@ test.each([
   ],
   [
     "linear timing function",
-    css`
+    code.css`
       a {
         animation: pulse 1s linear infinite;
       }
@@ -48,7 +48,7 @@ test.each([
   ],
   [
     "custom property alias",
-    css`
+    code.css`
       :root {
         --custom-easing: ease;
       }
@@ -59,7 +59,7 @@ test.each([
   ],
   [
     "custom property alias in shorthand",
-    css`
+    code.css`
       :root {
         --custom-easing: ease;
       }
@@ -68,9 +68,9 @@ test.each([
       }
     `,
   ],
-])("rejects a non-token easing in %s", async (_scenario, code) => {
+])("rejects a non-token easing in %s", async (_scenario, css) => {
   const { results } = await stylelint.lint({
-    code,
+    code: css,
     codeFilename: "src/easing-fixture.css",
     configFile: "./config/stylelint.config.js",
   });
@@ -85,22 +85,22 @@ test.each([
 });
 
 test.each([
-  css`
+  code.css`
     a {
       transition: color 150ms var(--md-sys-motion-spring-fast-effects);
     }
   `,
-  css`
+  code.css`
     a {
       animation: pulse 1s var(--md-sys-motion-easing-linear) infinite;
     }
   `,
-  css`
+  code.css`
     a {
       transition-timing-function: var(--md-sys-motion-easing-standard);
     }
   `,
-  css`
+  code.css`
     :root {
       --custom-easing: var(--md-sys-motion-easing-standard);
     }
@@ -108,7 +108,7 @@ test.each([
       animation-timing-function: var(--custom-easing);
     }
   `,
-  css`
+  code.css`
     :root {
       --custom-easing: var(--md-sys-motion-easing-standard);
     }
@@ -116,19 +116,19 @@ test.each([
       transition: color 150ms var(--custom-easing);
     }
   `,
-  css`
+  code.css`
     a {
       animation-timing-function: inherit;
     }
   `,
-  css`
+  code.css`
     a {
       --custom-value: ease;
     }
   `,
-])("allows motion tokens and values outside easing properties: %s", async (code) => {
+])("allows motion tokens and values outside easing properties: %s", async (css) => {
   const { results } = await stylelint.lint({
-    code,
+    code: css,
     codeFilename: "src/easing-fixture.css",
     configFile: "./config/stylelint.config.js",
   });
