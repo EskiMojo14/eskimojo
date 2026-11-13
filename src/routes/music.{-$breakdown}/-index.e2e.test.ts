@@ -114,7 +114,7 @@ function spotifyArtwork(
   lastfmImageUrl?: string,
 ) {
   const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
-  return mockServerFn(music.getSpotifyArtworkFn, async (data) => {
+  return mockServerFn(music.getMusicArtworkFn, async (data) => {
     await before();
     return {
       tracks: data.tracks.map((track) => mockedArtwork(track, "track", imageUrl, lastfmImageUrl)),
@@ -253,6 +253,48 @@ test("uses Last.fm artwork when Spotify has no matching image", async ({ network
   );
 });
 
+test("passes release and recording MBIDs through prefetch and renders non-Spotify artwork", async ({
+  network,
+  music,
+}) => {
+  const recordingMbid = "b1a9c0e9-d987-4042-ae91-78d6a3267d69";
+  const releaseMbid = "76df3287-6cda-33eb-8e9a-044b5e15ffdd";
+  const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+  let requests = 0;
+  network.use(
+    ...lastfm(
+      undefined,
+      recentTracks.map((track) => ({ ...track, recordingMbid, releaseMbid })),
+      topTracks.map((track) => ({ ...track, recordingMbid })),
+      topArtists,
+    ),
+    mockServerFn(musicFns.getMusicArtworkFn, (data) => {
+      requests++;
+      expect(data.tracks[0]?.recordingMbid).toBe(recordingMbid);
+      if (data.tracks[0]?.name === "Let It Happen") {
+        expect(data.tracks[0].releaseMbid).toBe(releaseMbid);
+      }
+      return {
+        tracks: data.tracks.map((track) => ({ ...track, artwork: { imageUrl } })),
+        artists: data.artists,
+        retryAfterMs: undefined,
+      };
+    }),
+  );
+  await music.navigate();
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  await music.recent.select();
+  await expect(music.recent.artworkImage("Let It Happen", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  expect(requests).toBe(2);
+});
+
 test("retries incomplete artwork after its cooldown without refetching early on tab changes", async ({
   network,
   music,
@@ -263,7 +305,7 @@ test("retries incomplete artwork after its cooldown without refetching early on 
   let artworkRequests = 0;
   network.use(
     ...lastfm(undefined, [], topTracks, topArtists),
-    mockServerFn(musicFns.getSpotifyArtworkFn, async (data) => {
+    mockServerFn(musicFns.getMusicArtworkFn, async (data) => {
       artworkRequests++;
       const artworkUrl = artworkRequests === 1 ? undefined : imageUrl;
       return {

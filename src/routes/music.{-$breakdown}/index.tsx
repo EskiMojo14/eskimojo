@@ -24,7 +24,7 @@ import {
 import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
-  getSpotifyArtwork,
+  getMusicArtwork,
   getTopTracks,
   getTopArtists,
   getUserData,
@@ -80,12 +80,12 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         );
       }
     };
-    const preloadArtwork = (params: Parameters<typeof getSpotifyArtwork>[0]) => {
+    const preloadArtwork = (params: Parameters<typeof getMusicArtwork>[0]) => {
       preloadImages(
         [...params.tracks, ...params.artists].map(({ lastfmArtworkUrl }) => lastfmArtworkUrl),
       );
       void queryClient
-        .query(getSpotifyArtwork(params))
+        .query(getMusicArtwork(params))
         .then(({ tracks, artists }) =>
           preloadImages([...tracks, ...artists].map(({ artwork }) => artwork?.imageUrl)),
         )
@@ -101,11 +101,15 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
           })
           .then((tracks) =>
             preloadArtwork({
-              tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                name,
-                artist,
-                lastfmArtworkUrl,
-              })),
+              tracks: tracks.map(
+                ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
+                  name,
+                  artist,
+                  lastfmArtworkUrl,
+                  recordingMbid,
+                  releaseMbid,
+                }),
+              ),
               artists: [],
             }),
           )
@@ -123,11 +127,15 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         void Promise.all([tracks, artists])
           .then(([topTracks, topArtists]) =>
             preloadArtwork({
-              tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                name,
-                artist,
-                lastfmArtworkUrl,
-              })),
+              tracks: topTracks.map(
+                ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
+                  name,
+                  artist,
+                  lastfmArtworkUrl,
+                  recordingMbid,
+                  releaseMbid,
+                }),
+              ),
               artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
                 name,
                 lastfmArtworkUrl,
@@ -222,12 +230,16 @@ function RecentTracksPanel() {
     refetchOnWindowFocus: "always",
   });
   const artworkQuery = useSuspenseQuery(
-    getSpotifyArtwork({
-      tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-        name,
-        artist,
-        lastfmArtworkUrl,
-      })),
+    getMusicArtwork({
+      tracks: recentTracks.map(
+        ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
+          name,
+          artist,
+          lastfmArtworkUrl,
+          recordingMbid,
+          releaseMbid,
+        }),
+      ),
       artists: [],
     }),
   );
@@ -268,11 +280,13 @@ function TopMusicPanel() {
     ],
   });
   const artworkQuery = useSuspenseQuery(
-    getSpotifyArtwork({
-      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
+    getMusicArtwork({
+      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
         name,
         artist,
         lastfmArtworkUrl,
+        recordingMbid,
+        releaseMbid,
       })),
       artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
     }),

@@ -8,12 +8,9 @@ import { anyAbortSignal, upfetch } from "#/utils/index.ts";
 import * as vUtils from "#/utils/valibot";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
-import { periodSchema, type Period } from "./-constants";
-import {
-  addSpotifyArtistArtwork,
-  addSpotifyTrackArtwork,
-  getSpotifyRateLimitRetryAfter,
-} from "./-spotify.server";
+import { mbidSchema, periodSchema, type Period } from "./-constants";
+import { addTrackArtwork, getMusicbrainzRetryAfter } from "./-cover-art.server";
+import { addSpotifyArtistArtwork, getSpotifyRateLimitRetryAfter } from "./-spotify.server";
 
 export { periodSchema, type Period } from "./-constants";
 
@@ -115,7 +112,7 @@ function withLastfmArtwork<T extends { image?: Partial<Record<ImageSize, string>
 }
 
 export function addLastfmArtworkFallback<
-  T extends { artwork?: SpotifyArtwork; lastfmArtworkUrl?: string },
+  T extends { artwork?: Artwork; lastfmArtworkUrl?: string },
 >(items: Array<T>): Array<Omit<T, "artwork" | "lastfmArtworkUrl"> & { artwork?: Artwork }> {
   return items.map(({ artwork, lastfmArtworkUrl, ...item }) => {
     if (artwork) return { ...item, artwork };
@@ -126,12 +123,39 @@ export function addLastfmArtworkFallback<
 
 const commonRecentTrackSchema = v.object({
   name: v.string(),
+  mbid: v.optional(v.string()),
   image: v.optional(imageSchema),
   artist: itemSchema,
-  album: itemSchema,
+  album: v.object({ "#text": v.string(), mbid: v.optional(v.string()) }),
 });
 
-const recentTrackSchema = v.union([
+function withRecordingMbid<T extends { mbid?: string }>({
+  mbid,
+  ...track
+}: T): Omit<T, "mbid"> & { recordingMbid?: string; releaseMbid?: string } {
+  return { ...track, recordingMbid: v.is(mbidSchema, mbid) ? mbid : undefined };
+}
+
+function withTrackMbids<T extends { mbid?: string; album: { "#text": string; mbid?: string } }>({
+  mbid,
+  album,
+  ...track
+}: T): Omit<T, "mbid" | "album"> & {
+  album: string;
+  recordingMbid?: string;
+  releaseMbid?: string;
+} {
+  const recording = v.safeParse(mbidSchema, mbid);
+  const release = v.safeParse(mbidSchema, album.mbid);
+  return {
+    ...track,
+    album: album["#text"],
+    recordingMbid: recording.success ? recording.output : undefined,
+    releaseMbid: release.success ? release.output : undefined,
+  };
+}
+
+export const recentTrackSchema = v.union([
   v.pipe(
     v.object({
       ...commonRecentTrackSchema.entries,
@@ -144,7 +168,7 @@ const recentTrackSchema = v.union([
       ),
     }),
     v.transform((track) => ({
-      ...withLastfmArtwork(track),
+      ...withLastfmArtwork(withTrackMbids(track)),
       nowPlaying: false as const,
     })),
   ),
@@ -157,7 +181,7 @@ const recentTrackSchema = v.union([
       }),
     }),
     v.transform(({ "@attr": _attr, ...track }) => ({
-      ...withLastfmArtwork(track),
+      ...withLastfmArtwork(withTrackMbids(track)),
       nowPlaying: true as const,
     })),
   ),
@@ -169,12 +193,14 @@ export type RecentTrack = v.InferOutput<typeof recentTrackSchema> & {
   palette?: ArtworkPalette;
 };
 
-const spotifyArtworkParams = v.object({
+const musicArtworkParams = v.object({
   tracks: v.pipe(
     v.array(
       v.object({
         name: v.string(),
         artist: v.string(),
+        recordingMbid: v.optional(mbidSchema),
+        releaseMbid: v.optional(mbidSchema),
         lastfmArtworkUrl: v.optional(v.pipe(v.string(), v.maxLength(2048))),
       }),
     ),
@@ -191,18 +217,18 @@ const spotifyArtworkParams = v.object({
   ),
 });
 
-const spotifyArtworkCacheDuration = 6 * 60 * 60 * 1000;
-const spotifyArtworkRetryDelay = 30_000;
+const musicArtworkCacheDuration = 6 * 60 * 60 * 1000;
+const musicArtworkRetryDelay = 30_000;
 
-export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
-  .validator(spotifyArtworkParams)
+export const getMusicArtworkFn = createServerFn({ method: "POST" })
+  .validator(musicArtworkParams)
   .handler(async ({ data }) => {
     const signal = getRequest().signal;
-    const [tracksWithSpotifyArtwork, artistsWithSpotifyArtwork] = await Promise.all([
-      addSpotifyTrackArtwork(data.tracks, signal),
+    const [trackArtwork, artistsWithSpotifyArtwork] = await Promise.all([
+      addTrackArtwork(data.tracks, signal),
       addSpotifyArtistArtwork(data.artists, signal),
     ]);
-    const tracksWithArtwork = addLastfmArtworkFallback(tracksWithSpotifyArtwork.items);
+    const tracksWithArtwork = addLastfmArtworkFallback(trackArtwork.items);
     const artistsWithArtwork = addLastfmArtworkFallback(artistsWithSpotifyArtwork.items);
     const [tracks, artists] = await Promise.all([
       addArtworkPalettes(tracksWithArtwork, signal),
@@ -212,22 +238,26 @@ export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
       tracks,
       artists,
       retryAfterMs:
-        tracksWithSpotifyArtwork.incomplete || artistsWithSpotifyArtwork.incomplete
-          ? Math.max(spotifyArtworkRetryDelay, getSpotifyRateLimitRetryAfter() ?? 0)
+        trackArtwork.incomplete || artistsWithSpotifyArtwork.incomplete
+          ? Math.max(
+              musicArtworkRetryDelay,
+              getSpotifyRateLimitRetryAfter() ?? 0,
+              getMusicbrainzRetryAfter() ?? 0,
+            )
           : undefined,
     };
   });
 
-export const getSpotifyArtwork = (
-  params: v.InferInput<typeof spotifyArtworkParams>,
+export const getMusicArtwork = (
+  params: v.InferInput<typeof musicArtworkParams>,
   signalOpt?: AbortSignal,
 ) =>
   queryOptions({
-    queryKey: ["spotify-artwork", params],
+    queryKey: ["music-artwork", params],
     queryFn: ({ signal }) =>
       params.tracks.length === 0 && params.artists.length === 0
         ? Promise.resolve({ tracks: [], artists: [], retryAfterMs: undefined })
-        : getSpotifyArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+        : getMusicArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
     initialData: {
       tracks: params.tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
         name,
@@ -241,14 +271,14 @@ export const getSpotifyArtwork = (
       retryAfterMs: undefined,
     },
     initialDataUpdatedAt: 0,
-    staleTime: (query) => query.state.data?.retryAfterMs ?? spotifyArtworkCacheDuration,
+    staleTime: (query) => query.state.data?.retryAfterMs ?? musicArtworkCacheDuration,
     refetchInterval: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
       if (retryAfterMs === undefined) return false;
       return Math.max(1000, retryAfterMs - (Date.now() - query.state.dataUpdatedAt));
     },
     refetchIntervalInBackground: false,
-    gcTime: spotifyArtworkCacheDuration,
+    gcTime: musicArtworkCacheDuration,
   });
 
 const getRecentTracksParams = v.object({
@@ -292,9 +322,10 @@ export const fullPeriodLabels: Record<Period, string> = {
   overall: "All time",
 };
 
-const topTrackSchema = v.pipe(
+export const topTrackSchema = v.pipe(
   v.object({
     name: v.string(),
+    mbid: v.optional(v.string()),
     image: v.optional(imageSchema),
     artist: v.pipe(
       v.object({ name: v.string() }),
@@ -306,7 +337,7 @@ const topTrackSchema = v.pipe(
     }),
   }),
   v.transform(({ "@attr": { rank }, ...track }) => ({
-    ...withLastfmArtwork(track),
+    ...withLastfmArtwork(withRecordingMbid(track)),
     rank,
   })),
 );
