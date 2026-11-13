@@ -9,15 +9,20 @@ import * as vUtils from "#/utils/valibot";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
 import { periodSchema, type Period } from "./-constants";
-import { addSpotifyArtistArtwork, addSpotifyTrackArtwork } from "./-spotify.server";
+import {
+  addSpotifyArtistArtwork,
+  addSpotifyTrackArtwork,
+  getSpotifyRateLimitRetryAfter,
+} from "./-spotify.server";
 
 export { periodSchema, type Period } from "./-constants";
 
-const spotifyArtworkSchema = v.object({
+const artworkSchema = v.object({
   imageUrl: v.string(),
-  spotifyUrl: v.string(),
+  spotifyUrl: v.optional(v.string()),
 });
-export type SpotifyArtwork = v.InferOutput<typeof spotifyArtworkSchema>;
+export type Artwork = v.InferOutput<typeof artworkSchema>;
+export type SpotifyArtwork = Artwork & { spotifyUrl: string };
 
 export type ArtworkPalette = Record<`--artwork-${string}`, string>;
 
@@ -55,8 +60,73 @@ const itemSchema = v.pipe(
   v.transform((item) => item["#text"]),
 );
 
+const imageSizeSchema = v.picklist(["small", "medium", "large", "extralarge", "mega"]);
+type ImageSize = v.InferOutput<typeof imageSizeSchema>;
+
+const lastfmArtworkHosts = new Set(["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"]);
+const lastfmPlaceholderFilename = "2a96cbd8b46e442fc41c2b86b821562f.png";
+
+function normalizeLastfmArtworkUrl(src: string | undefined) {
+  if (!src || src.length > 2048 || !URL.canParse(src)) return undefined;
+  const url = new URL(src);
+  if (
+    url.protocol !== "https:" ||
+    !lastfmArtworkHosts.has(url.hostname) ||
+    url.port ||
+    url.username ||
+    url.password ||
+    url.pathname.endsWith(`/${lastfmPlaceholderFilename}`)
+  ) {
+    return undefined;
+  }
+  if (url.hostname === "lastfm-img.freetls.fastly.net") {
+    // The legacy hostname can serve stale cached 404s for otherwise available artwork.
+    url.hostname = "lastfm.freetls.fastly.net";
+  }
+  return url.href;
+}
+
+export const imageSchema = v.pipe(
+  v.array(
+    v.object({
+      size: imageSizeSchema,
+      "#text": v.string(),
+    }),
+  ),
+  v.transform((images) =>
+    images.reduce<Partial<Record<ImageSize, string>>>((acc, image) => {
+      const src = normalizeLastfmArtworkUrl(image["#text"]);
+      if (src) acc[image.size] = src;
+      return acc;
+    }, {}),
+  ),
+);
+
+export function bestLastfmArtwork(image: Partial<Record<ImageSize, string>> | undefined) {
+  return image?.mega ?? image?.extralarge ?? image?.large ?? image?.medium ?? image?.small;
+}
+
+function withLastfmArtwork<T extends { image?: Partial<Record<ImageSize, string>> }>(
+  item: T,
+): Omit<T, "image"> & { lastfmArtworkUrl?: string } {
+  const { image, ...rest } = item;
+  const lastfmArtworkUrl = bestLastfmArtwork(image);
+  return lastfmArtworkUrl ? { ...rest, lastfmArtworkUrl } : rest;
+}
+
+export function addLastfmArtworkFallback<
+  T extends { artwork?: SpotifyArtwork; lastfmArtworkUrl?: string },
+>(items: Array<T>): Array<Omit<T, "artwork" | "lastfmArtworkUrl"> & { artwork?: Artwork }> {
+  return items.map(({ artwork, lastfmArtworkUrl, ...item }) => {
+    if (artwork) return { ...item, artwork };
+    const imageUrl = normalizeLastfmArtworkUrl(lastfmArtworkUrl);
+    return imageUrl ? { ...item, artwork: { imageUrl } } : item;
+  });
+}
+
 const commonRecentTrackSchema = v.object({
   name: v.string(),
+  image: v.optional(imageSchema),
   artist: itemSchema,
   album: itemSchema,
 });
@@ -74,7 +144,7 @@ const recentTrackSchema = v.union([
       ),
     }),
     v.transform((track) => ({
-      ...track,
+      ...withLastfmArtwork(track),
       nowPlaying: false as const,
     })),
   ),
@@ -86,17 +156,87 @@ const recentTrackSchema = v.union([
         nowplaying: v.literal("true"),
       }),
     }),
-    v.transform(({ "@attr": _attr, ...rest }) => ({
-      ...rest,
+    v.transform(({ "@attr": _attr, ...track }) => ({
+      ...withLastfmArtwork(track),
       nowPlaying: true as const,
     })),
   ),
 ]);
 
 export type RecentTrack = v.InferOutput<typeof recentTrackSchema> & {
-  artwork?: SpotifyArtwork;
+  lastfmArtworkUrl?: string;
+  artwork?: Artwork;
   palette?: ArtworkPalette;
 };
+
+const spotifyArtworkParams = v.object({
+  tracks: v.pipe(
+    v.array(
+      v.object({
+        name: v.string(),
+        artist: v.string(),
+        lastfmArtworkUrl: v.optional(v.pipe(v.string(), v.maxLength(2048))),
+      }),
+    ),
+    v.maxLength(11),
+  ),
+  artists: v.pipe(
+    v.array(
+      v.object({
+        name: v.string(),
+        lastfmArtworkUrl: v.optional(v.pipe(v.string(), v.maxLength(2048))),
+      }),
+    ),
+    v.maxLength(10),
+  ),
+});
+
+const spotifyArtworkCacheDuration = 6 * 60 * 60 * 1000;
+
+export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
+  .validator(spotifyArtworkParams)
+  .handler(async ({ data }) => {
+    const signal = getRequest().signal;
+    const [tracksWithSpotifyArtwork, artistsWithSpotifyArtwork] = await Promise.all([
+      addSpotifyTrackArtwork(data.tracks, signal),
+      addSpotifyArtistArtwork(data.artists, signal),
+    ]);
+    const tracksWithArtwork = addLastfmArtworkFallback(tracksWithSpotifyArtwork);
+    const artistsWithArtwork = addLastfmArtworkFallback(artistsWithSpotifyArtwork);
+    const [tracks, artists] = await Promise.all([
+      addArtworkPalettes(tracksWithArtwork, signal),
+      addArtworkPalettes(artistsWithArtwork, signal),
+    ]);
+    return {
+      tracks,
+      artists,
+      retryAfterMs: getSpotifyRateLimitRetryAfter(),
+    };
+  });
+
+export const getSpotifyArtwork = (
+  params: v.InferInput<typeof spotifyArtworkParams>,
+  signalOpt?: AbortSignal,
+) =>
+  queryOptions({
+    queryKey: ["spotify-artwork", params],
+    queryFn: ({ signal }) =>
+      getSpotifyArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    staleTime: (query) => {
+      const retryAfterMs = query.state.data?.retryAfterMs;
+      return retryAfterMs === undefined
+        ? spotifyArtworkCacheDuration
+        : Math.max(0, retryAfterMs - (Date.now() - query.state.dataUpdatedAt));
+    },
+    refetchInterval: (query) => {
+      const retryAfterMs = query.state.data?.retryAfterMs;
+      if (retryAfterMs === undefined) return false;
+      return Math.max(1000, retryAfterMs - (Date.now() - query.state.dataUpdatedAt));
+    },
+    refetchIntervalInBackground: false,
+    gcTime: spotifyArtworkCacheDuration,
+    enabled: params.tracks.length > 0 || params.artists.length > 0,
+  });
 
 const getRecentTracksParams = v.object({
   limit: v.optional(v.number()),
@@ -116,14 +256,7 @@ export const getRecentTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
-    const tracks = await addSpotifyTrackArtwork(response.recenttracks.track, signal);
-    return {
-      ...response,
-      recenttracks: {
-        ...response.recenttracks,
-        track: await addArtworkPalettes(tracks, signal),
-      },
-    };
+    return response;
   });
 
 export const getRecentTracks = (
@@ -149,6 +282,7 @@ export const fullPeriodLabels: Record<Period, string> = {
 const topTrackSchema = v.pipe(
   v.object({
     name: v.string(),
+    image: v.optional(imageSchema),
     artist: v.pipe(
       v.object({ name: v.string() }),
       v.transform(({ name }) => name),
@@ -159,13 +293,14 @@ const topTrackSchema = v.pipe(
     }),
   }),
   v.transform(({ "@attr": { rank }, ...track }) => ({
-    ...track,
+    ...withLastfmArtwork(track),
     rank,
   })),
 );
 
 export type TopTrack = v.InferOutput<typeof topTrackSchema> & {
-  artwork?: SpotifyArtwork;
+  lastfmArtworkUrl?: string;
+  artwork?: Artwork;
   palette?: ArtworkPalette;
 };
 
@@ -188,14 +323,7 @@ export const getTopTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
-    const tracks = await addSpotifyTrackArtwork(response.toptracks.track, signal);
-    return {
-      ...response,
-      toptracks: {
-        ...response.toptracks,
-        track: await addArtworkPalettes(tracks, signal),
-      },
-    };
+    return response;
   });
 
 export const getTopTracks = (
@@ -213,18 +341,20 @@ const topArtistSchema = v.pipe(
   v.object({
     name: v.string(),
     playcount: vUtils.coerceNumber,
+    image: v.optional(imageSchema),
     "@attr": v.object({
       rank: vUtils.coerceNumber,
     }),
   }),
   v.transform(({ "@attr": { rank }, ...artist }) => ({
-    ...artist,
+    ...withLastfmArtwork(artist),
     rank,
   })),
 );
 
 export type TopArtist = v.InferOutput<typeof topArtistSchema> & {
-  artwork?: SpotifyArtwork;
+  lastfmArtworkUrl?: string;
+  artwork?: Artwork;
   palette?: ArtworkPalette;
 };
 
@@ -249,14 +379,7 @@ export const getTopArtistsFn = createServerFn({ method: "GET" })
       signal,
       schema: topArtistsResponseSchema,
     });
-    const artists = await addSpotifyArtistArtwork(response.topartists.artist, signal);
-    return {
-      ...response,
-      topartists: {
-        ...response.topartists,
-        artist: await addArtworkPalettes(artists, signal),
-      },
-    };
+    return response;
   });
 
 export const getTopArtists = (

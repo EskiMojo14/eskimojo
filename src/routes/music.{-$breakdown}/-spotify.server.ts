@@ -57,9 +57,23 @@ const market = "GB";
 const cacheDuration = 6 * 60 * 60 * 1000;
 const maxCacheEntries = 256;
 const enrichmentTimeoutMs = 10_000;
+const fallbackRateLimitMs = 30_000;
 const artworkCache = new Map<string, SearchCacheEntry>();
 let tokenCache: { value: string; expiresAt: number } | undefined;
 let tokenRequest: Promise<string> | undefined;
+let rateLimitedUntil = 0;
+
+export function getSpotifyRateLimitRetryAfter() {
+  const remaining = rateLimitedUntil - Date.now();
+  return remaining > 0 ? remaining : undefined;
+}
+
+class SpotifyRateLimitError extends Error {
+  constructor() {
+    super("Spotify rate limit is active.");
+    this.name = "SpotifyRateLimitError";
+  }
+}
 
 function waitWithSignal<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
   signal.throwIfAborted();
@@ -98,6 +112,20 @@ function spotifyUrl(value: string | undefined, hostname: string) {
   return url.protocol === "https:" && url.hostname === hostname ? url.href : undefined;
 }
 
+function retryAfterMilliseconds(value: string | null) {
+  if (value) {
+    const seconds = Number(value);
+    if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1000;
+    const timestamp = Date.parse(value);
+    if (Number.isFinite(timestamp)) return Math.max(0, timestamp - Date.now());
+  }
+  return fallbackRateLimitMs;
+}
+
+function throwIfRateLimited() {
+  if (Date.now() < rateLimitedUntil) throw new SpotifyRateLimitError();
+}
+
 function imageUrl(images: Array<v.InferOutput<typeof imageSchema>> | undefined) {
   if (!images) return undefined;
   for (let index = images.length - 1; index >= 0; index--) {
@@ -112,6 +140,14 @@ async function responseJson<T extends v.GenericSchema>(
   schema: T,
   description: string,
 ) {
+  if (response.status === 429) {
+    rateLimitedUntil = Math.max(
+      rateLimitedUntil,
+      Date.now() + retryAfterMilliseconds(response.headers.get("retry-after")),
+    );
+    await response.body?.cancel();
+    throw new SpotifyRateLimitError();
+  }
   if (!response.ok) {
     await response.body?.cancel();
     throw new Error(`${description} failed (${response.status})`);
@@ -160,7 +196,9 @@ async function spotifySearch<T extends v.GenericSchema>(
   schema: T,
   signal: AbortSignal,
 ) {
+  throwIfRateLimited();
   const token = await accessToken(signal);
+  throwIfRateLimited();
   const url = new URL("https://api.spotify.com/v1/search");
   url.searchParams.set("q", query);
   url.searchParams.set("type", type);
@@ -237,6 +275,7 @@ async function addArtwork<T extends { artwork?: SpotifyArtwork }>(
     () => undefined,
   );
   const errors: Array<unknown> = [];
+  let rateLimited = false;
   let nextIndex = 0;
 
   await Promise.all(
@@ -250,12 +289,19 @@ async function addArtwork<T extends { artwork?: SpotifyArtwork }>(
           artwork[index] = await lookup(item, signal);
         } catch (error) {
           signal.throwIfAborted();
-          errors.push(error);
+          if (error instanceof SpotifyRateLimitError) {
+            rateLimited = true;
+          } else {
+            errors.push(error);
+          }
         }
       }
     }),
   );
 
+  if (rateLimited) {
+    console.warn("Spotify rate limit active; using Last.fm data while artwork lookups are paused.");
+  }
   if (errors.length > 0) {
     console.error(
       "Spotify artwork lookup failed; Last.fm listening data is still available.",

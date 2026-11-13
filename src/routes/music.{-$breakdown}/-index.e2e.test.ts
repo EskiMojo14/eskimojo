@@ -38,6 +38,22 @@ const recentTracks: Array<RecentTrack> = [
   },
 ];
 
+const recentTracksWithNowPlaying: Array<RecentTrack> = [
+  ...recentTracks,
+  ...Array.from({ length: 10 }, (_, index) => ({
+    name: `Recent Track ${index + 1}`,
+    artist: "Example Artist",
+    album: "Example Album",
+    nowPlaying: false as const,
+    date: "2026-11-13T16:38:00.000Z",
+  })),
+];
+
+const topTracks: Array<TopTrack> = [
+  { name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 },
+];
+const topArtists: Array<TopArtist> = [{ name: "Radiohead", rank: 1, playcount: 100 }];
+
 type LastfmMethod =
   | "user.getInfo"
   | "user.getTopTracks"
@@ -47,10 +63,10 @@ type LastfmMethod =
 function lastfm(
   before: (method: LastfmMethod) => void | Promise<void> = () => {},
   tracks: Array<RecentTrack> = [],
+  topTracksByRank: Array<TopTrack> = [],
+  topArtistsByRank: Array<TopArtist> = [],
 ) {
   const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
-  const topTracks: Array<TopTrack> = [];
-  const topArtists: Array<TopArtist> = [];
   return [
     mockServerFn(music.getUserDataFn, async () => {
       await before("user.getInfo");
@@ -58,17 +74,56 @@ function lastfm(
     }),
     mockServerFn(music.getTopTracksFn, async () => {
       await before("user.getTopTracks");
-      return { toptracks: { track: topTracks } };
+      return { toptracks: { track: topTracksByRank } };
     }),
     mockServerFn(music.getTopArtistsFn, async () => {
       await before("user.getTopArtists");
-      return { topartists: { artist: topArtists } };
+      return { topartists: { artist: topArtistsByRank } };
     }),
     mockServerFn(music.getRecentTracksFn, async () => {
       await before("user.getRecentTracks");
       return { recenttracks: { track: tracks } };
     }),
   ];
+}
+
+function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
+  item: T,
+  type: "track" | "artist",
+  imageUrl?: string,
+  lastfmImageUrl?: string,
+) {
+  if (imageUrl) {
+    return {
+      ...item,
+      artwork: {
+        imageUrl,
+        spotifyUrl: `https://open.spotify.com/${type}/test`,
+      },
+    };
+  }
+  if (item.lastfmArtworkUrl) {
+    return { ...item, artwork: { imageUrl: lastfmImageUrl ?? item.lastfmArtworkUrl } };
+  }
+  return item;
+}
+
+function spotifyArtwork(
+  before: () => void | Promise<void> = () => {},
+  imageUrl?: string,
+  lastfmImageUrl?: string,
+) {
+  const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+  return mockServerFn(music.getSpotifyArtworkFn, async (data) => {
+    await before();
+    return {
+      tracks: data.tracks.map((track) => mockedArtwork(track, "track", imageUrl, lastfmImageUrl)),
+      artists: data.artists.map((artist) =>
+        mockedArtwork(artist, "artist", imageUrl, lastfmImageUrl),
+      ),
+      retryAfterMs: undefined,
+    };
+  });
 }
 
 function failure(): never {
@@ -78,7 +133,7 @@ function failure(): never {
 const isSummary = (method: string) => method === "user.getInfo";
 
 test.beforeEach(async ({ network, page, home }) => {
-  network.use(...lastfm());
+  network.use(...lastfm(), spotifyArtwork());
   // Music data requests only reach the browser network fixture during client-side
   // navigation, so let the home page finish loading before following links.
   await home.goto({ waitUntil: "networkidle" });
@@ -107,6 +162,86 @@ test("shows music controls before independent requests finish", async ({ network
   summary.resolve();
   await expect(music.summary).toBeVisible();
   await expect(music.progressbars).not.toBeVisible();
+});
+
+test("shows Last.fm results while Spotify artwork is still loading", async ({ network, music }) => {
+  using topArtworkPending = disposablePromise();
+  using recentArtworkPending = disposablePromise();
+  using topArtworkStarted = disposablePromise();
+  using recentArtworkStarted = disposablePromise();
+  const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  let artworkRequests = 0;
+  network.use(
+    ...lastfm(undefined, recentTracksWithNowPlaying, topTracks, topArtists),
+    spotifyArtwork(async () => {
+      artworkRequests++;
+      if (artworkRequests === 1) {
+        topArtworkStarted.resolve();
+        await topArtworkPending.promise;
+      } else if (artworkRequests === 2) {
+        recentArtworkStarted.resolve();
+        await recentArtworkPending.promise;
+      }
+    }, imageUrl),
+  );
+
+  await music.navigate();
+  await topArtworkStarted.promise;
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).not.toBeVisible();
+  topArtworkPending.resolve();
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+
+  await music.recent.select();
+  await recentArtworkStarted.promise;
+  await expect(music.recent.track("Let It Happen")).toBeVisible();
+  await expect(music.recent.artworkImage("Let It Happen", imageUrl)).not.toBeVisible();
+
+  recentArtworkPending.resolve();
+  await expect(music.recent.artworkImage("Let It Happen", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+
+  await music.topMusic.select();
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  expect(artworkRequests).toBe(2);
+});
+
+test("uses Last.fm artwork when Spotify has no matching image", async ({ network, music }) => {
+  const lastfmArtworkUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/lastfm-fallback.gif";
+  const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  network.use(
+    ...lastfm(undefined, [
+      {
+        name: "Let It Happen",
+        artist: "Tame Impala",
+        album: "Currents",
+        nowPlaying: true,
+        lastfmArtworkUrl,
+      },
+    ]),
+    spotifyArtwork(() => {}, undefined, imageUrl),
+  );
+
+  await music.navigate();
+  await music.recent.select();
+  await expect(music.recent.track("Let It Happen")).toBeVisible();
+  await expect(music.recent.artworkImage("Let It Happen", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
 });
 
 test("period and tab changes show loading feedback without hiding music controls", async ({

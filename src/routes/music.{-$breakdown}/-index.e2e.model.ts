@@ -16,6 +16,21 @@ class TopMusicTab extends TabObjectModel<MusicPage> {
     return this.periods.getByRole("link", { name, exact: true });
   }
 
+  track(name: string) {
+    return this.tabPanel.getByText(name, { exact: true });
+  }
+
+  artist(name: string) {
+    return this.tabPanel.getByText(name, { exact: true });
+  }
+
+  artworkImage(name: string, imageUrl: string) {
+    return this.tabPanel
+      .getByRole("listitem")
+      .filter({ hasText: name })
+      .locator(`img[src="${imageUrl}"]`);
+  }
+
   get loading() {
     return this.tabPanel.getByRole("progressbar", { name: "Loading top music..." });
   }
@@ -57,6 +72,13 @@ class RecentTab extends TabObjectModel<MusicPage> {
 
   track(name: string) {
     return this.tabPanel.getByText(name, { exact: true });
+  }
+
+  artworkImage(name: string, imageUrl: string) {
+    return this.tabPanel
+      .getByRole("listitem")
+      .filter({ hasText: name })
+      .locator(`img[src="${imageUrl}"]`);
   }
 
   get error() {
