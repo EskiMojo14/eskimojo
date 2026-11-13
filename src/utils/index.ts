@@ -51,6 +51,14 @@ export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): Abor
 
 export const upfetch = up(fetch);
 
+/**
+ * A utility object for generating code strings, particularly for regular expressions.
+ * Accessing any property on this object returns `String.raw`.
+ * The main benefit is IDEs will use the key to achieve syntax highlighting and autocompletion for the code strings.
+ * @example
+ * const code = code.ts`const foo = "bar"`;
+ * const styles = code.css`body { color: red; }`;
+ */
 export const code = new Proxy({} as Record<string, typeof String.raw>, {
   get() {
     return String.raw;
