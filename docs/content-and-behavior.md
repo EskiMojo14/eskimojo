@@ -166,6 +166,11 @@ deduplicate repeated artwork, and share a five-second extraction deadline.
 Downloads are capped at 1 MB, redirects are rejected, and decoding is bounded
 to four million source pixels and two seconds. Missing artwork retains the
 site palette; failed extraction is logged and does not hide listening history.
+Last.fm's default star image (`2a96cbd8b46e442fc41c2b86b821562f.png`) is
+normalized to missing artwork at the API boundary, across image sizes and both
+Last.fm CDN hostnames. These rows use the site palette and music-note icon
+without downloading or extracting a palette from the placeholder. Genuine
+artwork from other providers is unchanged.
 Cancelling the request still cancels the operation. The surrounding Music page,
 top-music lists, and navigation keep the selected site palette.
 

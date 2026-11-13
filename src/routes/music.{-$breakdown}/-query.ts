@@ -48,7 +48,16 @@ const itemSchema = v.pipe(
   v.transform((item) => item["#text"]),
 );
 
-const imageSchema = v.pipe(
+function isLastfmPlaceholder(src: string) {
+  if (!URL.canParse(src)) return false;
+  const url = new URL(src);
+  return (
+    ["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"].includes(url.hostname) &&
+    url.pathname.endsWith("/2a96cbd8b46e442fc41c2b86b821562f.png")
+  );
+}
+
+export const imageSchema = v.pipe(
   v.array(
     v.object({
       size: imageSizeSchema,
@@ -57,7 +66,8 @@ const imageSchema = v.pipe(
   ),
   v.transform((images) =>
     images.reduce<Partial<Record<ImageSize, string>>>((acc, image) => {
-      acc[image.size] = image["#text"];
+      const src = image["#text"];
+      if (src && !isLastfmPlaceholder(src)) acc[image.size] = src;
       return acc;
     }, {}),
   ),

@@ -1,11 +1,12 @@
 import { argbFromHex, Contrast, Hct } from "@material/material-color-utilities";
 import { http, HttpResponse } from "msw";
 import sharp from "sharp";
+import * as v from "valibot";
 import { network } from "virtual:msw";
 import { expect, onTestFinished, test, vi } from "vite-plus/test";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
-import type { RecentTrack } from "./-query";
+import { imageSchema, type RecentTrack } from "./-query";
 
 function track(src?: string): RecentTrack {
   return {
@@ -16,6 +17,54 @@ function track(src?: string): RecentTrack {
     nowPlaying: true,
   };
 }
+
+test.each(["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"])(
+  "treats Last.fm placeholder artwork from %s as missing before extraction",
+  async (host) => {
+    let requests = 0;
+    network.use(
+      http.get("*", () => {
+        requests++;
+        return new HttpResponse(null, { status: 500 });
+      }),
+    );
+    const image = v.parse(
+      imageSchema,
+      [
+        { size: "small", path: "34s" },
+        { size: "medium", path: "64s" },
+        { size: "large", path: "174s" },
+        { size: "extralarge", path: "300x300" },
+      ].map(({ size, path }) => ({
+        size,
+        "#text": `https://${host}/i/u/${path}/2a96cbd8b46e442fc41c2b86b821562f.png?cache=1`,
+      })),
+    );
+    expect(image).toEqual({});
+    const [result] = await addArtworkPalettes(
+      [{ ...track(), image }],
+      new AbortController().signal,
+    );
+    expect(result?.palette).toBeUndefined();
+    expect(requests).toBe(0);
+  },
+);
+
+test("preserves genuine artwork, including Spotify URLs, when other sizes are placeholders", () => {
+  const src = "https://i.scdn.co/image/album-cover";
+  const otherProvider = "https://example.com/2a96cbd8b46e442fc41c2b86b821562f.png";
+  const image = v.parse(imageSchema, [
+    {
+      size: "extralarge",
+      "#text":
+        "https://lastfm-img.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png",
+    },
+    { size: "large", "#text": src },
+    { size: "medium", "#text": otherProvider },
+    { size: "small", "#text": "" },
+  ]);
+  expect(image).toEqual({ large: src, medium: otherProvider });
+});
 
 test.each([
   {
