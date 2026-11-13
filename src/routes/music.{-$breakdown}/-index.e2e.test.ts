@@ -93,6 +93,9 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
   imageUrl?: string,
   lastfmImageUrl?: string,
 ) {
+  if (item.lastfmArtworkUrl) {
+    return { ...item, artwork: { imageUrl: lastfmImageUrl ?? item.lastfmArtworkUrl } };
+  }
   if (imageUrl) {
     return {
       ...item,
@@ -101,9 +104,6 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
         spotifyUrl: `https://open.spotify.com/${type}/test`,
       },
     };
-  }
-  if (item.lastfmArtworkUrl) {
-    return { ...item, artwork: { imageUrl: lastfmImageUrl ?? item.lastfmArtworkUrl } };
   }
   return item;
 }
@@ -164,7 +164,7 @@ test("shows music controls before independent requests finish", async ({ network
   await expect(music.progressbars).not.toBeVisible();
 });
 
-test("shows Last.fm results while Spotify artwork is still loading", async ({ network, music }) => {
+test("waits for artwork and palettes before revealing music lists", async ({ network, music }) => {
   using topArtworkPending = disposablePromise();
   using recentArtworkPending = disposablePromise();
   using topArtworkStarted = disposablePromise();
@@ -192,8 +192,12 @@ test("shows Last.fm results while Spotify artwork is still loading", async ({ ne
 
   await music.navigate();
   await topArtworkStarted.promise;
-  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
-  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.summary).toBeVisible();
+  await expect(music.tabs).toBeVisible();
+  await expect(music.topMusic.periods).toBeVisible();
+  await expect(music.topMusic.loading).toBeVisible();
+  await expect(music.topMusic.track("Lost Chapter")).not.toBeVisible();
+  await expect(music.topMusic.artist("Radiohead")).not.toBeVisible();
   await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).not.toBeVisible();
   topArtworkPending.resolve();
   await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
@@ -207,15 +211,17 @@ test("shows Last.fm results while Spotify artwork is still loading", async ({ ne
 
   await music.recent.select();
   await recentArtworkStarted.promise;
-  await expect(music.recent.track("Let It Happen")).toBeVisible();
-  await expect(music.recent.artworkImage("Let It Happen", fallbackImageUrl)).toHaveJSProperty(
-    "naturalWidth",
-    1,
-  );
+  await expect(music.recent.loading).toBeVisible();
+  await expect(music.recent.track("Let It Happen")).not.toBeVisible();
+  await expect(music.recent.artworkImage("Let It Happen", fallbackImageUrl)).not.toBeVisible();
   await expect(music.recent.artworkImage("Let It Happen", imageUrl)).not.toBeVisible();
 
   recentArtworkPending.resolve();
-  await expect(music.recent.artworkImage("Let It Happen", imageUrl)).toHaveJSProperty(
+  await expect(music.recent.artworkImage("Recent Track 2", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  await expect(music.recent.artworkImage("Let It Happen", fallbackImageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
@@ -225,10 +231,11 @@ test("shows Last.fm results while Spotify artwork is still loading", async ({ ne
     "naturalWidth",
     1,
   );
+  await expect(music.topMusic.loading).not.toBeVisible();
   expect(artworkRequests).toBe(2);
 });
 
-test("uses Last.fm artwork when Spotify has no matching image", async ({ network, music }) => {
+test("renders Last.fm artwork returned by background enrichment", async ({ network, music }) => {
   const lastfmArtworkUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/lastfm-fallback.gif";
   const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
   network.use(

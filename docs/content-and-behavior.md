@@ -173,6 +173,10 @@ deduplicate repeated artwork, and share a five-second extraction deadline.
 Downloads are capped at 1 MB, redirects are rejected, and decoding is bounded
 to four million source pixels and two seconds. Missing artwork retains the
 site palette; failed extraction is logged and does not hide listening history.
+On an uncached load, keep the list skeleton visible until artwork lookup and
+palette extraction finish, then render the items with their resolved colors.
+Cached results can render immediately; do not seed the artwork query with
+unpaletted Last.fm images.
 Last.fm's default star image (`2a96cbd8b46e442fc41c2b86b821562f.png`) is
 normalized to missing artwork at the API boundary, across image sizes and both
 Last.fm CDN hostnames. These rows use the site palette and music-note icon
@@ -350,11 +354,16 @@ snapshot as live. Keep these period choices for Top Tracks and Top Artists:
 - 12 months (`12month`);
 - all time (`overall`).
 
-Use Last.fm for listening data. For track artwork, try Cover Art Archive first:
-use the album's release MBID when available (also trying it as a release-group
-ID if the release has no cover), or resolve the track's recording
-MBID to releases through MusicBrainz. Recording and artist MBIDs are not release
-IDs. Try up to three releases per recording, with a shared twelve-second lookup
+Use Last.fm for listening data and prefer its artwork for both tracks and artists.
+Only entries without a supported, non-placeholder Last.fm image reach the other
+providers. Last.fm artwork still receives an image-derived palette; it does not
+trigger MusicBrainz, Cover Art Archive, or Spotify lookups.
+
+For tracks missing Last.fm artwork, try Cover Art Archive: use the album's release
+MBID when available (also trying it as a release-group ID if the release has no
+cover), or resolve the track's recording MBID to releases through MusicBrainz.
+Recording and artist MBIDs are not release IDs. Try up to three releases per
+recording, with a shared twelve-second lookup
 deadline and up to three concurrent cover lookups. Serialize MusicBrainz requests
 with at least one second between requests and identify the application with a
 contactable User-Agent. Release mappings and cover hits/misses use bounded
@@ -372,13 +381,14 @@ at most five redirects and validating each HTTPS destination against the Cover A
 Archive / Internet Archive host allowlist. Palette downloads still reject redirects.
 If there is no usable MBID or cover, try Spotify's GB catalog, matching both the
 normalized track and artist names. Only tracks still missing artwork reach Spotify.
-Artist portraits use Spotify directly because Cover Art Archive stores release
-covers, not artist portraits.
+Artist portraits missing Last.fm artwork use Spotify because Cover Art Archive
+stores release covers, not artist portraits.
 
-If Spotify has no match or fails, use valid Last.fm artwork. Missing or broken
-images use the existing icon fallback. Every provider's artwork can supply a
-readable palette; only Spotify matches link directly to Spotify. Listening data
-and fallback art remain visible while enrichment runs. Incomplete provider lookups
+If no provider supplies artwork, or an image fails to load, use the existing
+icon fallback. Every provider's artwork can supply a readable palette; only Spotify
+matches link directly to Spotify. List content waits for artwork and palette
+resolution inside its existing Suspense boundary; the summary, tabs, and period
+picker remain independent and usable. Incomplete provider lookups
 retry after at least thirty seconds, respecting longer Spotify rate limits;
 completed lookups remain fresh for six hours.
 

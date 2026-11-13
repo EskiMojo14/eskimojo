@@ -220,16 +220,28 @@ const musicArtworkParams = v.object({
 const musicArtworkCacheDuration = 6 * 60 * 60 * 1000;
 const musicArtworkRetryDelay = 30_000;
 
-export const getMusicArtworkFn = createServerFn({ method: "POST" })
-  .validator(musicArtworkParams)
-  .handler(async ({ data }) => {
-    const signal = getRequest().signal;
+export const resolveMusicArtwork = createServerOnlyFn(
+  async (data: v.InferOutput<typeof musicArtworkParams>, signal: AbortSignal) => {
+    const tracksWithArtwork = addLastfmArtworkFallback(data.tracks);
+    const artistsWithArtwork = addLastfmArtworkFallback(data.artists);
+    const missingTracks = tracksWithArtwork.flatMap(({ artwork, ...track }, index) =>
+      artwork ? [] : [{ ...track, index }],
+    );
+    const missingArtists = artistsWithArtwork.flatMap(({ artwork, ...artist }, index) =>
+      artwork ? [] : [{ ...artist, index }],
+    );
     const [trackArtwork, artistsWithSpotifyArtwork] = await Promise.all([
-      addTrackArtwork(data.tracks, signal),
-      addSpotifyArtistArtwork(data.artists, signal),
+      addTrackArtwork(missingTracks, signal),
+      addSpotifyArtistArtwork(missingArtists, signal),
     ]);
-    const tracksWithArtwork = addLastfmArtworkFallback(trackArtwork.items);
-    const artistsWithArtwork = addLastfmArtworkFallback(artistsWithSpotifyArtwork.items);
+    for (const { index, artwork } of trackArtwork.items) {
+      const track = tracksWithArtwork[index];
+      if (track) track.artwork = artwork;
+    }
+    for (const { index, artwork } of artistsWithSpotifyArtwork.items) {
+      const artist = artistsWithArtwork[index];
+      if (artist) artist.artwork = artwork;
+    }
     const [tracks, artists] = await Promise.all([
       addArtworkPalettes(tracksWithArtwork, signal),
       addArtworkPalettes(artistsWithArtwork, signal),
@@ -246,7 +258,12 @@ export const getMusicArtworkFn = createServerFn({ method: "POST" })
             )
           : undefined,
     };
-  });
+  },
+);
+
+export const getMusicArtworkFn = createServerFn({ method: "POST" })
+  .validator(musicArtworkParams)
+  .handler(({ data }) => resolveMusicArtwork(data, getRequest().signal));
 
 export const getMusicArtwork = (
   params: v.InferInput<typeof musicArtworkParams>,
@@ -258,19 +275,6 @@ export const getMusicArtwork = (
       params.tracks.length === 0 && params.artists.length === 0
         ? Promise.resolve({ tracks: [], artists: [], retryAfterMs: undefined })
         : getMusicArtworkFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
-    initialData: {
-      tracks: params.tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-        name,
-        artist,
-        artwork: lastfmArtworkUrl ? { imageUrl: lastfmArtworkUrl } : undefined,
-      })),
-      artists: params.artists.map(({ name, lastfmArtworkUrl }) => ({
-        name,
-        artwork: lastfmArtworkUrl ? { imageUrl: lastfmArtworkUrl } : undefined,
-      })),
-      retryAfterMs: undefined,
-    },
-    initialDataUpdatedAt: 0,
     staleTime: (query) => query.state.data?.retryAfterMs ?? musicArtworkCacheDuration,
     refetchInterval: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
