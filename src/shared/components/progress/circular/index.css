@@ -105,8 +105,8 @@
 @media (prefers-reduced-motion: no-preference) {
   .circular-progress--indeterminate .circular-progress__visual {
     animation:
-      circular-progress-rotate 1568ms linear infinite,
-      circular-progress-sweep 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      circular-progress-rotate 1568ms var(--md-sys-motion-easing-linear) infinite,
+      circular-progress-sweep 1333ms var(--md-sys-motion-easing-legacy) infinite;
   }
 
   .circular-progress--determinate .circular-progress__visual {

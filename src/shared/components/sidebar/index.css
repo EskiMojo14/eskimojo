@@ -102,8 +102,8 @@
     translate var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized),
     opacity var(--md-sys-motion-spring-default-effects-duration)
       var(--md-sys-motion-spring-default-effects),
-    display var(--dialog-transition-duration) linear,
-    overlay var(--dialog-transition-duration) linear;
+    display var(--dialog-transition-duration) var(--md-sys-motion-easing-linear),
+    overlay var(--dialog-transition-duration) var(--md-sys-motion-easing-linear);
   transition-behavior: allow-discrete;
 
   &[open]:not([data-closing]) {

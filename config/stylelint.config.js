@@ -8,6 +8,10 @@ import {
   rule as useCustomMediaForWidth,
   ruleName as useCustomMediaForWidthName,
 } from "./stylelint-rules/use-custom-media-for-width.js";
+import {
+  rule as useMotionTokenForEasing,
+  ruleName as useMotionTokenForEasingName,
+} from "./stylelint-rules/use-motion-token-for-easing.js";
 
 const colorToken = String.raw`var\(--md-sys-color-[a-z-]+\)`;
 const colorMixArg = String.raw`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
@@ -55,10 +59,12 @@ export default {
     "stylelint-declaration-strict-value",
     stylelint.createPlugin(noParentRelativePathsName, noParentRelativePaths),
     stylelint.createPlugin(useCustomMediaForWidthName, useCustomMediaForWidth),
+    stylelint.createPlugin(useMotionTokenForEasingName, useMotionTokenForEasing),
   ],
   rules: {
     [noParentRelativePathsName]: true,
     [useCustomMediaForWidthName]: true,
+    [useMotionTokenForEasingName]: true,
     "scale-unlimited/declaration-strict-value": [
       [...fontProperties, ...colorProperties, ...radiusProperties],
       {

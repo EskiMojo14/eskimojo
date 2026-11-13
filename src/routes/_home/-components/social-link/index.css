@@ -31,7 +31,8 @@
   align-content: center;
   gap: 0.25rem 1rem;
   min-block-size: 6rem;
-  transition: background-color 150ms ease;
+  transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+    var(--md-sys-motion-spring-fast-effects);
 }
 
 .home-social-link__brand-icon {

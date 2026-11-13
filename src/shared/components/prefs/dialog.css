@@ -19,8 +19,8 @@
         var(--md-sys-motion-spring-default-effects),
       translate var(--md-sys-motion-spring-default-spatial-duration)
         var(--md-sys-motion-spring-default-spatial),
-      display var(--dialog-transition-duration) linear,
-      overlay var(--dialog-transition-duration) linear;
+      display var(--dialog-transition-duration) var(--md-sys-motion-easing-linear),
+      overlay var(--dialog-transition-duration) var(--md-sys-motion-easing-linear);
     transition-behavior: allow-discrete;
 
     &[open]:not([data-closing]) {

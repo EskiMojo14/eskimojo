@@ -351,7 +351,7 @@
     pointer-events: none;
     font: var(--md-sys-typography-title-large);
     font-feature-settings: var(--md-sys-typography-features-heading);
-    animation: app-bar-small-title-in linear both;
+    animation: app-bar-small-title-in var(--md-sys-motion-easing-linear) both;
     animation-timeline: scroll();
     animation-range: 0 var(--app-bar-collapse-distance);
   }
@@ -366,7 +366,7 @@
       z-index: 3;
       pointer-events: none;
       transform-origin: 0 0;
-      animation: app-bar-title-collapse linear both;
+      animation: app-bar-title-collapse var(--md-sys-motion-easing-linear) both;
       animation-timeline: scroll();
       animation-range: 0 var(--app-bar-collapse-distance);
 
