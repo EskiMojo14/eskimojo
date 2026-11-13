@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import { Route as HomeRoute } from "#/routes/_home";
@@ -9,6 +10,8 @@ import { Sidebar } from "./index";
 const meta = preview.meta({
   title: "Components/Sidebar",
   component: NavigationLayout,
+  argTypes: { christmas: { control: false } },
+  render: (_, { globals }) => <NavigationLayout christmas={globals.christmas === "on"} />,
   parameters: {
     layout: "fullscreen",
     tanstack: { router: { route: HomeRoute } },
@@ -24,7 +27,7 @@ const meta = preview.meta({
 function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="app-shell" data-christmas={christmas ? "true" : undefined}>
+    <div className="app-shell">
       <Sidebar open={open} onClose={() => setOpen(false)} christmas={christmas} />
       <div className="app-shell__main">
         <AppBar navigationOpen={open} onOpenNavigation={() => setOpen(true)} />
@@ -36,15 +39,20 @@ function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
 export const Default = meta.story({});
 
 export const Christmas = meta.story({
-  args: { christmas: true },
+  globals: { christmas: "on" },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('img[src="/Goat-avatar-christmas.webp"]'),
+    ).toBeInTheDocument();
+  },
 });
 
 export const ScrollingPage = meta.story({
-  render: () => (
+  render: (_, { globals }) => (
     <div className="app-shell">
-      <Sidebar open={false} onClose={() => {}} />
+      <Sidebar open={false} onClose={() => {}} christmas={globals.christmas === "on"} />
       <main className="app-shell__main">
-        {Array.from({ length: 40 }, (_, index) => (
+        {Array.from({ length: 40 }, (_value, index) => (
           <p key={index}>Page content {index + 1}. The desktop navigation stays in place.</p>
         ))}
       </main>
