@@ -71,7 +71,7 @@ function SidebarContents({
             <Fragment key={key}>
               {children.map(({ icon, label, ...link }) => (
                 <ListItem key={label}>
-                  <Link {...link} onClick={onNavigate}>
+                  <Link {...link} activeOptions={{ includeSearch: false }} onClick={onNavigate}>
                     <MdSymbol size={24}>{icon}</MdSymbol>
                     <span>{label}</span>
                   </Link>

@@ -140,7 +140,7 @@ export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
             {...link}
             key={label}
             icon={icon}
-            activeOptions={{ exact: link.to === "/" }}
+            activeOptions={{ exact: link.to === "/", includeSearch: false }}
           >
             {label}
           </DestinationLink>
