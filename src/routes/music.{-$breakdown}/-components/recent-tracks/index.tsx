@@ -47,6 +47,8 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
         return (
           <MusicListRow
             key={`${track.name}-${track.artist}-${track.date ?? "now"}-${index}`}
+            data-artwork-palette={track.palette ? "" : undefined}
+            style={track.palette}
             artwork={
               artwork ? (
                 <img src={artwork} alt="" width={56} height={56} loading="lazy" />
