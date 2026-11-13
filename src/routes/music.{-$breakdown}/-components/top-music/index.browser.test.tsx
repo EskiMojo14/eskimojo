@@ -68,3 +68,38 @@ test("shows matched Spotify track and artist artwork with direct links", async (
     .toHaveAttribute("href", "https://open.spotify.com/artist/radiohead");
   expect(result.getByAltText("").all()).toHaveLength(2);
 });
+
+test("falls back to each item's icon when Spotify artwork fails to load", async () => {
+  network.use(http.get("https://i.scdn.co/image/*", () => new HttpResponse(null, { status: 404 })));
+  const result = await page.renderWithProviders(
+    <MusicTopMusic
+      tracks={[
+        {
+          name: "Let It Happen",
+          artist: "Tame Impala",
+          rank: 1,
+          playcount: 42,
+          artwork: {
+            imageUrl: "https://i.scdn.co/image/missing-track",
+            spotifyUrl: "https://open.spotify.com/track/let-it-happen",
+          },
+        },
+      ]}
+      artists={[
+        {
+          name: "Radiohead",
+          rank: 1,
+          playcount: 42,
+          artwork: {
+            imageUrl: "https://i.scdn.co/image/missing-artist",
+            spotifyUrl: "https://open.spotify.com/artist/radiohead",
+          },
+        },
+      ]}
+    />,
+  );
+
+  await expect.element(result.getByText("music_note")).toBeVisible();
+  await expect.element(result.getByText("artist")).toBeVisible();
+  expect(result.getByAltText("").all()).toHaveLength(0);
+});
