@@ -125,7 +125,9 @@ function Snackbar({
 
   return (
     <div {...snackbarBem()} ref={surfaceRef} popover="manual">
-      <span {...snackbarBem({ element: "message" })}>{message.message}</span>
+      <span {...snackbarBem({ element: "message" })}>
+        <span {...snackbarBem({ element: "text" })}>{message.message}</span>
+      </span>
       {(message.action || message.showCloseButton) && (
         <div {...snackbarBem({ element: "controls" })}>
           {message.action && (
