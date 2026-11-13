@@ -253,6 +253,51 @@ test("uses Last.fm artwork when Spotify has no matching image", async ({ network
   );
 });
 
+test("retries incomplete artwork after its cooldown without refetching early on tab changes", async ({
+  network,
+  music,
+  page,
+}) => {
+  const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+  let artworkRequests = 0;
+  network.use(
+    ...lastfm(undefined, [], topTracks, topArtists),
+    mockServerFn(musicFns.getSpotifyArtworkFn, async (data) => {
+      artworkRequests++;
+      const artworkUrl = artworkRequests === 1 ? undefined : imageUrl;
+      return {
+        tracks: data.tracks.map((track) => mockedArtwork(track, "track", artworkUrl)),
+        artists: data.artists.map((artist) => mockedArtwork(artist, "artist", artworkUrl)),
+        retryAfterMs: artworkRequests === 1 ? 30_000 : undefined,
+      };
+    }),
+  );
+
+  await music.navigate();
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await expect.poll(() => artworkRequests).toBe(1);
+
+  await page.clock.fastForward(20_000);
+  await music.recent.select();
+  await music.topMusic.select();
+  expect(artworkRequests).toBe(1);
+
+  await page.clock.fastForward(10_000);
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  expect(artworkRequests).toBe(2);
+
+  await page.clock.fastForward(30_000);
+  expect(artworkRequests).toBe(2);
+});
+
 test("period and tab changes show loading feedback without hiding music controls", async ({
   network,
   music,

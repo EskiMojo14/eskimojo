@@ -53,6 +53,11 @@ type SearchCacheEntry = {
   expiresAt: number;
 };
 
+type ArtworkEnrichment<T> = {
+  items: Array<T & { artwork?: SpotifyArtwork }>;
+  incomplete: boolean;
+};
+
 const market = "GB";
 const cacheDuration = 6 * 60 * 60 * 1000;
 const maxCacheEntries = 256;
@@ -269,7 +274,7 @@ async function addArtwork<T extends { artwork?: SpotifyArtwork }>(
   items: Array<T>,
   lookup: (item: T, signal: AbortSignal) => Promise<SpotifyArtwork | undefined>,
   signal: AbortSignal,
-): Promise<Array<T & { artwork?: SpotifyArtwork }>> {
+): Promise<ArtworkEnrichment<T>> {
   const artwork: Array<SpotifyArtwork | undefined> = Array.from(
     { length: items.length },
     () => undefined,
@@ -308,17 +313,20 @@ async function addArtwork<T extends { artwork?: SpotifyArtwork }>(
       new AggregateError(errors),
     );
   }
-  return items.map((item, index) => {
-    const itemArtwork = artwork[index];
-    return itemArtwork ? { ...item, artwork: itemArtwork } : item;
-  });
+  return {
+    items: items.map((item, index) => {
+      const itemArtwork = artwork[index];
+      return itemArtwork ? { ...item, artwork: itemArtwork } : item;
+    }),
+    incomplete: rateLimited || errors.length > 0,
+  };
 }
 
 async function addArtworkWithDeadline<T extends { artwork?: SpotifyArtwork }>(
   items: Array<T>,
   signal: AbortSignal,
-  enrich: (signal: AbortSignal) => Promise<Array<T & { artwork?: SpotifyArtwork }>>,
-) {
+  enrich: (signal: AbortSignal) => Promise<ArtworkEnrichment<T>>,
+): Promise<ArtworkEnrichment<T>> {
   const timeoutSignal = AbortSignal.timeout(enrichmentTimeoutMs);
   const enrichmentSignal = AbortSignal.any([signal, timeoutSignal]);
   try {
@@ -329,13 +337,13 @@ async function addArtworkWithDeadline<T extends { artwork?: SpotifyArtwork }>(
     console.warn(
       "Spotify artwork enrichment timed out; Last.fm listening data is still available.",
     );
-    return items;
+    return { items, incomplete: true };
   }
 }
 
 export function addSpotifyTrackArtwork<
   T extends Pick<RecentTrack | TopTrack, "name" | "artist"> & { artwork?: SpotifyArtwork },
->(items: Array<T>, signal: AbortSignal): Promise<Array<T & { artwork?: SpotifyArtwork }>> {
+>(items: Array<T>, signal: AbortSignal): Promise<ArtworkEnrichment<T>> {
   return addArtworkWithDeadline(items, signal, (enrichmentSignal) =>
     addArtwork(
       items,
@@ -347,7 +355,7 @@ export function addSpotifyTrackArtwork<
 
 export function addSpotifyArtistArtwork<
   T extends Pick<TopArtist, "name"> & { artwork?: SpotifyArtwork },
->(items: Array<T>, signal: AbortSignal): Promise<Array<T & { artwork?: SpotifyArtwork }>> {
+>(items: Array<T>, signal: AbortSignal): Promise<ArtworkEnrichment<T>> {
   return addArtworkWithDeadline(items, signal, (enrichmentSignal) =>
     addArtwork(
       items,

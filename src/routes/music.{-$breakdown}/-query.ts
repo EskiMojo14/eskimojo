@@ -192,6 +192,7 @@ const spotifyArtworkParams = v.object({
 });
 
 const spotifyArtworkCacheDuration = 6 * 60 * 60 * 1000;
+const spotifyArtworkRetryDelay = 30_000;
 
 export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
   .validator(spotifyArtworkParams)
@@ -201,8 +202,8 @@ export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
       addSpotifyTrackArtwork(data.tracks, signal),
       addSpotifyArtistArtwork(data.artists, signal),
     ]);
-    const tracksWithArtwork = addLastfmArtworkFallback(tracksWithSpotifyArtwork);
-    const artistsWithArtwork = addLastfmArtworkFallback(artistsWithSpotifyArtwork);
+    const tracksWithArtwork = addLastfmArtworkFallback(tracksWithSpotifyArtwork.items);
+    const artistsWithArtwork = addLastfmArtworkFallback(artistsWithSpotifyArtwork.items);
     const [tracks, artists] = await Promise.all([
       addArtworkPalettes(tracksWithArtwork, signal),
       addArtworkPalettes(artistsWithArtwork, signal),
@@ -210,7 +211,10 @@ export const getSpotifyArtworkFn = createServerFn({ method: "POST" })
     return {
       tracks,
       artists,
-      retryAfterMs: getSpotifyRateLimitRetryAfter(),
+      retryAfterMs:
+        tracksWithSpotifyArtwork.incomplete || artistsWithSpotifyArtwork.incomplete
+          ? Math.max(spotifyArtworkRetryDelay, getSpotifyRateLimitRetryAfter() ?? 0)
+          : undefined,
     };
   });
 
@@ -237,12 +241,7 @@ export const getSpotifyArtwork = (
       retryAfterMs: undefined,
     },
     initialDataUpdatedAt: 0,
-    staleTime: (query) => {
-      const retryAfterMs = query.state.data?.retryAfterMs;
-      return retryAfterMs === undefined
-        ? spotifyArtworkCacheDuration
-        : Math.max(0, retryAfterMs - (Date.now() - query.state.dataUpdatedAt));
-    },
+    staleTime: (query) => query.state.data?.retryAfterMs ?? spotifyArtworkCacheDuration,
     refetchInterval: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
       if (retryAfterMs === undefined) return false;

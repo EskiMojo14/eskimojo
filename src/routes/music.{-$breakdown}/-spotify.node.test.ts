@@ -91,12 +91,20 @@ test("adds Spotify artwork and direct links for exact track and artist matches",
   );
 
   const signal = new AbortController().signal;
-  const [track] = await spotifyModule.addSpotifyTrackArtwork(
+  const {
+    items: [track],
+    incomplete: tracksIncomplete,
+  } = await spotifyModule.addSpotifyTrackArtwork(
     [{ name: "Let It Happen", artist: "Tame Impala" }],
     signal,
   );
-  const [artist] = await spotifyModule.addSpotifyArtistArtwork([{ name: "Radiohead" }], signal);
+  const {
+    items: [artist],
+    incomplete: artistsIncomplete,
+  } = await spotifyModule.addSpotifyArtistArtwork([{ name: "Radiohead" }], signal);
 
+  expect(tracksIncomplete).toBe(false);
+  expect(artistsIncomplete).toBe(false);
   expect(track?.artwork).toEqual({
     imageUrl: "https://i.scdn.co/image/currents",
     spotifyUrl: "https://open.spotify.com/track/let-it-happen",
@@ -131,12 +139,16 @@ test("does not attach artwork from a similarly titled track by a different artis
     }),
   );
 
-  const [track] = await spotifyModule.addSpotifyTrackArtwork(
+  const {
+    items: [track],
+    incomplete,
+  } = await spotifyModule.addSpotifyTrackArtwork(
     [{ name: "Same Song", artist: "Expected Artist" }],
     new AbortController().signal,
   );
 
   expect(track).toEqual({ name: "Same Song", artist: "Expected Artist" });
+  expect(incomplete).toBe(false);
   expect(tokenRequests()).toBe(1);
   expect(searchRequests).toBe(1);
 });
@@ -150,17 +162,26 @@ test("keeps listening data when Spotify lookup fails and reports the failure", a
   network.use(
     http.get("https://api.spotify.com/v1/search", () => {
       searchRequests++;
-      return new HttpResponse(null, { status: 503 });
+      return searchRequests === 1
+        ? new HttpResponse(null, { status: 503 })
+        : HttpResponse.json({ tracks: { items: [] } });
     }),
   );
 
   const item = { name: "Unavailable Song", artist: "Example Artist" };
-  const [result] = await spotifyModule.addSpotifyTrackArtwork([item], new AbortController().signal);
+  const result = await spotifyModule.addSpotifyTrackArtwork([item], new AbortController().signal);
 
-  expect(result).toEqual(item);
+  expect(result).toEqual({ items: [item], incomplete: true });
   expect(error).toHaveBeenCalledOnce();
   expect(tokenRequests()).toBe(1);
   expect(searchRequests).toBe(1);
+
+  const recovered = await spotifyModule.addSpotifyTrackArtwork(
+    [item],
+    new AbortController().signal,
+  );
+  expect(recovered).toEqual({ items: [item], incomplete: false });
+  expect(searchRequests).toBe(2);
 });
 
 test("keeps listening data available when Spotify credentials are not configured", async () => {
@@ -183,9 +204,9 @@ test("keeps listening data available when Spotify credentials are not configured
   );
 
   const item = { name: "Unavailable Song", artist: "Example Artist" };
-  const [result] = await spotifyModule.addSpotifyTrackArtwork([item], new AbortController().signal);
+  const result = await spotifyModule.addSpotifyTrackArtwork([item], new AbortController().signal);
 
-  expect(result).toEqual(item);
+  expect(result).toEqual({ items: [item], incomplete: true });
   expect(error).toHaveBeenCalledOnce();
   expect(tokenRequests).toBe(0);
   expect(searchRequests).toBe(0);
@@ -241,7 +262,9 @@ test("cancels one caller's token wait without cancelling the shared token reques
     }),
   );
 
-  const [activeTrack] = await activeLookup;
+  const {
+    items: [activeTrack],
+  } = await activeLookup;
   expect(activeTrack?.artwork).toEqual({
     imageUrl: "https://i.scdn.co/image/active-song",
     spotifyUrl: "https://open.spotify.com/track/active-song",
@@ -293,7 +316,7 @@ test("falls back to listening data when Spotify enrichment exceeds its deadline"
   deadline.abort(new DOMException("Spotify enrichment timed out", "TimeoutError"));
   searchGate.resolve();
 
-  await expect(lookup).resolves.toEqual(items);
+  await expect(lookup).resolves.toEqual({ items, incomplete: true });
   expect(tokenRequests).toBe(1);
   expect(searchRequests).toBe(3);
   expect(warning).toHaveBeenCalledOnce();
@@ -340,7 +363,7 @@ test("falls back to listening data when Spotify authentication exceeds its deadl
     }),
   );
 
-  await expect(lookup).resolves.toEqual([item]);
+  await expect(lookup).resolves.toEqual({ items: [item], incomplete: true });
   expect(tokenRequests).toBe(1);
   expect(searchRequests).toBe(0);
   expect(warning).toHaveBeenCalledOnce();
@@ -381,18 +404,22 @@ test("honors Spotify Retry-After before sending another catalog request", async 
 
   const item = { name: "Rate Limited Song", artist: "Example Artist" };
   const signal = new AbortController().signal;
-  const [firstResult] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
-  const [duringCooldown] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+  const firstResult = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+  const duringCooldown = await spotifyModule.addSpotifyTrackArtwork([item], signal);
 
-  expect(firstResult).toEqual(item);
-  expect(duringCooldown).toEqual(item);
+  expect(firstResult).toEqual({ items: [item], incomplete: true });
+  expect(duringCooldown).toEqual({ items: [item], incomplete: true });
   expect(spotifyModule.getSpotifyRateLimitRetryAfter()).toBe(30_000);
   expect(searchRequests).toBe(1);
 
   now += 30_001;
   expect(spotifyModule.getSpotifyRateLimitRetryAfter()).toBeUndefined();
-  const [afterCooldown] = await spotifyModule.addSpotifyTrackArtwork([item], signal);
+  const {
+    items: [afterCooldown],
+    incomplete,
+  } = await spotifyModule.addSpotifyTrackArtwork([item], signal);
 
+  expect(incomplete).toBe(false);
   expect(afterCooldown?.artwork).toEqual({
     imageUrl: "https://i.scdn.co/image/rate-limited-song",
     spotifyUrl: "https://open.spotify.com/track/rate-limited-song",
