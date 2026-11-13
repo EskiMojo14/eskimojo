@@ -24,7 +24,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Mount SnackbarHost once in the app shell. Call showSnackbar(message) or showSnackbar({ message, action: { label, onClick }, duration }) from any module; server calls are no-ops. Plain messages last five seconds; action messages persist. Timed messages hide the close button by default; opt in with showCloseButton: true. Persistent messages always show it. Calls queue rather than stack. Hover, focus, hidden tabs, and modal dialogs pause timing. duration accepts 4000-10000 ms or null. dismissSnackbar(id) removes a message; clearSnackbars() clears all. Keep feedback and actions available elsewhere; callbacks are synchronous and errors belong to the caller.",
+          "Mount SnackbarHost once in the app shell. Call showSnackbar(message) or showSnackbar({ message, action: { label, onClick }, duration }) from any module; server calls are no-ops. Visible messages are clamped to two lines; the full text remains available to assistive technology. Keep messages concise and provide longer details elsewhere. Plain messages last five seconds; action messages persist. Timed messages hide the close button by default; opt in with showCloseButton: true. Persistent messages always show it. Calls queue rather than stack. Hover, focus, hidden tabs, and modal dialogs pause timing. duration accepts 4000-10000 ms or null. dismissSnackbar(id) removes a message; clearSnackbars() clears all. Keep feedback and actions available elsewhere; callbacks are synchronous and errors belong to the caller.",
       },
     },
   },
