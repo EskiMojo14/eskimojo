@@ -1,3 +1,41 @@
+.recent-tracks [data-artwork-palette] {
+  --md-sys-color-surface-container: var(--artwork-standard-surface);
+  --md-sys-color-on-surface: var(--artwork-standard-on-surface);
+  --md-sys-color-on-surface-variant: var(--artwork-standard-on-surface-variant);
+  --md-sys-color-primary: var(--artwork-standard-primary);
+  --md-sys-color-secondary: var(--artwork-standard-secondary);
+  --md-sys-color-tertiary: var(--artwork-standard-tertiary);
+}
+
+[data-contrast="medium"] .recent-tracks [data-artwork-palette] {
+  --md-sys-color-surface-container: var(--artwork-medium-surface);
+  --md-sys-color-on-surface: var(--artwork-medium-on-surface);
+  --md-sys-color-on-surface-variant: var(--artwork-medium-on-surface-variant);
+  --md-sys-color-primary: var(--artwork-medium-primary);
+  --md-sys-color-secondary: var(--artwork-medium-secondary);
+  --md-sys-color-tertiary: var(--artwork-medium-tertiary);
+}
+
+[data-contrast="high"] .recent-tracks [data-artwork-palette] {
+  --md-sys-color-surface-container: var(--artwork-high-surface);
+  --md-sys-color-on-surface: var(--artwork-high-on-surface);
+  --md-sys-color-on-surface-variant: var(--artwork-high-on-surface-variant);
+  --md-sys-color-primary: var(--artwork-high-primary);
+  --md-sys-color-secondary: var(--artwork-high-secondary);
+  --md-sys-color-tertiary: var(--artwork-high-tertiary);
+}
+
+@media (prefers-contrast: more) {
+  :root:is(:not([data-contrast]), [data-contrast="system"]) .recent-tracks [data-artwork-palette] {
+    --md-sys-color-surface-container: var(--artwork-high-surface);
+    --md-sys-color-on-surface: var(--artwork-high-on-surface);
+    --md-sys-color-on-surface-variant: var(--artwork-high-on-surface-variant);
+    --md-sys-color-primary: var(--artwork-high-primary);
+    --md-sys-color-secondary: var(--artwork-high-secondary);
+    --md-sys-color-tertiary: var(--artwork-high-tertiary);
+  }
+}
+
 .recent-tracks {
   container-type: inline-size;
   inline-size: 100%;

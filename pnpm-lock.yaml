@@ -194,6 +194,9 @@ importers:
 
   .:
     dependencies:
+      '@material/material-color-utilities':
+        specifier: 0.4.0
+        version: 0.4.0(patch_hash=b1ce5dea9a31733ac3ddd4b236a80185e050df5f98e48bb7fd93f8ccf3f58378)
       '@tanstack/charts':
         specifier: 1.4.0
         version: 1.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.18)
@@ -254,6 +257,9 @@ importers:
       required-react-context:
         specifier: ^1.4.1
         version: 1.4.1(react@19.3.1)
+      sharp:
+        specifier: ^0.35.5
+        version: 0.35.5(@types/node@26.6.6)
       tanstack-meta:
         specifier: ^0.6.1
         version: 0.6.1
@@ -285,9 +291,6 @@ importers:
       '@csstools/postcss-global-data':
         specifier: ^4.0.0
         version: 4.0.0(postcss@8.5.32)
-      '@material/material-color-utilities':
-        specifier: 0.4.0
-        version: 0.4.0(patch_hash=b1ce5dea9a31733ac3ddd4b236a80185e050df5f98e48bb7fd93f8ccf3f58378)
       '@mdx-js/rollup':
         specifier: ^3.1.1
         version: 3.1.1(rollup@4.67.4)(supports-color@7.2.0)
@@ -429,9 +432,6 @@ importers:
       seroval:
         specifier: ^1.7.7
         version: 1.7.7
-      sharp:
-        specifier: ^0.35.5
-        version: 0.35.5(@types/node@26.6.6)
       storybook:
         specifier: ^10.6.5
         version: 10.6.5(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)(vite-plus@1.5.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(@vitest/browser-playwright@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.3(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-dev.20261105.1)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-dev.20261105.1))(playwright@1.64.1)(typescript@7.1.0-dev.20261105.1)(yaml@2.9.1))

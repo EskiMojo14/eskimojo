@@ -106,7 +106,9 @@ const recentTrackSchema = v.union([
   ),
 ]);
 
-export type RecentTrack = v.InferOutput<typeof recentTrackSchema>;
+export type RecentTrack = v.InferOutput<typeof recentTrackSchema> & {
+  palette?: Record<`--artwork-${string}`, string>;
+};
 
 const getRecentTracksParams = v.object({
   limit: v.optional(v.number()),
@@ -114,18 +116,27 @@ const getRecentTracksParams = v.object({
 
 export const getRecentTracksFn = createServerFn({ method: "GET" })
   .validator(getRecentTracksParams)
-  .handler(({ data }) =>
-    fetchLastfm({
+  .handler(async ({ data }) => {
+    const signal = getRequest().signal;
+    const response = await fetchLastfm({
       method: "user.getRecentTracks",
       params: data,
-      signal: getRequest().signal,
+      signal,
       schema: v.object({
         recenttracks: v.object({
           track: v.array(recentTrackSchema),
         }),
       }),
-    }),
-  );
+    });
+    const { addArtworkPalettes } = await import("./-artwork-palette.server");
+    return {
+      ...response,
+      recenttracks: {
+        ...response.recenttracks,
+        track: await addArtworkPalettes(response.recenttracks.track, signal),
+      },
+    };
+  });
 
 export const getRecentTracks = (
   params: v.InferInput<typeof getRecentTracksParams>,

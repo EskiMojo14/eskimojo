@@ -101,5 +101,5 @@ test("keeps grayscale logos neutral and rejects fully transparent logos", async 
   await sharp({ create: { width: 8, height: 8, channels: 4, background: "#00000000" } })
     .png()
     .toFile(file);
-  await expect(generateProjectPalette(logo)).rejects.toThrow("No visible logo pixels");
+  await expect(generateProjectPalette(logo)).rejects.toThrow("No visible pixels");
 });

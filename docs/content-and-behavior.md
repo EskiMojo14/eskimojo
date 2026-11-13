@@ -149,6 +149,26 @@ in the browser.
 Messages queued before hydration wait until the host is hydrated, preserving
 the empty server markup and its persistent announcement region.
 
+### Recent-track cover palettes
+
+Each recently played track with cover art uses an image-derived surface, text,
+link, and now-playing accent palette. The Last.fm server function fetches only
+HTTPS artwork URLs supplied by the music provider (not restricted to Last.fm's
+CDN, so Spotify cover art can also be used) and generates light/dark colors for all
+three contrast settings with Sharp and Material Color Utilities. The same
+decoder, deterministic seed selection, and readable-color helpers support
+build-time project palettes. Image processing libraries remain server-only;
+the browser receives color values.
+
+Successful palettes are cached by artwork URL for 24 hours in a bounded
+128-entry per-process cache. Requests process up to four covers concurrently,
+deduplicate repeated artwork, and share a five-second extraction deadline.
+Downloads are capped at 1 MB, redirects are rejected, and decoding is bounded
+to four million source pixels and two seconds. Missing artwork retains the
+site palette; failed extraction is logged and does not hide listening history.
+Cancelling the request still cancels the operation. The surrounding Music page,
+top-music lists, and navigation keep the selected site palette.
+
 ## Appearance preferences
 
 An MD3 large flexible top app bar displays the current page title below a
