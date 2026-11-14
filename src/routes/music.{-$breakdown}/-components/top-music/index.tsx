@@ -61,13 +61,11 @@ export function MusicTopMusic({
   tracks,
   albums,
   artists,
-  type = "tracks",
-}: {
-  tracks: ReadonlyArray<TopTrack>;
-  albums: ReadonlyArray<TopAlbum>;
-  artists: ReadonlyArray<TopArtist>;
-  type?: MusicType;
-}) {
+}:
+  | { tracks: ReadonlyArray<TopTrack>; albums?: never; artists?: never }
+  | { tracks?: never; albums: ReadonlyArray<TopAlbum>; artists?: never }
+  | { tracks?: never; albums?: never; artists: ReadonlyArray<TopArtist> }) {
+  const type = tracks !== undefined ? "tracks" : albums !== undefined ? "albums" : "artists";
   const rankings = { tracks, albums, artists };
   return (
     <>
@@ -79,7 +77,7 @@ export function MusicTopMusic({
           hidden={type !== value}
           className="music-top-music"
         >
-          <MusicTopList title={`Top ${value}`} items={rankings[value]} kind={value} />
+          <MusicTopList title={`Top ${value}`} items={rankings[value] ?? []} kind={value} />
         </TabLinkPanel>
       ))}
     </>

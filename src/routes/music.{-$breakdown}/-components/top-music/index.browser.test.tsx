@@ -34,16 +34,41 @@ const albums = [
   },
 ];
 
-test("shows only the selected ranking, including when tracks are empty", async () => {
-  const props = { tracks: [], albums, artists: [{ name: "Radiohead", rank: 1, playcount: 42 }] };
-  const result = await page.renderWithProviders(<MusicTopMusic {...props} />);
+test("infers the selected ranking from the supplied prop, including empty rankings", async () => {
+  const result = await page.renderWithProviders(<MusicTopMusic tracks={[]} />);
+  await expect.element(result.getByRole("region", { name: "Top tracks" })).toBeVisible();
   await expect
     .element(result.getByText("No listening data for this period.").first())
     .toBeVisible();
-  await expect.element(result.getByText("Radiohead")).not.toBeVisible();
-  await result.rerender(<MusicTopMusic {...props} type="artists" />);
+  await result.rerender(
+    <MusicTopMusic artists={[{ name: "Radiohead", rank: 1, playcount: 42 }]} />,
+  );
   await expect.element(result.getByText("Radiohead")).toBeVisible();
-  await expect.element(result.getByText("No listening data for this period.")).not.toBeVisible();
+  await expect
+    .element(
+      result
+        .getByRole("region", { name: "Top artists" })
+        .getByText("No listening data for this period."),
+    )
+    .not.toBeInTheDocument();
+  await result.rerender(<MusicTopMusic albums={[]} />);
+  await expect.element(result.getByRole("region", { name: "Top albums" })).toBeVisible();
+  await expect
+    .element(
+      result
+        .getByRole("region", { name: "Top albums" })
+        .getByText("No listening data for this period."),
+    )
+    .toBeVisible();
+  await result.rerender(<MusicTopMusic artists={[]} />);
+  await expect.element(result.getByRole("region", { name: "Top artists" })).toBeVisible();
+  await expect
+    .element(
+      result
+        .getByRole("region", { name: "Top artists" })
+        .getByText("No listening data for this period."),
+    )
+    .toBeVisible();
 });
 
 test("shows Last.fm track and artist album artwork with search links", async () => {
@@ -57,18 +82,14 @@ test("shows Last.fm track and artist album artwork with search links", async () 
       () => new HttpResponse(image, { headers: { "Content-Type": "image/gif" } }),
     ),
   );
-  const result = await page.renderWithProviders(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} />,
-  );
+  const result = await page.renderWithProviders(<MusicTopMusic tracks={tracks} />);
   await expect
     .element(result.getByRole("link", { name: "Search Spotify for Let It Happen Tame Impala" }))
     .toHaveAttribute("href", "https://open.spotify.com/search/Let%20It%20Happen%20Tame%20Impala");
   await expect
     .element(result.getByAltText("").first())
     .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/currents");
-  await result.rerender(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="albums" />,
-  );
+  await result.rerender(<MusicTopMusic albums={albums} />);
   await expect.element(result.getByRole("region", { name: "Top albums" })).toBeVisible();
   await expect
     .element(result.getByRole("link", { name: "Search Spotify for Currents Tame Impala" }))
@@ -82,9 +103,7 @@ test("shows Last.fm track and artist album artwork with search links", async () 
   await expect
     .element(result.getByRole("region", { name: "Top albums" }).getByAltText(""))
     .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/album-cover");
-  await result.rerender(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="artists" />,
-  );
+  await result.rerender(<MusicTopMusic artists={artists} />);
   await expect
     .element(result.getByRole("link", { name: "Search Spotify for Radiohead" }))
     .toHaveAttribute("href", "https://open.spotify.com/search/Radiohead");
@@ -94,6 +113,9 @@ test("shows Last.fm track and artist album artwork with search links", async () 
 });
 
 test("falls back to each item's icon when Last.fm artwork fails to load", async () => {
+  const brokenArtwork = {
+    imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/missing-cover",
+  };
   network.use(
     http.get(
       "https://lastfm.freetls.fastly.net/i/u/300x300/*",
@@ -101,15 +123,15 @@ test("falls back to each item's icon when Last.fm artwork fails to load", async 
     ),
   );
   const result = await page.renderWithProviders(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} />,
+    <MusicTopMusic tracks={tracks.map((track) => ({ ...track, artwork: brokenArtwork }))} />,
   );
   await expect.element(result.getByText("music_note")).toBeVisible();
   await result.rerender(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="albums" />,
+    <MusicTopMusic albums={albums.map((album) => ({ ...album, artwork: brokenArtwork }))} />,
   );
   await expect.element(result.getByText("album")).toBeVisible();
   await result.rerender(
-    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="artists" />,
+    <MusicTopMusic artists={artists.map((artist) => ({ ...artist, artwork: brokenArtwork }))} />,
   );
   await expect.element(result.getByText("artist")).toBeVisible();
   expect(result.getByAltText("").all()).toHaveLength(0);

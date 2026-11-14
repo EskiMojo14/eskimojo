@@ -9,7 +9,7 @@ import { serverFns } from "#test/e2e/server-fns.gen";
 
 import { MusicPage } from "./-index.e2e.model";
 import type {
-  getMusicArtwork,
+  resolveMusicArtwork,
   RecentTrack,
   TopAlbum,
   TopArtist,
@@ -122,7 +122,7 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
 }
 
 function musicArtwork(
-  before: (data: Parameters<typeof getMusicArtwork>[0]) => void | Promise<void> = () => {},
+  before: (data: Parameters<typeof resolveMusicArtwork>[0]) => void | Promise<void> = () => {},
   imageUrl?: string,
   lastfmImageUrl?: string,
 ) {

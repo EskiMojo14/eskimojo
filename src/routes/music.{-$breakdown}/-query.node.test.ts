@@ -159,8 +159,6 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
   const options = {
     ...query.getMusicArtwork({
       tracks: [{ name: "Retry Song", artist: "Example Artist" }],
-      artists: [],
-      albums: [],
     }),
     queryFn,
   };

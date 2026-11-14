@@ -1,52 +1,32 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
 import * as v from "valibot";
 
+import { MusicDataBoundary } from "#/routes/music.{-$breakdown}/-components/data-boundary";
 import {
-  MusicDataBoundary,
-  MusicRefreshNotice,
-} from "#/routes/music.{-$breakdown}/-components/data-boundary";
+  RecentTracksPanel,
+  SummaryPanel,
+  TopAlbumsPanel,
+  TopArtistsPanel,
+  TopTracksPanel,
+} from "#/routes/music.{-$breakdown}/-components/panels";
 import { MusicPeriodPicker } from "#/routes/music.{-$breakdown}/-components/period-picker/index";
-import {
-  RecentTracks,
-  RecentTracksSkeleton,
-} from "#/routes/music.{-$breakdown}/-components/recent-tracks/index";
-import {
-  MusicSummary,
-  MusicSummarySkeleton,
-} from "#/routes/music.{-$breakdown}/-components/summary/index";
+import { RecentTracksSkeleton } from "#/routes/music.{-$breakdown}/-components/recent-tracks/index";
+import { MusicSummarySkeleton } from "#/routes/music.{-$breakdown}/-components/summary/index";
 import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs/index";
 import {
-  MusicTopMusic,
   MusicTopMusicSkeleton,
   MusicTopMusicTabs,
 } from "#/routes/music.{-$breakdown}/-components/top-music/index";
-import { musicBreakdownSchema, musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
-  getRecentTracks,
-  getMusicArtwork,
-  getTopTracks,
-  getTopAlbums,
-  getTopArtists,
-  getUserData,
+  musicBreakdownSchema,
+  musicTypeSchema,
   periodSchema,
-} from "#/routes/music.{-$breakdown}/-query.ts";
+} from "#/routes/music.{-$breakdown}/-constants.ts";
+import { preloadMusic } from "#/routes/music.{-$breakdown}/-loader";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
-import { preloadImage } from "#/shared/lib/query";
 
 import styles from "./index.css?url";
-
-const recentTracksRefreshInterval = 60_000;
-
-function reportPreloadError(error: unknown) {
-  console.error("Failed to preload music data.", error);
-}
-
-function reportArtworkPreloadError(error: unknown) {
-  console.error("Failed to preload music artwork.", error);
-}
 
 export const Route = createFileRoute("/music/{-$breakdown}/")({
   params: {
@@ -72,107 +52,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     context: { queryClient },
     params: { breakdown = musicBreakdownSchema.fallback },
     deps: { period = periodSchema.fallback, type },
-  }) => {
-    const preloadedImages = new Set<string>();
-    const preloadImages = (urls: Array<string | undefined>) => {
-      for (const url of urls) {
-        if (!url || preloadedImages.has(url)) continue;
-        preloadedImages.add(url);
-        void preloadImage(url).catch((error: unknown) =>
-          console.error("Failed to preload music artwork image.", url, error),
-        );
-      }
-    };
-    const preloadArtwork = (params: Parameters<typeof getMusicArtwork>[0]) => {
-      preloadImages(
-        [...params.tracks, ...params.albums, ...params.artists].map(
-          ({ lastfmArtworkUrl }) => lastfmArtworkUrl,
-        ),
-      );
-      void queryClient
-        .query(getMusicArtwork(params))
-        .then(({ tracks, albums, artists }) =>
-          preloadImages([...tracks, ...albums, ...artists].map(({ artwork }) => artwork?.imageUrl)),
-        )
-        .catch(reportArtworkPreloadError);
-    };
-    queryClient.query({ ...getUserData(), staleTime: "static" }).catch(reportPreloadError);
-    switch (breakdown) {
-      case "recent":
-        void queryClient
-          .query({
-            ...getRecentTracks({ limit: 10 }),
-            staleTime: recentTracksRefreshInterval,
-          })
-          .then((tracks) =>
-            preloadArtwork({
-              tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                name,
-                artist,
-                lastfmArtworkUrl,
-              })),
-              artists: [],
-              albums: [],
-            }),
-          )
-          .catch(reportPreloadError);
-        break;
-      case "top-music": {
-        if (type === "artists") {
-          void queryClient
-            .query({
-              ...getTopArtists({ limit: 10, period }),
-              staleTime: "static",
-            })
-            .then((artists) =>
-              preloadArtwork({
-                tracks: [],
-                albums: [],
-                artists: artists.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
-              }),
-            )
-            .catch(reportPreloadError);
-        } else if (type === "albums") {
-          void queryClient
-            .query({
-              ...getTopAlbums({ limit: 10, period }),
-              staleTime: "static",
-            })
-            .then((albums) =>
-              preloadArtwork({
-                tracks: [],
-                albums: albums.map(({ name, artist, lastfmArtworkUrl }) => ({
-                  name,
-                  artist,
-                  lastfmArtworkUrl,
-                })),
-                artists: [],
-              }),
-            )
-            .catch(reportPreloadError);
-        } else {
-          void queryClient
-            .query({
-              ...getTopTracks({ limit: 10, period }),
-              staleTime: "static",
-            })
-            .then((tracks) =>
-              preloadArtwork({
-                tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                  name,
-                  artist,
-                  lastfmArtworkUrl,
-                })),
-                artists: [],
-                albums: [],
-              }),
-            )
-            .catch(reportPreloadError);
-        }
-        break;
-      }
-    }
-  },
+  }) => preloadMusic({ queryClient, breakdown, period, type }),
   head: () => {
     const metadata = generatePageMetadata({
       title: "Music",
@@ -242,152 +122,4 @@ function RouteComponent() {
       ))}
     </main>
   );
-}
-
-// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function SummaryPanel() {
-  const { data: user, dataUpdatedAt } = useSuspenseQuery({
-    ...getUserData(),
-    staleTime: "static",
-  });
-  return <MusicSummary user={user} asOf={dataUpdatedAt} />;
-}
-
-// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function RecentTracksPanel() {
-  const {
-    data: recentTracks,
-    error,
-    isRefetchError,
-    isFetching,
-    refetch,
-  } = useSuspenseQuery({
-    ...getRecentTracks({ limit: 10 }),
-    staleTime: recentTracksRefreshInterval,
-    refetchInterval: recentTracksRefreshInterval,
-    refetchIntervalInBackground: false,
-    refetchOnWindowFocus: "always",
-  });
-  const artworkQuery = useSuspenseQuery(
-    getMusicArtwork({
-      tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-        name,
-        artist,
-        lastfmArtworkUrl,
-      })),
-      artists: [],
-      albums: [],
-    }),
-  );
-  const tracks = recentTracks.map((track, index) => {
-    const artwork = artworkQuery.data?.tracks[index];
-    return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
-  });
-  useEffect(() => {
-    if (isRefetchError) console.error("Failed to refresh recent tracks.", error);
-    if (artworkQuery.isError) {
-      console.error("Failed to load artwork for recent tracks.", artworkQuery.error);
-    }
-  }, [artworkQuery.error, artworkQuery.isError, error, isRefetchError]);
-  return (
-    <>
-      {isRefetchError && (
-        <MusicRefreshNotice
-          isFetching={isFetching}
-          onRetry={() => {
-            refetch().catch((retryError: unknown) =>
-              console.error("Failed to retry recent tracks.", retryError),
-            );
-          }}
-        />
-      )}
-      <RecentTracks tracks={tracks} />
-    </>
-  );
-}
-
-// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function TopTracksPanel() {
-  const { period = periodSchema.fallback } = Route.useSearch();
-  const tracks = useSuspenseQuery({
-    ...getTopTracks({ limit: 10, period }),
-    staleTime: "static",
-  });
-  const artworkQuery = useSuspenseQuery(
-    getMusicArtwork({
-      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
-        name,
-        artist,
-        lastfmArtworkUrl,
-      })),
-      artists: [],
-      albums: [],
-    }),
-  );
-  const topTracks = tracks.data.map((track, index) => {
-    const artwork = artworkQuery.data?.tracks[index];
-    return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
-  });
-  useEffect(() => {
-    if (artworkQuery.isError) {
-      console.error("Failed to load artwork for top music.", artworkQuery.error);
-    }
-  }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={topTracks} albums={[]} artists={[]} type="tracks" />;
-}
-
-// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function TopAlbumsPanel() {
-  const { period = periodSchema.fallback } = Route.useSearch();
-  const albums = useSuspenseQuery({
-    ...getTopAlbums({ limit: 10, period }),
-    staleTime: "static",
-  });
-  const artworkQuery = useSuspenseQuery(
-    getMusicArtwork({
-      tracks: [],
-      albums: albums.data.map(({ name, artist, lastfmArtworkUrl }) => ({
-        name,
-        artist,
-        lastfmArtworkUrl,
-      })),
-      artists: [],
-    }),
-  );
-  const topAlbums = albums.data.map((album, index) => {
-    const artwork = artworkQuery.data?.albums[index];
-    return artwork ? { ...album, artwork: artwork.artwork, palette: artwork.palette } : album;
-  });
-  useEffect(() => {
-    if (artworkQuery.isError) {
-      console.error("Failed to load artwork for top music.", artworkQuery.error);
-    }
-  }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={[]} albums={topAlbums} artists={[]} type="albums" />;
-}
-
-// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function TopArtistsPanel() {
-  const { period = periodSchema.fallback } = Route.useSearch();
-  const artists = useSuspenseQuery({
-    ...getTopArtists({ limit: 10, period }),
-    staleTime: "static",
-  });
-  const artworkQuery = useSuspenseQuery(
-    getMusicArtwork({
-      tracks: [],
-      albums: [],
-      artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
-    }),
-  );
-  const topArtists = artists.data.map((artist, index) => {
-    const artwork = artworkQuery.data?.artists[index];
-    return artwork ? { ...artist, artwork: artwork.artwork, palette: artwork.palette } : artist;
-  });
-  useEffect(() => {
-    if (artworkQuery.isError) {
-      console.error("Failed to load artwork for top music.", artworkQuery.error);
-    }
-  }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={[]} albums={[]} artists={topArtists} type="artists" />;
 }

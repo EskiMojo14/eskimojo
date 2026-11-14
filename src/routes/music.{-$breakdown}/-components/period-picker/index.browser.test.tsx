@@ -27,6 +27,12 @@ import "#/routes/music.{-$breakdown}/index.css";
 
 const musicRoute = getRouteApi("/music/{-$breakdown}/");
 
+const topMusicPanels = {
+  tracks: <MusicTopMusic tracks={[]} />,
+  albums: <MusicTopMusic albums={[]} />,
+  artists: <MusicTopMusic artists={[]} />,
+};
+
 function Demo() {
   const { period = periodSchema.fallback, type } = musicRoute.useSearch();
   const { breakdown = musicBreakdownSchema.fallback } = musicRoute.useParams();
@@ -46,7 +52,7 @@ function Demo() {
               <MusicPeriodPicker />
               <div>Results for {period}</div>
               <MusicTopMusicTabs />
-              <MusicTopMusic tracks={[]} albums={[]} artists={[]} type={type} />
+              {topMusicPanels[type]}
             </>
           ) : (
             <p>Recently played tracks.</p>

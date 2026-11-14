@@ -7,6 +7,50 @@ import { disposablePromise } from "#/utils";
 
 import { getMusicArtwork, getMusicArtworkFn } from "./-query";
 
+test("reuses artwork cached with omitted groups for requests with explicit empty groups", async () => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  onTestFinished(() => client.clear());
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  onTestFinished(() => log.mockRestore());
+  let requests = 0;
+  network.use(
+    http.post(getMusicArtworkFn.url, () => {
+      requests++;
+      return HttpResponse.text("Service unavailable", { status: 503 });
+    }),
+  );
+  const artists = [{ name: "Example Artist" }];
+  const result = await client.query(getMusicArtwork({ artists }));
+  expect(result).toEqual({
+    tracks: [],
+    albums: [],
+    artists,
+    retryAfterMs: 30_000,
+  });
+  const cachedResult = await client.query(getMusicArtwork({ tracks: [], albums: [], artists }));
+  expect(cachedResult).toEqual(result);
+  expect(requests).toBe(1);
+});
+
+test("skips the artwork request when all groups are omitted", async () => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  onTestFinished(() => client.clear());
+  let requests = 0;
+  network.use(
+    http.post(getMusicArtworkFn.url, () => {
+      requests++;
+      return HttpResponse.text("Unexpected artwork request", { status: 500 });
+    }),
+  );
+  await expect(client.query(getMusicArtwork({}))).resolves.toEqual({
+    tracks: [],
+    albums: [],
+    artists: [],
+    retryAfterMs: undefined,
+  });
+  expect(requests).toBe(0);
+});
+
 test("recovers a failed artwork POST with validated images and a retry delay", async () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   onTestFinished(() => client.clear());
@@ -75,8 +119,6 @@ test("propagates artwork request cancellation without logging or caching fallbac
   const options = getMusicArtwork(
     {
       tracks: [{ name: "Cancelled Track", artist: "Example Artist" }],
-      artists: [],
-      albums: [],
     },
     controller.signal,
   );
