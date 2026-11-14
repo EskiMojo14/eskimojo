@@ -380,7 +380,9 @@ Album artwork shares the existing lookup queue, cache, cooldown, and palette
 processing; never look up an album as a track.
 
 Additional artwork lookups share a per-process queue with at least 250ms between
-request starts and a ten-second per-batch deadline. Deduplicate repeated entries
+request starts and a ten-second per-batch deadline. The deadline and caller
+cancellation also interrupt waiting for the queue; the queue itself remains
+serialized until each underlying request finishes. Deduplicate repeated entries
 within a batch and cache successful lookups and completed misses for six hours
 in a bounded 256-entry per-process cache. Transient errors are not cached.
 HTTP 429 and Last.fm API error 29 pause queued artwork lookups for at least thirty
