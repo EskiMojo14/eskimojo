@@ -96,7 +96,7 @@
     "lightningcss": "^1.33.0",
     "mdx-content-mapper": "^0.0.2",
     "mix-n-matchers": "^3.0.0",
-    "modern-web-guidance": "^0.0.197",
+    "modern-web-guidance": "^1.0.0",
     "msw": "^3.0.5",
     "msw-storybook-addon": "https://pkg.pr.new/mswjs/msw-storybook-addon@199",
     "playwright": "^1.65.0",

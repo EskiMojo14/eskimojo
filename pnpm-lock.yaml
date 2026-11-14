@@ -388,8 +388,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(vitest@5.1.0)
       modern-web-guidance:
-        specifier: ^0.0.197
-        version: 0.0.197
+        specifier: ^1.0.0
+        version: 1.0.0
       msw:
         specifier: ^3.0.5
         version: 3.0.5(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-dev.20261113.1)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-dev.20261113.1)
@@ -5917,8 +5917,8 @@ packages:
       vitest:
         optional: true
 
-  modern-web-guidance@0.0.197:
-    resolution: {integrity: sha512-+svoxOlW0GYmj1GW8QfUrycD2MIB8F/C3WuKHzN7BpYBgFzvGvhY7Zbo7JjfYMRQAHdsIYYOWP1J32aUVuzYOQ==}
+  modern-web-guidance@1.0.0:
+    resolution: {integrity: sha512-vafIZwC8AS6QjM2yyoflZbnc7n3/TVOMLbEMRdPTwcFy0f9/Tq8s5rJQ8UIqRt2KPl9ixravyaMR4nTGuUrcmg==}
     engines: {node: '>=22.0.0', vscode: ^1.90.0}
     hasBin: true
 
@@ -13100,7 +13100,7 @@ snapshots:
     optionalDependencies:
       vitest: 5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(@vitest/browser-playwright@5.1.0)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-dev.20261113.1)(yaml@2.9.1))(msw@3.0.5(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(typescript@7.1.0-dev.20261113.1)(yaml@2.9.1))(supports-color@7.2.0)(typescript@7.1.0-dev.20261113.1))
 
-  modern-web-guidance@0.0.197: {}
+  modern-web-guidance@1.0.0: {}
 
   module-definition@6.0.2:
     dependencies:
