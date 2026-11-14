@@ -63,7 +63,6 @@ export function MusicTopList({
             <MusicSearchLinks
               name={item.name}
               artist={"artist" in item ? item.artist : undefined}
-              spotifyUrl={item.artwork?.spotifyUrl}
             />
           }
           trailing={`${item.playcount.toLocaleString("en-GB")} ${item.playcount === 1 ? "play" : "plays"}`}

@@ -101,15 +101,11 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
           })
           .then((tracks) =>
             preloadArtwork({
-              tracks: tracks.map(
-                ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
-                  name,
-                  artist,
-                  lastfmArtworkUrl,
-                  recordingMbid,
-                  releaseMbid,
-                }),
-              ),
+              tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                name,
+                artist,
+                lastfmArtworkUrl,
+              })),
               artists: [],
             }),
           )
@@ -127,15 +123,11 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
         void Promise.all([tracks, artists])
           .then(([topTracks, topArtists]) =>
             preloadArtwork({
-              tracks: topTracks.map(
-                ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
-                  name,
-                  artist,
-                  lastfmArtworkUrl,
-                  recordingMbid,
-                  releaseMbid,
-                }),
-              ),
+              tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                name,
+                artist,
+                lastfmArtworkUrl,
+              })),
               artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
                 name,
                 lastfmArtworkUrl,
@@ -231,15 +223,11 @@ function RecentTracksPanel() {
   });
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
-      tracks: recentTracks.map(
-        ({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
-          name,
-          artist,
-          lastfmArtworkUrl,
-          recordingMbid,
-          releaseMbid,
-        }),
-      ),
+      tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+        name,
+        artist,
+        lastfmArtworkUrl,
+      })),
       artists: [],
     }),
   );
@@ -281,12 +269,10 @@ function TopMusicPanel() {
   });
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
-      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl, recordingMbid, releaseMbid }) => ({
+      tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
         name,
         artist,
         lastfmArtworkUrl,
-        recordingMbid,
-        releaseMbid,
       })),
       artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
     }),

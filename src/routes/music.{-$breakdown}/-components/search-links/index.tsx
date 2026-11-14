@@ -6,22 +6,14 @@ import { ExternalLinkButton } from "#/shared/components/buttons/link-button";
 
 const searchLinksBem = BEMHelper("music-search-links");
 
-export function MusicSearchLinks({
-  name,
-  artist,
-  spotifyUrl,
-}: {
-  name: string;
-  artist?: string;
-  spotifyUrl?: string;
-}) {
+export function MusicSearchLinks({ name, artist }: { name: string; artist?: string }) {
   const query = artist ? `${name} ${artist}` : name;
   return (
     <span {...searchLinksBem()}>
       <ExternalLinkButton
         variant="text"
-        href={spotifyUrl ?? `https://open.spotify.com/search/${encodeURIComponent(query)}`}
-        aria-label={spotifyUrl ? `Open ${query} on Spotify` : `Search Spotify for ${query}`}
+        href={`https://open.spotify.com/search/${encodeURIComponent(query)}`}
+        aria-label={`Search Spotify for ${query}`}
         icon={<SpotifyIcon />}
       >
         Spotify

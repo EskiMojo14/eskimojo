@@ -90,7 +90,6 @@ function lastfm(
 
 function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
   item: T,
-  type: "track" | "artist",
   imageUrl?: string,
   lastfmImageUrl?: string,
 ) {
@@ -100,16 +99,13 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
   if (imageUrl) {
     return {
       ...item,
-      artwork: {
-        imageUrl,
-        spotifyUrl: `https://open.spotify.com/${type}/test`,
-      },
+      artwork: { imageUrl },
     };
   }
   return item;
 }
 
-function spotifyArtwork(
+function musicArtwork(
   before: () => void | Promise<void> = () => {},
   imageUrl?: string,
   lastfmImageUrl?: string,
@@ -118,10 +114,8 @@ function spotifyArtwork(
   return mockServerFn(music.getMusicArtworkFn, async (data) => {
     await before();
     return {
-      tracks: data.tracks.map((track) => mockedArtwork(track, "track", imageUrl, lastfmImageUrl)),
-      artists: data.artists.map((artist) =>
-        mockedArtwork(artist, "artist", imageUrl, lastfmImageUrl),
-      ),
+      tracks: data.tracks.map((track) => mockedArtwork(track, imageUrl, lastfmImageUrl)),
+      artists: data.artists.map((artist) => mockedArtwork(artist, imageUrl, lastfmImageUrl)),
       retryAfterMs: undefined,
     };
   });
@@ -134,7 +128,7 @@ function failure(): never {
 const isSummary = (method: string) => method === "user.getInfo";
 
 test.beforeEach(async ({ network, page, home }) => {
-  network.use(...lastfm(), spotifyArtwork());
+  network.use(...lastfm(), musicArtwork());
   // Music data requests only reach the browser network fixture during client-side
   // navigation, so let the home page finish loading before following links.
   await home.goto({ waitUntil: "networkidle" });
@@ -179,7 +173,7 @@ test("waits for artwork and palettes before revealing music lists", async ({ net
   let artworkRequests = 0;
   network.use(
     ...lastfm(undefined, recentTracksWithFallback, topTracks, topArtists),
-    spotifyArtwork(async () => {
+    musicArtwork(async () => {
       artworkRequests++;
       if (artworkRequests === 1) {
         topArtworkStarted.resolve();
@@ -249,7 +243,7 @@ test("renders Last.fm artwork returned by background enrichment", async ({ netwo
         lastfmArtworkUrl,
       },
     ]),
-    spotifyArtwork(() => {}, undefined, imageUrl),
+    musicArtwork(() => {}, undefined, imageUrl),
   );
 
   await music.navigate();
@@ -261,37 +255,30 @@ test("renders Last.fm artwork returned by background enrichment", async ({ netwo
   );
 });
 
-test("passes release and recording MBIDs through prefetch and renders non-Spotify artwork", async ({
+test("prefetches Last.fm cover artwork for tracks and artists across tabs", async ({
   network,
   music,
 }) => {
-  const recordingMbid = "b1a9c0e9-d987-4042-ae91-78d6a3267d69";
-  const releaseMbid = "76df3287-6cda-33eb-8e9a-044b5e15ffdd";
   const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
   const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
   let requests = 0;
   network.use(
-    ...lastfm(
-      undefined,
-      recentTracks.map((track) => ({ ...track, recordingMbid, releaseMbid })),
-      topTracks.map((track) => ({ ...track, recordingMbid })),
-      topArtists,
-    ),
+    ...lastfm(undefined, recentTracks, topTracks, topArtists),
     mockServerFn(musicFns.getMusicArtworkFn, (data) => {
       requests++;
-      expect(data.tracks[0]?.recordingMbid).toBe(recordingMbid);
-      if (data.tracks[0]?.name === "Let It Happen") {
-        expect(data.tracks[0].releaseMbid).toBe(releaseMbid);
-      }
       return {
         tracks: data.tracks.map((track) => ({ ...track, artwork: { imageUrl } })),
-        artists: data.artists,
+        artists: data.artists.map((artist) => ({ ...artist, artwork: { imageUrl } })),
         retryAfterMs: undefined,
       };
     }),
   );
   await music.navigate();
   await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
@@ -317,8 +304,8 @@ test("retries incomplete artwork after its cooldown without refetching early on 
       artworkRequests++;
       const artworkUrl = artworkRequests === 1 ? undefined : imageUrl;
       return {
-        tracks: data.tracks.map((track) => mockedArtwork(track, "track", artworkUrl)),
-        artists: data.artists.map((artist) => mockedArtwork(artist, "artist", artworkUrl)),
+        tracks: data.tracks.map((track) => mockedArtwork(track, artworkUrl)),
+        artists: data.artists.map((artist) => mockedArtwork(artist, artworkUrl)),
         retryAfterMs: artworkRequests === 1 ? 30_000 : undefined,
       };
     }),
@@ -373,8 +360,8 @@ test("artwork POST failures preserve music data and retry enrichment after the c
       artworkRequests++;
       if (artworkRequests === 1) return HttpResponse.text("Service unavailable", { status: 503 });
       return {
-        tracks: data.tracks.map((track) => mockedArtwork(track, "track", recoveredImageUrl)),
-        artists: data.artists.map((artist) => mockedArtwork(artist, "artist", recoveredImageUrl)),
+        tracks: data.tracks.map((track) => mockedArtwork(track, recoveredImageUrl)),
+        artists: data.artists.map((artist) => mockedArtwork(artist, recoveredImageUrl)),
         retryAfterMs: undefined,
       };
     }),

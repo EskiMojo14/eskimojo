@@ -17,7 +17,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Ranked music lists use headline-small section headings, title-medium names, title-large ranks, body-medium artist details, and label-large play counts. Search actions use label-medium. Typography and font features come from the shared theme-aware tokens.",
+          "Ranked music lists use Last.fm artwork; artists without images use their most popular album's cover rather than a portrait. Headline-small section headings, title-medium names, title-large ranks, body-medium artist details, and label-large play counts follow the shared theme-aware tokens. Search actions use label-medium.",
       },
     },
   },
@@ -33,7 +33,6 @@ export const Artists = meta.story({
         playcount: 42,
         artwork: {
           imageUrl: exampleCoverUrl,
-          spotifyUrl: "https://open.spotify.com/artist/radiohead",
         },
         palette: fixturePalette("eskimojo"),
       },
