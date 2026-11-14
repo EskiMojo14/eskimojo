@@ -112,7 +112,7 @@
     "remark-mdx-frontmatter": "^6.0.0",
     "seroval": "^1.8.1",
     "storybook": "^10.6.7",
-    "stylelint": "^17.16.0",
+    "stylelint": "^18.0.0",
     "stylelint-declaration-strict-value": "^1.13.0",
     "typescript": "7.1.0-dev.20261113.1",
     "vite": "catalog:",
