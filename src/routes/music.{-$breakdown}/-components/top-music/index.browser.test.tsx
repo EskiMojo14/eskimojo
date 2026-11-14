@@ -7,10 +7,10 @@ import { MusicTopMusic } from "./index";
 
 import "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css";
 
-function mockSpotifyArtwork() {
+function mockLastfmArtwork() {
   network.use(
     http.get(
-      "https://i.scdn.co/image/*",
+      "https://lastfm.freetls.fastly.net/i/u/300x300/*",
       () => new HttpResponse(null, { status: 200, headers: { "Content-Type": "image/png" } }),
     ),
   );
@@ -30,8 +30,8 @@ test("keeps both sections visible when one ranking is empty", async () => {
   await expect.element(result.getByText("Radiohead")).toBeVisible();
 });
 
-test("shows matched Spotify track and artist artwork with direct links", async () => {
-  mockSpotifyArtwork();
+test("shows Last.fm track and artist album artwork with search links", async () => {
+  mockLastfmArtwork();
   const result = await page.renderWithProviders(
     <MusicTopMusic
       tracks={[
@@ -41,8 +41,7 @@ test("shows matched Spotify track and artist artwork with direct links", async (
           rank: 1,
           playcount: 42,
           artwork: {
-            imageUrl: "https://i.scdn.co/image/currents",
-            spotifyUrl: "https://open.spotify.com/track/let-it-happen",
+            imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/currents",
           },
         },
       ]}
@@ -52,8 +51,7 @@ test("shows matched Spotify track and artist artwork with direct links", async (
           rank: 1,
           playcount: 42,
           artwork: {
-            imageUrl: "https://i.scdn.co/image/radiohead",
-            spotifyUrl: "https://open.spotify.com/artist/radiohead",
+            imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/radiohead-album",
           },
         },
       ]}
@@ -61,16 +59,21 @@ test("shows matched Spotify track and artist artwork with direct links", async (
   );
 
   await expect
-    .element(result.getByRole("link", { name: "Open Let It Happen Tame Impala on Spotify" }))
-    .toHaveAttribute("href", "https://open.spotify.com/track/let-it-happen");
+    .element(result.getByRole("link", { name: "Search Spotify for Let It Happen Tame Impala" }))
+    .toHaveAttribute("href", "https://open.spotify.com/search/Let%20It%20Happen%20Tame%20Impala");
   await expect
-    .element(result.getByRole("link", { name: "Open Radiohead on Spotify" }))
-    .toHaveAttribute("href", "https://open.spotify.com/artist/radiohead");
+    .element(result.getByRole("link", { name: "Search Spotify for Radiohead" }))
+    .toHaveAttribute("href", "https://open.spotify.com/search/Radiohead");
   expect(result.getByAltText("").all()).toHaveLength(2);
 });
 
-test("falls back to each item's icon when Spotify artwork fails to load", async () => {
-  network.use(http.get("https://i.scdn.co/image/*", () => new HttpResponse(null, { status: 404 })));
+test("falls back to each item's icon when Last.fm artwork fails to load", async () => {
+  network.use(
+    http.get(
+      "https://lastfm.freetls.fastly.net/i/u/300x300/*",
+      () => new HttpResponse(null, { status: 404 }),
+    ),
+  );
   const result = await page.renderWithProviders(
     <MusicTopMusic
       tracks={[
@@ -80,8 +83,7 @@ test("falls back to each item's icon when Spotify artwork fails to load", async 
           rank: 1,
           playcount: 42,
           artwork: {
-            imageUrl: "https://i.scdn.co/image/missing-track",
-            spotifyUrl: "https://open.spotify.com/track/let-it-happen",
+            imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/missing-track",
           },
         },
       ]}
@@ -91,8 +93,7 @@ test("falls back to each item's icon when Spotify artwork fails to load", async 
           rank: 1,
           playcount: 42,
           artwork: {
-            imageUrl: "https://i.scdn.co/image/missing-artist",
-            spotifyUrl: "https://open.spotify.com/artist/radiohead",
+            imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/missing-artist",
           },
         },
       ]}

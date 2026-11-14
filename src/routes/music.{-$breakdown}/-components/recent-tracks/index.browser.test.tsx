@@ -5,10 +5,10 @@ import { page } from "vite-plus/test/browser";
 
 import { RecentTracks } from "./index";
 
-function mockSpotifyArtwork() {
+function mockLastfmArtwork() {
   network.use(
     http.get(
-      "https://i.scdn.co/image/*",
+      "https://lastfm.freetls.fastly.net/i/u/300x300/*",
       () => new HttpResponse(null, { status: 200, headers: { "Content-Type": "image/png" } }),
     ),
   );
@@ -37,8 +37,8 @@ test("renders now playing and repeated completed tracks with semantic timestamps
     .toHaveAttribute("datetime", "2026-10-26T00:55:00.000Z");
 });
 
-test("shows matched Spotify artwork and links directly to the matched track", async () => {
-  mockSpotifyArtwork();
+test("shows Last.fm artwork and preserves music search links", async () => {
+  mockLastfmArtwork();
   const result = await page.renderWithProviders(
     <RecentTracks
       tracks={[
@@ -47,8 +47,7 @@ test("shows matched Spotify artwork and links directly to the matched track", as
           artist: "Tame Impala",
           album: "Currents",
           artwork: {
-            imageUrl: "https://i.scdn.co/image/currents",
-            spotifyUrl: "https://open.spotify.com/track/let-it-happen",
+            imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/currents",
           },
           nowPlaying: true,
         },
@@ -57,10 +56,10 @@ test("shows matched Spotify artwork and links directly to the matched track", as
   );
   await expect
     .element(result.getByAltText(""))
-    .toHaveAttribute("src", "https://i.scdn.co/image/currents");
+    .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/currents");
   await expect
-    .element(result.getByRole("link", { name: "Open Let It Happen Tame Impala on Spotify" }))
-    .toHaveAttribute("href", "https://open.spotify.com/track/let-it-happen");
+    .element(result.getByRole("link", { name: "Search Spotify for Let It Happen Tame Impala" }))
+    .toHaveAttribute("href", "https://open.spotify.com/search/Let%20It%20Happen%20Tame%20Impala");
 });
 
 test("shows an explicit empty state instead of an empty list", async () => {

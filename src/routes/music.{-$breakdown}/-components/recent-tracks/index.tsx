@@ -51,13 +51,7 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
             artwork={<MusicArtwork imageUrl={track.artwork?.imageUrl} fallbackIcon="music_note" />}
             headline={track.name}
             supportingText={[track.artist, track.album].filter(Boolean).join(" / ")}
-            actions={
-              <MusicSearchLinks
-                name={track.name}
-                artist={track.artist}
-                spotifyUrl={track.artwork?.spotifyUrl}
-              />
-            }
+            actions={<MusicSearchLinks name={track.name} artist={track.artist} />}
             trailing={
               track.nowPlaying ? (
                 <span {...recentTracksBem({ element: "now-playing" })}>
