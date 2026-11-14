@@ -183,3 +183,105 @@ test("propagates caller cancellation without logging an artwork failure", async 
   await cancellation;
   expect(warning).not.toHaveBeenCalled();
 });
+
+test("returns incomplete queued artwork when its deadline expires before an earlier lookup finishes", async () => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  onTestFinished(() => warning.mockRestore());
+  using started = disposablePromise();
+  using pending = disposablePromise();
+  const requests: Array<string | null> = [];
+  network.use(
+    http.get(api, async ({ request }) => {
+      const name = new URL(request.url).searchParams.get("track");
+      requests.push(name);
+      if (name === "Blocking Track") {
+        started.resolve();
+        await pending.promise;
+      }
+      return HttpResponse.json(trackResponse);
+    }),
+  );
+  const blocking = artwork.addLastfmTrackArtwork(
+    [{ ...track, name: "Blocking Track" }],
+    new AbortController().signal,
+  );
+  onTestFinished(async () => {
+    pending.resolve();
+    await blocking;
+  });
+  await started.promise;
+  const deadline = new AbortController();
+  const timeout = vi.spyOn(AbortSignal, "timeout").mockReturnValueOnce(deadline.signal);
+  onTestFinished(() => timeout.mockRestore());
+  let outcome: unknown;
+  const queued = artwork.addLastfmTrackArtwork([track], new AbortController().signal).then(
+    (result) => {
+      outcome = result;
+    },
+    (error: unknown) => {
+      outcome = error;
+    },
+  );
+  deadline.abort(new DOMException("Artwork timed out", "TimeoutError"));
+  await vi.waitFor(() => expect(outcome).toEqual({ items: [track], incomplete: true }));
+  await queued;
+  expect(requests).toEqual(["Blocking Track"]);
+  expect(warning).toHaveBeenCalledOnce();
+  pending.resolve();
+  await blocking;
+  const recovered = await artwork.addLastfmTrackArtwork([track], new AbortController().signal);
+  expect(recovered.items[0]?.artwork).toEqual({ imageUrl });
+  expect(recovered.incomplete).toBe(false);
+  expect(requests).toEqual(["Blocking Track", track.name]);
+});
+
+test("cancels a queued caller without waiting for or disrupting an earlier lookup", async () => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  onTestFinished(() => warning.mockRestore());
+  using started = disposablePromise();
+  using pending = disposablePromise();
+  const requests: Array<string | null> = [];
+  network.use(
+    http.get(api, async ({ request }) => {
+      const name = new URL(request.url).searchParams.get("track");
+      requests.push(name);
+      if (name === "Blocking Track") {
+        started.resolve();
+        await pending.promise;
+      }
+      return HttpResponse.json(trackResponse);
+    }),
+  );
+  const blocking = artwork.addLastfmTrackArtwork(
+    [{ ...track, name: "Blocking Track" }],
+    new AbortController().signal,
+  );
+  onTestFinished(async () => {
+    pending.resolve();
+    await blocking;
+  });
+  await started.promise;
+  const controller = new AbortController();
+  onTestFinished(() => controller.abort());
+  let outcome: unknown;
+  const queued = artwork.addLastfmTrackArtwork([track], controller.signal).then(
+    (result) => {
+      outcome = result;
+    },
+    (error: unknown) => {
+      outcome = error;
+    },
+  );
+  const reason = new DOMException("Cancelled", "AbortError");
+  controller.abort(reason);
+  await vi.waitFor(() => expect(outcome).toBe(reason));
+  await queued;
+  expect(requests).toEqual(["Blocking Track"]);
+  expect(warning).not.toHaveBeenCalled();
+  pending.resolve();
+  expect((await blocking).incomplete).toBe(false);
+  const recovered = await artwork.addLastfmTrackArtwork([track], new AbortController().signal);
+  expect(recovered.items[0]?.artwork).toEqual({ imageUrl });
+  expect(recovered.incomplete).toBe(false);
+  expect(requests).toEqual(["Blocking Track", track.name]);
+});

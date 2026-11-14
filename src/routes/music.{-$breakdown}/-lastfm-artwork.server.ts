@@ -1,3 +1,4 @@
+import { addAbortListener } from "node:events";
 import { setTimeout } from "node:timers/promises";
 
 import * as v from "valibot";
@@ -91,7 +92,9 @@ async function cachedArtwork(
     () => {},
     () => {},
   );
-  return request;
+  const aborted = Promise.withResolvers<never>();
+  using _ = addAbortListener(signal, () => aborted.reject(signal.reason));
+  return await Promise.race([request, aborted.promise]);
 }
 
 async function addArtwork<T extends { artwork?: Artwork }>(
