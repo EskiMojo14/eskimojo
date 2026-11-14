@@ -31,6 +31,7 @@ test("recovers a failed artwork POST with validated images and a retry delay", a
       },
     ],
     artists: [{ name: "Covered Artist", lastfmArtworkUrl: legacyUrl }, { name: "Missing Artist" }],
+    albums: [{ name: "Covered Album", artist: "Example Artist", lastfmArtworkUrl: legacyUrl }],
   });
 
   const result = await client.query(options);
@@ -45,6 +46,9 @@ test("recovers a failed artwork POST with validated images and a retry delay", a
       { name: "Missing Artist" },
     ],
     retryAfterMs: 30_000,
+    albums: [
+      { name: "Covered Album", artist: "Example Artist", artwork: { imageUrl: normalizedUrl } },
+    ],
   });
   expect(log).toHaveBeenCalledWith(
     "Failed to load music artwork; using Last.fm artwork or icons.",
@@ -72,6 +76,7 @@ test("propagates artwork request cancellation without logging or caching fallbac
     {
       tracks: [{ name: "Cancelled Track", artist: "Example Artist" }],
       artists: [],
+      albums: [],
     },
     controller.signal,
   );

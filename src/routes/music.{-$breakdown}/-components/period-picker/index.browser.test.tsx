@@ -46,7 +46,7 @@ function Demo() {
               <MusicPeriodPicker />
               <div>Results for {period}</div>
               <MusicTopMusicTabs />
-              <MusicTopMusic tracks={[]} artists={[]} type={type} />
+              <MusicTopMusic tracks={[]} albums={[]} artists={[]} type={type} />
             </>
           ) : (
             <p>Recently played tracks.</p>
@@ -147,22 +147,22 @@ test("both tab levels slide while period and other navigation crossfade", async 
       .toHaveAttribute("aria-current", "page");
     await backwards.value.finished;
 
-    await result.getByRole("tab", { name: "Artists", exact: true }).click();
+    await result.getByRole("tab", { name: "Albums", exact: true }).click();
     await expect.poll(() => startTransition.mock.results.length).toBe(4);
     expect(startTransition.mock.calls[3]?.[0]).toMatchObject({
       types: ["tab-forward", "music-type"],
     });
-    const artists = startTransition.mock.results[3];
-    if (artists?.type !== "return") throw new Error("Expected an artist tab transition");
-    await artists.value.ready;
+    const albums = startTransition.mock.results[3];
+    if (albums?.type !== "return") throw new Error("Expected an album tab transition");
+    await albums.value.ready;
     expect(
       transitionKeyframes("::view-transition-new(tab-content)").some(
         (frame) => frame.translate !== undefined,
       ),
     ).toBe(true);
-    await artists.value.finished;
+    await albums.value.finished;
     await expect
-      .element(result.getByRole("tabpanel", { name: "Artists", exact: true }))
+      .element(result.getByRole("tabpanel", { name: "Albums", exact: true }))
       .toBeVisible();
 
     await result.getByRole("tab", { name: "Tracks", exact: true }).click();

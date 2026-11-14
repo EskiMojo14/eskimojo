@@ -10,7 +10,7 @@ export function MusicArtwork({
   fallbackIcon,
 }: {
   imageUrl?: string;
-  fallbackIcon: "artist" | "music_note";
+  fallbackIcon: "artist" | "music_note" | "album";
 }) {
   const [failedImageUrl, setFailedImageUrl] = useState<string>();
   const showArtwork = imageUrl && imageUrl !== failedImageUrl;
@@ -31,7 +31,7 @@ export function MusicArtwork({
 
   return (
     <span {...recentTracksBem({ element: "placeholder" })} aria-hidden="true">
-      {fallbackIcon === "artist" ? <MdSymbol>artist</MdSymbol> : <MdSymbol>music_note</MdSymbol>}
+      <MdSymbol>{fallbackIcon}</MdSymbol>
     </span>
   );
 }

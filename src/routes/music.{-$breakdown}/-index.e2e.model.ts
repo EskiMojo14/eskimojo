@@ -8,7 +8,7 @@ class TopRankingTab extends TabObjectModel<TopMusicTab> {
   constructor(
     page: Page,
     parent: TopMusicTab,
-    public tabName: "Tracks" | "Artists",
+    public tabName: "Tracks" | "Albums" | "Artists",
   ) {
     super(page, parent);
   }
@@ -29,6 +29,7 @@ class TopMusicTab extends TabObjectModel<MusicPage> {
   url = "/music";
   tabName = "Top music";
   tracks = new TopRankingTab(this.page, this, "Tracks");
+  albums = new TopRankingTab(this.page, this, "Albums");
   artists = new TopRankingTab(this.page, this, "Artists");
 
   get tabs() {
@@ -53,6 +54,10 @@ class TopMusicTab extends TabObjectModel<MusicPage> {
 
   artist(name: string) {
     return this.tabPanel.getByText(name, { exact: true });
+  }
+
+  album(name: string) {
+    return this.albums.tabPanel.getByText(name, { exact: true });
   }
 
   artworkImage(name: string, imageUrl: string) {

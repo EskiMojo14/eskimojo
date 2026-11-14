@@ -24,9 +24,18 @@ const artists = [
     artwork: { imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/radiohead-album" },
   },
 ];
+const albums = [
+  {
+    name: "Currents",
+    artist: "Tame Impala",
+    rank: 1,
+    playcount: 200,
+    artwork: { imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/album-cover" },
+  },
+];
 
 test("shows only the selected ranking, including when tracks are empty", async () => {
-  const props = { tracks: [], artists: [{ name: "Radiohead", rank: 1, playcount: 42 }] };
+  const props = { tracks: [], albums, artists: [{ name: "Radiohead", rank: 1, playcount: 42 }] };
   const result = await page.renderWithProviders(<MusicTopMusic {...props} />);
   await expect
     .element(result.getByText("No listening data for this period.").first())
@@ -49,7 +58,7 @@ test("shows Last.fm track and artist album artwork with search links", async () 
     ),
   );
   const result = await page.renderWithProviders(
-    <MusicTopMusic tracks={tracks} artists={artists} />,
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} />,
   );
   await expect
     .element(result.getByRole("link", { name: "Search Spotify for Let It Happen Tame Impala" }))
@@ -57,7 +66,25 @@ test("shows Last.fm track and artist album artwork with search links", async () 
   await expect
     .element(result.getByAltText("").first())
     .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/currents");
-  await result.rerender(<MusicTopMusic tracks={tracks} artists={artists} type="artists" />);
+  await result.rerender(
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="albums" />,
+  );
+  await expect.element(result.getByRole("region", { name: "Top albums" })).toBeVisible();
+  await expect
+    .element(result.getByRole("link", { name: "Search Spotify for Currents Tame Impala" }))
+    .toHaveAttribute("href", "https://open.spotify.com/search/Currents%20Tame%20Impala");
+  await expect
+    .element(result.getByRole("link", { name: "Search YouTube for Currents Tame Impala" }))
+    .toHaveAttribute(
+      "href",
+      "https://www.youtube.com/results?search_query=Currents%20Tame%20Impala",
+    );
+  await expect
+    .element(result.getByRole("region", { name: "Top albums" }).getByAltText(""))
+    .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/album-cover");
+  await result.rerender(
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="artists" />,
+  );
   await expect
     .element(result.getByRole("link", { name: "Search Spotify for Radiohead" }))
     .toHaveAttribute("href", "https://open.spotify.com/search/Radiohead");
@@ -74,10 +101,16 @@ test("falls back to each item's icon when Last.fm artwork fails to load", async 
     ),
   );
   const result = await page.renderWithProviders(
-    <MusicTopMusic tracks={tracks} artists={artists} />,
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} />,
   );
   await expect.element(result.getByText("music_note")).toBeVisible();
-  await result.rerender(<MusicTopMusic tracks={tracks} artists={artists} type="artists" />);
+  await result.rerender(
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="albums" />,
+  );
+  await expect.element(result.getByText("album")).toBeVisible();
+  await result.rerender(
+    <MusicTopMusic tracks={tracks} albums={albums} artists={artists} type="artists" />,
+  );
   await expect.element(result.getByText("artist")).toBeVisible();
   expect(result.getByAltText("").all()).toHaveLength(0);
 });

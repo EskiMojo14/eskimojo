@@ -39,6 +39,7 @@ test("uses existing Last.fm artwork and palettes without additional metadata loo
   const result = await query.resolveMusicArtwork(
     {
       tracks: [{ name: "Covered Song", artist: "Example Artist", lastfmArtworkUrl }],
+      albums: [{ name: "Covered Album", artist: "Example Artist", lastfmArtworkUrl }],
       artists: [{ name: "Covered Artist", lastfmArtworkUrl }],
     },
     new AbortController().signal,
@@ -47,6 +48,8 @@ test("uses existing Last.fm artwork and palettes without additional metadata loo
   expect(result.artists[0]?.artwork).toEqual({ imageUrl: lastfmArtworkUrl });
   expect(result.tracks[0]?.palette).toBeDefined();
   expect(result.artists[0]?.palette).toBeDefined();
+  expect(result.albums[0]?.artwork).toEqual({ imageUrl: lastfmArtworkUrl });
+  expect(result.albums[0]?.palette).toBeDefined();
   expect(result.retryAfterMs).toBeUndefined();
   expect(requests).toBe(0);
 });
@@ -65,6 +68,7 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
   const existingUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/existing.png";
   const trackUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/track-cover.png";
   const artistUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/artist-album.png";
+  const albumUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/album-cover.png";
   const lookups: Array<Array<string | null>> = [];
   network.use(
     http.get(
@@ -74,11 +78,20 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
     http.get("https://ws.audioscrobbler.com/2.0/", ({ request }) => {
       const params = new URL(request.url).searchParams;
       const method = params.get("method");
-      lookups.push([method, params.get("artist"), params.get("track"), params.get("limit")]);
+      lookups.push([
+        method,
+        params.get("artist"),
+        params.get("track"),
+        params.get("limit"),
+        params.get("album"),
+      ]);
       if (method === "track.getInfo") {
         return HttpResponse.json({
           track: { album: { image: [{ size: "extralarge", "#text": trackUrl }] } },
         });
+      }
+      if (method === "album.getInfo") {
+        return HttpResponse.json({ album: { image: [{ size: "extralarge", "#text": albumUrl }] } });
       }
       return HttpResponse.json({
         topalbums: { album: [{ image: [{ size: "extralarge", "#text": artistUrl }] }] },
@@ -99,6 +112,10 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
       { name: "Covered Artist", lastfmArtworkUrl: existingUrl },
       { name: "Missing Artist" },
     ],
+    albums: [
+      { name: "Covered Album", artist: "Example Artist", lastfmArtworkUrl: existingUrl },
+      { name: "Missing Album", artist: "Example Artist" },
+    ],
   };
   const result = await query.resolveMusicArtwork(params, new AbortController().signal);
   expect(result.tracks.map(({ name, artwork }) => [name, artwork?.imageUrl])).toEqual([
@@ -111,11 +128,17 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
   ]);
   expect(result.tracks[1]?.palette).toBeDefined();
   expect(result.artists[1]?.palette).toBeDefined();
+  expect(result.albums.map(({ name, artwork }) => [name, artwork?.imageUrl])).toEqual([
+    ["Covered Album", existingUrl],
+    ["Missing Album", albumUrl],
+  ]);
+  expect(result.albums[1]?.palette).toBeDefined();
   expect(result.retryAfterMs).toBeUndefined();
   await query.resolveMusicArtwork(params, new AbortController().signal);
   expect(lookups).toEqual([
-    ["track.getInfo", "Example Artist", "Missing Track", null],
-    ["artist.getTopAlbums", "Missing Artist", null, "1"],
+    ["track.getInfo", "Example Artist", "Missing Track", null, null],
+    ["album.getInfo", "Example Artist", null, null, "Missing Album"],
+    ["artist.getTopAlbums", "Missing Artist", null, "1", null],
   ]);
 });
 
@@ -129,6 +152,7 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
   const response = {
     tracks: [{ name: "Retry Song", artist: "Example Artist", artwork: undefined }],
     artists: [],
+    albums: [],
     retryAfterMs: 30_000,
   };
   const queryFn = vi.fn<() => Promise<typeof response>>().mockResolvedValue(response);
@@ -136,6 +160,7 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
     ...query.getMusicArtwork({
       tracks: [{ name: "Retry Song", artist: "Example Artist" }],
       artists: [],
+      albums: [],
     }),
     queryFn,
   };
@@ -169,6 +194,24 @@ test("filters unsafe and placeholder Last.fm image URLs", () => {
     large: "https://lastfm.freetls.fastly.net/i/u/300x300/real.jpg",
   });
   expect(bestLastfmArtwork(image)).toBe("https://lastfm.freetls.fastly.net/i/u/300x300/real.jpg");
+});
+
+test("normalizes ranked album data and rejects placeholder cover art", () => {
+  expect(
+    v.parse(query.topAlbumSchema, {
+      name: "Currents",
+      artist: { name: "Tame Impala" },
+      playcount: "42",
+      "@attr": { rank: "1" },
+      image: [
+        {
+          size: "extralarge",
+          "#text":
+            "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png",
+        },
+      ],
+    }),
+  ).toEqual({ name: "Currents", artist: "Tame Impala", playcount: 42, rank: 1 });
 });
 
 test("validates Last.fm artwork without replacing already resolved images", () => {

@@ -74,6 +74,10 @@ const meta = preview.meta({
       { name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 },
       { name: "Let It Happen", artist: "Tame Impala", rank: 2, playcount: 200 },
     ],
+    albums: [
+      { name: "Currents", artist: "Tame Impala", rank: 1, playcount: 1200 },
+      { name: "In Rainbows", artist: "Radiohead", rank: 2, playcount: 900 },
+    ],
     artists: [
       { name: "Scary Pockets", rank: 1, playcount: 4794 },
       { name: "Radiohead", rank: 2, playcount: 4000 },
@@ -85,7 +89,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Top tracks and artists for the same listening period, separated by secondary navigation links with decorative music-note and artist icons. Tracks is the default; ?type=artists opens artists directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
+          "Top tracks, albums, and artists for the same listening period, in that order, separated by secondary navigation links with decorative icons. Tracks is the default; ?type=albums or ?type=artists opens the corresponding ranking directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
       },
     },
   },
@@ -121,14 +125,34 @@ export const Mobile = meta.story({
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(await canvas.findByRole("tab", { name: "Tracks" }));
     await userEvent.keyboard("{ArrowRight}");
-    await expect(canvas.getByRole("tab", { name: "Artists" })).toHaveFocus();
+    await expect(canvas.getByRole("tab", { name: "Albums" })).toHaveFocus();
     await waitFor(() => expect(canvas.getByRole("region", { name: "Top tracks" })).toBeVisible());
     await userEvent.keyboard("{Enter}");
+    await waitFor(() => expect(canvas.getByRole("region", { name: "Top albums" })).toBeVisible());
+    await userEvent.keyboard("{ArrowRight}{Enter}");
     await waitFor(() => expect(canvas.getByRole("region", { name: "Top artists" })).toBeVisible());
   },
 });
 
-export const Empty = meta.story({ args: { tracks: [], artists: [] } });
+export const Empty = meta.story({ args: { tracks: [], albums: [], artists: [] } });
+
+export const Albums = meta.story({
+  render: (args) => (
+    <TopMusicDemo initialEntry="/music?type=albums">
+      <TopMusicContent {...args} />
+    </TopMusicDemo>
+  ),
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByRole("tab", { name: "Albums" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await waitFor(() => expect(canvas.getByRole("region", { name: "Top albums" })).toBeVisible());
+    await expect(canvas.getByText("Currents")).toBeVisible();
+    await expect(canvas.queryByRole("region", { name: "Top tracks" })).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("region", { name: "Top artists" })).not.toBeInTheDocument();
+  },
+});
 
 export const Artists = meta.story({
   render: (args) => (

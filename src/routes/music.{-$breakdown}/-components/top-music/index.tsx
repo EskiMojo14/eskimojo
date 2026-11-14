@@ -9,7 +9,7 @@ import {
   musicTypeSchema,
   type MusicType,
 } from "#/routes/music.{-$breakdown}/-constants";
-import type { TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
+import type { TopAlbum, TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabLinkPanel, TabNav } from "#/shared/components/tabs";
@@ -42,53 +42,46 @@ export function MusicTopMusicSkeleton({ type = "tracks" }: { type?: MusicType })
   return (
     <>
       <SkeletonProgress label="Loading top music..." />
-      <TabLinkPanel
-        id="music-top-tracks-panel"
-        tabId="music-top-tracks-tab"
-        hidden={type !== "tracks"}
-        className="music-top-music music-skeleton"
-      >
-        <MusicTopListSkeleton title="Top tracks" kind="tracks" />
-      </TabLinkPanel>
-      <TabLinkPanel
-        id="music-top-artists-panel"
-        tabId="music-top-artists-tab"
-        hidden={type !== "artists"}
-        className="music-top-music music-skeleton"
-      >
-        <MusicTopListSkeleton title="Top artists" kind="artists" />
-      </TabLinkPanel>
+      {musicTypeSchema.options.map((value) => (
+        <TabLinkPanel
+          key={value}
+          id={`music-top-${value}-panel`}
+          tabId={`music-top-${value}-tab`}
+          hidden={type !== value}
+          className="music-top-music music-skeleton"
+        >
+          <MusicTopListSkeleton title={`Top ${value}`} kind={value} />
+        </TabLinkPanel>
+      ))}
     </>
   );
 }
 
 export function MusicTopMusic({
   tracks,
+  albums,
   artists,
   type = "tracks",
 }: {
   tracks: ReadonlyArray<TopTrack>;
+  albums: ReadonlyArray<TopAlbum>;
   artists: ReadonlyArray<TopArtist>;
   type?: MusicType;
 }) {
+  const rankings = { tracks, albums, artists };
   return (
     <>
-      <TabLinkPanel
-        id="music-top-tracks-panel"
-        tabId="music-top-tracks-tab"
-        hidden={type !== "tracks"}
-        className="music-top-music"
-      >
-        <MusicTopList title="Top tracks" items={tracks} />
-      </TabLinkPanel>
-      <TabLinkPanel
-        id="music-top-artists-panel"
-        tabId="music-top-artists-tab"
-        hidden={type !== "artists"}
-        className="music-top-music"
-      >
-        <MusicTopList title="Top artists" items={artists} />
-      </TabLinkPanel>
+      {musicTypeSchema.options.map((value) => (
+        <TabLinkPanel
+          key={value}
+          id={`music-top-${value}-panel`}
+          tabId={`music-top-${value}-tab`}
+          hidden={type !== value}
+          className="music-top-music"
+        >
+          <MusicTopList title={`Top ${value}`} items={rankings[value]} kind={value} />
+        </TabLinkPanel>
+      ))}
     </>
   );
 }
