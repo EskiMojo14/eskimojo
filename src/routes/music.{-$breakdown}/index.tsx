@@ -27,6 +27,7 @@ import {
   getRecentTracks,
   getMusicArtwork,
   getTopTracks,
+  getTopAlbums,
   getTopArtists,
   getUserData,
   periodSchema,
@@ -84,12 +85,14 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
     };
     const preloadArtwork = (params: Parameters<typeof getMusicArtwork>[0]) => {
       preloadImages(
-        [...params.tracks, ...params.artists].map(({ lastfmArtworkUrl }) => lastfmArtworkUrl),
+        [...params.tracks, ...params.albums, ...params.artists].map(
+          ({ lastfmArtworkUrl }) => lastfmArtworkUrl,
+        ),
       );
       void queryClient
         .query(getMusicArtwork(params))
-        .then(({ tracks, artists }) =>
-          preloadImages([...tracks, ...artists].map(({ artwork }) => artwork?.imageUrl)),
+        .then(({ tracks, albums, artists }) =>
+          preloadImages([...tracks, ...albums, ...artists].map(({ artwork }) => artwork?.imageUrl)),
         )
         .catch(reportArtworkPreloadError);
     };
@@ -109,6 +112,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
                 lastfmArtworkUrl,
               })),
               artists: [],
+              albums: [],
             }),
           )
           .catch(reportPreloadError);
@@ -123,7 +127,26 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
             .then((artists) =>
               preloadArtwork({
                 tracks: [],
+                albums: [],
                 artists: artists.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
+              }),
+            )
+            .catch(reportPreloadError);
+        } else if (type === "albums") {
+          void queryClient
+            .query({
+              ...getTopAlbums({ limit: 10, period }),
+              staleTime: "static",
+            })
+            .then((albums) =>
+              preloadArtwork({
+                tracks: [],
+                albums: albums.map(({ name, artist, lastfmArtworkUrl }) => ({
+                  name,
+                  artist,
+                  lastfmArtworkUrl,
+                })),
+                artists: [],
               }),
             )
             .catch(reportPreloadError);
@@ -141,6 +164,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
                   lastfmArtworkUrl,
                 })),
                 artists: [],
+                albums: [],
               }),
             )
             .catch(reportPreloadError);
@@ -167,6 +191,11 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
 function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
   const { period = periodSchema.fallback, type } = Route.useSearch();
+  const TopMusicPanel = {
+    tracks: TopTracksPanel,
+    albums: TopAlbumsPanel,
+    artists: TopArtistsPanel,
+  }[type];
   return (
     <main>
       <MusicDataBoundary
@@ -203,7 +232,7 @@ function RouteComponent() {
                     loading={<MusicTopMusicSkeleton type={type} />}
                     errorTitle="Couldn't load top music"
                   >
-                    {type === "artists" ? <TopArtistsPanel /> : <TopTracksPanel />}
+                    <TopMusicPanel />
                   </MusicDataBoundary>
                 </>
               )}
@@ -247,6 +276,7 @@ function RecentTracksPanel() {
         lastfmArtworkUrl,
       })),
       artists: [],
+      albums: [],
     }),
   );
   const tracks = recentTracks.map((track, index) => {
@@ -291,6 +321,7 @@ function TopTracksPanel() {
         lastfmArtworkUrl,
       })),
       artists: [],
+      albums: [],
     }),
   );
   const topTracks = tracks.data.map((track, index) => {
@@ -302,7 +333,37 @@ function TopTracksPanel() {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={topTracks} artists={[]} type="tracks" />;
+  return <MusicTopMusic tracks={topTracks} albums={[]} artists={[]} type="tracks" />;
+}
+
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
+function TopAlbumsPanel() {
+  const { period = periodSchema.fallback } = Route.useSearch();
+  const albums = useSuspenseQuery({
+    ...getTopAlbums({ limit: 10, period }),
+    staleTime: "static",
+  });
+  const artworkQuery = useSuspenseQuery(
+    getMusicArtwork({
+      tracks: [],
+      albums: albums.data.map(({ name, artist, lastfmArtworkUrl }) => ({
+        name,
+        artist,
+        lastfmArtworkUrl,
+      })),
+      artists: [],
+    }),
+  );
+  const topAlbums = albums.data.map((album, index) => {
+    const artwork = artworkQuery.data?.albums[index];
+    return artwork ? { ...album, artwork: artwork.artwork, palette: artwork.palette } : album;
+  });
+  useEffect(() => {
+    if (artworkQuery.isError) {
+      console.error("Failed to load artwork for top music.", artworkQuery.error);
+    }
+  }, [artworkQuery.error, artworkQuery.isError]);
+  return <MusicTopMusic tracks={[]} albums={topAlbums} artists={[]} type="albums" />;
 }
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
@@ -315,6 +376,7 @@ function TopArtistsPanel() {
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
       tracks: [],
+      albums: [],
       artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
     }),
   );
@@ -327,5 +389,5 @@ function TopArtistsPanel() {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={[]} artists={topArtists} type="artists" />;
+  return <MusicTopMusic tracks={[]} albums={[]} artists={topArtists} type="artists" />;
 }

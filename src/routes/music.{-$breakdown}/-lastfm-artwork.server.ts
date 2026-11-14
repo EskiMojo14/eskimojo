@@ -18,6 +18,10 @@ const albumsSchema = v.union([
     topalbums: v.object({ album: v.array(v.object({ image: v.optional(imageSchema) })) }),
   }),
 ]);
+const albumSchema = v.union([
+  errorSchema,
+  v.object({ album: v.object({ image: v.optional(imageSchema) }) }),
+]);
 
 type ArtworkResult = { artwork?: Artwork; incomplete: boolean };
 const cache = new Map<string, { artwork?: Artwork; expiresAt: number }>();
@@ -153,6 +157,31 @@ export function addLastfmTrackArtwork<
         return undefined;
       }
       const imageUrl = bestLastfmArtwork(response.track.album?.image);
+      return imageUrl ? { imageUrl } : undefined;
+    },
+    signal,
+  );
+}
+
+export function addLastfmAlbumArtwork<
+  T extends { name: string; artist: string; artwork?: Artwork },
+>(items: Array<T>, signal: AbortSignal) {
+  return addArtwork(
+    items,
+    (item) => JSON.stringify(["album", item.artist, item.name]),
+    async (item, requestSignal) => {
+      const response = await fetchLastfm({
+        method: "album.getInfo",
+        params: { artist: item.artist, album: item.name, autocorrect: 0 },
+        schema: albumSchema,
+        signal: requestSignal,
+        onResponse: handleResponse,
+      });
+      if ("error" in response) {
+        handleError(response);
+        return undefined;
+      }
+      const imageUrl = bestLastfmArtwork(response.album.image);
       return imageUrl ? { imageUrl } : undefined;
     },
     signal,

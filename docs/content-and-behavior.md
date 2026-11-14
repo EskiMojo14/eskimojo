@@ -338,9 +338,9 @@ The Now playing icon and label and listening-summary counts use the theme's
 tertiary accent. Summary card surfaces and labels remain neutral.
 
 Provide two listening tabs: Top music (the default) and Recently played.
-Top music has secondary Tracks and Artists tabs with one shared listening-period
-picker. The `type` search parameter selects `tracks` (the default) or `artists`;
-`/music?type=artists` opens artists directly. Show only the selected ranking at
+Top music has secondary Tracks, Albums, and Artists tabs, in that order, with one shared listening-period
+picker. The `type` search parameter selects `tracks` (the default), `albums`, or `artists`;
+`/music?type=albums` and `/music?type=artists` open those rankings directly. Show only the selected ranking at
 every screen size. Use real navigation links that preserve the listening period;
 period changes and primary-tab navigation retain `type`. The secondary tabs stay
 available while rankings load. Only fetch and preload the selected ranking,
@@ -357,7 +357,7 @@ Use `/music` for the default view, `/music/top-music` for its explicit URL, and
 are required before launch.
 
 Use current Last.fm-backed data rather than presenting a static historical
-snapshot as live. Keep these period choices for Top Tracks and Top Artists:
+snapshot as live. Keep these period choices for Top Tracks, Top Albums, and Top Artists:
 
 - 7 days (`7day`);
 - 30 days (`1month`);
@@ -373,6 +373,11 @@ and use its album images. For missing artist images, call `artist.getTopAlbums`
 with `limit=1` and use the most popular album's cover. This is representative
 album artwork, not an artist portrait; do not call `artist.getInfo`, whose images
 can be placeholders.
+Fetch album rankings from `user.getTopAlbums`, showing the album name, artist,
+rank, play count, and cover. Prefer covers already returned with the ranking;
+only call `album.getInfo` with album and artist names when a cover is missing.
+Album artwork shares the existing lookup queue, cache, cooldown, and palette
+processing; never look up an album as a track.
 
 Additional artwork lookups share a per-process queue with at least 250ms between
 request starts and a ten-second per-batch deadline. Deduplicate repeated entries
@@ -398,7 +403,7 @@ hours. Cancellation still propagates instead of producing fallback data.
 
 Current defaults:
 
-- Top tracks and Top artists: all time, ten results each;
+- Top tracks, Top albums, and Top artists: all time, ten results each;
 - Recently played: ten tracks.
 
 Link to the Last.fm profile from this section:

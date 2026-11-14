@@ -11,6 +11,7 @@ import { periodSchema, type Period } from "./-constants";
 import { addLastfmArtworkFallback, fetchLastfm, imageSchema, withLastfmArtwork } from "./-lastfm";
 import {
   addLastfmArtistArtwork,
+  addLastfmAlbumArtwork,
   addLastfmTrackArtwork,
   getLastfmArtworkRetryAfter,
 } from "./-lastfm-artwork.server";
@@ -73,17 +74,15 @@ export type RecentTrack = v.InferOutput<typeof recentTrackSchema> & {
   palette?: ArtworkPalette;
 };
 
+const artworkWithArtistParams = v.object({
+  name: v.string(),
+  artist: v.string(),
+  lastfmArtworkUrl: v.optional(v.pipe(v.string(), v.maxLength(2048))),
+});
+
 const musicArtworkParams = v.object({
-  tracks: v.pipe(
-    v.array(
-      v.object({
-        name: v.string(),
-        artist: v.string(),
-        lastfmArtworkUrl: v.optional(v.pipe(v.string(), v.maxLength(2048))),
-      }),
-    ),
-    v.maxLength(11),
-  ),
+  tracks: v.pipe(v.array(artworkWithArtistParams), v.maxLength(11)),
+  albums: v.pipe(v.array(artworkWithArtistParams), v.maxLength(10)),
   artists: v.pipe(
     v.array(
       v.object({
@@ -101,20 +100,24 @@ const musicArtworkRetryDelay = 30_000;
 export const resolveMusicArtwork = createServerOnlyFn(
   async (data: v.InferOutput<typeof musicArtworkParams>, signal: AbortSignal) => {
     const tracksWithArtwork = addLastfmArtworkFallback(data.tracks);
+    const albumsWithArtwork = addLastfmArtworkFallback(data.albums);
     const artistsWithArtwork = addLastfmArtworkFallback(data.artists);
-    const [trackArtwork, artistArtwork] = await Promise.all([
+    const [trackArtwork, albumArtwork, artistArtwork] = await Promise.all([
       addLastfmTrackArtwork(tracksWithArtwork, signal),
+      addLastfmAlbumArtwork(albumsWithArtwork, signal),
       addLastfmArtistArtwork(artistsWithArtwork, signal),
     ]);
-    const [tracks, artists] = await Promise.all([
+    const [tracks, albums, artists] = await Promise.all([
       addArtworkPalettes(trackArtwork.items, signal),
+      addArtworkPalettes(albumArtwork.items, signal),
       addArtworkPalettes(artistArtwork.items, signal),
     ]);
     return {
       tracks,
+      albums,
       artists,
       retryAfterMs:
-        trackArtwork.incomplete || artistArtwork.incomplete
+        trackArtwork.incomplete || albumArtwork.incomplete || artistArtwork.incomplete
           ? Math.max(musicArtworkRetryDelay, getLastfmArtworkRetryAfter() ?? 0)
           : undefined,
     };
@@ -132,8 +135,8 @@ export const getMusicArtwork = (
   queryOptions({
     queryKey: ["music-artwork", params],
     queryFn: async ({ signal }): Promise<Awaited<ReturnType<typeof getMusicArtworkFn>>> => {
-      if (params.tracks.length === 0 && params.artists.length === 0) {
-        return { tracks: [], artists: [], retryAfterMs: undefined };
+      if (params.tracks.length === 0 && params.albums.length === 0 && params.artists.length === 0) {
+        return { tracks: [], albums: [], artists: [], retryAfterMs: undefined };
       }
       const requestSignal = anyAbortSignal(signal, signalOpt);
       try {
@@ -143,6 +146,7 @@ export const getMusicArtwork = (
         console.error("Failed to load music artwork; using Last.fm artwork or icons.", error);
         return {
           tracks: addLastfmArtworkFallback(params.tracks),
+          albums: addLastfmArtworkFallback(params.albums),
           artists: addLastfmArtworkFallback(params.artists),
           retryAfterMs: musicArtworkRetryDelay,
         };
@@ -255,6 +259,37 @@ export const getTopTracks = (
     queryFn: ({ signal }) =>
       getTopTracksFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
     select: (res) => res.toptracks.track,
+  });
+
+export const topAlbumSchema = topTrackSchema;
+export type TopAlbum = TopTrack;
+
+const getTopAlbumsParams = v.object({
+  period: periodSchema,
+  limit: v.optional(v.number()),
+});
+
+export const getTopAlbumsFn = createServerFn({ method: "GET" })
+  .validator(getTopAlbumsParams)
+  .handler(async ({ data }) => {
+    const response = await fetchLastfm({
+      method: "user.getTopAlbums",
+      params: data,
+      signal: getRequest().signal,
+      schema: v.object({ topalbums: v.object({ album: v.array(topAlbumSchema) }) }),
+    });
+    return response;
+  });
+
+export const getTopAlbums = (
+  params: v.InferInput<typeof getTopAlbumsParams>,
+  signalOpt?: AbortSignal,
+) =>
+  queryOptions({
+    queryKey: ["top-albums", params],
+    queryFn: ({ signal }) =>
+      getTopAlbumsFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
+    select: (res) => res.topalbums.album,
   });
 
 const topArtistSchema = v.pipe(

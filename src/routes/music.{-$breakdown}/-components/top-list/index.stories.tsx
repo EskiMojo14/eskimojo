@@ -26,6 +26,7 @@ const meta = preview.meta({
 export const Artists = meta.story({
   args: {
     title: "Top artists",
+    kind: "artists",
     items: [
       {
         name: "Radiohead",
@@ -42,13 +43,31 @@ export const Artists = meta.story({
 
 export const Tracks = meta.story({
   args: {
+    kind: "tracks",
     title: "Top tracks",
     items: [{ name: "Let It Happen", artist: "Tame Impala", rank: 1, playcount: 1 }],
   },
 });
 
+export const Albums = meta.story({
+  args: {
+    title: "Top albums",
+    kind: "albums",
+    items: [
+      {
+        name: "Currents",
+        artist: "Tame Impala",
+        rank: 1,
+        playcount: 1200,
+        artwork: { imageUrl: exampleCoverUrl },
+        palette: fixturePalette("eskimojo"),
+      },
+    ],
+  },
+});
+
 export const Empty = meta.story({
-  args: { title: "Top tracks", items: [] },
+  args: { title: "Top tracks", kind: "tracks", items: [] },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole("heading", { name: "No listening data for this period." }),
@@ -60,6 +79,7 @@ export const Empty = meta.story({
 
 export const NarrowTracks = meta.story({
   args: {
+    kind: "tracks",
     title: "Top tracks",
     items: [{ name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 }],
   },
@@ -82,6 +102,7 @@ export const NarrowTracks = meta.story({
 
 export const NarrowArtists = meta.story({
   args: {
+    kind: "artists",
     title: "Top artists",
     items: [{ name: "Scary Pockets", rank: 1, playcount: 4794 }],
   },

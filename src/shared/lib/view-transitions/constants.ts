@@ -34,7 +34,12 @@ export const filterGroups = [
     route: "/music/{-$breakdown}",
     parameter: "type",
     defaultValue: musicTypeSchema.fallback,
-    types: (_from, to) => [to === "artists" ? "tab-forward" : "tab-backward", "music-type"],
+    types: (from, to) => [
+      musicTypeSchema.options.indexOf(to) > musicTypeSchema.options.indexOf(from)
+        ? "tab-forward"
+        : "tab-backward",
+      "music-type",
+    ],
   }),
   defineFilterGroup({
     route: "/music/{-$breakdown}",

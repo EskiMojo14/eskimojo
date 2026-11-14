@@ -1,6 +1,7 @@
 import { useId, type ComponentProps, type ComponentPropsWithRef, type ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
+import type { MusicType } from "#/routes/music.{-$breakdown}/-constants";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { Skeleton } from "#/shared/components/skeleton";
 
@@ -9,13 +10,7 @@ const topListBem = BEMHelper("music-top-list");
 const skeletonBem = BEMHelper("music-skeleton");
 const searchLinksBem = BEMHelper("music-search-links");
 
-export function MusicListSkeleton({
-  title,
-  kind,
-}: {
-  title: string;
-  kind: "recent" | "tracks" | "artists";
-}) {
+export function MusicListSkeleton({ title, kind }: { title: string; kind: "recent" | MusicType }) {
   const ranked = kind !== "recent";
   return (
     <MusicListLayout
