@@ -6,12 +6,13 @@ import {
   getRouteApi,
   RouterProvider,
 } from "@tanstack/react-router";
-import { useMemo, type ComponentProps, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { expect, waitFor } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
 import { musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants";
+import type { TopAlbum, TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { MusicTopMusic, MusicTopMusicSkeleton, MusicTopMusicTabs } from "./index";
@@ -23,10 +24,22 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/");
 
 function TopMusicContent({
   loading = false,
-  ...props
-}: ComponentProps<typeof MusicTopMusic> & { loading?: boolean }) {
+  tracks,
+  albums,
+  artists,
+}: {
+  tracks: ReadonlyArray<TopTrack>;
+  albums: ReadonlyArray<TopAlbum>;
+  artists: ReadonlyArray<TopArtist>;
+  loading?: boolean;
+}) {
   const { type } = musicRoute.useSearch();
-  return loading ? <MusicTopMusicSkeleton type={type} /> : <MusicTopMusic {...props} type={type} />;
+  if (loading) return <MusicTopMusicSkeleton type={type} />;
+  return {
+    tracks: <MusicTopMusic tracks={tracks} />,
+    albums: <MusicTopMusic albums={albums} />,
+    artists: <MusicTopMusic artists={artists} />,
+  }[type];
 }
 
 function createDemoRouter(children: ReactNode, initialEntry: string) {
@@ -63,7 +76,7 @@ function TopMusicDemo({
 
 const meta = preview.meta({
   title: "Music/Top Music",
-  component: MusicTopMusic,
+  component: TopMusicContent,
   render: (args) => (
     <TopMusicDemo>
       <TopMusicContent {...args} />
@@ -89,7 +102,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Top tracks, albums, and artists for the same listening period, in that order, separated by secondary navigation links with decorative icons. Tracks is the default; ?type=albums or ?type=artists opens the corresponding ranking directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
+          "Top tracks, albums, and artists for the same listening period, in that order, separated by secondary navigation links with decorative icons. MusicTopMusic accepts exactly one ranking prop (tracks, albums, or artists) and infers the panel type from it, including for empty arrays. This demo supplies data for all tabs. Tracks is the default; ?type=albums or ?type=artists opens the corresponding ranking directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
       },
     },
   },

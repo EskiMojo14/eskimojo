@@ -129,10 +129,11 @@ export const getMusicArtworkFn = createServerFn({ method: "POST" })
   .handler(({ data }) => resolveMusicArtwork(data, getRequest().signal));
 
 export const getMusicArtwork = (
-  params: v.InferInput<typeof musicArtworkParams>,
+  { tracks = [], albums = [], artists = [] }: Partial<v.InferInput<typeof musicArtworkParams>>,
   signalOpt?: AbortSignal,
-) =>
-  queryOptions({
+) => {
+  const params = { tracks, albums, artists };
+  return queryOptions({
     queryKey: ["music-artwork", params],
     queryFn: async ({ signal }): Promise<Awaited<ReturnType<typeof getMusicArtworkFn>>> => {
       if (params.tracks.length === 0 && params.albums.length === 0 && params.artists.length === 0) {
@@ -161,6 +162,7 @@ export const getMusicArtwork = (
     refetchIntervalInBackground: false,
     gcTime: musicArtworkCacheDuration,
   });
+};
 
 const getRecentTracksParams = v.object({
   limit: v.optional(v.number()),

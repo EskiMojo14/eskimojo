@@ -1,5 +1,7 @@
 import * as v from "valibot";
 
+export const recentTracksRefreshInterval = 60_000;
+
 export const periodSchema = v.fallback(
   v.picklist(["7day", "1month", "3month", "6month", "12month", "overall"]),
   "overall",
