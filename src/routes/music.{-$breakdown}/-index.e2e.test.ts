@@ -8,7 +8,7 @@ import { mockServerFn } from "#test/e2e/msw";
 import { serverFns } from "#test/e2e/server-fns.gen";
 
 import { MusicPage } from "./-index.e2e.model";
-import type { RecentTrack, TopArtist, TopTrack, UserData } from "./-query";
+import type { getMusicArtwork, RecentTrack, TopArtist, TopTrack, UserData } from "./-query";
 
 const test = createTest({ home: HomePage, music: MusicPage });
 
@@ -106,13 +106,13 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
 }
 
 function musicArtwork(
-  before: () => void | Promise<void> = () => {},
+  before: (data: Parameters<typeof getMusicArtwork>[0]) => void | Promise<void> = () => {},
   imageUrl?: string,
   lastfmImageUrl?: string,
 ) {
   const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
   return mockServerFn(music.getMusicArtworkFn, async (data) => {
-    await before();
+    await before(data);
     return {
       tracks: data.tracks.map((track) => mockedArtwork(track, imageUrl, lastfmImageUrl)),
       artists: data.artists.map((artist) => mockedArtwork(artist, imageUrl, lastfmImageUrl)),
@@ -147,6 +147,7 @@ test("shows music controls before independent requests finish", async ({ network
   await music.navigate();
   await expect(music.tabs).toBeVisible();
   await expect(music.topMusic.periods).toBeVisible();
+  await expect(music.topMusic.tabs).toBeVisible();
   await expect(music.summaryLoading).toBeVisible();
   await expect(music.topMusic.loading).toBeVisible();
 
@@ -173,12 +174,12 @@ test("waits for artwork and palettes before revealing music lists", async ({ net
   let artworkRequests = 0;
   network.use(
     ...lastfm(undefined, recentTracksWithFallback, topTracks, topArtists),
-    musicArtwork(async () => {
+    musicArtwork(async ({ tracks }) => {
       artworkRequests++;
-      if (artworkRequests === 1) {
+      if (tracks.some(({ name }) => name === "Lost Chapter")) {
         topArtworkStarted.resolve();
         await topArtworkPending.promise;
-      } else if (artworkRequests === 2) {
+      } else if (tracks.some(({ name }) => name === "Let It Happen")) {
         recentArtworkStarted.resolve();
         await recentArtworkPending.promise;
       }
@@ -199,6 +200,7 @@ test("waits for artwork and palettes before revealing music lists", async ({ net
     "naturalWidth",
     1,
   );
+  await music.topMusic.artists.select();
   await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
@@ -222,12 +224,13 @@ test("waits for artwork and palettes before revealing music lists", async ({ net
   );
 
   await music.topMusic.select();
+  await music.topMusic.tracks.select();
   await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
   await expect(music.topMusic.loading).not.toBeVisible();
-  expect(artworkRequests).toBe(2);
+  expect(artworkRequests).toBe(3);
 });
 
 test("renders Last.fm artwork returned by background enrichment", async ({ network, music }) => {
@@ -255,17 +258,28 @@ test("renders Last.fm artwork returned by background enrichment", async ({ netwo
   );
 });
 
-test("prefetches Last.fm cover artwork for tracks and artists across tabs", async ({
+test("prefetches only the selected ranking and artwork and reuses visited tabs", async ({
   network,
   music,
 }) => {
   const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
   const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
-  let requests = 0;
+  const methods: Array<LastfmMethod> = [];
+  const requests: Array<{ tracks: Array<string>; artists: Array<string> }> = [];
   network.use(
-    ...lastfm(undefined, recentTracks, topTracks, topArtists),
+    ...lastfm(
+      (method) => {
+        methods.push(method);
+      },
+      recentTracks,
+      topTracks,
+      topArtists,
+    ),
     mockServerFn(musicFns.getMusicArtworkFn, (data) => {
-      requests++;
+      requests.push({
+        tracks: data.tracks.map(({ name }) => name),
+        artists: data.artists.map(({ name }) => name),
+      });
       return {
         tracks: data.tracks.map((track) => ({ ...track, artwork: { imageUrl } })),
         artists: data.artists.map((artist) => ({ ...artist, artwork: { imageUrl } })),
@@ -278,16 +292,81 @@ test("prefetches Last.fm cover artwork for tracks and artists across tabs", asyn
     "naturalWidth",
     1,
   );
+  expect(methods.toSorted()).toEqual(["user.getInfo", "user.getTopTracks"]);
+  expect(requests).toEqual([{ tracks: ["Lost Chapter"], artists: [] }]);
+  await music.topMusic.artists.select();
   await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
+  expect(methods.toSorted()).toEqual(["user.getInfo", "user.getTopArtists", "user.getTopTracks"]);
+  expect(requests).toEqual([
+    { tracks: ["Lost Chapter"], artists: [] },
+    { tracks: [], artists: ["Radiohead"] },
+  ]);
+  await music.topMusic.tracks.select();
+  await expect(music.topMusic.artworkImage("Lost Chapter", imageUrl)).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
+  expect(requests).toHaveLength(2);
   await music.recent.select();
   await expect(music.recent.artworkImage("Let It Happen", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
-  expect(requests).toBe(2);
+  expect(requests).toEqual([
+    { tracks: ["Lost Chapter"], artists: [] },
+    { tracks: [], artists: ["Radiohead"] },
+    { tracks: ["Let It Happen"], artists: [] },
+  ]);
+});
+
+test("secondary tabs reuse loaded rankings and preserve the selection when changing period", async ({
+  network,
+  music,
+  page,
+}) => {
+  let artworkRequests = 0;
+  const methods: Array<LastfmMethod> = [];
+  network.use(
+    ...lastfm(
+      (method) => {
+        methods.push(method);
+      },
+      [],
+      topTracks,
+      topArtists,
+    ),
+    musicArtwork(() => {
+      artworkRequests++;
+    }),
+  );
+  await music.navigate();
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await expect(music.topMusic.artist("Radiohead")).not.toBeVisible();
+  await music.topMusic.tracks.tabLink.focus();
+  await music.topMusic.tracks.tabLink.press("ArrowRight");
+  await expect(music.topMusic.artists.tabLink).toBeFocused();
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await music.topMusic.artists.tabLink.press("Enter");
+  await expect(page).toHaveURL(/type=artists/);
+  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.topMusic.track("Lost Chapter")).not.toBeVisible();
+  expect(artworkRequests).toBe(2);
+
+  await music.topMusic.period("7 days").click();
+  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.topMusic.artists.tabLink).toHaveAttribute("aria-selected", "true");
+  await expect(music.topMusic.track("Lost Chapter")).not.toBeVisible();
+  await expect(music.topMusic.period("7 days")).toHaveAttribute("aria-current", "page");
+  expect(methods.filter((method) => method === "user.getTopTracks")).toHaveLength(1);
+  expect(methods.filter((method) => method === "user.getTopArtists")).toHaveLength(2);
+  expect(artworkRequests).toBe(2);
+  await music.recent.select();
+  await music.topMusic.select();
+  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
+  await expect(music.topMusic.period("7 days")).toHaveAttribute("aria-current", "page");
 });
 
 test("retries incomplete artwork after its cooldown without refetching early on tab changes", async ({
@@ -325,14 +404,15 @@ test("retries incomplete artwork after its cooldown without refetching early on 
     "naturalWidth",
     1,
   );
+  await music.topMusic.artists.select();
   await expect(music.topMusic.artworkImage("Radiohead", imageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
-  expect(artworkRequests).toBe(2);
+  expect(artworkRequests).toBe(3);
 
   await page.clock.fastForward(30_000);
-  expect(artworkRequests).toBe(2);
+  expect(artworkRequests).toBe(3);
 });
 
 test("artwork POST failures preserve music data and retry enrichment after the cooldown", async ({
@@ -360,7 +440,9 @@ test("artwork POST failures preserve music data and retry enrichment after the c
       artworkRequests++;
       if (artworkRequests === 1) return HttpResponse.text("Service unavailable", { status: 503 });
       return {
-        tracks: data.tracks.map((track) => mockedArtwork(track, recoveredImageUrl)),
+        tracks: data.tracks.map((track) =>
+          mockedArtwork(track, recoveredImageUrl, recoveredImageUrl),
+        ),
         artists: data.artists.map((artist) => mockedArtwork(artist, recoveredImageUrl)),
         retryAfterMs: undefined,
       };
@@ -368,21 +450,19 @@ test("artwork POST failures preserve music data and retry enrichment after the c
   );
   await music.navigate();
   await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
-  await expect(music.topMusic.artist("Radiohead")).toBeVisible();
   await expect(music.topMusic.artworkImage("Lost Chapter", lastfmArtworkUrl)).toHaveJSProperty(
     "naturalWidth",
     64,
   );
   await expect(music.alerts).not.toBeVisible();
   expect(artworkRequests).toBe(1);
-
   await page.clock.fastForward(20_000);
   await music.recent.select();
   await music.topMusic.select();
   expect(artworkRequests).toBe(1);
 
   await page.clock.fastForward(10_000);
-  await expect(music.topMusic.artworkImage("Radiohead", recoveredImageUrl)).toHaveJSProperty(
+  await expect(music.topMusic.artworkImage("Lost Chapter", recoveredImageUrl)).toHaveJSProperty(
     "naturalWidth",
     1,
   );
@@ -467,6 +547,7 @@ test("failed rankings preserve summary and retry without showing empty listening
   network.use(...lastfm());
   await music.topMusic.retry.click();
   await expect(music.topMusic.topTracks).toBeVisible();
+  await music.topMusic.artists.select();
   await expect(music.topMusic.topArtists).toBeVisible();
 });
 
@@ -485,15 +566,17 @@ test("changing period or tab recovers the active tab after an error", async ({
   await skipRetryBackoff(page, music.topMusic.error);
 
   network.use(...lastfm());
+  await music.topMusic.artists.select();
+  await expect(music.topMusic.topArtists).toBeVisible();
   await music.topMusic.period("7 days").click();
-  await expect(music.topMusic.topTracks).toBeVisible();
+  await expect(music.topMusic.topArtists).toBeVisible();
 
   network.use(...lastfm(failure));
   await music.recent.select();
   await skipRetryBackoff(page, music.recent.error);
 
   await music.topMusic.select();
-  await expect(music.topMusic.topTracks).toBeVisible();
+  await expect(music.topMusic.topArtists).toBeVisible();
   await expect(music.alerts).not.toBeVisible();
 });
 

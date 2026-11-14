@@ -1,5 +1,9 @@
 import { gigBreakdownSchema } from "#/routes/gigs.{-$breakdown}/-constants";
-import { musicBreakdownSchema, periodSchema } from "#/routes/music.{-$breakdown}/-constants";
+import {
+  musicBreakdownSchema,
+  musicTypeSchema,
+  periodSchema,
+} from "#/routes/music.{-$breakdown}/-constants";
 import { links } from "#/shared/components/sidebar/groups";
 
 import { defineDetailGroup, defineFilterGroup, defineTabGroup } from "./factories";
@@ -26,6 +30,12 @@ export const detailGroups = [
 ];
 
 export const filterGroups = [
+  defineFilterGroup({
+    route: "/music/{-$breakdown}",
+    parameter: "type",
+    defaultValue: musicTypeSchema.fallback,
+    types: (_from, to) => [to === "artists" ? "tab-forward" : "tab-backward", "music-type"],
+  }),
   defineFilterGroup({
     route: "/music/{-$breakdown}",
     parameter: "period",

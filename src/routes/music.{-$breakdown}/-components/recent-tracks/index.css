@@ -108,9 +108,6 @@
 }
 
 .music-top-music {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
-  align-items: start;
   max-inline-size: 80rem;
   margin-inline: auto;
 }
@@ -121,11 +118,29 @@
   padding: 16px;
 }
 
+.music-panel {
+  view-transition-name: music-results;
+}
+
 :root:active-view-transition-type(music-period) {
   view-transition-name: none;
 
-  .music-top-music {
+  .music-panel {
+    view-transition-name: none;
+  }
+
+  .music-top-music[role="tabpanel"]:not([hidden]) {
     view-transition-name: music-results;
+  }
+}
+
+:root:active-view-transition-type(music-type) {
+  .tabs__route-content {
+    view-transition-name: none;
+  }
+
+  .music-top-music[role="tabpanel"]:not([hidden]) {
+    view-transition-name: tab-content;
   }
 }
 

@@ -3,7 +3,11 @@ import * as v from "valibot";
 import { expect, test } from "vite-plus/test";
 
 import { gigBreakdownSchema } from "#/routes/gigs.{-$breakdown}/-constants";
-import { musicBreakdownSchema, periodSchema } from "#/routes/music.{-$breakdown}/-constants";
+import {
+  musicBreakdownSchema,
+  musicTypeSchema,
+  periodSchema,
+} from "#/routes/music.{-$breakdown}/-constants";
 import { projectKindSchema } from "#/routes/projects/-schema";
 
 import { defineFilterGroup } from "./factories";
@@ -21,7 +25,10 @@ const router = createRouter({
             path === "/projects"
               ? v.object({ type: v.optional(projectKindSchema) })
               : path === "/music/{-$breakdown}"
-                ? v.object({ period: v.optional(periodSchema) })
+                ? v.object({
+                    period: v.optional(periodSchema),
+                    type: v.optional(musicTypeSchema, musicTypeSchema.fallback),
+                  })
                 : undefined,
           params: {
             parse: (params: Record<string, string>) => ({
@@ -134,6 +141,13 @@ test.each([
   ["/music/recent/", "/music/top-music/", ["tab-backward"]],
   ["/projects?type=package", "/projects/example?ref=list#details", ["project"]],
   ["/music", "/music/recent", ["tab-forward"]],
+  ["/music", "/music?type=artists", ["tab-forward", "music-type"]],
+  ["/music?type=artists", "/music?type=tracks", ["tab-backward", "music-type"]],
+  ["/music?period=7day", "/music?period=1month&type=artists", ["tab-forward", "music-type"]],
+  ["/music?type=artists", "/music/recent?type=tracks", ["tab-forward"]],
+  ["/music?type=artists", "/music?type=artists&period=7day", ["music-period"]],
+  ["/music?type=artists", "/music?type=artists#details", []],
+  ["/music?type=invalid", "/music?type=tracks", []],
   ["/music/recent", "/music/top-music", ["tab-backward"]],
   ["/music", "/music/top-music", false],
   ["/music/top-music", "/music/", false],

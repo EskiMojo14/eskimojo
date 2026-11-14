@@ -1,8 +1,39 @@
+import type { Page } from "playwright";
+
 import { expect, PageObjectModel, TabObjectModel } from "#test/e2e";
+
+class TopRankingTab extends TabObjectModel<TopMusicTab> {
+  url = "/music";
+
+  constructor(
+    page: Page,
+    parent: TopMusicTab,
+    public tabName: "Tracks" | "Artists",
+  ) {
+    super(page, parent);
+  }
+
+  override matchesUrl(url: URL) {
+    return (
+      this.parent.matchesUrl(url) &&
+      (url.searchParams.get("type") ?? "tracks") === this.tabName.toLowerCase()
+    );
+  }
+
+  override get tabPanel() {
+    return this.parent.tabPanel.getByRole("tabpanel", { name: this.tabName, includeHidden: true });
+  }
+}
 
 class TopMusicTab extends TabObjectModel<MusicPage> {
   url = "/music";
   tabName = "Top music";
+  tracks = new TopRankingTab(this.page, this, "Tracks");
+  artists = new TopRankingTab(this.page, this, "Artists");
+
+  get tabs() {
+    return this.tabPanel.getByRole("tablist", { name: "Top music rankings" });
+  }
 
   override matchesUrl(url: URL) {
     return url.pathname === this.url || url.pathname === "/music/top-music";

@@ -1,4 +1,4 @@
-import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import * as v from "valibot";
@@ -20,8 +20,9 @@ import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tab
 import {
   MusicTopMusic,
   MusicTopMusicSkeleton,
+  MusicTopMusicTabs,
 } from "#/routes/music.{-$breakdown}/-components/top-music/index";
-import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
+import { musicBreakdownSchema, musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
 import {
   getRecentTracks,
   getMusicArtwork,
@@ -63,12 +64,13 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
   },
   validateSearch: v.object({
     period: v.optional(periodSchema),
+    type: v.optional(musicTypeSchema, musicTypeSchema.fallback),
   }),
-  loaderDeps: ({ search: { period } }) => ({ period }),
+  loaderDeps: ({ search: { period, type } }) => ({ period, type }),
   loader: ({
     context: { queryClient },
     params: { breakdown = musicBreakdownSchema.fallback },
-    deps: { period = periodSchema.fallback },
+    deps: { period = periodSchema.fallback, type },
   }) => {
     const preloadedImages = new Set<string>();
     const preloadImages = (urls: Array<string | undefined>) => {
@@ -112,29 +114,37 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
           .catch(reportPreloadError);
         break;
       case "top-music": {
-        const tracks = queryClient.query({
-          ...getTopTracks({ limit: 10, period }),
-          staleTime: "static",
-        });
-        const artists = queryClient.query({
-          ...getTopArtists({ limit: 10, period }),
-          staleTime: "static",
-        });
-        void Promise.all([tracks, artists])
-          .then(([topTracks, topArtists]) =>
-            preloadArtwork({
-              tracks: topTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
-                name,
-                artist,
-                lastfmArtworkUrl,
-              })),
-              artists: topArtists.map(({ name, lastfmArtworkUrl }) => ({
-                name,
-                lastfmArtworkUrl,
-              })),
-            }),
-          )
-          .catch(reportPreloadError);
+        if (type === "artists") {
+          void queryClient
+            .query({
+              ...getTopArtists({ limit: 10, period }),
+              staleTime: "static",
+            })
+            .then((artists) =>
+              preloadArtwork({
+                tracks: [],
+                artists: artists.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
+              }),
+            )
+            .catch(reportPreloadError);
+        } else {
+          void queryClient
+            .query({
+              ...getTopTracks({ limit: 10, period }),
+              staleTime: "static",
+            })
+            .then((tracks) =>
+              preloadArtwork({
+                tracks: tracks.map(({ name, artist, lastfmArtworkUrl }) => ({
+                  name,
+                  artist,
+                  lastfmArtworkUrl,
+                })),
+                artists: [],
+              }),
+            )
+            .catch(reportPreloadError);
+        }
         break;
       }
     }
@@ -156,7 +166,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
-  const { period = periodSchema.fallback } = Route.useSearch();
+  const { period = periodSchema.fallback, type } = Route.useSearch();
   return (
     <main>
       <MusicDataBoundary
@@ -172,23 +182,31 @@ function RouteComponent() {
           id={`music-${value}-panel`}
           tabId={`music-${value}-tab`}
           hidden={breakdown !== value}
-          className="tabs__route-content"
+          className="music-panel tabs__route-content"
         >
           {breakdown === value && (
             <>
-              {breakdown !== "recent" && <MusicPeriodPicker />}
-              <MusicDataBoundary
-                resetKey={breakdown === "recent" ? breakdown : `${breakdown}:${period}`}
-                loading={
-                  breakdown === "recent" ? <RecentTracksSkeleton /> : <MusicTopMusicSkeleton />
-                }
-                errorTitle={
-                  breakdown === "recent" ? "Couldn't load recent tracks" : "Couldn't load top music"
-                }
-              >
-                {breakdown === "recent" && <RecentTracksPanel />}
-                {breakdown === "top-music" && <TopMusicPanel />}
-              </MusicDataBoundary>
+              {breakdown === "recent" ? (
+                <MusicDataBoundary
+                  resetKey={breakdown}
+                  loading={<RecentTracksSkeleton />}
+                  errorTitle="Couldn't load recent tracks"
+                >
+                  <RecentTracksPanel />
+                </MusicDataBoundary>
+              ) : (
+                <>
+                  <MusicPeriodPicker />
+                  <MusicTopMusicTabs />
+                  <MusicDataBoundary
+                    resetKey={`${breakdown}:${period}:${type}`}
+                    loading={<MusicTopMusicSkeleton type={type} />}
+                    errorTitle="Couldn't load top music"
+                  >
+                    {type === "artists" ? <TopArtistsPanel /> : <TopTracksPanel />}
+                  </MusicDataBoundary>
+                </>
+              )}
             </>
           )}
         </TabLinkPanel>
@@ -259,13 +277,11 @@ function RecentTracksPanel() {
 }
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
-function TopMusicPanel() {
+function TopTracksPanel() {
   const { period = periodSchema.fallback } = Route.useSearch();
-  const [tracks, artists] = useSuspenseQueries({
-    queries: [
-      { ...getTopTracks({ limit: 10, period }), staleTime: "static" },
-      { ...getTopArtists({ limit: 10, period }), staleTime: "static" },
-    ],
+  const tracks = useSuspenseQuery({
+    ...getTopTracks({ limit: 10, period }),
+    staleTime: "static",
   });
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
@@ -274,13 +290,34 @@ function TopMusicPanel() {
         artist,
         lastfmArtworkUrl,
       })),
-      artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
+      artists: [],
     }),
   );
   const topTracks = tracks.data.map((track, index) => {
     const artwork = artworkQuery.data?.tracks[index];
     return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
   });
+  useEffect(() => {
+    if (artworkQuery.isError) {
+      console.error("Failed to load artwork for top music.", artworkQuery.error);
+    }
+  }, [artworkQuery.error, artworkQuery.isError]);
+  return <MusicTopMusic tracks={topTracks} artists={[]} type="tracks" />;
+}
+
+// oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
+function TopArtistsPanel() {
+  const { period = periodSchema.fallback } = Route.useSearch();
+  const artists = useSuspenseQuery({
+    ...getTopArtists({ limit: 10, period }),
+    staleTime: "static",
+  });
+  const artworkQuery = useSuspenseQuery(
+    getMusicArtwork({
+      tracks: [],
+      artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
+    }),
+  );
   const topArtists = artists.data.map((artist, index) => {
     const artwork = artworkQuery.data?.artists[index];
     return artwork ? { ...artist, artwork: artwork.artwork, palette: artwork.palette } : artist;
@@ -290,5 +327,5 @@ function TopMusicPanel() {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
-  return <MusicTopMusic tracks={topTracks} artists={topArtists} />;
+  return <MusicTopMusic tracks={[]} artists={topArtists} type="artists" />;
 }
