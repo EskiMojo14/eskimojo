@@ -256,7 +256,10 @@ page shares the project's title, summary, and links between views. The router
 selects transition types from the source and destination locations, so link
 clicks and browser history behave consistently. Top-level sections and the
 Music/Gigs breakdowns animate in destination order, not history direction.
-Music period changes and project filters use their own transition types.
+Music ranking links combine a tab direction with `music-type` to animate only
+the secondary panel. Primary tab changes take precedence, followed by ranking
+changes, then period changes. Music periods and project filters use their own
+transition types.
 Default breakdown aliases share the same position; selecting an unchanged
 location does not animate. Switching directly between two project kinds uses
 the generic fade rather than animating the filtered cards.
@@ -335,10 +338,20 @@ The Now playing icon and label and listening-summary counts use the theme's
 tertiary accent. Summary card surfaces and labels remain neutral.
 
 Provide two listening tabs: Top music (the default) and Recently played.
-Top music combines Top tracks and Top artists with one shared listening-period
-picker. Show tracks first, then artists: side by side when the content area has
-room for two readable columns, and stacked on smaller screens. Each list adapts
-its row layout to its own available width.
+Top music has secondary Tracks and Artists tabs with one shared listening-period
+picker. The `type` search parameter selects `tracks` (the default) or `artists`;
+`/music?type=artists` opens artists directly. Show only the selected ranking at
+every screen size. Use real navigation links that preserve the listening period;
+period changes and primary-tab navigation retain `type`. The secondary tabs stay
+available while rankings load. Only fetch and preload the selected ranking,
+its artwork, and its images; defer the other ranking until its link is prefetched
+or activated. Revisit cached rankings and artwork without redundant requests.
+Each list adapts its row layout to its available width.
+Both tab levels use directional slide-and-fade transitions: primary tabs animate
+the whole listening panel; secondary tabs animate only the selected ranking.
+Period changes crossfade the ranking while keeping navigation live, and other
+navigation crossfades the listening panel independently of page movement.
+Respect reduced motion for all of these animations.
 Use `/music` for the default view, `/music/top-music` for its explicit URL, and
 `/music/recent` for Recently played. No redirects for the former separate tabs
 are required before launch.
@@ -395,7 +408,7 @@ Poll recent listening data to keep it current; retain the five-minute freshness
 window for top tracks rather than applying it to all Last.fm data. Do not
 silently present unavailable data as current.
 
-The route loader starts the summary and active tab's queries in parallel without
+The route loader depends on `period` and `type` and starts the summary and active tab's queries in parallel without
 waiting for them. Components consume the same cached queries with Suspense, so
 navigation can display the tabs and period picker immediately. The summary and
 active tab have independent skeleton loaders; changing the listening
@@ -444,15 +457,15 @@ The recent-track retry uses this instead of changing its label to "Retrying...".
 
 Following [Material 3 skeleton-loader guidance](https://m3.material.io/styles/motion/transitions/transition-patterns),
 the placeholders reuse the summary card grid and ten-row list layouts, including
-artwork, rankings, metadata, and the responsive top-music columns. Neutral surface
+artwork, rankings, metadata, and the selected top-music ranking. Neutral surface
 tokens and a staggered opacity pulse indicate loading; reduced motion disables
 the pulse and content reveal. Each fallback has one named, indeterminate progress
 element for assistive technology, while decorative placeholders are hidden and
 never keyboard-focusable.
 
-Loaded content and skeletons share `MusicSummaryLayout`, `MusicListLayout`,
-`MusicListRow`, and `MusicTopMusicLayout`. These own the summary copy, card
-labels, heading/list structure, row slots, and responsive columns. Data formatting,
+Loaded content and skeletons share `MusicSummaryLayout`, `MusicListLayout`, and
+`MusicListRow`. These own the summary copy, card labels, heading/list structure,
+and row slots. Top-music panels show only the selected ranking. Data formatting,
 count animation, interactive search links, and inert placeholders stay in their
 respective consumers, so loading states never need fake listening data.
 Each component's skeleton and layout live alongside its loaded implementation in

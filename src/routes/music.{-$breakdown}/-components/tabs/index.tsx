@@ -18,6 +18,7 @@ export function MusicBreakdownTabs() {
           key={value}
           id={`music-${value}-tab`}
           panelId={`music-${value}-panel`}
+          from={musicRoute.id}
           to="/music/{-$breakdown}"
           params={{
             breakdown:
