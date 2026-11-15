@@ -58,7 +58,7 @@ new conventions.
 - Keep relocatable tool configuration and its tests in `config/`, and ambient
   type declarations in `types/`. Keep `vite.config.ts`, `tsconfig.json`,
   `tsr.config.json`, and `netlify.toml` at the root for tool and editor discovery.
-  The CSS lint script selects `config/stylelint.config.js` with `--config`;
+  The CSS lint script selects `config/stylelint.config.ts` with `--config`;
   VS Code uses the same file through `stylelint.configFile`.
 - Keep route definitions in `src/routes`, following TanStack Router's
   file-based routing conventions.

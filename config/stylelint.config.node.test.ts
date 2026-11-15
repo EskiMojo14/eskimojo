@@ -5,14 +5,14 @@ test("preserves foundation overrides and generated-file exclusions with an expli
   const foundation = await stylelint.lint({
     code: "body { color: red; }",
     codeFilename: "src/shared/styles/typography.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
   expect(foundation.results[0]?.warnings).toEqual([]);
 
   const generated = await stylelint.lint({
     code: '@import "../ignored.css";',
     codeFilename: "src/shared/styles/theme/palettes/fixture.gen.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
   expect(generated.results[0]?.ignored).toBe(true);
 });
@@ -25,7 +25,7 @@ test.each([
   const { results } = await stylelint.lint({
     code,
     codeFilename: "src/color-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toEqual([]);
@@ -39,7 +39,7 @@ test.each([
   const { results } = await stylelint.lint({
     code,
     codeFilename: "src/color-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toHaveLength(1);

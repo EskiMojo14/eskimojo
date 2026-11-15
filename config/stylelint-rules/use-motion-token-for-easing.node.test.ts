@@ -72,7 +72,7 @@ test.each([
   const { results } = await stylelint.lint({
     code: css,
     codeFilename: "src/easing-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toEqual([
@@ -130,7 +130,7 @@ test.each([
   const { results } = await stylelint.lint({
     code: css,
     codeFilename: "src/easing-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toEqual([]);

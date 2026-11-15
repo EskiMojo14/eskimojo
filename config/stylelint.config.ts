@@ -1,19 +1,20 @@
 import stylelint from "stylelint";
+import type { Config } from "stylelint";
 
 import { code } from "#/utils/index.ts";
 
 import {
   rule as noParentRelativePaths,
   ruleName as noParentRelativePathsName,
-} from "./stylelint-rules/no-parent-relative-paths.js";
+} from "./stylelint-rules/no-parent-relative-paths.ts";
 import {
   rule as useCustomMediaForWidth,
   ruleName as useCustomMediaForWidthName,
-} from "./stylelint-rules/use-custom-media-for-width.js";
+} from "./stylelint-rules/use-custom-media-for-width.ts";
 import {
   rule as useMotionTokenForEasing,
   ruleName as useMotionTokenForEasingName,
-} from "./stylelint-rules/use-motion-token-for-easing.js";
+} from "./stylelint-rules/use-motion-token-for-easing.ts";
 
 const colorToken = code.regex`var\(--md-sys-color-[a-z-]+\)`;
 const colorMixArg = code.regex`(?:${colorToken}|currentcolor)(?:\s+\d+(?:\.\d+)?%)?`;
@@ -33,7 +34,7 @@ const colorValues = [
 
 // The plugin can't expand these shorthands, so it checks each word: allow the non-colour ones.
 const lineWords = String.raw`/^(?:[\d.]+[a-z]*|thin|medium|thick|auto|solid|dashed|dotted|double|groove|ridge|inset|outset|wavy)$/`;
-const shorthandWords = {
+const shorthandWords: Record<string, Array<string>> = {
   outline: [lineWords],
   "text-decoration": [
     lineWords,
@@ -41,7 +42,8 @@ const shorthandWords = {
   ],
 };
 
-const radiusProperties = ["/^border(-[a-z]+)*-radius$/"];
+const radiusProperty = "/^border(-[a-z]+)*-radius$/";
+const radiusProperties = [radiusProperty];
 
 const fontProperties = ["font", "font-family", "font-weight"];
 const colorProperties = [
@@ -54,8 +56,7 @@ const colorProperties = [
   "stroke",
 ];
 
-/** @type {import("stylelint").Config} */
-export default {
+const config = {
   ignoreFiles: ["../**/*.gen.*"],
   plugins: [
     "stylelint-declaration-strict-value",
@@ -75,7 +76,7 @@ export default {
         // Keys must match a property entry exactly, and replace "" rather than adding to it.
         ignoreValues: {
           "": globalKeywords,
-          [radiusProperties[0]]: [...globalKeywords, "0"],
+          [radiusProperty]: [...globalKeywords, "0"],
           ...Object.fromEntries(
             colorProperties.map((property) => [
               property,
@@ -101,4 +102,6 @@ export default {
       rules: { "scale-unlimited/declaration-strict-value": null },
     },
   ],
-};
+} satisfies Config;
+
+export default config;
