@@ -12,7 +12,7 @@ const parseVersion = (version: string): VersionParts | null => {
 
 const compareVersions = (left: VersionParts, right: VersionParts): number => {
   for (let index = 0; index < left.length; index += 1) {
-    if (left[index] !== right[index]) return left[index] - right[index];
+    if (left[index] !== right[index]) return left[index]! - right[index]!;
   }
 
   return 0;
@@ -38,7 +38,7 @@ if (typeof currentVersion !== "string" || !currentVersionParts) {
   throw new Error("Could not determine the current stable Vite+ version");
 }
 
-const publishedVersionsData = readJson("npm", ["view", "vite-plus", "versions", "--json"]);
+const publishedVersionsData = readJson("pnpm", ["view", "vite-plus", "versions", "--json"]);
 if (
   !Array.isArray(publishedVersionsData) ||
   !publishedVersionsData.every((version) => typeof version === "string")
@@ -47,7 +47,7 @@ if (
 }
 const publishedVersions = new Set(publishedVersionsData);
 
-const times = readJson("npm", ["view", "vite-plus", "time", "--json"]);
+const times = readJson("pnpm", ["view", "vite-plus", "time", "--json"]);
 if (typeof times !== "object" || times === null || Array.isArray(times)) {
   throw new Error("Could not read Vite+ release publication times");
 }

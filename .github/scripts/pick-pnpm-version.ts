@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
 
-const raw = execFileSync("npm", ["view", "pnpm", "time", "--json"], {
+const raw = execFileSync("pnpm", ["view", "pnpm", "time", "--json"], {
   encoding: "utf8",
 });
 const time: unknown = JSON.parse(raw);
