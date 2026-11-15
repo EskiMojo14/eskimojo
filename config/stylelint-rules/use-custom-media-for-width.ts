@@ -1,12 +1,15 @@
 import valueParser from "postcss-value-parser";
 import stylelint from "stylelint";
+import type { Rule, RuleBase } from "stylelint";
 
 export const ruleName = "local/use-custom-media-for-width";
+const messages = {
+  rejected: "Use a named custom media query instead of a viewport width feature.",
+};
 
-const isWidthFeature = (value) => /^(?:(?:min|max)-)?(?:device-)?width$/i.test(value);
+const isWidthFeature = (value: string) => /^(?:(?:min|max)-)?(?:device-)?width$/i.test(value);
 
-/** @type {import("stylelint").Rule} */
-export const rule = (primary) => (root, result) => {
+const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
   if (
     !stylelint.utils.validateOptions(result, ruleName, {
       actual: primary,
@@ -30,7 +33,12 @@ export const rule = (primary) => (root, result) => {
       ruleName,
       result,
       node: atRule,
-      message: "Use a named custom media query instead of a viewport width feature.",
+      message: messages.rejected,
     });
   });
 };
+
+export const rule: Rule<boolean> = Object.assign(ruleFunction, {
+  ruleName,
+  messages,
+});

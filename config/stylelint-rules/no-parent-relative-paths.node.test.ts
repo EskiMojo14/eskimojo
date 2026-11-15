@@ -18,7 +18,7 @@ test.each([
   const { results } = await stylelint.lint({
     code,
     codeFilename: "src/path-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toEqual([
@@ -49,7 +49,7 @@ test.each([
   const { results } = await stylelint.lint({
     code,
     codeFilename: "src/path-fixture.css",
-    configFile: "./config/stylelint.config.js",
+    configFile: "./config/stylelint.config.ts",
   });
 
   expect(results[0]?.warnings).toEqual([]);

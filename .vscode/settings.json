@@ -9,7 +9,7 @@
     "**/routeTree.gen.ts": true
   },
   "npm.scriptRunner": "vp",
-  "stylelint.configFile": "config/stylelint.config.js",
+  "stylelint.configFile": "config/stylelint.config.ts",
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"

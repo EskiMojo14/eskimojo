@@ -20,7 +20,7 @@
     "preview": "vp preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint:css": "stylelint --config config/stylelint.config.js",
+    "lint:css": "stylelint --config config/stylelint.config.ts",
     "lint:css:all": "vpr lint:css \"src/**/*.{css,pcss}\" \".storybook/**/*.css\"",
     "gigs:types": "node scripts/generate-gigs-types.ts",
     "theme:generate": "node scripts/generate-theme.ts",

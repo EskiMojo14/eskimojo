@@ -1,7 +1,11 @@
 import valueParser from "postcss-value-parser";
 import stylelint from "stylelint";
+import type { Rule, RuleBase } from "stylelint";
 
 export const ruleName = "local/use-motion-token-for-easing";
+
+type ValueNode = ReturnType<typeof valueParser>["nodes"][number];
+type CustomPropertyAliases = Map<string, Array<string>>;
 
 const easingKeywords = new Set([
   "ease",
@@ -16,8 +20,11 @@ const easingFunctions = new Set(["cubic-bezier", "frames", "linear", "steps"]);
 const globalKeywords = new Set(["inherit", "initial", "revert", "revert-layer", "unset"]);
 const motionToken =
   /^--md-sys-motion-(?:easing-[a-z\d-]+|spring-(?:fast|default|slow)-(?:spatial|effects))$/i;
+const messages = {
+  rejected: (easing: string) => `Use a motion token for easing curves instead of "${easing}".`,
+};
 
-function containsLiteralNonTokenEasing(nodes) {
+function containsLiteralNonTokenEasing(nodes: Array<ValueNode>): boolean {
   return nodes.some((node) => {
     if (node.type === "word") return easingKeywords.has(node.value.toLowerCase());
     if (node.type !== "function") return false;
@@ -28,7 +35,11 @@ function containsLiteralNonTokenEasing(nodes) {
   });
 }
 
-const resolvesToMotionToken = (node, aliases, seen = new Set()) => {
+const resolvesToMotionToken = (
+  node: ValueNode,
+  aliases: CustomPropertyAliases,
+  seen = new Set<string>(),
+): boolean => {
   if (node.type !== "function" || node.value.toLowerCase() !== "var") return false;
   const name = node.nodes.find((part) => part.type === "word")?.value;
   if (name === undefined) return false;
@@ -41,13 +52,20 @@ const resolvesToMotionToken = (node, aliases, seen = new Set()) => {
     const significantNodes = valueParser(value).nodes.filter(
       (part) => part.type !== "space" && part.type !== "comment",
     );
+    const [significantNode] = significantNodes;
     return (
-      significantNodes.length === 1 && resolvesToMotionToken(significantNodes[0], aliases, nextSeen)
+      significantNodes.length === 1 &&
+      significantNode !== undefined &&
+      resolvesToMotionToken(significantNode, aliases, nextSeen)
     );
   });
 };
 
-function containsNonTokenEasingAlias(node, aliases, seen = new Set()) {
+function containsNonTokenEasingAlias(
+  node: ValueNode,
+  aliases: CustomPropertyAliases,
+  seen = new Set<string>(),
+): boolean {
   if (node.type !== "function" || node.value.toLowerCase() !== "var") return false;
   const name = node.nodes.find((part) => part.type === "word")?.value;
   if (name === undefined || motionToken.test(name) || seen.has(name)) return false;
@@ -64,7 +82,11 @@ function containsNonTokenEasingAlias(node, aliases, seen = new Set()) {
   });
 }
 
-function findNonTokenEasing(nodes, requireMotionToken, aliases) {
+function findNonTokenEasing(
+  nodes: Array<ValueNode>,
+  requireMotionToken: boolean,
+  aliases: CustomPropertyAliases,
+): ValueNode | undefined {
   for (const node of nodes) {
     if (node.type === "word") {
       const value = node.value.toLowerCase();
@@ -101,8 +123,7 @@ function findNonTokenEasing(nodes, requireMotionToken, aliases) {
   return undefined;
 }
 
-/** @type {import("stylelint").Rule} */
-export const rule = (primary) => (root, result) => {
+const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
   if (
     !stylelint.utils.validateOptions(result, ruleName, {
       actual: primary,
@@ -111,7 +132,7 @@ export const rule = (primary) => (root, result) => {
   )
     return;
 
-  const aliases = new Map();
+  const aliases: CustomPropertyAliases = new Map();
   root.walkDecls(/^--/, (decl) => {
     const definitions = aliases.get(decl.prop) ?? [];
     definitions.push(decl.value);
@@ -131,7 +152,12 @@ export const rule = (primary) => (root, result) => {
       ruleName,
       result,
       node: decl,
-      message: `Use a motion token for easing curves instead of "${valueParser.stringify(easing)}".`,
+      message: messages.rejected(valueParser.stringify(easing)),
     });
   });
 };
+
+export const rule: Rule<boolean> = Object.assign(ruleFunction, {
+  ruleName,
+  messages,
+});
