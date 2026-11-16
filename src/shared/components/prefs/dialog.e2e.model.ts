@@ -42,4 +42,25 @@ export class PreferencesDialogModel extends ComponentObjectModel {
       ).toHaveAttribute("aria-pressed", "true");
     }
   }
+
+  async activeThemeColors() {
+    return this.page.locator('head meta[name="theme-color"]').evaluateAll((metas) =>
+      metas
+        .filter((meta) => {
+          const media = meta.getAttribute("media");
+          return !media || matchMedia(media).matches;
+        })
+        .map((meta) => meta.getAttribute("content")),
+    );
+  }
+
+  async activeThemeColorMedia() {
+    return this.page
+      .locator('head meta[name="theme-color"]')
+      .evaluateAll((metas) =>
+        metas
+          .map((meta) => meta.getAttribute("media"))
+          .filter((media) => !media || matchMedia(media).matches),
+      );
+  }
 }

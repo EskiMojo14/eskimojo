@@ -129,6 +129,7 @@ test("a failed save rolls back and allows retrying", async ({
   network,
   page,
 }) => {
+  await page.emulateMedia({ colorScheme: "light" });
   using save = disposablePromise();
   network.use(
     mockServerFn(prefs.setThemeFn, async (value) => {
@@ -141,9 +142,11 @@ test("a failed save rolls back and allows retrying", async ({
   await preferences.select("Theme", "Dark");
   await preferences.expectSelected("Theme", "Dark");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#161217"]);
   save.resolve();
   await preferences.expectSelected("Theme", "System");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "system");
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#fff7fb"]);
 
   await preferences.close();
   await expect(snackbar.notifications).toContainText("Couldn't save theme preference");
@@ -155,4 +158,64 @@ test("a failed save rolls back and allows retrying", async ({
   await page.waitForLoadState("networkidle");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
+});
+
+test("browser theme colour follows system and saved appearance preferences", async ({
+  preferences,
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "light", contrast: "no-preference" });
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#fff7fb"]);
+  await expect
+    .poll(() => preferences.activeThemeColorMedia())
+    .toEqual(["(prefers-color-scheme: light) and (not (prefers-contrast: more))"]);
+
+  await page.emulateMedia({ colorScheme: "dark", contrast: "more" });
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#161217"]);
+  await expect
+    .poll(() => preferences.activeThemeColorMedia())
+    .toEqual(["(prefers-color-scheme: dark) and (prefers-contrast: more)"]);
+
+  await preferences.select("Palette", "Arctic");
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#121318"]);
+  await preferences.select("Theme", "Light");
+  await preferences.select("Contrast", "Medium");
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#faf8ff"]);
+  await expect.poll(() => preferences.activeThemeColorMedia()).toEqual([null]);
+
+  await page.emulateMedia({ colorScheme: "dark", contrast: "no-preference" });
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#faf8ff"]);
+  await page.waitForLoadState("networkidle");
+  await page.reload();
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#faf8ff"]);
+
+  await preferences.open();
+  await preferences.select("Theme", "System");
+  await preferences.select("Contrast", "System");
+  await expect.poll(() => preferences.activeThemeColors()).toEqual(["#121318"]);
+});
+
+test("browser theme colour works before hydration and with JavaScript disabled", async ({
+  browser,
+  page,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
+  try {
+    const noJsPage = await context.newPage();
+    const noJsPreferences = new PreferencesDialogModel(noJsPage);
+    await noJsPage.goto(page.url());
+    await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#161217"]);
+    await noJsPage.emulateMedia({ colorScheme: "light" });
+    await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#fff7fb"]);
+
+    await context.addCookies([
+      { name: "eskimojo::palette", value: "arctic", url: page.url() },
+      { name: "eskimojo::theme", value: "dark", url: page.url() },
+      { name: "eskimojo::contrast", value: "high", url: page.url() },
+    ]);
+    await noJsPage.reload();
+    await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#121318"]);
+  } finally {
+    await context.close();
+  }
 });

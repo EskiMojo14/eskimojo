@@ -8,7 +8,7 @@ import { promisify } from "node:util";
 import { argbFromRgb, Contrast, Hct } from "@material/material-color-utilities";
 import { expect, onTestFinished, test } from "vite-plus/test";
 
-import { assert } from "#/utils";
+import { assert, code } from "#/utils";
 
 const exec = promisify(execFile);
 const root = new URL("../", import.meta.url);
@@ -148,6 +148,23 @@ test("fails explicitly when a theme export is incomplete", async () => {
   const { dir, generate } = await fixture();
   await rm(join(dir, themePath, "exports/arctic/dark-hc.css"));
   await expect(generate()).rejects.toThrow(/arctic\/dark-hc.css/);
+});
+
+test("generates browser theme colours from each contrast level's surface", async () => {
+  const { dir, generate } = await fixture();
+  const path = join(dir, themePath, "exports/arctic/light-hc.css");
+  const css = await readFile(path, "utf8");
+  await writeFile(
+    path,
+    css.replace(
+      code.css`--md-sys-color-surface: rgb(250 248 255);`,
+      code.css`--md-sys-color-surface: rgb(1 2 3);`,
+    ),
+  );
+  await generate();
+  const output = await readFile(join(dir, themePath, "theme-colors.gen.ts"), "utf8");
+  expect(output).toMatch(/high:\s*\{\s*light: "#010203"/);
+  expect(output).toContain('light: "#faf8ff"');
 });
 
 test("fails explicitly when an export has no tokens", async () => {

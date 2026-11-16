@@ -15,6 +15,7 @@ import {
   ContrastProvider,
   PaletteProvider,
 } from "#/shared/components/prefs/provider";
+import { ThemeColor } from "#/shared/components/prefs/theme-color";
 import { Providers } from "#/shared/components/providers.tsx";
 import { Sidebar } from "#/shared/components/sidebar";
 import { SnackbarHost } from "#/shared/components/snackbar";
@@ -89,6 +90,7 @@ function PreferenceDocument({
     >
       <head>
         <HeadContent />
+        <ThemeColor />
       </head>
       <body>
         <div {...appShellBem()}>
