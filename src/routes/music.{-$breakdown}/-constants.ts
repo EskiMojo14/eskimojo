@@ -8,7 +8,8 @@ export const periodSchema = v.fallback(
 );
 export type Period = v.InferOutput<typeof periodSchema>;
 
-export const musicTypeSchema = v.fallback(v.picklist(["tracks", "albums", "artists"]), "tracks");
+export const strictMusicTypeSchema = v.picklist(["tracks", "albums", "artists"]);
+export const musicTypeSchema = v.fallback(strictMusicTypeSchema, "tracks");
 export type MusicType = v.InferOutput<typeof musicTypeSchema>;
 
 export const musicTypeLabels = {
@@ -17,7 +18,8 @@ export const musicTypeLabels = {
   artists: { label: "Artists", icon: "artist" },
 } as const satisfies Record<MusicType, { label: string; icon: string }>;
 
-export const musicBreakdownSchema = v.fallback(v.picklist(["top", "recent"]), "top");
+export const strictMusicBreakdownSchema = v.picklist(["top", "recent"]);
+export const musicBreakdownSchema = v.fallback(strictMusicBreakdownSchema, "top");
 export type MusicBreakdown = v.InferOutput<typeof musicBreakdownSchema>;
 
 export const musicBreakdownLabels: Record<MusicBreakdown, { label: string; icon: string }> = {

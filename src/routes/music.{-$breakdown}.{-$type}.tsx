@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import * as v from "valibot";
 
 import { MusicDataBoundary } from "#/routes/music.{-$breakdown}/-components/data-boundary";
@@ -19,6 +19,8 @@ import {
 } from "#/routes/music.{-$breakdown}/-components/top-music/index";
 import {
   musicBreakdownSchema,
+  strictMusicBreakdownSchema,
+  strictMusicTypeSchema,
   musicTypeSchema,
   periodSchema,
   type MusicBreakdown,
@@ -31,14 +33,17 @@ import styles from "./music.{-$breakdown}/index.css?url";
 
 export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
   params: {
-    parse: (params) =>
-      v.parse(
+    parse: (params) => {
+      const parseResult = v.safeParse(
         v.object({
-          breakdown: v.optional(v.picklist(["top", "recent", "top-music"])),
-          type: v.optional(musicTypeSchema),
+          breakdown: v.optional(strictMusicBreakdownSchema),
+          type: v.optional(strictMusicTypeSchema),
         }),
         params,
-      ),
+      );
+      if (!parseResult.success) throw notFound();
+      return parseResult.output;
+    },
   },
   staticData: {
     title: "Music",
@@ -59,7 +64,6 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
     const breakdown = params.breakdown === "recent" ? "recent" : "top";
     if (
       params.breakdown === undefined ||
-      params.breakdown === "top-music" ||
       (breakdown === "top" && params.type === undefined) ||
       (breakdown === "recent" && params.type !== undefined)
     ) {
@@ -99,10 +103,9 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
-  const { breakdown: routeBreakdown, type: routeType } = Route.useParams();
-  const breakdown = routeBreakdown === "recent" ? "recent" : "top";
+  const { breakdown = musicBreakdownSchema.fallback, type = musicTypeSchema.fallback } =
+    Route.useParams();
   const { period = periodSchema.fallback } = Route.useSearch();
-  const type = routeType ?? musicTypeSchema.fallback;
   const TopMusicPanel = {
     tracks: TopTracksPanel,
     albums: TopAlbumsPanel,

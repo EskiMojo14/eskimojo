@@ -674,3 +674,15 @@ test("failed recent-track refresh keeps cached tracks and retries in place", asy
   await expect(music.recent.refreshNotice).not.toBeVisible();
   await expect(music.recent.emptyState).toBeVisible();
 });
+
+test("shows the not-found page for invalid music paths", async ({ network, page }) => {
+  network.use(...lastfm());
+
+  await page.goto("/music/top/invalid?period=7day");
+  await expect(page).toHaveURL("/music/top/invalid?period=7day");
+  await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
+
+  await page.goto("/music/top-music");
+  await expect(page).toHaveURL("/music/top-music");
+  await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
+});
