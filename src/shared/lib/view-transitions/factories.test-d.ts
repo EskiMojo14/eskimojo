@@ -13,7 +13,7 @@ test("tab groups preserve the route's parsed parameter values", () => {
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
   });
-  expectTypeOf(group.order).toEqualTypeOf<Array<"top" | "recent" | "top-music">>();
+  expectTypeOf(group.order).toEqualTypeOf<Array<"top" | "recent">>();
 });
 
 test("tab groups reject parameters absent from their route", () => {

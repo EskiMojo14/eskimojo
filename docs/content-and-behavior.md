@@ -342,7 +342,8 @@ Top music has secondary Tracks, Albums, and Artists tabs, in that order, with on
 picker. The path selects the ranking: `/music/top/tracks` (the default),
 `/music/top/albums`, or `/music/top/artists`. `/music` and `/music/top` redirect
 to the default ranking; the old `type` search parameter no longer selects a ranking. Show only the selected ranking at
-every screen size. Use real navigation links that preserve the listening period;
+every screen size. Ranking and breakdown path segments are validated strictly.
+Use real navigation links that preserve the listening period;
 primary-tab navigation returns to Tracks from Recently played. The secondary tabs stay
 available while rankings load. Only fetch and preload the selected ranking,
 its artwork, and its images; defer the other ranking until its link is prefetched
@@ -354,7 +355,7 @@ Period changes crossfade the ranking while keeping navigation live, and other
 navigation crossfades the listening panel independently of page movement.
 Respect reduced motion for all of these animations.
 Use `/music/top/tracks` for the default view and `/music/recent` for Recently
-played. The former `/music/top-music` path redirects to the default ranking.
+played.
 
 Use current Last.fm-backed data rather than presenting a static historical
 snapshot as live. Keep these period choices for Top Tracks, Top Albums, and Top Artists:
