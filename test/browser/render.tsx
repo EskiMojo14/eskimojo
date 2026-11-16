@@ -20,7 +20,7 @@ import {
   type Palette,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
-import { type PreloadedState, type AppStore, makeStore } from "#/shared/store.tsx";
+import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
 
 interface TestPreferences {
   theme: Theme;

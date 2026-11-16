@@ -9,7 +9,8 @@ import type { ReactNode } from "react";
 
 import { ErrorPage, NotFoundPage } from "#/shared/components/page-state";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
-import { makeStore, setupReduxIntegration, type AppStore } from "#/shared/store.tsx";
+import { makeStore, type AppStore } from "#/shared/store";
+import { setupReduxIntegration } from "#/shared/store/router";
 
 import { routeTree } from "./routeTree.gen";
 import { createQueryClient } from "./shared/lib/query";
