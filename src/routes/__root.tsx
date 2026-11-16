@@ -22,10 +22,12 @@ import { SnackbarHost } from "#/shared/components/snackbar";
 import { isChristmas } from "#/shared/lib/christmas";
 import { getDocumentHead } from "#/shared/lib/document-head";
 import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
+import type { AppStore } from "#/shared/store.tsx";
 import { promiseAllKeyed } from "#/utils/index.ts";
 
 interface MyRouterContext {
   queryClient: QueryClient;
+  store: AppStore;
 }
 
 const appShellBem = BEMHelper("app-shell");
