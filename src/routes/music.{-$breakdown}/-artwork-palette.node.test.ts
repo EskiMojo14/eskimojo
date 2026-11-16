@@ -101,6 +101,92 @@ test("generates artwork palettes for ranked artists", async () => {
   expect(artist?.palette).toBeDefined();
 });
 
+test("generates a palette after redirects to supported artwork hosts", async () => {
+  const src = "https://lastfm-img.freetls.fastly.net/i/u/300x300/redirect-start.png";
+  const next = "https://lastfm-img.freetls.fastly.net/i/u/300x300/redirect-next.png";
+  const destination = "https://lastfm.freetls.fastly.net/i/u/300x300/redirect-image.png";
+  const image = await sharp({
+    create: { width: 8, height: 8, channels: 4, background: "#2040ca" },
+  })
+    .png()
+    .toBuffer();
+  network.use(
+    http.get(
+      src,
+      () => new HttpResponse(null, { status: 302, headers: { Location: "./redirect-next.png" } }),
+    ),
+    http.get(next, () => HttpResponse.redirect(destination)),
+    http.get(
+      destination,
+      () =>
+        new HttpResponse(new Uint8Array(image), {
+          headers: { "Content-Type": "image/png" },
+        }),
+    ),
+  );
+
+  const [result] = await addArtworkPalettes([track(src)], new AbortController().signal);
+  expect(result?.palette).toBeDefined();
+});
+
+test.each([
+  "https://example.com/image.png",
+  "http://lastfm.freetls.fastly.net/image.png",
+  "https://user:password@lastfm.freetls.fastly.net/image.png",
+  "https://lastfm.freetls.fastly.net:8443/image.png",
+  "https://127.0.0.1/image.png",
+])("does not fetch an unsafe redirect destination: %s", async (destination) => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  onTestFinished(() => warning.mockRestore());
+  const src = "https://lastfm.freetls.fastly.net/i/u/300x300/unsafe-redirect.png";
+  const next = "https://lastfm-img.freetls.fastly.net/i/u/300x300/unsafe-redirect-next.png";
+  let destinationRequests = 0;
+  network.use(
+    http.get(src, () => HttpResponse.redirect(next)),
+    http.get(next, () => HttpResponse.redirect(destination)),
+    http.get("*", () => {
+      destinationRequests++;
+      return new HttpResponse(null, { status: 500 });
+    }),
+  );
+
+  const [result] = await addArtworkPalettes([track(src)], new AbortController().signal);
+  expect(result?.palette).toBeUndefined();
+  expect(destinationRequests).toBe(0);
+  expect(warning).toHaveBeenCalledOnce();
+});
+
+test("rejects a redirect without a location", async () => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  onTestFinished(() => warning.mockRestore());
+  const src = "https://lastfm.freetls.fastly.net/i/u/300x300/missing-location.png";
+  network.use(http.get(src, () => new HttpResponse(null, { status: 302 })));
+
+  const [result] = await addArtworkPalettes([track(src)], new AbortController().signal);
+  expect(result?.palette).toBeUndefined();
+  expect(warning).toHaveBeenCalledOnce();
+});
+
+test("stops a redirect loop without losing listening history", async () => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  onTestFinished(() => warning.mockRestore());
+  const src = "https://lastfm.freetls.fastly.net/i/u/300x300/redirect-loop.png";
+  let requests = 0;
+  network.use(
+    http.get(src, () => {
+      requests++;
+      return HttpResponse.redirect(src);
+    }),
+  );
+
+  const [result] = await addArtworkPalettes([track(src)], new AbortController().signal);
+  expect(result?.name).toBe("Example song");
+  expect(result?.palette).toBeUndefined();
+  expect(requests).toBeGreaterThan(1);
+  expect(requests).toBeLessThanOrEqual(21);
+  expect(warning).toHaveBeenCalledOnce();
+});
+
 test("keeps tracks with missing or failed artwork and reports extraction errors", async () => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
   onTestFinished(() => warning.mockRestore());

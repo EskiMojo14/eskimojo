@@ -7,21 +7,34 @@ import type { Artwork, ArtworkPalette } from "./-query";
 const cache = new Map<string, { palette: ArtworkPalette; expires: number }>();
 const artworkHosts = new Set(["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"]);
 const maxArtworkBytes = 1_000_000;
+const maxArtworkRedirects = 5;
+
+async function fetchArtwork(src: string, signal: AbortSignal): Promise<Response> {
+  let url = new URL(src);
+  for (let redirects = 0; ; redirects++) {
+    if (
+      url.protocol !== "https:" ||
+      !artworkHosts.has(url.hostname) ||
+      url.port ||
+      url.username ||
+      url.password
+    ) {
+      throw new Error(
+        "Artwork palette requires an HTTPS image URL hosted on a supported provider without credentials or a custom port",
+      );
+    }
+    const response = await fetch(url, { signal, redirect: "manual" });
+    if (![301, 302, 303, 307, 308].includes(response.status)) return response;
+    const location = response.headers.get("location");
+    await response.body?.cancel();
+    if (!location) throw new Error("Artwork redirect has no location");
+    if (redirects >= maxArtworkRedirects) throw new Error("Artwork exceeds redirect limit");
+    url = new URL(location, url);
+  }
+}
 
 async function downloadArtwork(src: string, signal: AbortSignal) {
-  const url = new URL(src);
-  if (
-    url.protocol !== "https:" ||
-    !artworkHosts.has(url.hostname) ||
-    url.port ||
-    url.username ||
-    url.password
-  ) {
-    throw new Error(
-      "Artwork palette requires an HTTPS image URL hosted on a supported provider without credentials or a custom port",
-    );
-  }
-  const response = await fetch(url, { signal, redirect: "error" });
+  const response = await fetchArtwork(src, signal);
   if (!response.ok) {
     await response.body?.cancel();
     throw new Error(`Artwork request failed (${response.status})`);
