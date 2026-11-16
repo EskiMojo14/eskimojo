@@ -1,1 +1,7 @@
-pnpm-*
+# pnpm
+/chrome-extensions
+/devtools-vite-plugin
+/migrate-from-nextjs
+/modern-web-guidance
+/react-start
+# pnpm end
