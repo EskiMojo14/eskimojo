@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 
 import { ErrorPage, NotFoundPage } from "#/shared/components/page-state";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
+import { makeStore, setupReduxIntegration, type AppStore } from "#/shared/store.tsx";
 
 import { routeTree } from "./routeTree.gen";
 import { createQueryClient } from "./shared/lib/query";
@@ -16,14 +17,16 @@ import { createQueryClient } from "./shared/lib/query";
 export function getRouter({
   history,
   queryClient = createQueryClient(),
+  store = makeStore(),
 }: {
   history?: RouterHistory;
   queryClient?: QueryClient;
+  store?: AppStore;
 } = {}) {
   const router = createTanStackRouter({
     history,
     routeTree,
-    context: { queryClient },
+    context: { queryClient, store },
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
@@ -33,6 +36,7 @@ export function getRouter({
 
   addNavigationTransitions(router);
   setupRouterSsrQueryIntegration({ router, queryClient });
+  setupReduxIntegration({ router, store });
 
   return router;
 }

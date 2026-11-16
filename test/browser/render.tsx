@@ -6,6 +6,7 @@ import {
   type RouterHistory,
 } from "@tanstack/react-router";
 import { Fragment, type ReactElement, type ReactNode, useEffect, useState } from "react";
+import { Provider } from "react-redux";
 import { render, type RenderOptions, type RenderResult } from "vitest-browser-react";
 
 import { getRouter } from "#/router";
@@ -19,6 +20,7 @@ import {
   type Palette,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
+import { type PreloadedState, type AppStore, makeStore } from "#/shared/store.tsx";
 
 interface TestPreferences {
   theme: Theme;
@@ -38,12 +40,15 @@ export interface RenderWithProviderOptions extends RenderOptions {
   };
   history?: RouterHistory;
   router?: RegisteredRouter;
+  preloadedState?: PreloadedState;
+  store?: AppStore;
 }
 
 interface RenderWithProvidersResult extends RenderResult {
   queryClient: QueryClient;
   history: RouterHistory;
   router: RegisteredRouter;
+  store: AppStore;
 }
 
 function PreferenceProviders({
@@ -86,6 +91,8 @@ export async function renderWithProviders(
   ui: ReactElement,
   {
     queryClient: providedQueryClient,
+    preloadedState,
+    store: providedStore,
     historyOpts,
     history: providedHistory,
     router: providedRouter,
@@ -97,11 +104,13 @@ export async function renderWithProviders(
 ): Promise<RenderWithProvidersResult> {
   const queryClient =
     providedQueryClient ?? providedRouter?.options.context.queryClient ?? createQueryClient();
+  const store = providedStore ?? makeStore(preloadedState);
   const history = providedHistory ?? providedRouter?.history ?? createMemoryHistory(historyOpts);
-  const router = providedRouter ?? getRouter({ history, queryClient });
+  const router = providedRouter ?? getRouter({ history, queryClient, store });
 
   return {
     queryClient,
+    store,
     history,
     router,
     ...(await render(ui, {
@@ -109,18 +118,20 @@ export async function renderWithProviders(
       wrapper({ children }) {
         return (
           <RouterContextProvider router={router}>
-            <QueryClientProvider client={queryClient}>
-              {preferences === false ? (
-                <Wrapper>{children}</Wrapper>
-              ) : (
-                <PreferenceProviders
-                  initialPreferences={preferences}
-                  syncToDocument={syncPreferencesToDocument}
-                >
+            <Provider store={store}>
+              <QueryClientProvider client={queryClient}>
+                {preferences === false ? (
                   <Wrapper>{children}</Wrapper>
-                </PreferenceProviders>
-              )}
-            </QueryClientProvider>
+                ) : (
+                  <PreferenceProviders
+                    initialPreferences={preferences}
+                    syncToDocument={syncPreferencesToDocument}
+                  >
+                    <Wrapper>{children}</Wrapper>
+                  </PreferenceProviders>
+                )}
+              </QueryClientProvider>
+            </Provider>
           </RouterContextProvider>
         );
       },

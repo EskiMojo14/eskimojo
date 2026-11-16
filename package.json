@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@material/material-color-utilities": "0.4.0",
+    "@reduxjs/toolkit": "^2.14.0",
     "@tanstack/charts": "1.5.0",
     "@tanstack/react-devtools": "0.10.14",
     "@tanstack/react-query": "5.107.1",
@@ -50,6 +51,7 @@
     "react-bem-helper": "^1.4.1",
     "react-dom": "^19.3.1",
     "react-error-boundary": "^6.1.6",
+    "react-redux": "^9.3.1",
     "required-react-context": "^1.4.1",
     "sharp": "^0.35.5",
     "tanstack-meta": "^0.6.1",
