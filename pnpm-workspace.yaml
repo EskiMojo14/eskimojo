@@ -25,11 +25,40 @@ peerDependencyRules:
     vite: "*"
     vitest: "*"
 permissions:
+  "@reduxjs/toolkit":
+    skills:
+      [
+        modern-redux,
+        redux-dataflow,
+        debug-redux-toolkit-apps,
+        build-slices-and-selectors,
+        design-state-ownership,
+        handle-side-effects,
+      ]
+  "@tanstack/charts":
+    skills:
+      [
+        build-chart-interactions,
+        compose-marks-and-views,
+        configure-scales-guides-color,
+        coordinate-charts-with-tanstack,
+        debug-and-verify-charts,
+        design-a-chart,
+        design-responsive-charts,
+        extend-tanstack-charts,
+        prepare-chart-data,
+        ship-accessible-charts,
+        update-and-animate-charts,
+      ]
   "@tanstack/devtools-vite":
     skills: true
+  "@tanstack/react-router":
+    skills: [router-query, react-router]
   "@tanstack/react-start":
     skills: true
   modern-web-guidance:
+    skills: true
+  up-fetch:
     skills: true
 skills:
   dirs:

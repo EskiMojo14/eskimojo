@@ -1,7 +1,27 @@
 # pnpm
+/build-chart-interactions
+/build-slices-and-selectors
 /chrome-extensions
+/compose-marks-and-views
+/configure-scales-guides-color
+/coordinate-charts-with-tanstack
+/debug-and-verify-charts
+/debug-redux-toolkit-apps
+/design-a-chart
+/design-responsive-charts
+/design-state-ownership
 /devtools-vite-plugin
+/extend-tanstack-charts
+/handle-side-effects
 /migrate-from-nextjs
+/modern-redux
 /modern-web-guidance
+/prepare-chart-data
+/react-router
 /react-start
+/redux-dataflow
+/router-query
+/ship-accessible-charts
+/update-and-animate-charts
+/upfetch
 # pnpm end
