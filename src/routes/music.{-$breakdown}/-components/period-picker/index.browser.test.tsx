@@ -25,7 +25,7 @@ import { MusicPeriodPicker } from "./index";
 
 import "#/routes/music.{-$breakdown}/index.css";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 const topMusicPanels = {
   tracks: <MusicTopMusic tracks={[]} />,
@@ -34,7 +34,8 @@ const topMusicPanels = {
 };
 
 function Demo() {
-  const { period = periodSchema.fallback, type } = musicRoute.useSearch();
+  const { period = periodSchema.fallback } = musicRoute.useSearch();
+  const { type = musicTypeSchema.fallback } = musicRoute.useParams();
   const { breakdown = musicBreakdownSchema.fallback } = musicRoute.useParams();
   return (
     <>
@@ -47,7 +48,7 @@ function Demo() {
           hidden={value !== breakdown}
           className="music-panel tabs__route-content"
         >
-          {value === "top-music" ? (
+          {value === "top" ? (
             <>
               <MusicPeriodPicker />
               <div>Results for {period}</div>
@@ -84,16 +85,21 @@ test("both tab levels slide while period and other navigation crossfade", async 
     routeTree: root.addChildren([
       createRoute({
         getParentRoute: () => root,
-        path: "/music/{-$breakdown}/",
-        validateSearch: v.object({
-          period: v.optional(periodSchema),
-          type: v.optional(musicTypeSchema, musicTypeSchema.fallback),
-        }),
+        path: "/music/{-$breakdown}/{-$type}",
+        params: {
+          parse: v.parser(
+            v.object({
+              breakdown: v.optional(musicBreakdownSchema),
+              type: v.optional(musicTypeSchema),
+            }),
+          ),
+        },
+        validateSearch: v.object({ period: v.optional(periodSchema) }),
         component: Demo,
       }),
       createRoute({ getParentRoute: () => root, path: "/", component: Home }),
     ]),
-    history: createMemoryHistory({ initialEntries: ["/music/top-music?period=1month"] }),
+    history: createMemoryHistory({ initialEntries: ["/music/top/tracks?period=1month"] }),
   });
   addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);

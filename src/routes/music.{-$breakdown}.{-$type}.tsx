@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import * as v from "valibot";
 
 import { MusicDataBoundary } from "#/routes/music.{-$breakdown}/-components/data-boundary";
@@ -21,16 +21,24 @@ import {
   musicBreakdownSchema,
   musicTypeSchema,
   periodSchema,
+  type MusicBreakdown,
 } from "#/routes/music.{-$breakdown}/-constants.ts";
 import { preloadMusic } from "#/routes/music.{-$breakdown}/-loader";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
-import styles from "./index.css?url";
+import styles from "./music.{-$breakdown}/index.css?url";
 
-export const Route = createFileRoute("/music/{-$breakdown}/")({
+export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
   params: {
-    parse: (params) => v.parse(v.object({ breakdown: v.optional(musicBreakdownSchema) }), params),
+    parse: (params) =>
+      v.parse(
+        v.object({
+          breakdown: v.optional(v.picklist(["top", "recent", "top-music"])),
+          type: v.optional(musicTypeSchema),
+        }),
+        params,
+      ),
   },
   staticData: {
     title: "Music",
@@ -45,14 +53,36 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
   },
   validateSearch: v.object({
     period: v.optional(periodSchema),
-    type: v.optional(musicTypeSchema, musicTypeSchema.fallback),
   }),
-  loaderDeps: ({ search: { period, type } }) => ({ period, type }),
-  loader: ({
-    context: { queryClient },
-    params: { breakdown = musicBreakdownSchema.fallback },
-    deps: { period = periodSchema.fallback, type },
-  }) => preloadMusic({ queryClient, breakdown, period, type }),
+  loaderDeps: ({ search: { period } }) => ({ period }),
+  beforeLoad: ({ params, search }) => {
+    const breakdown = params.breakdown === "recent" ? "recent" : "top";
+    if (
+      params.breakdown === undefined ||
+      params.breakdown === "top-music" ||
+      (breakdown === "top" && params.type === undefined) ||
+      (breakdown === "recent" && params.type !== undefined)
+    ) {
+      throw redirect({
+        to: "/music/{-$breakdown}/{-$type}",
+        params: {
+          breakdown,
+          type: breakdown === "top" ? (params.type ?? musicTypeSchema.fallback) : undefined,
+        },
+        search: { period: search.period },
+        replace: true,
+      });
+    }
+  },
+  loader: ({ context: { queryClient }, params, deps: { period = periodSchema.fallback } }) => {
+    const breakdown: MusicBreakdown = params.breakdown === "recent" ? "recent" : "top";
+    return preloadMusic({
+      queryClient,
+      breakdown,
+      period,
+      type: params.type ?? musicTypeSchema.fallback,
+    });
+  },
   head: () => {
     const metadata = generatePageMetadata({
       title: "Music",
@@ -69,8 +99,10 @@ export const Route = createFileRoute("/music/{-$breakdown}/")({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RouteComponent() {
-  const { breakdown = musicBreakdownSchema.fallback } = Route.useParams();
-  const { period = periodSchema.fallback, type } = Route.useSearch();
+  const { breakdown: routeBreakdown, type: routeType } = Route.useParams();
+  const breakdown = routeBreakdown === "recent" ? "recent" : "top";
+  const { period = periodSchema.fallback } = Route.useSearch();
+  const type = routeType ?? musicTypeSchema.fallback;
   const TopMusicPanel = {
     tracks: TopTracksPanel,
     albums: TopAlbumsPanel,

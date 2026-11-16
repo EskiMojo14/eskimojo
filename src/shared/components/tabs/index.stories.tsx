@@ -190,8 +190,8 @@ function createDemoRouter({
           <TabLink
             id="demo-music-tab"
             panelId="demo-music-panel"
-            to="/music/{-$breakdown}"
-            params={{ breakdown: undefined }}
+            to="/music/{-$breakdown}/{-$type}"
+            params={{ breakdown: undefined, type: undefined }}
             icon={<MdSymbol>music_note</MdSymbol>}
           >
             Music

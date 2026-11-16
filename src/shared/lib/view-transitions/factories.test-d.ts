@@ -8,28 +8,28 @@ import { defineDetailGroup, defineFilterGroup, defineTabGroup } from "./factorie
 
 test("tab groups preserve the route's parsed parameter values", () => {
   const group = defineTabGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "breakdown",
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
   });
-  expectTypeOf(group.order).toEqualTypeOf<Array<"top-music" | "recent">>();
+  expectTypeOf(group.order).toEqualTypeOf<Array<"top" | "recent" | "top-music">>();
 });
 
 test("tab groups reject parameters absent from their route", () => {
   const group = defineTabGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     // @ts-expect-error Music has no slug path parameter.
     parameter: "slug",
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
   });
-  expectTypeOf(group.route).toEqualTypeOf<"/music/{-$breakdown}">();
+  expectTypeOf(group.route).toEqualTypeOf<"/music/{-$breakdown}/{-$type}">();
 });
 
 test("tab groups reject schema options and defaults from another route", () => {
   const group = defineTabGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "breakdown",
     // @ts-expect-error Gigs options are not valid parsed Music params.
     order: gigBreakdownSchema.options,
@@ -52,7 +52,7 @@ test("detail groups reject unrelated registered routes", () => {
   const group = defineDetailGroup({
     listRoute: "/projects",
     // @ts-expect-error Music is not a descendant of Projects.
-    detailRoute: "/music/{-$breakdown}",
+    detailRoute: "/music/{-$breakdown}/{-$type}",
     type: "project",
   });
   expectTypeOf(group.listRoute).toEqualTypeOf<"/projects">();
@@ -82,7 +82,7 @@ test("filter callbacks infer the route's optional search output", () => {
 
 test("filter callbacks preserve the route's optional period search type", () => {
   defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     types: (from, to) => {
       expectTypeOf(from).toEqualTypeOf<Period | undefined>();
@@ -94,7 +94,7 @@ test("filter callbacks preserve the route's optional period search type", () => 
 
 test("filter callbacks receive defined values when a default is provided", () => {
   defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     defaultValue: "overall",
     types: (from, to) => {
@@ -120,7 +120,7 @@ test("an explicitly undefined default preserves optional callback values", () =>
 
 test("filter defaults must belong to the selected route parameter", () => {
   defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     // @ts-expect-error A project kind is not a valid Music period default.
     defaultValue: "project",
@@ -130,7 +130,7 @@ test("filter defaults must belong to the selected route parameter", () => {
 
 test("defaults do not narrow callbacks to only the fallback literal", () => {
   defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     // @ts-expect-error The narrow callback prevents the defaulted overload from matching.
     defaultValue: "overall",

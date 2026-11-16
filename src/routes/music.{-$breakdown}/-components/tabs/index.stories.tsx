@@ -20,7 +20,7 @@ import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
 import { MusicBreakdownTabs } from "./index";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 function MusicTabsContent() {
   const { breakdown: param } = musicRoute.useParams();
@@ -52,13 +52,24 @@ function MusicTabsContent() {
   );
 }
 
-function MusicTabsDemo({ initialEntry = "/music?period=1month" }: { initialEntry?: string }) {
+function MusicTabsDemo({
+  initialEntry = "/music/top/tracks?period=1month",
+}: {
+  initialEntry?: string;
+}) {
   const [router] = useState(() => {
     const root = createRootRoute();
     const music = createRoute({
       getParentRoute: () => root,
-      path: "/music/{-$breakdown}/",
-      params: { parse: v.parser(v.object({ breakdown: v.optional(musicBreakdownSchema) })) },
+      path: "/music/{-$breakdown}/{-$type}",
+      params: {
+        parse: v.parser(
+          v.object({
+            breakdown: v.optional(musicBreakdownSchema),
+            type: v.optional(v.picklist(["tracks", "albums", "artists"])),
+          }),
+        ),
+      },
       validateSearch: v.object({ period: v.optional(v.string()) }),
       component: MusicTabsContent,
     });
@@ -81,7 +92,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Responsive primary route links. /music defaults to Top music, combining tracks and artists for one listening period. /music/top-music selects it explicitly; /music/recent shows Recently played. Links replace history and preserve the period search parameter. Contents crossfade with a 24px directional slide: a later tab enters from the inline end, an earlier tab from the inline start. Tabs and page chrome remain live, RTL reverses the direction, and reduced motion disables the transition.",
+          "Responsive primary route links. /music redirects to /music/top/tracks, combining tracks and artists for one listening period. /music/recent shows Recently played. Links replace history and preserve the period search parameter. Contents crossfade with a 24px directional slide: a later tab enters from the inline end, an earlier tab from the inline start. Tabs and page chrome remain live, RTL reverses the direction, and reduced motion disables the transition.",
       },
     },
   },
@@ -104,7 +115,7 @@ export const Navigation = meta.story({
     );
     await expect(canvas.getByRole("tab", { name: "Top music" })).toHaveAttribute(
       "href",
-      "/music?period=1month",
+      "/music/top?period=1month",
     );
     await waitFor(() =>
       expect(document.documentElement.matches(":active-view-transition")).toBe(false),
@@ -114,6 +125,10 @@ export const Navigation = meta.story({
       "aria-current",
       "page",
     );
+    await expect(canvas.getByRole("tab", { name: "Top music" })).toHaveAttribute(
+      "href",
+      "/music/top?period=1month",
+    );
     await waitFor(() =>
       expect(document.documentElement.matches(":active-view-transition")).toBe(false),
     );
@@ -121,7 +136,7 @@ export const Navigation = meta.story({
 });
 
 export const DeepLink = meta.story({
-  render: () => <MusicTabsDemo initialEntry="/music/top-music?period=7day" />,
+  render: () => <MusicTabsDemo initialEntry="/music/top/tracks?period=7day" />,
   play: async ({ canvas }) => {
     await expect(await canvas.findByRole("tab", { name: "Top music" })).toHaveAttribute(
       "aria-current",

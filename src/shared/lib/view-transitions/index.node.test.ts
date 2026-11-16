@@ -16,31 +16,36 @@ import { addNavigationTransitions, createNavigationTransitionTypes } from "./ind
 const root = createRootRoute();
 const router = createRouter({
   routeTree: root.addChildren(
-    ["/", "/projects", "/projects/$slug", "/music/{-$breakdown}", "/gigs/{-$breakdown}"].map(
-      (path) =>
-        createRoute({
-          getParentRoute: () => root,
-          path,
-          validateSearch:
-            path === "/projects"
-              ? v.object({ type: v.optional(projectKindSchema) })
-              : path === "/music/{-$breakdown}"
-                ? v.object({
-                    period: v.optional(periodSchema),
-                    type: v.optional(musicTypeSchema, musicTypeSchema.fallback),
-                  })
-                : undefined,
-          params: {
-            parse: (params: Record<string, string>) => ({
-              ...params,
-              ...(path === "/music/{-$breakdown}"
-                ? { breakdown: v.parse(v.optional(musicBreakdownSchema), params.breakdown) }
-                : path === "/gigs/{-$breakdown}"
-                  ? { breakdown: v.parse(v.optional(gigBreakdownSchema), params.breakdown) }
-                  : {}),
-            }),
-          },
-        }),
+    [
+      "/",
+      "/projects",
+      "/projects/$slug",
+      "/music/{-$breakdown}/{-$type}",
+      "/gigs/{-$breakdown}",
+    ].map((path) =>
+      createRoute({
+        getParentRoute: () => root,
+        path,
+        validateSearch:
+          path === "/projects"
+            ? v.object({ type: v.optional(projectKindSchema) })
+            : path === "/music/{-$breakdown}/{-$type}"
+              ? v.object({ period: v.optional(periodSchema) })
+              : undefined,
+        params: {
+          parse: (params: Record<string, string>) => ({
+            ...params,
+            ...(path === "/music/{-$breakdown}/{-$type}"
+              ? {
+                  breakdown: v.parse(v.optional(musicBreakdownSchema), params.breakdown),
+                  type: v.parse(v.optional(musicTypeSchema), params.type),
+                }
+              : path === "/gigs/{-$breakdown}"
+                ? { breakdown: v.parse(v.optional(gigBreakdownSchema), params.breakdown) }
+                : {}),
+          }),
+        },
+      }),
     ),
   ),
 });
@@ -48,7 +53,7 @@ const getNavigationTransitionTypes = createNavigationTransitionTypes(router.matc
 
 test("filter callbacks receive effective defaults in both navigation directions", () => {
   const group = defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     defaultValue: "overall",
     types: (from, to) => [`${from}:${to}`],
@@ -136,39 +141,39 @@ test.each([
   ["/projects", "/projects/example/nested", []],
   ["/projects/example/nested", "/projects", []],
   ["/projects", "/projects-archive/example", []],
-  ["/music/recent/nested", "/music", []],
+  ["/music/recent/nested/missing", "/music", []],
   ["/unknown", "/music/recent", []],
-  ["/music/recent/", "/music/top-music/", ["tab-backward"]],
+  ["/music/recent/", "/music/top/tracks/", ["tab-backward"]],
   ["/projects?type=package", "/projects/example?ref=list#details", ["project"]],
   ["/music", "/music/recent", ["tab-forward"]],
-  ["/music", "/music?type=artists", ["tab-forward", "music-type"]],
-  ["/music", "/music?type=albums", ["tab-forward", "music-type"]],
-  ["/music?type=albums", "/music?type=artists", ["tab-forward", "music-type"]],
-  ["/music?type=artists", "/music?type=albums", ["tab-backward", "music-type"]],
-  ["/music?type=albums", "/music?type=tracks", ["tab-backward", "music-type"]],
-  ["/music?type=albums", "/music?type=albums&period=7day", ["music-period"]],
-  ["/music?type=artists", "/music?type=tracks", ["tab-backward", "music-type"]],
-  ["/music?period=7day", "/music?period=1month&type=artists", ["tab-forward", "music-type"]],
-  ["/music?type=artists", "/music/recent?type=tracks", ["tab-forward"]],
-  ["/music?type=artists", "/music?type=artists&period=7day", ["music-period"]],
-  ["/music?type=artists", "/music?type=artists#details", []],
-  ["/music?type=invalid", "/music?type=tracks", []],
-  ["/music/recent", "/music/top-music", ["tab-backward"]],
-  ["/music", "/music/top-music", false],
-  ["/music/top-music", "/music/", false],
+  ["/music/top/tracks", "/music/top/artists", ["tab-forward", "music-type"]],
+  ["/music/top/albums", "/music/top/artists", ["tab-forward", "music-type"]],
+  ["/music/top/artists", "/music/top/albums", ["tab-backward", "music-type"]],
+  ["/music/top/albums", "/music/top/tracks", ["tab-backward", "music-type"]],
+  ["/music/top/albums?period=7day", "/music/top/albums?period=overall", ["music-period"]],
+  ["/music/top/artists", "/music/top/tracks", ["tab-backward", "music-type"]],
+  [
+    "/music/top/tracks?period=7day",
+    "/music/top/artists?period=1month",
+    ["tab-forward", "music-type"],
+  ],
+  ["/music/top/artists", "/music/recent", ["tab-forward"]],
+  ["/music/top/artists?period=7day", "/music/top/artists?period=overall", ["music-period"]],
+  ["/music/top/artists", "/music/top/artists#details", []],
+  ["/music/recent", "/music/top/tracks", ["tab-backward"]],
   ["/gigs", "/gigs/by-city", ["tab-forward"]],
   ["/gigs/by-city", "/gigs/by-artist", ["tab-backward"]],
   ["/gigs/by-month", "/gigs", false],
   ["/gigs/", "/gigs/by-month", false],
   ["/gigs/by-artist", "/gigs/by-venue", ["tab-forward"]],
   ["/gigs/by-venue", "/gigs/by-month", ["tab-backward"]],
-  ["/music/recent?period=7day", "/music?period=1month", ["tab-backward"]],
-  ["/music?period=7day", "/music?period=overall", ["music-period"]],
+  ["/music/recent?period=7day", "/music/top/tracks?period=1month", ["tab-backward"]],
+  ["/music/top/tracks?period=7day", "/music/top/tracks?period=overall", ["music-period"]],
   ["/music/recent", "/music/recent?period=1month", ["music-period"]],
-  ["/music?period=7day", "/music/recent?period=overall", ["tab-forward"]],
-  ["/music", "/music?period=overall", []],
-  ["/music?period=invalid", "/music?period=overall", []],
-  ["/music?period=invalid", "/music?period=7day", ["music-period"]],
+  ["/music/top/tracks?period=7day", "/music/recent?period=overall", ["tab-forward"]],
+  ["/music/top/tracks", "/music/top/tracks?period=overall", []],
+  ["/music/top/tracks?period=invalid", "/music/top/tracks?period=overall", []],
+  ["/music/top/tracks?period=invalid", "/music/top/tracks?period=7day", ["music-period"]],
   ["/music?period=7day", "/gigs?period=1month", ["page-forward"]],
   ["/projects/?type=package", "/projects/", ["project-filter", "project-filter-all"]],
   ["/projects/example?type=project", "/projects/example?type=package", []],

@@ -46,8 +46,8 @@ function createTabRouter(
           <TabLink
             id="music-tab"
             panelId="music-panel"
-            to="/music/{-$breakdown}"
-            params={{ breakdown: undefined }}
+            to="/music/{-$breakdown}/{-$type}"
+            params={{ breakdown: undefined, type: undefined }}
           >
             Music
           </TabLink>
@@ -87,7 +87,7 @@ function createTabRouter(
       }),
       createRoute({
         getParentRoute: () => root,
-        path: "/music/{-$breakdown}",
+        path: "/music/{-$breakdown}/{-$type}",
         component: () => (
           <TabLinkPanel id="music-panel" tabId="music-tab">
             Music content
@@ -249,8 +249,8 @@ test("cancelled and modified clicks do not navigate the current router", async (
         <TabLink
           id="music-tab"
           panelId="music-panel"
-          to="/music/{-$breakdown}"
-          params={{ breakdown: undefined }}
+          to="/music/{-$breakdown}/{-$type}"
+          params={{ breakdown: undefined, type: undefined }}
         >
           Music
         </TabLink>

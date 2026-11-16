@@ -17,10 +17,10 @@ export const musicTypeLabels = {
   artists: { label: "Artists", icon: "artist" },
 } as const satisfies Record<MusicType, { label: string; icon: string }>;
 
-export const musicBreakdownSchema = v.fallback(v.picklist(["top-music", "recent"]), "top-music");
+export const musicBreakdownSchema = v.fallback(v.picklist(["top", "recent"]), "top");
 export type MusicBreakdown = v.InferOutput<typeof musicBreakdownSchema>;
 
 export const musicBreakdownLabels: Record<MusicBreakdown, { label: string; icon: string }> = {
-  "top-music": { label: "Top music", icon: "leaderboard" },
+  top: { label: "Top music", icon: "leaderboard" },
   recent: { label: "Recently played", icon: "history" },
 };

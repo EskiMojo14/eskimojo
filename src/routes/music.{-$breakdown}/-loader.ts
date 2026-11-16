@@ -78,7 +78,7 @@ export function preloadMusic({
         )
         .catch(reportPreloadError);
       break;
-    case "top-music": {
+    case "top": {
       if (type === "artists") {
         void queryClient
           .query({

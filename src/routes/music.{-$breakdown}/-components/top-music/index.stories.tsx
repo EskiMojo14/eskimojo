@@ -11,7 +11,7 @@ import { expect, waitFor } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import { musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants";
+import { musicBreakdownSchema, musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants";
 import type { TopAlbum, TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
@@ -20,7 +20,7 @@ import { MusicTopMusic, MusicTopMusicSkeleton, MusicTopMusicTabs } from "./index
 import "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css";
 import "#/routes/music.{-$breakdown}/-components/skeletons/index.css";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 function TopMusicContent({
   loading = false,
@@ -33,7 +33,7 @@ function TopMusicContent({
   artists: ReadonlyArray<TopArtist>;
   loading?: boolean;
 }) {
-  const { type } = musicRoute.useSearch();
+  const { type = musicTypeSchema.fallback } = musicRoute.useParams();
   if (loading) return <MusicTopMusicSkeleton type={type} />;
   return {
     tracks: <MusicTopMusic tracks={tracks} />,
@@ -46,8 +46,16 @@ function createDemoRouter(children: ReactNode, initialEntry: string) {
   const root = createRootRoute();
   const music = createRoute({
     getParentRoute: () => root,
-    path: "/music/{-$breakdown}/",
-    validateSearch: v.object({ type: v.optional(musicTypeSchema, musicTypeSchema.fallback) }),
+    path: "/music/{-$breakdown}/{-$type}",
+    params: {
+      parse: v.parser(
+        v.object({
+          breakdown: v.optional(musicBreakdownSchema),
+          type: v.optional(musicTypeSchema),
+        }),
+      ),
+    },
+    validateSearch: v.object({ period: v.optional(v.string()) }),
     component: () => (
       <>
         <MusicTopMusicTabs />
@@ -65,7 +73,7 @@ function createDemoRouter(children: ReactNode, initialEntry: string) {
 
 function TopMusicDemo({
   children,
-  initialEntry = "/music",
+  initialEntry = "/music/top/tracks",
 }: {
   children: ReactNode;
   initialEntry?: string;
@@ -102,7 +110,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Top tracks, albums, and artists for the same listening period, in that order, separated by secondary navigation links with decorative icons. MusicTopMusic accepts exactly one ranking prop (tracks, albums, or artists) and infers the panel type from it, including for empty arrays. This demo supplies data for all tabs. Tracks is the default; ?type=albums or ?type=artists opens the corresponding ranking directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
+          "Top tracks, albums, and artists for the same listening period, in that order, separated by secondary navigation links with decorative icons. MusicTopMusic accepts exactly one ranking prop (tracks, albums, or artists) and infers the panel type from it, including for empty arrays. This demo supplies data for all tabs. Tracks is the default at /music/top/tracks; /music/top/albums and /music/top/artists open the other rankings directly. Arrow keys move focus; Enter or Space follows a tab link. Only the selected ranking is visible and available to keyboard and assistive-technology users. Tabs remain available while data and artwork load, and links preserve the shared period. Secondary tab changes slide the selected ranking, with direction reversed in RTL and animations disabled for reduced motion.",
       },
     },
   },
@@ -151,7 +159,7 @@ export const Empty = meta.story({ args: { tracks: [], albums: [], artists: [] } 
 
 export const Albums = meta.story({
   render: (args) => (
-    <TopMusicDemo initialEntry="/music?type=albums">
+    <TopMusicDemo initialEntry="/music/top/albums">
       <TopMusicContent {...args} />
     </TopMusicDemo>
   ),
@@ -169,7 +177,7 @@ export const Albums = meta.story({
 
 export const Artists = meta.story({
   render: (args) => (
-    <TopMusicDemo initialEntry="/music?type=artists">
+    <TopMusicDemo initialEntry="/music/top/artists">
       <TopMusicContent {...args} />
     </TopMusicDemo>
   ),

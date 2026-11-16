@@ -24,6 +24,7 @@ export function defineTabGroup<
   parameter: TParameter;
   order: NoInfer<Array<Extract<RouteParams<TPath>[TParameter], string>>>;
   defaultTab: NoInfer<Extract<RouteParams<TPath>[TParameter], string>>;
+  transitionType?: string;
 }) {
   return group;
 }

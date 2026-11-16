@@ -10,6 +10,7 @@ import { expect, waitFor } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
+import { musicBreakdownSchema, musicTypeSchema } from "#/routes/music.{-$breakdown}/-constants";
 import { periodSchema } from "#/routes/music.{-$breakdown}/-query.ts";
 
 import { MusicPeriodPicker } from "./index";
@@ -22,12 +23,20 @@ function createDemoRouter() {
     routeTree: root.addChildren([
       createRoute({
         getParentRoute: () => root,
-        path: "/music/{-$breakdown}/",
+        path: "/music/{-$breakdown}/{-$type}",
+        params: {
+          parse: v.parser(
+            v.object({
+              breakdown: v.optional(musicBreakdownSchema),
+              type: v.optional(musicTypeSchema),
+            }),
+          ),
+        },
         validateSearch: v.object({ period: v.optional(periodSchema) }),
         component: MusicPeriodPicker,
       }),
     ]),
-    history: createMemoryHistory({ initialEntries: ["/music/top-music?period=1month"] }),
+    history: createMemoryHistory({ initialEntries: ["/music/top/tracks?period=1month"] }),
     defaultViewTransition: true,
   });
 }

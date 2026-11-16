@@ -339,10 +339,11 @@ tertiary accent. Summary card surfaces and labels remain neutral.
 
 Provide two listening tabs: Top music (the default) and Recently played.
 Top music has secondary Tracks, Albums, and Artists tabs, in that order, with one shared listening-period
-picker. The `type` search parameter selects `tracks` (the default), `albums`, or `artists`;
-`/music?type=albums` and `/music?type=artists` open those rankings directly. Show only the selected ranking at
+picker. The path selects the ranking: `/music/top/tracks` (the default),
+`/music/top/albums`, or `/music/top/artists`. `/music` and `/music/top` redirect
+to the default ranking; the old `type` search parameter no longer selects a ranking. Show only the selected ranking at
 every screen size. Use real navigation links that preserve the listening period;
-period changes and primary-tab navigation retain `type`. The secondary tabs stay
+primary-tab navigation returns to Tracks from Recently played. The secondary tabs stay
 available while rankings load. Only fetch and preload the selected ranking,
 its artwork, and its images; defer the other ranking until its link is prefetched
 or activated. Revisit cached rankings and artwork without redundant requests.
@@ -352,9 +353,8 @@ the whole listening panel; secondary tabs animate only the selected ranking.
 Period changes crossfade the ranking while keeping navigation live, and other
 navigation crossfades the listening panel independently of page movement.
 Respect reduced motion for all of these animations.
-Use `/music` for the default view, `/music/top-music` for its explicit URL, and
-`/music/recent` for Recently played. No redirects for the former separate tabs
-are required before launch.
+Use `/music/top/tracks` for the default view and `/music/recent` for Recently
+played. The former `/music/top-music` path redirects to the default ranking.
 
 Use current Last.fm-backed data rather than presenting a static historical
 snapshot as live. Keep these period choices for Top Tracks, Top Albums, and Top Artists:

@@ -85,9 +85,9 @@ test("bottom navigation starts page transitions in destination order", async () 
     ),
   });
   const router = createRouter({
-    history: createMemoryHistory({ initialEntries: ["/music/artists"] }),
+    history: createMemoryHistory({ initialEntries: ["/music/top/artists"] }),
     routeTree: root.addChildren(
-      ["/", "/projects", "/music/{-$breakdown}", "/gigs/{-$breakdown}"].map((path) =>
+      ["/", "/projects", "/music/{-$breakdown}/{-$type}", "/gigs/{-$breakdown}"].map((path) =>
         createRoute({
           getParentRoute: () => root,
           path,
@@ -148,7 +148,7 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   });
   const music = createRoute({
     getParentRoute: () => root,
-    path: "/music/{-$breakdown}",
+    path: "/music/{-$breakdown}/{-$type}",
   });
   const gigs = createRoute({
     getParentRoute: () => root,
@@ -194,7 +194,10 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
   await expect.poll(() => document.title).toBe("Site | eskimojo");
   await expect.element(siteSubtitle).toBeVisible();
 
-  await router.navigate({ to: "/music/{-$breakdown}", params: { breakdown: "recent" } });
+  await router.navigate({
+    to: "/music/{-$breakdown}/{-$type}",
+    params: { breakdown: "recent", type: undefined },
+  });
   await expect
     .element(navigation.getByRole("link", { name: "Music", exact: true }))
     .toHaveAttribute("aria-current", "page");

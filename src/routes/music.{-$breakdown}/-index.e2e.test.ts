@@ -392,7 +392,7 @@ test("secondary tabs reuse loaded rankings and preserve the selection when chang
   await expect(music.topMusic.albums.tabLink).toBeFocused();
   await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
   await music.topMusic.albums.tabLink.press("Enter");
-  await expect(page).toHaveURL(/type=albums/);
+  await expect(page).toHaveURL(/\/music\/top\/albums$/);
   await expect(music.topMusic.album("Currents")).toBeVisible();
   await expect(music.topMusic.track("Lost Chapter")).not.toBeVisible();
   expect(artworkRequests).toBe(2);
@@ -408,7 +408,8 @@ test("secondary tabs reuse loaded rankings and preserve the selection when chang
   expect(artworkRequests).toBe(2);
   await music.recent.select();
   await music.topMusic.select();
-  await expect(music.topMusic.album("Currents")).toBeVisible();
+  await expect(music.topMusic.track("Lost Chapter")).toBeVisible();
+  await expect(music.topMusic.tracks.tabLink).toHaveAttribute("aria-selected", "true");
   await expect(music.topMusic.period("7 days")).toHaveAttribute("aria-current", "page");
 });
 
@@ -622,8 +623,11 @@ test("changing period or tab recovers the active tab after an error", async ({
   await music.recent.select();
   await skipRetryBackoff(page, music.recent.error);
 
+  network.use(...lastfm());
   await music.topMusic.select();
-  await expect(music.topMusic.topArtists).toBeVisible();
+  await expect(music.topMusic.topTracks).toBeVisible();
+  await expect(music.topMusic.tracks.tabLink).toHaveAttribute("aria-selected", "true");
+  await expect(music.topMusic.period("7 days")).toHaveAttribute("aria-current", "page");
   await expect(music.alerts).not.toBeVisible();
 });
 
