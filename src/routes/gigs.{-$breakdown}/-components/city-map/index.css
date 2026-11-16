@@ -1,11 +1,6 @@
 .gigs-city-map {
   padding: 1rem;
   color: var(--md-sys-color-on-surface);
-
-  & h2 {
-    font: var(--md-sys-typography-title-large);
-    margin-block: 0 1rem;
-  }
 }
 
 .gigs-city-map__map {

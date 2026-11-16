@@ -144,14 +144,6 @@
   }
 }
 
-.recent-tracks__heading {
-  margin: 0 0 16px;
-  color: var(--md-sys-color-on-surface);
-  font: var(--md-sys-typography-headline-small);
-  font-feature-settings: var(--md-sys-typography-features-heading);
-  text-wrap: balance;
-}
-
 .recent-tracks__placeholder {
   display: grid;
   place-items: center;

@@ -118,7 +118,6 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
 
   return (
     <section className="gigs-heatmap" aria-label="Gigs by month and year">
-      <h2>Gigs by month and year</h2>
       <div
         className="gigs-heatmap__chart"
         onKeyDownCapture={(event) => {

@@ -100,7 +100,6 @@ export function GigsCityMap({
 
   return (
     <section className="gigs-city-map" aria-label="Gigs by city">
-      <h2>Gigs by city</h2>
       <div className="gigs-city-map__map">
         <Chart
           definition={definition}

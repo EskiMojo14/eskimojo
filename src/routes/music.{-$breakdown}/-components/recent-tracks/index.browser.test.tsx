@@ -37,6 +37,23 @@ test("renders now playing and repeated completed tracks with semantic timestamps
     .toHaveAttribute("datetime", "2026-10-26T00:55:00.000Z");
 });
 
+test("keeps the section and list named without a visible heading", async () => {
+  const result = await page.renderWithProviders(
+    <RecentTracks
+      tracks={[
+        {
+          name: "Let It Happen",
+          artist: "Tame Impala",
+          album: "Currents",
+          nowPlaying: true,
+        },
+      ]}
+    />,
+  );
+  await expect.element(result.getByRole("region", { name: "Recently played" })).toBeVisible();
+  await expect.element(result.getByRole("list", { name: "Recently played" })).toBeVisible();
+});
+
 test("shows Last.fm artwork and preserves music search links", async () => {
   mockLastfmArtwork();
   const result = await page.renderWithProviders(

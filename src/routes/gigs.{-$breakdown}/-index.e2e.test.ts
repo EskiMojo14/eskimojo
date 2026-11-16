@@ -12,13 +12,14 @@ test("navigates between gig breakdowns and updates the selected tab", async ({ g
   await gigs.goto();
 
   await gigs.artist.select();
-  await expect(gigs.artist.heading).toBeVisible();
+  await expect(gigs.artist.region).toBeVisible();
   await gigs.venue.select();
-  await expect(gigs.venue.heading).toBeVisible();
+  await expect(gigs.venue.region).toBeVisible();
   await gigs.city.select();
+  await expect(gigs.city.region).toBeVisible();
   await expect(gigs.city.map).toBeVisible();
   await gigs.month.select();
-  await expect(gigs.month.heading).toBeVisible();
+  await expect(gigs.month.region).toBeVisible();
 });
 
 test("loads a gig breakdown directly from its URL", async ({ page, gigs }) => {

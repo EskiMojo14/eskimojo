@@ -72,11 +72,11 @@ class TopMusicTab extends TabObjectModel<MusicPage> {
   }
 
   get topTracks() {
-    return this.tabPanel.getByRole("heading", { name: "Top tracks", exact: true });
+    return this.tabPanel.getByRole("region", { name: "Top tracks", exact: true });
   }
 
   get topArtists() {
-    return this.tabPanel.getByRole("heading", { name: "Top artists", exact: true });
+    return this.tabPanel.getByRole("region", { name: "Top artists", exact: true });
   }
 
   get emptyState() {

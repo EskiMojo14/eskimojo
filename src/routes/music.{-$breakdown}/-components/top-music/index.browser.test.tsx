@@ -51,6 +51,9 @@ test("infers the selected ranking from the supplied prop, including empty rankin
         .getByText("No listening data for this period."),
     )
     .not.toBeInTheDocument();
+  await expect
+    .element(result.getByRole("list", { name: "Top artists", exact: true }))
+    .toBeVisible();
   await result.rerender(<MusicTopMusic albums={[]} />);
   await expect.element(result.getByRole("region", { name: "Top albums" })).toBeVisible();
   await expect

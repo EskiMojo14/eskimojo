@@ -124,7 +124,6 @@ export function GigsVenueChart({
 
   return (
     <section className="gigs-venues" aria-label="Gigs by venue">
-      <h2>Gigs by venue</h2>
       <Chart
         definition={definition}
         height={venues.length * 48 + 56}

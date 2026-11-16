@@ -17,7 +17,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Ranked music lists use Last.fm artwork; artists without images use their most popular album's cover rather than a portrait. Headline-small section headings, title-medium names, title-large ranks, body-medium artist details, and label-large play counts follow the shared theme-aware tokens. Search actions use label-medium.",
+          "Ranked music lists use Last.fm artwork; artists without images use their most popular album's cover rather than a portrait. The named region and list provide ranking context without a visible section heading. Title-medium names, title-large ranks, body-medium artist details, and label-large play counts follow the shared theme-aware tokens. Search actions use label-medium.",
       },
     },
   },

@@ -1,4 +1,4 @@
-import { useId, type ComponentProps, type ComponentPropsWithRef, type ReactNode } from "react";
+import { type ComponentProps, type ComponentPropsWithRef, type ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
 import type { MusicType } from "#/routes/music.{-$breakdown}/-constants";
@@ -62,14 +62,10 @@ export function MusicListLayout({
   emptyState?: ReactNode;
   ordered?: boolean;
 }) {
-  const headingId = useId();
   return (
-    <section {...props} {...recentTracksBem({ extra: className })} aria-labelledby={headingId}>
-      <h2 id={headingId} {...recentTracksBem({ element: "heading" })}>
-        {title}
-      </h2>
+    <section {...props} {...recentTracksBem({ extra: className })} aria-label={title}>
       {emptyState ?? (
-        <List ordered={ordered} aria-labelledby={headingId}>
+        <List ordered={ordered} aria-label={title}>
           {children}
         </List>
       )}

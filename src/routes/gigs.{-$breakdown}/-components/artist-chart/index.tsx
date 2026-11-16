@@ -119,7 +119,6 @@ export function GigsArtistChart({
 
   return (
     <section className="gigs-artists" aria-label="Gigs by artist">
-      <h2>Gigs by artist</h2>
       <ul className="gigs-artists__legend" aria-label="Appearance types">
         <li>
           <span className="gigs-artists__key gigs-artists__key--main" />
