@@ -3,7 +3,7 @@ import type { Page } from "playwright";
 import { expect, PageObjectModel, TabObjectModel } from "#test/e2e";
 
 class TopRankingTab extends TabObjectModel<TopMusicTab> {
-  url = "/music";
+  url = "/music/top/tracks";
 
   constructor(
     page: Page,
@@ -11,13 +11,11 @@ class TopRankingTab extends TabObjectModel<TopMusicTab> {
     public tabName: "Tracks" | "Albums" | "Artists",
   ) {
     super(page, parent);
+    this.url = `/music/top/${tabName.toLowerCase()}`;
   }
 
   override matchesUrl(url: URL) {
-    return (
-      this.parent.matchesUrl(url) &&
-      (url.searchParams.get("type") ?? "tracks") === this.tabName.toLowerCase()
-    );
+    return this.parent.matchesUrl(url) && url.pathname === this.url;
   }
 
   override get tabPanel() {
@@ -26,7 +24,7 @@ class TopRankingTab extends TabObjectModel<TopMusicTab> {
 }
 
 class TopMusicTab extends TabObjectModel<MusicPage> {
-  url = "/music";
+  url = "/music/top/tracks";
   tabName = "Top music";
   tracks = new TopRankingTab(this.page, this, "Tracks");
   albums = new TopRankingTab(this.page, this, "Albums");
@@ -37,7 +35,7 @@ class TopMusicTab extends TabObjectModel<MusicPage> {
   }
 
   override matchesUrl(url: URL) {
-    return url.pathname === this.url || url.pathname === "/music/top-music";
+    return url.pathname.startsWith("/music/top/");
   }
 
   get periods() {
@@ -137,6 +135,10 @@ class RecentTab extends TabObjectModel<MusicPage> {
 export class MusicPage extends PageObjectModel {
   url = "/music";
   title = /^Music/;
+
+  override matchesUrl(url: URL) {
+    return url.pathname === this.url || url.pathname.startsWith(`${this.url}/`);
+  }
 
   get navLink() {
     return this.page

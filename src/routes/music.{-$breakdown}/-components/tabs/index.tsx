@@ -7,33 +7,44 @@ import {
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabNav } from "#/shared/components/tabs";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 export function MusicBreakdownTabs() {
-  const { breakdown } = musicRoute.useParams();
+  const { period } = musicRoute.useSearch();
   return (
     <TabNav aria-label="Music breakdown" variant="primary" responsive>
-      {musicBreakdownSchema.options.map((value) => (
-        <TabLink
-          key={value}
-          id={`music-${value}-tab`}
-          panelId={`music-${value}-panel`}
-          from={musicRoute.id}
-          to="/music/{-$breakdown}"
-          params={{
-            breakdown:
-              value === musicBreakdownSchema.fallback && breakdown !== musicBreakdownSchema.fallback
-                ? undefined
-                : value,
-          }}
-          search={(previous) => previous}
-          activeOptions={{ exact: true }}
-          icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
-          replace
-        >
-          {musicBreakdownLabels[value].label}
-        </TabLink>
-      ))}
+      {musicBreakdownSchema.options.map((value) =>
+        value === "top" ? (
+          <TabLink
+            key={value}
+            id={`music-${value}-tab`}
+            panelId={`music-${value}-panel`}
+            from={musicRoute.id}
+            to="/music/top"
+            search={() => ({ period })}
+            activeOptions={{ exact: false, includeSearch: false }}
+            icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
+            replace
+          >
+            {musicBreakdownLabels[value].label}
+          </TabLink>
+        ) : (
+          <TabLink
+            key={value}
+            id={`music-${value}-tab`}
+            panelId={`music-${value}-panel`}
+            from={musicRoute.id}
+            to="/music/{-$breakdown}/{-$type}"
+            params={{ breakdown: value, type: undefined }}
+            search={() => ({ period })}
+            activeOptions={{ exact: false }}
+            icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
+            replace
+          >
+            {musicBreakdownLabels[value].label}
+          </TabLink>
+        ),
+      )}
     </TabNav>
   );
 }

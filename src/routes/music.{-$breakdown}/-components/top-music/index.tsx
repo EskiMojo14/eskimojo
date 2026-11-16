@@ -14,7 +14,7 @@ import { SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabLinkPanel, TabNav } from "#/shared/components/tabs";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 export function MusicTopMusicTabs() {
   return (
@@ -31,7 +31,8 @@ export function MusicTopMusicTabs() {
           panelId={`music-top-${type}-panel`}
           from={musicRoute.id}
           to="."
-          search={(previous) => ({ ...previous, type })}
+          params={(previous) => ({ ...previous, type })}
+          search={(previous) => ({ period: previous.period })}
           activeOptions={{ exact: true }}
           icon={<MdSymbol>{musicTypeLabels[type].icon}</MdSymbol>}
           replace

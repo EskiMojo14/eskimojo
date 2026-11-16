@@ -48,8 +48,10 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
     );
     if (detailGroup) return [detailGroup.type];
 
-    const tabGroup = tabGroups.find(({ route }) => route === fromRoute && route === toRoute);
-    if (tabGroup) {
+    const routeTabGroups = tabGroups.filter(
+      ({ route }) => route === fromRoute && route === toRoute,
+    );
+    for (const tabGroup of routeTabGroups) {
       const { order, parameter, defaultTab } = tabGroup;
       const fromParams: Record<string, unknown> = fromMatch.params;
       const toParams: Record<string, unknown> = toMatch.params;
@@ -58,7 +60,10 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
       const fromIndex = order.findIndex((tab) => tab === fromTab);
       const toIndex = order.findIndex((tab) => tab === toTab);
       if (fromIndex !== toIndex) {
-        return [toIndex > fromIndex ? "tab-forward" : "tab-backward"];
+        return [
+          toIndex > fromIndex ? "tab-forward" : "tab-backward",
+          ...(tabGroup.transitionType ? [tabGroup.transitionType] : []),
+        ];
       }
     }
 
@@ -67,7 +72,10 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
       const types = getTypes(fromMatch, toMatch);
       if (types !== undefined) return types;
     }
-    if (tabGroup && trimPathRight(fromLocation.pathname) !== trimPathRight(toLocation.pathname))
+    if (
+      routeTabGroups.length > 0 &&
+      trimPathRight(fromLocation.pathname) !== trimPathRight(toLocation.pathname)
+    )
       return false;
 
     const fromIndex = sections.findIndex(

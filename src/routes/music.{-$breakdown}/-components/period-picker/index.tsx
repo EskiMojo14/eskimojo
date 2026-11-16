@@ -11,7 +11,7 @@ export function MusicPeriodPicker() {
       {periodSchema.options.map((value) => (
         <InternalLinkChip
           key={value}
-          from="/music/{-$breakdown}/"
+          from="/music/{-$breakdown}/{-$type}"
           to="."
           search={(previous) => ({
             ...previous,

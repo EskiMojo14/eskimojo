@@ -16,7 +16,7 @@ import {
   getUserData,
 } from "#/routes/music.{-$breakdown}/-query";
 
-const musicRoute = getRouteApi("/music/{-$breakdown}/");
+const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 export function SummaryPanel() {
   const { data: user, dataUpdatedAt } = useSuspenseQuery({

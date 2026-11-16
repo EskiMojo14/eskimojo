@@ -12,10 +12,17 @@ export const sections = links.flatMap(({ children }) => children.map(({ to }) =>
 
 export const tabGroups = [
   defineTabGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "breakdown",
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
+  }),
+  defineTabGroup({
+    route: "/music/{-$breakdown}/{-$type}",
+    parameter: "type",
+    order: musicTypeSchema.options,
+    defaultTab: musicTypeSchema.fallback,
+    transitionType: "music-type",
   }),
   defineTabGroup({
     route: "/gigs/{-$breakdown}",
@@ -31,18 +38,7 @@ export const detailGroups = [
 
 export const filterGroups = [
   defineFilterGroup({
-    route: "/music/{-$breakdown}",
-    parameter: "type",
-    defaultValue: musicTypeSchema.fallback,
-    types: (from, to) => [
-      musicTypeSchema.options.indexOf(to) > musicTypeSchema.options.indexOf(from)
-        ? "tab-forward"
-        : "tab-backward",
-      "music-type",
-    ],
-  }),
-  defineFilterGroup({
-    route: "/music/{-$breakdown}",
+    route: "/music/{-$breakdown}/{-$type}",
     parameter: "period",
     defaultValue: periodSchema.fallback,
     types: () => ["music-period"],
