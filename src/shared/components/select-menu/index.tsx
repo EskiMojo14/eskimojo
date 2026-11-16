@@ -1,9 +1,10 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- Select-only combobox with a themed cross-browser popover, not a native OS picker. */
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { MdSymbol } from "#/shared/components/symbol";
 import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useLocalSlice } from "#/utils/use-local-slice";
 
 const selectBem = BEMHelper("select-menu");
 
@@ -35,9 +36,34 @@ function useSelectMenuInteraction<Value extends string>({
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef({ text: "", time: 0 });
-  const [expanded, setExpanded] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(selectedIndex);
+  const [menuState, menuDispatch] = useLocalSlice({
+    slice: "select-menu",
+    initialState: {
+      expanded: false,
+      activeIndex: selectedIndex,
+      search: { text: "", time: 0 },
+    },
+    reducers: {
+      activeOptionChanged(state, action: { payload: number }) {
+        state.activeIndex = action.payload;
+      },
+      popoverStateChanged(state, action: { payload: { newState: string; selectedIndex: number } }) {
+        state.expanded = action.payload.newState === "open";
+        if (state.expanded) state.activeIndex = action.payload.selectedIndex;
+      },
+      typeaheadUpdated(
+        state,
+        action: { payload: { text: string; time: number; activeIndex: number } },
+      ) {
+        state.search = { text: action.payload.text, time: action.payload.time };
+        state.activeIndex = action.payload.activeIndex;
+      },
+      typeaheadCleared(state) {
+        state.search = { text: "", time: 0 };
+      },
+    },
+  });
+  const { activeIndex, expanded } = menuState;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -63,14 +89,18 @@ function useSelectMenuInteraction<Value extends string>({
     }
   }, [expanded, activeIndex]);
 
-  function open(index = selectedIndex) {
+  function showPopover() {
     menuRef.current?.showPopover({ source: triggerRef.current ?? undefined });
-    setActiveIndex(index);
+  }
+
+  function open(index = selectedIndex) {
+    showPopover();
+    menuDispatch.activeOptionChanged(index);
   }
 
   function close() {
     menuRef.current?.hidePopover();
-    searchRef.current = { text: "", time: 0 };
+    menuDispatch.typeaheadCleared();
   }
 
   function commit(index: number) {
@@ -129,26 +159,26 @@ function useSelectMenuInteraction<Value extends string>({
         if (event.altKey || event.key.length !== 1) return;
         event.preventDefault();
         const time = performance.now();
-        const search = searchRef.current;
-        const text = (time - search.time < 500 ? search.text : "") + event.key.toLowerCase();
-        searchRef.current = { text, time };
+        const text =
+          (time - menuState.search.time < 500 ? menuState.search.text : "") +
+          event.key.toLowerCase();
         const first = text.charAt(0);
         const query = text === first.repeat(text.length) ? first : text;
-        const start = isOpen ? activeIndex : selectedIndex;
+        const start = isOpen ? menuState.activeIndex : selectedIndex;
         const match = options.findIndex((_, offset) => {
           const index = (start + offset + (query.length === 1 ? 1 : 0)) % options.length;
           return options[index]?.label.toLowerCase().startsWith(query);
         });
         const index =
           match < 0 ? start : (start + match + (query.length === 1 ? 1 : 0)) % options.length;
-        open(index);
+        showPopover();
+        menuDispatch.typeaheadUpdated({ text, time, activeIndex: index });
       }
     }
   }
 
   function handleBeforeToggle(newState: string) {
-    setExpanded(newState === "open");
-    if (newState === "open") setActiveIndex(selectedIndex);
+    menuDispatch.popoverStateChanged({ newState, selectedIndex });
   }
 
   function handleOptionClick(index: number) {
