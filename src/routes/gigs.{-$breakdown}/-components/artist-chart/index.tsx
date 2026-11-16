@@ -152,7 +152,7 @@ export function GigsArtistChart({
                   {row.label}: {row.value}
                 </p>
               ))}
-              <ul className="gigs-artists__events">
+              <ol className="gigs-artists__events">
                 {appearances?.map(({ event, role: appearanceRole }, index) => (
                   <li key={index}>
                     <strong>{formatDate(event.date)}</strong>
@@ -164,7 +164,7 @@ export function GigsArtistChart({
                     )}
                   </li>
                 ))}
-              </ul>
+              </ol>
               {pinned && (
                 <div className="tooltip__actions">
                   <InternalLinkButton

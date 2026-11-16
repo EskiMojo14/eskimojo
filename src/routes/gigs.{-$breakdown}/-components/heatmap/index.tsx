@@ -178,7 +178,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
             ) : (
               <div className="tooltip--rich tooltip--chart gigs-heatmap__tooltip">
                 <h3 className="tooltip__subhead">{content.title}</h3>
-                <ul className="gigs-heatmap__events">
+                <ol className="gigs-heatmap__events">
                   {primaryPoint?.datum.events.map((event, index) => (
                     <li key={index}>
                       <strong>{event.artists.join(", ")}</strong>
@@ -193,7 +193,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                     </li>
                   ))}
                   {!primaryPoint?.datum.events.length && <li>No gigs recorded this month.</li>}
-                </ul>
+                </ol>
                 {pinned && (
                   <div className="tooltip__actions">
                     <Button variant="text" onClick={dismiss}>

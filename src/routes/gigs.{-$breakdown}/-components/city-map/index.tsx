@@ -114,7 +114,7 @@ export function GigsCityMap({
             ) : (
               <div className="tooltip--rich tooltip--chart gigs-city-map__tooltip">
                 <h3 className="tooltip__subhead">{content.title}</h3>
-                <ul className="gigs-city-map__events">
+                <ol className="gigs-city-map__events">
                   {primaryPoint?.datum.properties.events.map((event, index) => (
                     <li key={index}>
                       <strong>{event.artists.join(", ")}</strong>
@@ -127,7 +127,7 @@ export function GigsCityMap({
                       ) : null}
                     </li>
                   ))}
-                </ul>
+                </ol>
                 {pinned && (
                   <div className="tooltip__actions">
                     <InternalLinkButton

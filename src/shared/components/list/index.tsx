@@ -13,12 +13,22 @@ import { useRipple } from "#/shared/components/ripple";
 
 const listBem = BEMHelper("list");
 
-export interface ListProps extends ComponentPropsWithRef<"ul"> {
+export type ListProps<TOrdered extends boolean = false> = ComponentPropsWithRef<
+  TOrdered extends true ? "ol" : "ul"
+> & {
+  ordered?: TOrdered;
   variant?: "navigation" | "expressive";
-}
+};
 
-export function List({ variant = "expressive", className, ...props }: ListProps) {
-  return <ul {...props} {...listBem({ modifier: variant, extra: className })} />;
+export function List<TOrdered extends boolean = false>({
+  ordered,
+  variant = "expressive",
+  className,
+  ...props
+}: ListProps<TOrdered>) {
+  const Component = ordered ? "ol" : "ul";
+  // @ts-expect-error Component can be "ul" or "ol"
+  return <Component {...props} {...listBem({ modifier: variant, extra: className })} />;
 }
 
 type ListItemActionProps = HTMLAttributes<HTMLElement> & { disabled?: boolean };

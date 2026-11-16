@@ -140,7 +140,7 @@ export function GigsVenueChart({
               <p>
                 {primaryPoint?.datum.count} {primaryPoint?.datum.count === 1 ? "gig" : "gigs"}
               </p>
-              <ul className="gigs-venues__events">
+              <ol className="gigs-venues__events">
                 {primaryPoint?.datum.events.map((event, index) => (
                   <li key={index}>
                     <strong>{event.artists.join(", ")}</strong>
@@ -150,7 +150,7 @@ export function GigsVenueChart({
                     ) : null}
                   </li>
                 ))}
-              </ul>
+              </ol>
               {pinned && (
                 <div className="tooltip__actions">
                   <InternalLinkButton

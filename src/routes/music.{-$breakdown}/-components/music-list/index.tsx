@@ -55,10 +55,12 @@ export function MusicListLayout({
   children,
   emptyState,
   className,
+  ordered,
   ...props
 }: Omit<ComponentPropsWithRef<"section">, "title"> & {
   title: string;
   emptyState?: ReactNode;
+  ordered?: boolean;
 }) {
   const headingId = useId();
   return (
@@ -66,7 +68,11 @@ export function MusicListLayout({
       <h2 id={headingId} {...recentTracksBem({ element: "heading" })}>
         {title}
       </h2>
-      {emptyState ?? <List aria-labelledby={headingId}>{children}</List>}
+      {emptyState ?? (
+        <List ordered={ordered} aria-labelledby={headingId}>
+          {children}
+        </List>
+      )}
     </section>
   );
 }

@@ -29,6 +29,7 @@ export function MusicTopList({
 }) {
   return (
     <MusicListLayout
+      ordered
       title={title}
       {...topListBem()}
       emptyState={
