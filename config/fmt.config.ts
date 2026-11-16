@@ -5,7 +5,7 @@ import type { OxfmtConfig } from "vite-plus/fmt";
 const config: OxfmtConfig = {
   // Generated files are formatted by the script that writes them.
   // PostCSS templates contain keyframe calculations Oxfmt cannot parse.
-  ignorePatterns: ["**/*.gen.*", "**/skills/**", "**/*.pcss"],
+  ignorePatterns: ["**/*.gen.*", "**/skills/**", "**/*.pcss", "public/mockServiceWorker.js"],
   sortImports: true,
 };
 
