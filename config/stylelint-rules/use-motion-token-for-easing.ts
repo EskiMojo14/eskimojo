@@ -20,6 +20,7 @@ const easingFunctions = new Set(["cubic-bezier", "frames", "linear", "steps"]);
 const globalKeywords = new Set(["inherit", "initial", "revert", "revert-layer", "unset"]);
 const motionToken =
   /^--md-sys-motion-(?:easing-[a-z\d-]+|spring-(?:fast|default|slow)-(?:spatial|effects))$/i;
+const customPropertyPattern = /^--/;
 const messages = {
   rejected: (easing: string) => `Use a motion token for easing curves instead of "${easing}".`,
 };
@@ -133,7 +134,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
     return;
 
   const aliases: CustomPropertyAliases = new Map();
-  root.walkDecls(/^--/, (decl) => {
+  root.walkDecls(customPropertyPattern, (decl) => {
     const definitions = aliases.get(decl.prop) ?? [];
     definitions.push(decl.value);
     aliases.set(decl.prop, definitions);

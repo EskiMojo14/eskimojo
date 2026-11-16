@@ -58,7 +58,7 @@ function mountSnackbar(
       pause();
     } else if (remaining !== null && timeout === undefined) {
       startedAt = performance.now();
-      timeout = setTimeout(() => dismissSnackbar(message.id), remaining);
+      timeout = setTimeout(dismissSnackbar, remaining, message.id);
     }
   };
   const pointerEnter = () => {

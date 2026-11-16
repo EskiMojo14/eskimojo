@@ -8,7 +8,7 @@ export type ButtonGroupProps = Omit<ComponentPropsWithoutRef<"div">, "role"> & {
 } & ({ "aria-label": string } | { "aria-labelledby": string });
 
 function buttonsIn(group: HTMLDivElement) {
-  return Array.from(group.querySelectorAll<HTMLButtonElement>(":scope > button"));
+  return [...group.querySelectorAll<HTMLButtonElement>(":scope > button")];
 }
 
 function availableButtons(group: HTMLDivElement) {

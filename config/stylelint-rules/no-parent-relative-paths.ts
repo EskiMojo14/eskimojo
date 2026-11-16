@@ -4,6 +4,8 @@ import type { Rule, RuleBase } from "stylelint";
 
 export const ruleName = "local/no-parent-relative-paths";
 
+const absoluteUrlPattern = /^(?:[a-z][a-z\d+.-]*:|\/\/)/i;
+const quotedStringPattern = /^(["'])(.*)\1$/;
 const messages = {
   rejected: (path: string) =>
     `Use a #/ import or a root-absolute URL instead of parent-relative path "${path}".`,
@@ -34,7 +36,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
       : undefined;
 
     const reportIfRelative = (path: string) => {
-      if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(path) || !path.split("/").includes("..")) return;
+      if (absoluteUrlPattern.test(path) || !path.split("/").includes("..")) return;
 
       stylelint.utils.report({
         ruleName,
@@ -46,10 +48,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
 
     parsed.walk((part) => {
       if (part.type === "function" && part.value.toLowerCase() === "url") {
-        const path = valueParser
-          .stringify(part.nodes)
-          .trim()
-          .replace(/^(["'])(.*)\1$/, "$2");
+        const path = valueParser.stringify(part.nodes).trim().replace(quotedStringPattern, "$2");
         reportIfRelative(path);
         return false;
       }

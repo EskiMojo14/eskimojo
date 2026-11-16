@@ -5,6 +5,8 @@ import { runnerImport, type Plugin } from "vite-plus";
 
 import { symbolsUrl } from "../src/shared/lib/symbols";
 
+const jsxCallNamePattern = /^(?:_?jsx(?:s|DEV)?\d*|createElement)$/;
+
 interface Options {
   /** Names used in interpolated children, which cannot be extracted statically. */
   knownSymbols?: Array<string>;
@@ -88,7 +90,7 @@ export default function materialSymbols({
               : nameOf(callee);
           if (
             typeof name !== "string" ||
-            !/^(?:_?jsx(?:s|DEV)?\d*|createElement)$/.test(name) ||
+            !jsxCallNamePattern.test(name) ||
             !Array.isArray(args) ||
             nameOf(args[0]) !== "MdSymbol"
           )

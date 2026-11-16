@@ -9,14 +9,16 @@ import {
   readableImageColor as readable,
 } from "#/shared/lib/image-palette";
 
+const syntaxStandardPattern = /%syntax-standard\s*\{([^}]+)\}/;
+const syntaxColorPattern =
+  /--syntax-([\w-]+):\s*light-dark\(rgb\((\d+) (\d+) (\d+)\), rgb\((\d+) (\d+) (\d+)\)\)/g;
+
 function readSyntaxColors() {
   const css = readFileSync(resolve("src/shared/styles/syntax.gen.css"), "utf8");
-  const standard = /%syntax-standard\s*\{([^}]+)\}/.exec(css)?.[1];
+  const standard = syntaxStandardPattern.exec(css)?.[1];
   if (!standard) throw new Error("Missing standard syntax palette in syntax.gen.css");
   const colors = new Map<string, [number, number]>();
-  for (const [, role, r, g, b, dr, dg, db] of standard.matchAll(
-    /--syntax-([\w-]+):\s*light-dark\(rgb\((\d+) (\d+) (\d+)\), rgb\((\d+) (\d+) (\d+)\)\)/g,
-  )) {
+  for (const [, role, r, g, b, dr, dg, db] of standard.matchAll(syntaxColorPattern)) {
     if (!role) throw new Error("Missing syntax color role");
     colors.set(role, [
       argbFromRgb(Number(r), Number(g), Number(b)),

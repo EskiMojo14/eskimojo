@@ -27,6 +27,7 @@ const levels = {
   medium: { suffix: "-mc" },
   high: { suffix: "-hc" },
 } as const;
+const rgbPattern = /^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/;
 
 function readTokens(theme: string, file: string): Map<string, string> {
   const path = `exports/${theme}/${file}.css`;
@@ -56,7 +57,7 @@ function readLevel(theme: string, suffix: string): Map<string, [string, string]>
 }
 
 function parseRgb(value: string): Rgb {
-  const m = /^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/.exec(value);
+  const m = rgbPattern.exec(value);
   if (!m) throw new Error(`Expected rgb(r g b), got ${value}`);
   const [red, green, blue] = m.slice(1);
   assert(
@@ -162,7 +163,8 @@ await writeFormatted(
 mkdirSync(new URL("palettes/", themeDir), { recursive: true });
 for (const [theme, palette] of Object.entries(themePalettes)) {
   const blocks = Object.entries(palette).map(([level, roles]) => {
-    const declarations = [...roles].map(
+    const declarations = Array.from(
+      roles,
       ([name, [l, d]]) => `  --md-sys-color-${name}: ${l === d ? l : `light-dark(${l}, ${d})`};`,
     );
     return `%${theme}-${level} {\n${declarations.join("\n")}\n}`;

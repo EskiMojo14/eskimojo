@@ -125,7 +125,8 @@ const RouterTabLink = createLink(TabLinkBase);
 
 export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
   const router = useRouter();
-  const linkProps = Object.assign({}, props, {
+  const linkProps = {
+    ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {
       props.onClick?.(event);
       triggerSelectionLinkHaptic(
@@ -133,7 +134,7 @@ export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
         router.history.createHref(router.state.location.publicHref),
       );
     },
-  });
+  };
   return <RouterTabLink resetScroll={false} {...linkProps} />;
 };
 
@@ -196,7 +197,7 @@ export type TabListProps = Omit<ComponentPropsWithoutRef<"div">, "role"> & {
 } & ({ "aria-label": string } | { "aria-labelledby": string });
 
 function availableTabs(list: HTMLDivElement) {
-  return Array.from(list.querySelectorAll<HTMLElement>(":scope > [role='tab']")).filter(
+  return [...list.querySelectorAll<HTMLElement>(":scope > [role='tab']")].filter(
     (tab) =>
       !tab.matches(':disabled, [aria-disabled="true"], [hidden], [inert], [inert] *') &&
       tab.checkVisibility({ visibilityProperty: true }),
@@ -216,7 +217,7 @@ function useTabListNavigation(
 
     const originalTabIndexes = new Map<HTMLElement, string | null>();
     const synchronizeTabStops = () => {
-      const tabs = Array.from(list.querySelectorAll<HTMLElement>(":scope > [role='tab']"));
+      const tabs = [...list.querySelectorAll<HTMLElement>(":scope > [role='tab']")];
       for (const tab of tabs) {
         if (!originalTabIndexes.has(tab)) {
           originalTabIndexes.set(tab, tab.getAttribute("tabindex"));

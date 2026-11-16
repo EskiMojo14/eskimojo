@@ -132,7 +132,8 @@ const RouterLinkChip = createLink(LinkChipBase);
 
 export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
   const router = useRouter();
-  const linkProps = Object.assign({}, props, {
+  const linkProps = {
+    ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {
       props.onClick?.(event);
       triggerSelectionLinkHaptic(
@@ -140,7 +141,7 @@ export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
         router.history.createHref(router.state.location.publicHref),
       );
     },
-  });
+  };
   return <RouterLinkChip resetScroll={false} {...linkProps} />;
 };
 
