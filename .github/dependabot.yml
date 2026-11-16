@@ -22,6 +22,10 @@ updates:
       - dependency-name: "vitest"
       - dependency-name: "@vitest/browser-playwright"
       - dependency-name: "@vitest/coverage-v8"
+      - dependency-name: "playwright"
+        versions: ["1.65.1"]
+      - dependency-name: "@playwright/test"
+        versions: ["1.65.1"]
     groups:
       npm:
         patterns:
