@@ -1,9 +1,9 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import eslintPluginE18e from "@e18e/eslint-plugin";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
 import eslintPluginRouter from "@tanstack/eslint-plugin-router";
-import { configs as eslintDependConfigs } from "eslint-plugin-depend";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
@@ -31,13 +31,13 @@ const config = defineConfig({
     plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
     jsPlugins: [
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
-      { name: "depend", specifier: "eslint-plugin-depend" },
+      { name: "e18e", specifier: "@e18e/eslint-plugin" },
       { name: "@tanstack/router", specifier: "@tanstack/eslint-plugin-router" },
       { name: "@tanstack/query", specifier: "@tanstack/eslint-plugin-query" },
       { name: "no-relative", specifier: "eslint-plugin-no-relative-import-paths" },
     ],
     rules: {
-      ...eslintDependConfigs["flat/recommended"].rules,
+      ...eslintPluginE18e.configs.moduleReplacements.rules,
       "vite-plus/prefer-vite-plus-imports": "error",
       "import/first": "error",
       "import/no-unassigned-import": "off",
