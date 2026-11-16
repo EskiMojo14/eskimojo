@@ -1,5 +1,8 @@
 import { spawnSync } from "node:child_process";
 
+const sourceFilePattern = /\.(?:ts|tsx|mdx)$/;
+const projectConfigPattern = /^config\/tsconfig\..*\.json$/;
+
 const diff = spawnSync("git", ["diff", "--cached", "--name-only", "-z"], {
   encoding: "utf8",
 });
@@ -18,9 +21,7 @@ const typecheckInputs = new Set([
 ]);
 const needsTypecheck = files.some(
   (file) =>
-    /\.(?:ts|tsx|mdx)$/.test(file) ||
-    /^config\/tsconfig\..*\.json$/.test(file) ||
-    typecheckInputs.has(file),
+    sourceFilePattern.test(file) || projectConfigPattern.test(file) || typecheckInputs.has(file),
 );
 if (needsTypecheck) {
   const check = spawnSync("vp", ["run", "typecheck"], { stdio: "inherit" });

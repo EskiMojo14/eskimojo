@@ -3,8 +3,10 @@ import { appendFileSync } from "node:fs";
 
 type VersionParts = [number, number, number];
 
+const versionPattern = /^\d+\.\d+\.\d+$/;
+
 const parseVersion = (version: string): VersionParts | null => {
-  if (!/^\d+\.\d+\.\d+$/.test(version)) return null;
+  if (!versionPattern.test(version)) return null;
 
   const [major, minor, patch] = version.split(".");
   return [Number(major), Number(minor), Number(patch)];

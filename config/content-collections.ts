@@ -41,6 +41,8 @@ export const projectLogoSchema = v.union([
   }),
 ]);
 
+const projectSlugSchema = v.pipe(v.string(), v.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/));
+
 const projects = defineCollection({
   name: "projects",
   directory: "../src/routes/projects/-content",
@@ -66,10 +68,7 @@ const projects = defineCollection({
         : undefined,
     kind: v.parse(projectKindSchema, posix.dirname(meta.path)),
     filePath: meta.filePath,
-    slug: v.parse(
-      v.pipe(v.string(), v.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)),
-      posix.basename(meta.path),
-    ),
+    slug: v.parse(projectSlugSchema, posix.basename(meta.path)),
   }),
 });
 

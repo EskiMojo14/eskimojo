@@ -118,10 +118,9 @@ export async function addArtworkPalettes<T extends { artwork?: Artwork; palette?
 ): Promise<Array<T & { palette?: ArtworkPalette }>> {
   const extractionSignal = AbortSignal.any([signal, AbortSignal.timeout(5000)]);
   const pending = new Map<string, Promise<ArtworkPalette | undefined>>();
-  const palettes: Array<ArtworkPalette | undefined> = Array.from(
-    { length: items.length },
-    () => undefined,
-  );
+  const palettes = Array.from<ArtworkPalette | undefined>({
+    length: items.length,
+  }).fill(undefined);
   const queue = items.entries();
   await Promise.all(
     Array.from({ length: Math.min(4, items.length) }, async () => {

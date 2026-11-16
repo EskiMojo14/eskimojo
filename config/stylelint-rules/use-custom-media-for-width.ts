@@ -7,7 +7,8 @@ const messages = {
   rejected: "Use a named custom media query instead of a viewport width feature.",
 };
 
-const isWidthFeature = (value: string) => /^(?:(?:min|max)-)?(?:device-)?width$/i.test(value);
+const widthFeaturePattern = /^(?:(?:min|max)-)?(?:device-)?width$/i;
+const isWidthFeature = (value: string) => widthFeaturePattern.test(value);
 
 const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
   if (

@@ -14,6 +14,8 @@ import fmtConfig from "./config/fmt.config.ts";
 
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+const clientImportSpecifiers = [/^sharp(?:\/|$)/, /^@material\/material-color-utilities(?:\/|$)/];
+const viteReactInclude = /\.(js|jsx|ts|tsx|mdx)$/;
 
 // Set HEADLESS=false to watch browser and Storybook tests run.
 const headless = process.env.HEADLESS !== "false";
@@ -37,7 +39,7 @@ const config = defineConfig({
       { name: "no-relative", specifier: "eslint-plugin-no-relative-import-paths" },
     ],
     rules: {
-      ...eslintPluginE18e.configs.moduleReplacements.rules,
+      ...eslintPluginE18e.configs.recommended.rules,
       "vite-plus/prefer-vite-plus-imports": "error",
       "import/first": "error",
       "import/no-unassigned-import": "off",
@@ -89,6 +91,14 @@ const config = defineConfig({
           ],
           "vitest/no-focused-tests": "error",
           "vitest/no-disabled-tests": "warn",
+        },
+      },
+      {
+        files: ["**/*.{browser,node,e2e}.test.{ts,tsx}", "**/*.stories.tsx"],
+        // Keep performance micro-optimizations from obscuring test and story intent.
+        rules: {
+          "e18e/prefer-array-from-map": "off",
+          "e18e/prefer-static-regex": "off",
         },
       },
       {
@@ -168,7 +178,7 @@ const config = defineConfig({
           importProtection: {
             behavior: "error",
             client: {
-              specifiers: [/^sharp(?:\/|$)/, /^@material\/material-color-utilities(?:\/|$)/],
+              specifiers: clientImportSpecifiers,
             },
           },
         }),
@@ -182,7 +192,7 @@ const config = defineConfig({
           rehypePlugins: [rehypePrism],
         }),
       },
-      viteReact({ include: /\.(js|jsx|ts|tsx|mdx)$/ }),
+      viteReact({ include: viteReactInclude }),
       svgr(),
       materialSymbols({
         knownSymbolsModule: path.join(dirname, "vite/known-symbols.ts"),
