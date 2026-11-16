@@ -10,6 +10,7 @@ import {
 
 import { setThemeFn, setContrastFn, setPaletteFn } from "#/shared/lib/prefs";
 import { showSnackbar } from "#/shared/lib/snackbar";
+import { useAppDispatch } from "#/shared/store/hooks";
 import { capitalize } from "#/utils";
 import type { Compute } from "#/utils/types";
 
@@ -27,6 +28,7 @@ function createPrefProvider<Name extends string, Value extends string>(
 ) {
   const PrefProvider: FC<PrefProviderProps<Name, Value>> = ({ children, [name]: value }) => {
     const router = useRouter();
+    const dispatch = useAppDispatch();
     const [optimisticValue, setOptimisticValue] = useOptimistic<Value>(value);
     const [, savePref] = useActionState<null, Value>(async (_, data) => {
       try {
@@ -37,10 +39,12 @@ function createPrefProvider<Name extends string, Value extends string>(
         });
       } catch (error) {
         console.error(`Unable to update ${name} preference`, error);
-        showSnackbar({
-          message: `Couldn't save ${name} preference`,
-          showCloseButton: true,
-        });
+        dispatch(
+          showSnackbar({
+            message: `Couldn't save ${name} preference`,
+            showCloseButton: true,
+          }),
+        );
       }
       return null;
     }, null);
