@@ -3,6 +3,8 @@ import type { AnyRouter } from "@tanstack/react-router";
 import { Fragment } from "react";
 import { Provider, useDispatch, useSelector, useStore } from "react-redux";
 
+import { listenerMiddleware } from "#/shared/middleware/listener.ts";
+
 import { rootReducer } from "./slices";
 
 export type PreloadedState = Parameters<typeof rootReducer>[0];
@@ -11,12 +13,20 @@ export function makeStore(preloadedState?: PreloadedState) {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      // oxlint-disable-next-line e18e/prefer-spread-syntax
+      getDefaultMiddleware({
+        thunk: {
+          extraArgument: undefined,
+        },
+      }).concat(listenerMiddleware.middleware),
   });
 }
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
+export type ExtraArgument = undefined;
 
 export interface Options<TRouter extends AnyRouter> {
   router: TRouter;
