@@ -18,7 +18,12 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/");
 
 export function MusicTopMusicTabs() {
   return (
-    <TabNav aria-label="Top music rankings" variant="secondary" className="music-top-music">
+    <TabNav
+      aria-label="Top music rankings"
+      variant="secondary"
+      className="music-top-music"
+      responsive
+    >
       {musicTypeSchema.options.map((type) => (
         <TabLink
           key={type}
