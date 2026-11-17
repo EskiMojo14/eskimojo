@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { WebHaptics } from "web-haptics";
 
 import { AppBar } from "#/shared/components/app-bar";
 import { Sidebar } from "#/shared/components/sidebar";
@@ -12,7 +13,6 @@ import {
   paletteSchema,
   paletteLabels,
 } from "#/shared/constants/prefs";
-import { haptics } from "#/shared/lib/haptics";
 
 import { PreferencesDialog } from "./dialog";
 
@@ -197,8 +197,7 @@ test("app bar opens only preferences on desktop, keeps changes, and reopens", as
 });
 
 test("arrows only move focus; Space selects; Escape keeps changes", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(<NavigationLayout />);
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
@@ -212,12 +211,81 @@ test("arrows only move focus; Space selects; Escape keeps changes", async () => 
   await expect.element(light).toHaveAttribute("aria-pressed", "false");
   await userEvent.keyboard(" ");
   await expect.element(light).toHaveAttribute("aria-pressed", "true");
-  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
   const dialogElement = dialog.element();
   await userEvent.keyboard("{Escape}");
   await expect.element(dialogElement).not.toBeVisible();
   await trigger.click();
   await expect.element(light).toHaveAttribute("aria-pressed", "true");
+});
+
+test.each([1280, 390])(
+  "haptic feedback follows its saved preference immediately at %ipx",
+  async (width) => {
+    await page.viewport(width, 844);
+    using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+    const result = await page.renderWithProviders(<PreferencesDialog open />, {
+      preferences: { haptics: "off" },
+      syncPreferencesToDocument: true,
+    });
+    const dialog = result.getByRole("dialog", { name: "Preferences" });
+    const toggle = dialog.getByRole("switch", { name: "Haptic feedback" });
+    await expect.element(toggle).not.toBeChecked();
+
+    async function selectTheme(name: string) {
+      if (width <= 600) {
+        await dialog.getByRole("combobox", { name: "Theme" }).click();
+        await dialog
+          .getByRole("listbox", { name: "Theme" })
+          .getByRole("option", { name, exact: true })
+          .click();
+      } else {
+        const button = dialog
+          .getByRole("toolbar", { name: "Theme" })
+          .getByRole("button", { name, exact: true });
+        await button.click();
+      }
+    }
+
+    await selectTheme("Dark");
+    await expect.element(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(triggerHaptic).not.toHaveBeenCalled();
+    await dialog.getByRole("listitem").click({ position: { x: 4, y: 28 } });
+    await expect.element(toggle).toBeChecked();
+    await expect.element(toggle).toHaveAccessibleName("Haptic feedback");
+    expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
+    await selectTheme("Light");
+    await expect.element(document.documentElement).toHaveAttribute("data-theme", "light");
+    expect(triggerHaptic).toHaveBeenCalledTimes(2);
+    toggle.element().focus();
+    await userEvent.keyboard(" ");
+    await expect.element(toggle).not.toBeChecked();
+    await selectTheme("System");
+    await expect.element(document.documentElement).toHaveAttribute("data-theme", "system");
+    expect(triggerHaptic).toHaveBeenCalledTimes(2);
+  },
+);
+
+test("unsupported browsers omit the haptics preference and keep interactions quiet", async ({
+  onTestFinished,
+}) => {
+  const support = Object.getOwnPropertyDescriptor(WebHaptics, "isSupported");
+  if (!support) throw new Error("Expected the haptics support capability.");
+  Object.defineProperty(WebHaptics, "isSupported", { value: false });
+  onTestFinished(() => {
+    Object.defineProperty(WebHaptics, "isSupported", support);
+  });
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(<PreferencesDialog open />);
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+  await expect
+    .element(dialog.getByRole("switch", { name: "Haptic feedback" }))
+    .not.toBeInTheDocument();
+  await dialog.getByRole("button", { name: "Dark" }).click();
+  await expect
+    .element(dialog.getByRole("button", { name: "Dark" }))
+    .toHaveAttribute("aria-pressed", "true");
+  expect(triggerHaptic).not.toHaveBeenCalled();
 });
 
 test("sidebar opens a modal navigation drawer and Escape restores focus", async () => {

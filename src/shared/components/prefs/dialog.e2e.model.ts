@@ -3,6 +3,7 @@ import { ComponentObjectModel, expect } from "#test/e2e";
 export class PreferencesDialogModel extends ComponentObjectModel {
   dialog = this.page.getByRole("dialog", { name: "Preferences" });
   trigger = this.page.getByRole("button", { name: "Preferences" });
+  hapticsSwitch = this.dialog.getByRole("switch", { name: "Haptic feedback" });
 
   async open() {
     await this.trigger.click();
@@ -12,6 +13,11 @@ export class PreferencesDialogModel extends ComponentObjectModel {
   async close() {
     await this.page.keyboard.press("Escape");
     await expect(this.dialog).not.toBeVisible();
+  }
+
+  async setHaptics(enabled: boolean) {
+    await this.hapticsSwitch.setChecked(enabled);
+    await expect(this.hapticsSwitch).toBeChecked({ checked: enabled });
   }
 
   async select(name: string, option: string) {

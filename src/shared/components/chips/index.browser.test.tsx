@@ -8,9 +8,9 @@ import {
 import { useState } from "react";
 import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
-import { haptics } from "#/shared/lib/haptics";
 
 import { ExternalLinkChip, FilterChip, InternalLinkChip } from "./index";
 
@@ -28,8 +28,7 @@ function ToggleDemo() {
 }
 
 test("toggles with pointer and keyboard without changing its accessible name", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(<ToggleDemo />);
   const chip = result.getByRole("button", { name: "Favourite", exact: true });
   await expect.element(chip).toHaveAttribute("type", "button");
@@ -39,7 +38,7 @@ test("toggles with pointer and keyboard without changing its accessible name", a
   await userEvent.keyboard(" ");
   await expect.element(chip).toHaveAttribute("aria-pressed", "false");
   expect(triggerHaptic).toHaveBeenCalledTimes(2);
-  expect(triggerHaptic).toHaveBeenCalledWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledWith("selection", undefined);
   await expect.element(chip).toHaveAccessibleName("Favourite");
   expect(result.getByRole("img").query()).toBeNull();
 });
@@ -55,6 +54,25 @@ test("updates selected state without changing the chip's accessible name", async
   await result.rerender(<FilterChip selected={false}>Period</FilterChip>);
   await expect.element(chip).toHaveAttribute("aria-pressed", "false");
   await expect.element(chip).toHaveAccessibleName("Period");
+});
+
+test("disabling haptics preserves filter changes and link navigation without feedback", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(
+    <>
+      <ToggleDemo />
+      <InternalLinkChip to="/projects" search={{ type: "package" }}>
+        Packages
+      </InternalLinkChip>
+    </>,
+    { preferences: { haptics: "off" } },
+  );
+  const toggle = result.getByRole("button", { name: "Favourite" });
+  await toggle.click();
+  await expect.element(toggle).toHaveAttribute("aria-pressed", "true");
+  await result.getByRole("link", { name: "Packages" }).click();
+  await expect.poll(() => result.router.state.location.search.type).toBe("package");
+  expect(triggerHaptic).not.toHaveBeenCalled();
 });
 
 test("link chips update their current state and preserve link semantics", async () => {
@@ -79,8 +97,7 @@ test("link chips update their current state and preserve link semantics", async 
 });
 
 test("link filters confirm query changes and clearing filters, but not unchanged destinations", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(
     <>
       <InternalLinkChip to="/projects" search={{ type: "package" }}>
@@ -100,7 +117,7 @@ test("link filters confirm query changes and clearing filters, but not unchanged
   await expect.element(clear).toHaveAttribute("aria-current", "page");
   await clear.click();
   await expect.poll(() => result.router.state.location.search.type).toBeUndefined();
-  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
 
   await packages.click();
   await expect.poll(() => result.router.state.location.search.type).toBe("package");
@@ -137,8 +154,7 @@ test("link filters preserve scroll when changing the query", async () => {
 });
 
 test("canceled, disabled, and new-tab link filters do not produce feedback", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(
     <>
       <InternalLinkChip to="/projects" onClick={(event) => event.preventDefault()}>

@@ -3,6 +3,18 @@
   gap: 1.5rem;
 }
 
+.preferences-dialog__haptics {
+  margin-inline: -16px;
+
+  > .list__item {
+    background-color: transparent;
+  }
+
+  .list__content {
+    padding-block: 4px;
+  }
+}
+
 .dialog.preferences-dialog-modal {
   @media (--phone) {
     position: fixed;

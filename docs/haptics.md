@@ -34,7 +34,9 @@ physical feel varies with the device.
   never be the only way to understand a change or an error.
 
 The current shared selection components provide feedback for filter-chip
-activation, changed button-tab selections, and committed select-menu changes.
+activation, switch changes, changed button-tab selections, and committed select-menu changes.
+Switch callers should not add duplicate feedback; use `hapticFeedback={false}`
+only when the caller must own the feedback.
 `InternalLinkChip` and `TabLink` also provide selection feedback when activated
 to change the current URL, including query-string filters. They compare the
 destination with the router's current URL rather than relying on active styling,
@@ -43,14 +45,17 @@ canceling the click, downloading, or opening another browsing context produces
 no feedback. Keyboard activation works like an ordinary primary click.
 `ExternalLinkChip` and ordinary navigation links remain quiet.
 
-## Using the shared helper
+## Using the shared hook
 
-Import `triggerHapticFeedback` from
-[haptics.ts](../src/shared/lib/haptics.ts). Its default pattern is `selection`;
-pass a pattern explicitly when that makes the interaction's intent clearer.
+Call `useHapticFeedback` from
+[haptics.ts](../src/shared/lib/haptics.ts) inside components or hooks. Its
+`triggerHapticFeedback` callback defaults to `selection`; pass a pattern
+explicitly when that makes the interaction's intent clearer.
 
 ```tsx
-import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useHapticFeedback } from "#/shared/lib/haptics";
+
+const { triggerHapticFeedback } = useHapticFeedback();
 
 function selectTheme(nextTheme: Theme) {
   if (nextTheme === theme) return;
@@ -62,40 +67,55 @@ function selectTheme(nextTheme: Theme) {
 This example belongs in the component that owns `theme` and `setTheme`, with
 `Theme` matching that component's preference type.
 
-The helper uses a client-only `WebHaptics` instance and checks
-`WebHaptics.isSupported` before triggering it. Server calls and browsers
-without the Vibration API do not produce feedback. The support check also
-deliberately bypasses the library's hidden-switch fallback on browsers without
-that API.
+The hook uses `useWebHaptics` from `web-haptics/react`, which creates and
+destroys its instance with the component lifecycle. It only triggers when
+the saved preference is on and the Vibration API is supported. Server renders
+and unsupported browsers do not produce feedback; the support check also
+deliberately bypasses the library's hidden-switch fallback.
+
+Existing callers of the exported `triggerHapticFeedback` function should
+obtain the callback from `useHapticFeedback()` instead. Selection-link
+components use `useSelectionLinkHaptic()` to retain their activation guards.
+
+The **Haptic feedback** switch in Preferences defaults to on, preserving
+existing behavior. It appears after hydration on browsers with Vibration
+API support. Like the appearance preferences, changes are optimistic and
+saved in a cookie (`eskimojo::haptics`, `on` or `off`); failed saves roll back
+and show a snackbar. Disabling feedback is silent; enabling it gives one
+selection confirmation. This switch opts out of automatic feedback and uses
+`useWebHaptics` directly with the new value and support check, rather than the
+previous saved value still in context during its change handler.
+The preference applies to all feedback consumers
+without changing their interactions.
 
 API availability does not guarantee a vibration motor or successful playback.
-Browser policies and device settings can suppress vibration. The helper does
-not read Android's touch-feedback setting or provide a site-level haptics
-preference, so do not claim native preference integration. Keep the entire
+Browser policies and device settings can suppress vibration. The hook does
+not read Android's touch-feedback setting; the site preference is independent,
+so do not claim native preference integration. Keep the entire
 interaction usable when no vibration occurs.
 
 ## Verification
 
 Exercise the actual control in a browser test and check both its visible state
-and the feedback request. Spy on the existing instance rather than replacing
-the module, which may already be imported by browser-test setup:
+and the feedback request. Spy on the library prototype rather than replacing
+internal hooks or modules, so component-owned instances are covered:
 
 ```ts
 import { expect, vi } from "vite-plus/test";
+import { WebHaptics } from "web-haptics";
 
-import { haptics } from "#/shared/lib/haptics";
-
-if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
 
 await control.click();
 
-expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
 ```
 
-Use this inside an async browser test with its rendered `control`. Disposable
+Use this inside an async browser test with its rendered `control`. The library's
+React hook forwards the optional trigger options as `undefined`. Disposable
 spies restore themselves when the test scope exits. Include meaningful negative
-cases such as an unchanged choice, canceled menu, or disabled action, and verify
+cases such as an unchanged choice, canceled menu, disabled action, or saved
+`haptics: "off"` preference, and verify
 keyboard activation where applicable.
 
 Automated tests verify requests, not the physical sensation. Check the changed

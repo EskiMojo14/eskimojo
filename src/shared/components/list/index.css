@@ -118,7 +118,7 @@
       border-end-end-radius: var(--md-sys-shape-corner-large-increased);
     }
 
-    > :is(a, button) {
+    > :is(a, button, label) {
       position: relative;
       isolation: isolate;
       display: block;
@@ -153,7 +153,7 @@
         outline-offset: 2px;
       }
 
-      &:focus-visible::before {
+      &:is(:focus-visible, :has(input:focus-visible))::before {
         opacity: var(--md-sys-state-focus-state-layer-opacity);
       }
 
@@ -172,6 +172,18 @@
 
         &::before {
           opacity: 0;
+        }
+      }
+
+      &:is(label) {
+        cursor: pointer;
+
+        &:has(input:disabled) {
+          cursor: default;
+
+          &::before {
+            opacity: 0;
+          }
         }
       }
     }
@@ -240,7 +252,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .list--expressive > .list__item > :is(a, button)::before {
+  .list--expressive > .list__item > :is(a, button, label)::before {
     transition: none;
   }
 }

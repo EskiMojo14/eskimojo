@@ -41,7 +41,10 @@ function ListItemAction({ action }: { action: ReactElement<ListItemActionProps> 
 export function ListItem({ className, children, ...props }: ComponentPropsWithRef<"li">) {
   const interactive =
     isValidElement<ListItemActionProps>(children) &&
-    (children.type === "a" || children.type === "button" || children.type === Link);
+    (children.type === "a" ||
+      children.type === "button" ||
+      children.type === "label" ||
+      children.type === Link);
   return (
     <li {...props} {...listBem({ element: "item", extra: className })}>
       {interactive ? <ListItemAction action={children} /> : children}

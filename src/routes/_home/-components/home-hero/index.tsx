@@ -3,7 +3,7 @@ import BEMHelper from "react-bem-helper";
 
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { MdSymbol } from "#/shared/components/symbol";
-import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useHapticFeedback } from "#/shared/lib/haptics";
 
 import { roles } from "./constants";
 
@@ -33,6 +33,7 @@ function useHomeHeroRoleWidths() {
 }
 
 function useHomeHeroRoleAnimation() {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const heroRef = useRef<HTMLElement>(null);
   const [paused, togglePaused] = useReducer((previous: boolean) => !previous, false);
 
@@ -83,6 +84,7 @@ function useHomeHeroRoleAnimation() {
 }
 
 export function HomeHero() {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const titleId = useId();
   const rolesRef = useHomeHeroRoleWidths();
   const { heroRef, paused, skipRole, togglePaused } = useHomeHeroRoleAnimation();

@@ -1,5 +1,7 @@
 import { expect, test, vi } from "vite-plus/test";
-import { page } from "vite-plus/test/browser";
+import { page, userEvent } from "vite-plus/test/browser";
+
+import { Switch } from "#/shared/components/switch";
 
 import { List, ListItem, ListItemContent } from "./index";
 
@@ -64,4 +66,36 @@ test("preserves the existing navigation API", async () => {
   await expect
     .element(result.getByRole("link", { name: "Music" }))
     .toHaveAttribute("aria-current", "page");
+});
+
+test("switch rows toggle once from empty space, either edge, and the keyboard", async () => {
+  const onChange = vi.fn<() => void>();
+  const result = await page.renderWithProviders(
+    <List style={{ width: 320 }}>
+      <ListItem>
+        <label htmlFor="list-notifications">
+          <ListItemContent
+            headline="Notifications"
+            trailing={
+              <Switch id="list-notifications" aria-label="Notifications" onChange={onChange} />
+            }
+          />
+        </label>
+      </ListItem>
+    </List>,
+  );
+  const row = result.getByRole("listitem");
+  const toggle = result.getByRole("switch", { name: "Notifications" });
+  await row.click({ position: { x: 160, y: 36 } });
+  await expect.element(toggle).toBeChecked();
+  await row.click({ position: { x: 4, y: 36 } });
+  await expect.element(toggle).not.toBeChecked();
+  await row.click({ position: { x: 316, y: 36 } });
+  await expect.element(toggle).toBeChecked();
+  await toggle.click();
+  await expect.element(toggle).not.toBeChecked();
+  await expect.element(toggle).toHaveFocus();
+  await userEvent.keyboard(" ");
+  await expect.element(toggle).toBeChecked();
+  expect(onChange).toHaveBeenCalledTimes(5);
 });

@@ -15,6 +15,7 @@ import {
   InternalLinkChip,
 } from "#/shared/components/chips";
 import { List, ListItem, ListItemContent } from "#/shared/components/list";
+import { Switch } from "#/shared/components/switch";
 import { Tab, TabLink, TabList, TabNav, Tabs } from "#/shared/components/tabs";
 
 function press(element: Element, x = 8, y = 8, pointerId = 1, button = 0) {
@@ -38,6 +39,49 @@ function wave(element: Element) {
   if (!(node instanceof HTMLSpanElement)) throw new Error("Expected an active ripple wave");
   return node;
 }
+
+test("switch rows ripple on pointer and Space presses, but not Enter or disabled input", async () => {
+  const result = await page.renderWithProviders(
+    <List>
+      <ListItem>
+        <label htmlFor="ripple-notifications">
+          <ListItemContent
+            headline="Notifications"
+            trailing={<Switch id="ripple-notifications" aria-label="Notifications" />}
+          />
+        </label>
+      </ListItem>
+      <ListItem>
+        <label htmlFor="ripple-unavailable">
+          <ListItemContent
+            headline="Unavailable"
+            trailing={<Switch id="ripple-unavailable" aria-label="Unavailable" disabled />}
+          />
+        </label>
+      </ListItem>
+    </List>,
+  );
+  const toggle = result.getByRole("switch", { name: "Notifications" });
+  const row = toggle.element().closest("label");
+  const disabledRow = result
+    .getByRole("switch", { name: "Unavailable" })
+    .element()
+    .closest("label");
+  if (!row || !disabledRow) throw new Error("Expected native label rows.");
+  press(row);
+  expect(wave(row).isConnected).toBe(true);
+  document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
+  toggle.element().focus();
+  await userEvent.keyboard("{Enter}");
+  expect(row.querySelector(".ripple__wave")).toBeNull();
+  await userEvent.keyboard("{Space>}");
+  expect(wave(row).isConnected).toBe(true);
+  await userEvent.keyboard("{/Space}");
+  await expect.element(toggle).toBeChecked();
+  press(disabledRow);
+  expect(disabledRow.querySelector(".ripple__wave")).toBeNull();
+  await expect.element(result.getByRole("switch", { name: "Unavailable" })).not.toBeChecked();
+});
 
 test("chips and interactive list rows ripple without changing static rows or event behavior", async () => {
   const ref = createRef<HTMLButtonElement>();

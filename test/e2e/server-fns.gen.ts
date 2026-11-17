@@ -25,6 +25,9 @@ export const serverFns = {
     getContrastFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getContrastFn"]>(
       "*/_serverFn/6217dac80714f0c95244fcd9031a37964187f27873561265a6cad38629dda34c",
     ),
+    getHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getHapticsFn"]>(
+      "*/_serverFn/0c3ff8d95e9a617d67c8be57a892ecd98773fb220cba30ce6c793430c9aa24b4",
+    ),
     getPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getPaletteFn"]>(
       "*/_serverFn/4558a4a690a0c9df6b9eb86a7c8c0e641ab41e2f2aacba3e7ad9c4128c3950c7",
     ),
@@ -33,6 +36,9 @@ export const serverFns = {
     ),
     setContrastFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setContrastFn"]>(
       "*/_serverFn/d97b50e9e66f6f44e47850c1c2f8a2d92fa341064e539f670e9b767686b4f4cd",
+    ),
+    setHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setHapticsFn"]>(
+      "*/_serverFn/d2e9a9568090983d9139048d3978ad28c524808c45f86c7d327d49c3389f151b",
     ),
     setPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setPaletteFn"]>(
       "*/_serverFn/d1a07d169904c6702fc34531aa4378a4389ae9a78fbd93ad1884099940ec075c",

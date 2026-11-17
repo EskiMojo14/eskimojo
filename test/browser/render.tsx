@@ -10,14 +10,21 @@ import { Provider } from "react-redux";
 import { render, type RenderOptions, type RenderResult } from "vitest-browser-react";
 
 import { getRouter } from "#/router";
-import { ThemeContext, ContrastContext, PaletteContext } from "#/shared/components/prefs/context";
+import {
+  ThemeContext,
+  ContrastContext,
+  PaletteContext,
+  HapticsContext,
+} from "#/shared/components/prefs/context";
 import {
   themeSchema,
   contrastSchema,
   paletteSchema,
+  hapticsSchema,
   type Theme,
   type Contrast,
   type Palette,
+  type Haptics,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
 import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
@@ -26,6 +33,7 @@ interface TestPreferences {
   theme: Theme;
   contrast: Contrast;
   palette: Palette;
+  haptics: Haptics;
 }
 
 export interface RenderWithProviderOptions extends RenderOptions {
@@ -63,6 +71,7 @@ function PreferenceProviders({
   const [theme, setTheme] = useState(initialPreferences.theme ?? themeSchema.fallback);
   const [contrast, setContrast] = useState(initialPreferences.contrast ?? contrastSchema.fallback);
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
+  const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
 
   useEffect(() => {
     if (!syncToDocument) return undefined;
@@ -81,7 +90,9 @@ function PreferenceProviders({
   return (
     <ThemeContext value={{ theme, setTheme }}>
       <ContrastContext value={{ contrast, setContrast }}>
-        <PaletteContext value={{ palette, setPalette }}>{children}</PaletteContext>
+        <PaletteContext value={{ palette, setPalette }}>
+          <HapticsContext value={{ haptics, setHaptics }}>{children}</HapticsContext>
+        </PaletteContext>
       </ContrastContext>
     </ThemeContext>
   );
