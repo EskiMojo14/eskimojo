@@ -11,6 +11,8 @@ import {
 } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { useLocalSlice } from "#/utils/use-local-slice";
+
 const dialogBem = BEMHelper("dialog");
 
 interface DialogLabels {
@@ -70,10 +72,36 @@ export interface DialogProps {
   "aria-describedby"?: string;
 }
 
+interface DialogLifecycleState {
+  exitPhase: "idle" | "closing";
+  returnValue: string | undefined;
+}
+
+const initialDialogLifecycleState: DialogLifecycleState = {
+  exitPhase: "idle",
+  returnValue: undefined,
+};
+
+const dialogLifecycleSlice = {
+  slice: "dialog",
+  initialState: initialDialogLifecycleState,
+  reducers: {
+    exitStarted(state: DialogLifecycleState, action: { payload: string | undefined }) {
+      state.exitPhase = "closing";
+      state.returnValue = action.payload;
+    },
+    exitFinished(state: DialogLifecycleState) {
+      state.exitPhase = "idle";
+      state.returnValue = undefined;
+    },
+  },
+};
+
 function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "closedby">) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<DialogClose | null>(null);
   const requestRef = useRef<{ returnValue?: string } | null>(null);
+  const [lifecycle, transition] = useLocalSlice(dialogLifecycleSlice);
   const close = useCallback((returnValue?: string) => closeRef.current?.(returnValue), []);
   const requestClose = useCallback((returnValue?: string) => {
     const dialog = dialogRef.current;
@@ -90,11 +118,9 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
       requestRef.current = null;
     }
   }, []);
-  const disposedRef = useRef(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    let timeout: ReturnType<typeof setTimeout> | undefined;
     const closeDialog: DialogClose = (returnValue) => {
       if (!dialog?.open || dialog.hasAttribute("data-closing")) return;
       if (supportsTopLayerExit()) {
@@ -102,18 +128,9 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
         return;
       }
 
+      // Mark the DOM synchronously so repeated close requests are ignored before React commits.
       dialog.setAttribute("data-closing", "");
-      const finishClosing = () => {
-        clearTimeout(timeout);
-        if (!disposedRef.current) {
-          dialog.close(returnValue);
-          dialog.removeAttribute("data-closing");
-        }
-      };
-      timeout = setTimeout(finishClosing, 2000);
-      void Promise.allSettled(
-        dialog.getAnimations({ subtree: true }).map((animation) => animation.finished),
-      ).then(finishClosing);
+      transition.exitStarted(returnValue);
     };
     const handleBackdropClick = (event: MouseEvent) => {
       if (
@@ -146,17 +163,49 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
     }
 
     return () => {
-      disposedRef.current = true;
       closeRef.current = null;
-      clearTimeout(timeout);
       if (dialog) {
         dialog.removeEventListener("click", handleBackdropClick);
-        dialog.removeAttribute("data-closing");
       }
     };
-  }, [open, closedby, requestClose]);
+  }, [open, closedby, requestClose, transition]);
 
-  return { close, dialogRef, requestClose, requestRef };
+  useEffect(() => {
+    if (lifecycle.exitPhase !== "closing") return undefined;
+    const dialog = dialogRef.current;
+    if (!dialog) return undefined;
+
+    let cancelled = false;
+    let finished = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const finishClosing = () => {
+      if (cancelled || finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      if (dialog.open) dialog.close(lifecycle.returnValue);
+      dialog.removeAttribute("data-closing");
+      transition.exitFinished();
+    };
+
+    timeout = setTimeout(finishClosing, 2000);
+    void Promise.allSettled(
+      dialog.getAnimations({ subtree: true }).map((animation) => animation.finished),
+    ).then(finishClosing);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [lifecycle.exitPhase, lifecycle.returnValue, transition]);
+
+  return {
+    close,
+    dialogRef,
+    exitFinished: transition.exitFinished,
+    isClosing: lifecycle.exitPhase === "closing",
+    requestClose,
+    requestRef,
+  };
 }
 
 export function Dialog({
@@ -171,17 +220,22 @@ export function Dialog({
   "aria-describedby": ariaDescribedBy,
 }: DialogProps) {
   const [labels, setLabels] = useState<DialogLabels | null>(null);
-  const { close, dialogRef, requestClose, requestRef } = useDialogLifecycle({ open, closedby });
+  const { close, dialogRef, exitFinished, isClosing, requestClose, requestRef } =
+    useDialogLifecycle({ open, closedby });
 
   return (
     <dialog
       {...dialogBem({ extra: className })}
       ref={dialogRef}
+      data-closing={isClosing ? "" : undefined}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : labels?.titleId)}
       aria-describedby={ariaDescribedBy ?? labels?.descriptionId}
       closedby={closedby}
-      onClose={onClose}
+      onClose={(event) => {
+        exitFinished();
+        onClose?.(event);
+      }}
       onCancel={(event) => {
         onCancel?.(event);
         if (event.defaultPrevented) return;
