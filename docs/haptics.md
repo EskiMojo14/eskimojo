@@ -34,9 +34,10 @@ physical feel varies with the device.
   never be the only way to understand a change or an error.
 
 The current shared selection components provide feedback for filter-chip
-activation, checkbox and switch changes, changed button-tab selections, and committed select-menu changes.
-Checkbox and switch callers should not add duplicate feedback; use `hapticFeedback={false}`
+activation, checkbox and switch changes, radio selections, changed button-tab selections, and committed select-menu changes.
+Checkbox, radio, and switch callers should not add duplicate feedback; use `hapticFeedback={false}`
 only when the caller must own the feedback.
+Reselecting an already selected radio stays quiet.
 `InternalLinkChip` and `TabLink` also provide selection feedback when activated
 to change the current URL, including query-string filters. They compare the
 destination with the router's current URL rather than relying on active styling,

@@ -50,7 +50,7 @@ const config = defineConfig({
       "react/rules-of-hooks": "error",
       "jsx-a11y/label-has-associated-control": [
         "warn",
-        { controlComponents: ["Checkbox", "Switch"] },
+        { controlComponents: ["Checkbox", "Radio", "Switch"] },
       ],
     },
     options: {

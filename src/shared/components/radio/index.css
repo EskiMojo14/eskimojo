@@ -1,0 +1,172 @@
+.radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 48px;
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typography-body-large);
+  cursor: pointer;
+  user-select: none;
+
+  &:has(> .radio__input:disabled) {
+    color: alpha(
+      from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity)
+    );
+    cursor: default;
+  }
+}
+
+.radio__input {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  inline-size: 48px;
+  block-size: 48px;
+  margin: 0;
+  appearance: none;
+  opacity: 0;
+  cursor: inherit;
+  translate: 0 -50%;
+}
+
+.radio__control {
+  --radio-icon-color: var(--md-sys-color-on-surface-variant);
+  --radio-state-color: var(--md-sys-color-on-surface);
+  --radio-focus-color: var(--md-sys-color-secondary);
+
+  position: relative;
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  pointer-events: none;
+
+  &::before {
+    position: absolute;
+    inset: 4px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--radio-state-color);
+    content: "";
+    opacity: 0;
+    transition:
+      background-color var(--md-sys-motion-spring-fast-effects-duration)
+        var(--md-sys-motion-spring-fast-effects),
+      opacity var(--md-sys-motion-spring-fast-effects-duration)
+        var(--md-sys-motion-spring-fast-effects);
+  }
+}
+
+.radio__ring {
+  position: relative;
+  inline-size: 20px;
+  block-size: 20px;
+  border: 2px solid currentColor;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--radio-icon-color);
+  transition: color var(--md-sys-motion-spring-fast-effects-duration)
+    var(--md-sys-motion-spring-fast-effects);
+
+  &::after {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: inherit;
+    background-color: currentColor;
+    content: "";
+    opacity: 0;
+    scale: 0;
+    translate: -50% -50%;
+    transition:
+      opacity var(--md-sys-motion-spring-fast-effects-duration)
+        var(--md-sys-motion-spring-fast-effects),
+      scale var(--md-sys-motion-spring-fast-spatial-duration)
+        var(--md-sys-motion-spring-fast-spatial);
+  }
+}
+
+.radio__label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.radio__input:checked + .radio__control {
+  --radio-icon-color: var(--md-sys-color-primary);
+  --radio-state-color: var(--md-sys-color-primary);
+
+  .radio__ring::after {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.radio:where(:hover) > .radio__input:where(:not(:disabled):not(:checked)) + .radio__control,
+.radio__input:where(:not(:disabled):not(:checked)):focus-visible + .radio__control {
+  --radio-icon-color: var(--md-sys-color-on-surface);
+}
+
+.radio:where(:hover) > .radio__input:where(:not(:disabled)) + .radio__control::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.radio__input:focus-visible + .radio__control {
+  outline: 3px solid var(--radio-focus-color);
+  outline-offset: -4px;
+  border-radius: var(--md-sys-shape-corner-full);
+
+  &::before {
+    opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+}
+
+.radio:where(:active, [data-keyboard-pressed])
+  > .radio__input:where(:not(:disabled))
+  + .radio__control {
+  --radio-icon-color: var(--md-sys-color-on-surface);
+  --radio-state-color: var(--md-sys-color-primary);
+
+  &::before {
+    opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+}
+
+.radio:where(:active, [data-keyboard-pressed])
+  > .radio__input:where(:not(:disabled)):checked
+  + .radio__control {
+  --radio-icon-color: var(--md-sys-color-primary);
+  --radio-state-color: var(--md-sys-color-on-surface);
+}
+
+.radio__input:disabled + .radio__control {
+  --radio-icon-color: alpha(
+    from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity)
+  );
+
+  &::before {
+    opacity: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .radio__control {
+    --radio-focus-color: Highlight;
+  }
+
+  .radio__ring {
+    --radio-system-icon-color: ButtonText;
+
+    color: var(--radio-system-icon-color);
+    forced-color-adjust: none;
+  }
+
+  .radio__input:checked + .radio__control .radio__ring {
+    --radio-system-icon-color: Highlight;
+  }
+
+  .radio__input:disabled + .radio__control .radio__ring {
+    --radio-system-icon-color: GrayText;
+  }
+}

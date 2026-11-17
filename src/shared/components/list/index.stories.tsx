@@ -3,6 +3,7 @@ import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import { Checkbox } from "#/shared/components/checkbox";
+import { Radio } from "#/shared/components/radio";
 import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
 
@@ -17,7 +18,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, wrap it in a native link/button or TanStack Link for an action, or use a native label containing one checkbox or switch for a whole-row toggle. Do not nest interactive controls inside row links or buttons. For a leading/trailing Checkbox or Switch, omit its built-in label and supply aria-label or aria-labelledby to avoid nested labels; slotted controls need htmlFor/id for the linter. Direct row actions automatically receive pointer-origin ripples and centered keyboard feedback, including Space activation of labelled checkboxes and switches. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
+          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, wrap it in a native link/button or TanStack Link for an action, or use a native label containing one checkbox, radio or switch for whole-row selection. Do not nest interactive controls inside row links or buttons. For a leading/trailing Checkbox, Radio or Switch, omit its built-in label and supply aria-label or aria-labelledby to avoid nested labels; slotted controls need htmlFor/id for the linter. Group related radios with fieldset/legend and a shared name; native keyboard navigation and exclusive selection are preserved. Direct row actions automatically receive pointer-origin ripples and centered keyboard feedback, including Space activation of labelled selection controls. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
       },
     },
   },
@@ -235,6 +236,87 @@ export const CheckboxRows = meta.story({
     await userEvent.click(canvas.getByText("Album releases"));
     await expect(all).toBePartiallyChecked();
     await expect(canvas.getByRole("checkbox", { name: "Presale access" })).toBeDisabled();
+  },
+});
+
+function RadioList() {
+  const name = useId();
+  const normalId = useId();
+  const highId = useId();
+  const losslessId = useId();
+  const [quality, setQuality] = useState("normal");
+  return (
+    <fieldset style={{ width: "min(100%, 28rem)", minWidth: 0, border: 0, margin: 0, padding: 0 }}>
+      <legend>Playback quality</legend>
+      <List>
+        <ListItem>
+          <label htmlFor={normalId}>
+            <ListItemContent
+              headline="Normal"
+              supportingText="Uses less mobile data."
+              leading={
+                <Radio
+                  id={normalId}
+                  aria-label="Normal"
+                  name={name}
+                  value="normal"
+                  checked={quality === "normal"}
+                  onChange={(event) => setQuality(event.currentTarget.value)}
+                />
+              }
+            />
+          </label>
+        </ListItem>
+        <ListItem>
+          <label htmlFor={highId}>
+            <ListItemContent
+              headline="High"
+              supportingText="Not currently available."
+              trailing={<Radio id={highId} aria-label="High" name={name} value="high" disabled />}
+            />
+          </label>
+        </ListItem>
+        <ListItem>
+          <label htmlFor={losslessId}>
+            <ListItemContent
+              headline="Lossless"
+              supportingText="Original audio quality."
+              trailing={
+                <Radio
+                  id={losslessId}
+                  aria-label="Lossless"
+                  name={name}
+                  value="lossless"
+                  checked={quality === "lossless"}
+                  onChange={(event) => setQuality(event.currentTarget.value)}
+                />
+              }
+            />
+          </label>
+        </ListItem>
+      </List>
+    </fieldset>
+  );
+}
+
+export const RadioRows = meta.story({
+  render: () => <RadioList />,
+  play: async ({ canvas, userEvent }) => {
+    const normal = canvas.getByRole("radio", { name: "Normal" });
+    const lossless = canvas.getByRole("radio", { name: "Lossless" });
+    await expect(normal).toBeChecked();
+    await userEvent.click(canvas.getByText("Lossless"));
+    await expect(lossless).toBeChecked();
+    await expect(normal).not.toBeChecked();
+    await userEvent.keyboard("{ArrowUp}");
+    await expect(normal).toBeChecked();
+    await expect(normal).toHaveFocus();
+    await userEvent.keyboard("{ArrowDown}");
+    await expect(lossless).toBeChecked();
+    await expect(lossless).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await expect(lossless).toBeChecked();
+    await expect(canvas.getByRole("radio", { name: "High" })).toBeDisabled();
   },
 });
 
