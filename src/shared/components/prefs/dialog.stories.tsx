@@ -5,6 +5,7 @@ import preview from "#.storybook/preview";
 import { Button } from "#/shared/components/buttons/button";
 import { MdSymbol } from "#/shared/components/symbol";
 
+import { HapticsContext, useHaptics } from "./context";
 import { PreferencesDialog } from "./dialog";
 
 const meta = preview.meta({
@@ -52,17 +53,27 @@ export const BottomSheet = meta.story({
 
 function InteractivePreferences() {
   const [open, setOpen] = useState(false);
+  const { haptics: initialHaptics } = useHaptics();
+  const [haptics, setHaptics] = useState(initialHaptics);
   return (
-    <>
+    <HapticsContext value={{ haptics, setHaptics }}>
       <Button icon={<MdSymbol>settings</MdSymbol>} onClick={() => setOpen(true)}>
         Preferences
       </Button>
       <PreferencesDialog open={open} onClose={() => setOpen(false)} />
-    </>
+    </HapticsContext>
   );
 }
 
 export const Interactive = meta.story({
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Haptics state is local to this interactive example and starts from the Haptics global. This lets pointer and keyboard toggles work in portable tests, where globals updates are not applied. Other preferences still update Storybook globals.",
+      },
+    },
+  },
   render: () => <InteractivePreferences />,
   play: async ({ canvas, canvasElement, userEvent, globals }) => {
     const trigger = canvas.getByRole("button", { name: "Preferences" });
