@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "re
 import BEMHelper from "react-bem-helper";
 
 import { MdSymbol } from "#/shared/components/symbol";
-import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useHapticFeedback } from "#/shared/lib/haptics";
 import { useLocalSlice } from "#/utils/use-local-slice";
 
 const selectBem = BEMHelper("select-menu");
@@ -33,6 +33,7 @@ function useSelectMenuInteraction<Value extends string>({
 }: Pick<SelectMenuProps<Value>, "value" | "options" | "onChange" | "disabled"> & {
   selectedIndex: number;
 }) {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);

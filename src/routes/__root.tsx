@@ -14,6 +14,7 @@ import {
   ThemeProvider,
   ContrastProvider,
   PaletteProvider,
+  HapticsProvider,
 } from "#/shared/components/prefs/provider";
 import { ThemeColor } from "#/shared/components/prefs/theme-color";
 import { Providers } from "#/shared/components/providers.tsx";
@@ -21,7 +22,7 @@ import { Sidebar } from "#/shared/components/sidebar";
 import { SnackbarHost } from "#/shared/components/snackbar";
 import { isChristmas } from "#/shared/lib/christmas";
 import { getDocumentHead } from "#/shared/lib/document-head";
-import { getThemeFn, getContrastFn, getPaletteFn } from "#/shared/lib/prefs.ts";
+import { getThemeFn, getContrastFn, getPaletteFn, getHapticsFn } from "#/shared/lib/prefs.ts";
 import type { AppStore } from "#/shared/store";
 import { promiseAllKeyed } from "#/utils/index.ts";
 
@@ -43,6 +44,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       theme: getThemeFn(),
       contrast: getContrastFn(),
       palette: getPaletteFn(),
+      haptics: getHapticsFn(),
     }),
   head: ({ loaderData, match }) => getDocumentHead(loaderData?.palette, match.context.christmas),
   shellComponent: RootDocument,
@@ -50,7 +52,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { theme, contrast, palette } = Route.useLoaderData();
+  const { theme, contrast, palette, haptics } = Route.useLoaderData();
   const { christmas } = Route.useRouteContext();
   return (
     <Providers
@@ -58,6 +60,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         [ThemeProvider, { theme }],
         [ContrastProvider, { contrast }],
         [PaletteProvider, { palette }],
+        [HapticsProvider, { haptics }],
       ]}
     >
       <PreferenceDocument christmas={christmas}>{children}</PreferenceDocument>

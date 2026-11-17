@@ -80,7 +80,9 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
 
   function start(host: T, point?: { x: number; y: number }, pointerId?: number, key?: string) {
     const layer = layerRef.current;
-    if (!layer || host.matches(":disabled, [aria-disabled='true']")) return;
+    if (!layer || host.matches(":disabled, [aria-disabled='true'], label:has(input:disabled)")) {
+      return;
+    }
     clear();
     const rect = layer.getBoundingClientRect();
     const x = unbounded || !point ? rect.width / 2 : point.x - rect.left;
@@ -178,9 +180,12 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
     onKeyDown(event) {
       props.onKeyDown?.(event);
       const activates =
-        event.key === "Enter" ||
+        (event.key === "Enter" && event.currentTarget.tagName !== "LABEL") ||
         (event.key === " " &&
           (event.currentTarget.tagName === "BUTTON" ||
+            (event.currentTarget.tagName === "LABEL" &&
+              event.target instanceof HTMLInputElement &&
+              (event.target.type === "checkbox" || event.target.type === "radio")) ||
             (event.currentTarget.getAttribute("role") === "tab" &&
               !event.altKey &&
               !event.ctrlKey &&

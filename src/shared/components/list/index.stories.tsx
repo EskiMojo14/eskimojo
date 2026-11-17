@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
 
 import { List, ListDivider, ListItem, ListItemContent } from "./index";
@@ -15,7 +16,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, or wrap it in a native link/button or TanStack Link for interaction; do not nest interactive controls inside a row action. These direct row actions automatically receive pointer-origin ripples and unbounded keyboard feedback, including navigation links. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
+          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, wrap it in a native link/button or TanStack Link for an action, or use a native label containing one checkbox or switch for a whole-row toggle. Do not nest interactive controls inside row links or buttons. For a trailing Switch, omit its built-in label and supply aria-label or aria-labelledby to avoid nested labels. Direct row actions automatically receive pointer-origin ripples and centered keyboard feedback, including Space activation of labelled switches. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
       },
     },
   },
@@ -88,6 +89,56 @@ export const Interactive = meta.story({
     await expect(canvas.getByRole("button", { name: "Unavailable track" })).toBeDisabled();
     await userEvent.tab();
     await expect(canvas.getByRole("link", { name: "View artist" })).toHaveFocus();
+  },
+});
+
+function SwitchList() {
+  const [notifications, setNotifications] = useState(false);
+  const notificationsId = useId();
+  const unavailableId = useId();
+  return (
+    <List aria-label="Notification preferences" style={{ width: "min(100%, 28rem)" }}>
+      <ListItem>
+        <label htmlFor={notificationsId}>
+          <ListItemContent
+            headline="Notifications"
+            trailing={
+              <Switch
+                id={notificationsId}
+                aria-label="Notifications"
+                checked={notifications}
+                onChange={(event) => setNotifications(event.currentTarget.checked)}
+              />
+            }
+          />
+        </label>
+      </ListItem>
+      <ListItem>
+        <label htmlFor={unavailableId}>
+          <ListItemContent
+            headline="Unavailable"
+            trailing={<Switch id={unavailableId} aria-label="Unavailable" disabled />}
+          />
+        </label>
+      </ListItem>
+    </List>
+  );
+}
+
+export const SwitchRows = meta.story({
+  render: () => <SwitchList />,
+  play: async ({ canvas, userEvent }) => {
+    const toggle = canvas.getByRole("switch", { name: "Notifications" });
+    await expect(toggle).not.toBeChecked();
+    const row = canvas.getByText("Notifications").closest("label");
+    if (!row) throw new Error("Expected a native label row.");
+    await userEvent.click(row);
+    await expect(toggle).toBeChecked();
+    await userEvent.keyboard(" ");
+    await expect(toggle).not.toBeChecked();
+    await userEvent.click(canvas.getByText("Notifications"));
+    await expect(toggle).toBeChecked();
+    await expect(canvas.getByRole("switch", { name: "Unavailable" })).toBeDisabled();
   },
 });
 

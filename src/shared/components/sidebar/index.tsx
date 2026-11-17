@@ -8,7 +8,7 @@ import { usePalette } from "#/shared/components/prefs/context";
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 import { withTooltip } from "#/shared/components/tooltip";
-import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useHapticFeedback } from "#/shared/lib/haptics";
 
 import { links } from "./groups";
 
@@ -26,6 +26,7 @@ function SidebarContents({
   christmas: boolean;
 }) {
   const { palette, setPalette } = usePalette();
+  const { triggerHapticFeedback } = useHapticFeedback();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(undefined, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";

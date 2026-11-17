@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { expect, test } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
 
@@ -20,6 +21,7 @@ function ControlledSwitch() {
 }
 
 test("exposes a named switch that toggles by pointer and keyboard", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const result = await page.renderWithProviders(<ControlledSwitch />);
   const toggle = result.getByRole("switch", { name: "Wi-Fi" });
 
@@ -31,6 +33,32 @@ test("exposes a named switch that toggles by pointer and keyboard", async () => 
   await userEvent.keyboard(" ");
   await expect.element(toggle).not.toBeChecked();
   await expect.element(toggle).toHaveAccessibleName("Wi-Fi");
+  expect(triggerHaptic).toHaveBeenCalledTimes(2);
+  expect(triggerHaptic).toHaveBeenCalledWith("selection", undefined);
+});
+
+test("saved haptics opt-out keeps switches usable without feedback", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(<ControlledSwitch />, {
+    preferences: { haptics: "off" },
+  });
+  const toggle = result.getByRole("switch", { name: "Wi-Fi" });
+  await toggle.click();
+  await expect.element(toggle).toBeChecked();
+  await userEvent.keyboard(" ");
+  await expect.element(toggle).not.toBeChecked();
+  expect(triggerHaptic).not.toHaveBeenCalled();
+});
+
+test("callers can own switch feedback without an automatic duplicate", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const result = await page.renderWithProviders(
+    <Switch label="Custom feedback" hapticFeedback={false} />,
+  );
+  const toggle = result.getByRole("switch", { name: "Custom feedback" });
+  await toggle.click();
+  await expect.element(toggle).toBeChecked();
+  expect(triggerHaptic).not.toHaveBeenCalled();
 });
 
 test("supports uncontrolled form submission and disabled switches", async () => {

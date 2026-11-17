@@ -20,7 +20,7 @@
   );
 }
 
-:is(.button, .icon-button, .chip, .list__item > a, .list__item > button):has(
+:is(.button, .icon-button, .chip, .list__item > a, .list__item > button, .list__item > label):has(
     > .ripple[data-active]
   )::before,
 .list:not(.list--expressive) > .list__item > a:has(> .ripple[data-active])::before {

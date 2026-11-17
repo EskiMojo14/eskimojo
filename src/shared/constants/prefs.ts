@@ -26,3 +26,6 @@ export const paletteLabels: Record<Palette, { label: string; icon: string }> = {
   goat: { label: "Goat", icon: "pets" },
   arctic: { label: "Arctic", icon: "ac_unit" },
 };
+
+export const hapticsSchema = v.fallback(v.picklist(["on", "off"]), "on");
+export type Haptics = v.InferOutput<typeof hapticsSchema>;

@@ -5,7 +5,7 @@ import BEMHelper from "react-bem-helper";
 
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
-import { triggerHapticFeedback, triggerSelectionLinkHaptic } from "#/shared/lib/haptics";
+import { useHapticFeedback, useSelectionLinkHaptic } from "#/shared/lib/haptics";
 
 const chipBem = BEMHelper("chip");
 const chipGroupBem = BEMHelper("chip-group");
@@ -83,6 +83,7 @@ export function FilterChip({
   onClick,
   ...props
 }: FilterChipProps) {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
   return (
     <button
@@ -132,6 +133,7 @@ const RouterLinkChip = createLink(LinkChipBase);
 
 export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
   const router = useRouter();
+  const triggerSelectionLinkHaptic = useSelectionLinkHaptic();
   const linkProps = {
     ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {

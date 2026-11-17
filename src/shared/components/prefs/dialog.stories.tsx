@@ -16,15 +16,19 @@ const meta = preview.meta({
     docs: {
       description: {
         story:
-          "Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
+          "Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Toggle rows are transparent to preserve the dialog surface while retaining full-row click targets and ripples. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
-          "Theme, contrast, and palette preferences using the existing preference contexts. At viewport widths up to 37.5rem (600px), each preference uses an MD3 outlined SelectMenu with a floating label, icons in the selection and options, and a themed, anchored listbox. Larger viewports use connected button groups with icons. Both layouts share the same selections and save changes immediately. Select menus support arrows, Home/End, type-ahead, Enter/Space to select, and Escape to dismiss without changing the value or closing the dialog. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the existing Theme, Contrast, and Palette globals; the app saves them through its cookie-backed providers.",
+          "Theme, contrast, palette, and haptic feedback preferences using the existing preference contexts. At viewport widths up to 37.5rem (600px), appearance preferences use an MD3 outlined SelectMenu with a floating label, icons in the selection and options, and a themed, anchored listbox. Larger viewports use connected button groups with icons. Haptic feedback uses a whole-row native label with a leading headline and trailing MD3 switch in both layouts. Clicking anywhere in the row toggles once, with a pointer-origin ripple; Space on the switch gives centered keyboard feedback. It is shown after hydration only when the Vibration API is supported. It defaults to on; turning it off silences feedback without changing interactions. Both layouts share the same selections and save changes immediately. Select menus support arrows, Home/End, type-ahead, Enter/Space to select, and Escape to dismiss without changing the value or closing the dialog. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the Theme, Contrast, Palette, and Haptics globals; the app saves them through its cookie-backed providers.",
       },
     },
   },
 });
 
 export const Default = meta.story({});
+
+export const HapticsOff = meta.story({
+  globals: { haptics: "off" },
+});
 
 export const BottomSheet = meta.story({
   parameters: {
@@ -81,6 +85,17 @@ export const Interactive = meta.story({
       "aria-pressed",
       String(globals.contrast === "system"),
     );
+    const haptics = dialog.queryByRole("switch", { name: "Haptic feedback" });
+    if (haptics) {
+      const initiallyOn = globals.haptics !== "off";
+      await expect(haptics).toHaveProperty("checked", initiallyOn);
+      const row = dialog.getByText("Haptic feedback").closest("label");
+      if (!row) throw new Error("Expected a native label row.");
+      await userEvent.click(row);
+      await waitFor(() => expect(haptics).toHaveProperty("checked", !initiallyOn));
+      await userEvent.keyboard(" ");
+      await waitFor(() => expect(haptics).toHaveProperty("checked", initiallyOn));
+    }
     await userEvent.click(dialog.getByRole("button", { name: "Done" }));
     await waitFor(() => expect(dialogElement).not.toBeVisible());
     await expect(trigger).toHaveFocus();

@@ -25,9 +25,11 @@ function preferenceRequests(
     mockServerFn(prefs.setThemeFn, resolver),
     mockServerFn(prefs.setContrastFn, resolver),
     mockServerFn(prefs.setPaletteFn, resolver),
+    mockServerFn(prefs.setHapticsFn, resolver),
     mockServerFn(prefs.getThemeFn, refresh),
     mockServerFn(prefs.getContrastFn, refresh),
     mockServerFn(prefs.getPaletteFn, refresh),
+    mockServerFn(prefs.getHapticsFn, refresh),
   ];
 }
 
@@ -121,6 +123,80 @@ test("rapid changes keep the latest selection and persist in order", async ({
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
+});
+
+test("haptic feedback saves optimistically and stays off after navigation and reload", async ({
+  home,
+  preferences,
+  page,
+  context,
+  network,
+}) => {
+  using save = disposablePromise();
+  network.use(
+    mockServerFn(prefs.setHapticsFn, async () => {
+      await save.promise;
+      return passthrough();
+    }),
+  );
+  await expect(preferences.hapticsSwitch).toBeChecked();
+  await preferences.setHaptics(false);
+  expect(
+    (await context.cookies()).find(({ name }) => name === "eskimojo::haptics"),
+  ).toBeUndefined();
+
+  save.resolve();
+  await expect
+    .poll(
+      async () => (await context.cookies()).find(({ name }) => name === "eskimojo::haptics")?.value,
+    )
+    .toBe("off");
+  await page.waitForLoadState("networkidle");
+  await preferences.close();
+  await home.goto({ waitUntil: "networkidle" });
+  await preferences.open();
+  await expect(preferences.hapticsSwitch).not.toBeChecked();
+  await page.reload();
+  await preferences.open();
+  await expect(preferences.hapticsSwitch).not.toBeChecked();
+});
+
+test("failed haptics saves roll back, notify, and allow retrying", async ({
+  preferences,
+  snackbar,
+  page,
+  context,
+  network,
+}) => {
+  using save = disposablePromise();
+  network.use(
+    mockServerFn(prefs.setHapticsFn, async () => {
+      await save.promise;
+      throw new Error("Unable to save cookie");
+    }),
+  );
+  await preferences.setHaptics(false);
+  save.resolve();
+  await expect(preferences.hapticsSwitch).toBeChecked();
+  expect(
+    (await context.cookies()).find(({ name }) => name === "eskimojo::haptics"),
+  ).toBeUndefined();
+  await preferences.close();
+  await expect(snackbar.notifications).toContainText("Couldn't save haptics preference");
+  await snackbar.dismiss();
+  await preferences.open();
+
+  network.use(mockServerFn(prefs.setHapticsFn, () => passthrough()));
+  await preferences.setHaptics(false);
+  await expect
+    .poll(
+      async () => (await context.cookies()).find(({ name }) => name === "eskimojo::haptics")?.value,
+    )
+    .toBe("off");
+  await page.waitForLoadState("networkidle");
+  await page.reload();
+  await preferences.open();
+  await expect(preferences.hapticsSwitch).not.toBeChecked();
 });
 
 test("a failed save rolls back and allows retrying", async ({

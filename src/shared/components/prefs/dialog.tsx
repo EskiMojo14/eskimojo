@@ -1,10 +1,14 @@
+import { useHydrated } from "@tanstack/react-router";
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
+import { useWebHaptics } from "web-haptics/react";
 
 import { Button } from "#/shared/components/buttons/button";
 import { ButtonGroup } from "#/shared/components/buttons/button-group";
 import { Dialog, DialogContent, type DialogProps } from "#/shared/components/dialog";
+import { List, ListItem, ListItemContent } from "#/shared/components/list";
 import { SelectMenu } from "#/shared/components/select-menu";
+import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
 import {
   themeSchema,
@@ -14,9 +18,9 @@ import {
   paletteSchema,
   paletteLabels,
 } from "#/shared/constants/prefs";
-import { triggerHapticFeedback } from "#/shared/lib/haptics";
+import { useHapticFeedback } from "#/shared/lib/haptics";
 
-import { useTheme, useContrast, usePalette } from "./context";
+import { useTheme, useContrast, usePalette, useHaptics } from "./context";
 
 const preferencesBem = BEMHelper("preferences-dialog");
 
@@ -26,9 +30,15 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
   const { theme, setTheme } = useTheme();
   const { contrast, setContrast } = useContrast();
   const { palette, setPalette } = usePalette();
+  const { haptics, setHaptics } = useHaptics();
+  const { triggerHapticFeedback, isSupported } = useHapticFeedback();
+  const { trigger } = useWebHaptics();
+  const hydrated = useHydrated();
   const themeId = useId();
   const contrastId = useId();
   const paletteId = useId();
+  const hapticsId = useId();
+  const hapticsLabelId = useId();
 
   return (
     <Dialog open={open} onClose={onClose} className="preferences-dialog-modal">
@@ -147,6 +157,33 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                 ))}
               </ButtonGroup>
             </section>
+            {hydrated && isSupported && (
+              <List {...preferencesBem({ element: "haptics" })}>
+                <ListItem>
+                  <label htmlFor={hapticsId}>
+                    <ListItemContent
+                      headline={<span id={hapticsLabelId}>Haptic feedback</span>}
+                      trailing={
+                        <Switch
+                          id={hapticsId}
+                          aria-labelledby={hapticsLabelId}
+                          name="haptics"
+                          hapticFeedback={false}
+                          checked={haptics === "on"}
+                          onChange={(event) => {
+                            const enabled = event.currentTarget.checked;
+                            setHaptics(enabled ? "on" : "off");
+                            if (enabled && isSupported) void trigger("selection");
+                          }}
+                          onIcon={<MdSymbol>check</MdSymbol>}
+                          offIcon={<MdSymbol>close</MdSymbol>}
+                        />
+                      }
+                    />
+                  </label>
+                </ListItem>
+              </List>
+            )}
           </div>
         </DialogContent>
       )}

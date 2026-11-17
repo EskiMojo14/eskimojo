@@ -15,7 +15,7 @@ import {
 import BEMHelper from "react-bem-helper";
 
 import { useRipple } from "#/shared/components/ripple";
-import { triggerHapticFeedback, triggerSelectionLinkHaptic } from "#/shared/lib/haptics";
+import { useHapticFeedback, useSelectionLinkHaptic } from "#/shared/lib/haptics";
 
 const tabsBem = BEMHelper("tabs");
 
@@ -125,6 +125,7 @@ const RouterTabLink = createLink(TabLinkBase);
 
 export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
   const router = useRouter();
+  const triggerSelectionLinkHaptic = useSelectionLinkHaptic();
   const linkProps = {
     ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {
@@ -169,6 +170,7 @@ export function Tabs({
   children,
   ...props
 }: TabsProps) {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const value = controlledValue ?? uncontrolledValue;
   const id = useId().replaceAll(":", "");

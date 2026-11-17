@@ -9,9 +9,9 @@ import {
 } from "@tanstack/react-router";
 import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
-import { haptics } from "#/shared/lib/haptics";
 
 import { TabLink, TabLinkPanel, TabNav } from "./index";
 
@@ -108,8 +108,7 @@ function createTabRouter(
 }
 
 test("router links navigate and track active state through history without manual state", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const router = createTabRouter();
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Sections" })).toBeVisible();
@@ -124,7 +123,7 @@ test("router links navigate and track active state through history without manua
   await expect.element(projects).toHaveAttribute("aria-current", "page");
   await expect.element(home).not.toHaveAttribute("aria-current");
   expect(router.state.location.pathname).toBe("/projects");
-  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
   router.history.back();
   await expect.element(home).toHaveAttribute("aria-current", "page");
   await expect.element(result.getByText("Home content")).toBeVisible();
@@ -140,8 +139,7 @@ test("router links navigate and track active state through history without manua
 });
 
 test("deep links, typed params, and keyboard navigation use native anchors", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const router = createTabRouter("/music");
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect
@@ -174,7 +172,7 @@ test("deep links, typed params, and keyboard navigation use native anchors", asy
     .element(result.getByRole("tabpanel", { name: "Artists" }))
     .toHaveAttribute("aria-labelledby", "gigs-tab");
   expect(triggerHaptic).toHaveBeenCalledTimes(2);
-  expect(triggerHaptic).toHaveBeenCalledWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledWith("selection", undefined);
 });
 
 test("tab navigation preserves the current scroll position", async () => {
@@ -228,8 +226,7 @@ test("horizontal linked tabs follow RTL reading direction", async () => {
 });
 
 test("cancelled and modified clicks do not navigate the current router", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const router = createTabRouter();
   const onClick = vi.fn<() => void>();
   const result = await page.renderWithProviders(

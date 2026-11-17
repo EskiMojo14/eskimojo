@@ -2,25 +2,35 @@ import { useState } from "react";
 import type { ComponentPropsWithRef, ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 
+import { useHapticFeedback } from "#/shared/lib/haptics";
+
 const switchBem = BEMHelper("switch");
 const nativeSwitchAttributes = {
   type: "checkbox",
   switch: "",
 } satisfies ComponentPropsWithRef<"input"> & { switch: "" };
 
-export interface SwitchProps extends Omit<
+interface SwitchBaseProps extends Omit<
   ComponentPropsWithRef<"input">,
   "aria-checked" | "children" | "role" | "type"
 > {
-  label: string;
   onIcon?: ReactNode;
   offIcon?: ReactNode;
+  hapticFeedback?: boolean;
 }
+
+export type SwitchProps = SwitchBaseProps &
+  (
+    | { label: string }
+    | { label?: never; "aria-label": string }
+    | { label?: never; "aria-labelledby": string }
+  );
 
 export function Switch({
   label,
   onIcon,
   offIcon,
+  hapticFeedback = true,
   className,
   checked,
   defaultChecked,
@@ -30,13 +40,15 @@ export function Switch({
   onBlur,
   ...props
 }: SwitchProps) {
+  const { triggerHapticFeedback } = useHapticFeedback();
   const [uncontrolledChecked, setUncontrolledChecked] = useState(defaultChecked ?? false);
   const [keyboardPressed, setKeyboardPressed] = useState(false);
   const isControlled = checked !== undefined;
   const isChecked = checked ?? uncontrolledChecked;
+  const Component = label === undefined ? "span" : "label";
 
   return (
-    <label
+    <Component
       {...switchBem({ extra: className })}
       data-keyboard-pressed={keyboardPressed || undefined}
     >
@@ -50,6 +62,7 @@ export function Switch({
         onChange={(event) => {
           if (!isControlled) setUncontrolledChecked(event.currentTarget.checked);
           onChange?.(event);
+          if (hapticFeedback && !event.defaultPrevented) triggerHapticFeedback("selection");
         }}
         onKeyDown={(event) => {
           onKeyDown?.(event);
@@ -74,7 +87,7 @@ export function Switch({
           )}
         </span>
       </span>
-      <span {...switchBem({ element: "label" })}>{label}</span>
-    </label>
+      {label !== undefined && <span {...switchBem({ element: "label" })}>{label}</span>}
+    </Component>
   );
 }

@@ -1,7 +1,12 @@
 import { createOptionalContext } from "required-react-context";
 import type * as v from "valibot";
 
-import { themeSchema, contrastSchema, paletteSchema } from "#/shared/constants/prefs";
+import {
+  themeSchema,
+  contrastSchema,
+  paletteSchema,
+  hapticsSchema,
+} from "#/shared/constants/prefs";
 import { capitalize } from "#/utils";
 import type { Compute } from "#/utils/types";
 
@@ -23,3 +28,4 @@ function createPrefContext<Name extends string, Value>(
 export const { ThemeContext, useTheme } = createPrefContext("theme", themeSchema);
 export const { ContrastContext, useContrast } = createPrefContext("contrast", contrastSchema);
 export const { PaletteContext, usePalette } = createPrefContext("palette", paletteSchema);
+export const { HapticsContext, useHaptics } = createPrefContext("haptics", hapticsSchema);

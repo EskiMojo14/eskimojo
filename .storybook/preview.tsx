@@ -13,9 +13,15 @@ import {
   ThemeContext,
   ContrastContext,
   PaletteContext,
+  HapticsContext,
 } from "#/shared/components/prefs/context.ts";
 import { Providers } from "#/shared/components/providers.tsx";
-import { themeSchema, contrastSchema, paletteSchema } from "#/shared/constants/prefs";
+import {
+  themeSchema,
+  contrastSchema,
+  paletteSchema,
+  hapticsSchema,
+} from "#/shared/constants/prefs";
 
 import { theme as storybookTheme } from "./theme";
 
@@ -24,6 +30,7 @@ const globalsSchema = v.object({
   palette: paletteSchema,
   theme: themeSchema,
   contrast: contrastSchema,
+  haptics: hapticsSchema,
   motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
   christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
@@ -99,6 +106,18 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    haptics: {
+      description: "Haptic feedback",
+      toolbar: {
+        title: "Haptics",
+        icon: "lightning",
+        items: [
+          { value: "on", title: "Haptics on" },
+          { value: "off", title: "Haptics off" },
+        ],
+        dynamicTitle: true,
+      },
+    },
     christmas: {
       description: "Christmas artwork",
       toolbar: {
@@ -118,13 +137,14 @@ export default definePreview({
     theme: "system",
     contrast: "system",
     motion: "expressive",
+    haptics: "on",
     christmas: "off",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const { direction, palette, theme, contrast, motion, christmas } = v.parse(
+      const { direction, palette, theme, contrast, motion, christmas, haptics } = v.parse(
         globalsSchema,
         globals,
       );
@@ -165,6 +185,15 @@ export default definePreview({
                 value: {
                   palette,
                   setPalette: (nextPalette) => updateGlobals({ palette: nextPalette }),
+                },
+              },
+            ],
+            [
+              HapticsContext,
+              {
+                value: {
+                  haptics,
+                  setHaptics: (nextHaptics) => updateGlobals({ haptics: nextHaptics }),
                 },
               },
             ],

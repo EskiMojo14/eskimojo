@@ -1,8 +1,8 @@
 import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
-import { haptics } from "#/shared/lib/haptics";
 
 import { Tab, TabList, TabPanel, Tabs } from "./index";
 
@@ -30,8 +30,7 @@ function TabExample({
 }
 
 test("tab relationships, selection, activation, and arrow navigation", async () => {
-  if (!haptics) throw new Error("Haptics should be initialized in a browser test.");
-  using triggerHaptic = vi.spyOn(haptics, "trigger").mockResolvedValue();
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onValueChange = vi.fn<(value: string) => void>();
   const result = await page.renderWithProviders(
     <Tabs defaultValue="first" onValueChange={onValueChange}>
@@ -55,7 +54,7 @@ test("tab relationships, selection, activation, and arrow navigation", async () 
   await expect.element(second).toHaveAttribute("aria-selected", "true");
   await expect.element(result.getByRole("tabpanel")).toHaveTextContent("Second panel");
   expect(onValueChange).toHaveBeenCalledExactlyOnceWith("second");
-  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection");
+  expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
   await userEvent.keyboard("{ArrowRight}");
   await expect.element(first).toHaveFocus();
 });
