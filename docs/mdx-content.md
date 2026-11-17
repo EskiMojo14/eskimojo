@@ -120,13 +120,9 @@ and standard/medium/high contrast. A separate `dark` logo supplies the dark
 scheme's seed; otherwise both schemes use `light`. Grayscale logos produce
 neutral palettes, and symbol-only entries retain the site palette.
 The detail page uses the same palette within its main content, including page
-and code-block surfaces, links, and dividers. Its background fills the content
-area while the text stays in a centered, width-constrained column. Syntax
-highlighting retains the site's distinct accent hues, adjusting their tones
-against each project's code background to meet the selected contrast target.
-These accents are derived from the checked-in
-[syntax.gen.css](../src/shared/styles/syntax.gen.css); regenerate
-project content after running `vp run theme:generate` to refresh them.
+surfaces, links, and dividers. Its background fills the content area while the
+text stays in a centered, width-constrained column. Syntax highlighting uses
+the shared Dracula/Alucard theme rather than project-specific accent colors.
 The top app bar and footer also use the project palette. The sidebar, bottom
 navigation, and preferences dialog keep the selected site palette.
 Only the generated colors ship to the browser, not the image-processing libraries.

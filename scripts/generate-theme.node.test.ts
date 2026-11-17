@@ -5,24 +5,13 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
-import { argbFromRgb, Contrast, Hct } from "@material/material-color-utilities";
 import { expect, onTestFinished, test } from "vite-plus/test";
 
-import { assert, code } from "#/utils";
+import { code } from "#/utils";
 
 const exec = promisify(execFile);
 const root = new URL("../", import.meta.url);
 const themePath = "src/shared/styles/theme";
-
-function tone(value: string) {
-  const channels = [...value.matchAll(/\d+/g)].map(([channel]) => Number(channel));
-  const [red, green, blue] = channels;
-  assert(
-    red !== undefined && green !== undefined && blue !== undefined && channels.length === 3,
-    `Expected three RGB channels in ${value}`,
-  );
-  return Hct.fromInt(argbFromRgb(red, green, blue)).tone;
-}
 
 async function fixture() {
   const dir = await mkdtemp(join(tmpdir(), "generate-theme-"));
@@ -91,56 +80,13 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   expect(outputs.get("arctic")).not.toBe(outputs.get("goat"));
   expect(outputs.get("peach")).not.toBe(outputs.get("goat"));
   expect(outputs.get("peach")).not.toBe(outputs.get("arctic"));
-  const syntax = await readFile(join(dir, "src/shared/styles/syntax.gen.css"), "utf8");
-  for (const [level, target] of Object.entries({ standard: 4.5, medium: 6, high: 7 })) {
-    const block = new RegExp(`%syntax-${level} \\{([^}]+)\\}`).exec(syntax)?.[1];
-    expect(block).toBeDefined();
-    const accents = [...(block ?? "").matchAll(/light-dark\((rgb\([^)]+\)), (rgb\([^)]+\))\)/g)];
-    expect(accents).toHaveLength(6);
-    for (const [, light, dark] of accents) {
-      for (const [theme, css] of outputs) {
-        const paletteBlock = new RegExp(`%${theme}-${level} \\{([^}]+)\\}`).exec(css)?.[1];
-        const backgrounds =
-          /--md-sys-color-surface-container-low: light-dark\((rgb\([^)]+\)), (rgb\([^)]+\))\)/.exec(
-            paletteBlock ?? "",
-          );
-        expect(backgrounds).not.toBeNull();
-        if (!backgrounds) throw new Error(`Missing ${theme}/${level} syntax backgrounds`);
-        const [, lightBackground, darkBackground] = backgrounds;
-        assert(
-          light && dark && lightBackground && darkBackground,
-          `Malformed ${theme}/${level} syntax colours`,
-        );
-        expect(Contrast.ratioOfTones(tone(light), tone(lightBackground))).toBeGreaterThanOrEqual(
-          target,
-        );
-        expect(Contrast.ratioOfTones(tone(dark), tone(darkBackground))).toBeGreaterThanOrEqual(
-          target,
-        );
-      }
-    }
-  }
-  for (const [token, theme, role] of [
-    ["keyword", "goat", "primary"],
-    ["string", "arctic", "tertiary"],
-    ["function", "arctic", "primary"],
-    ["number", "goat", "tertiary"],
-    ["type", "arctic", "primary"],
-    ["parameter", "goat", "error"],
-  ] as const) {
-    const values = await Promise.all(
-      (["light", "dark"] as const).map(async (scheme) => {
-        const css = await readFile(join(dir, themePath, `exports/${theme}/${scheme}.css`), "utf8");
-        return new RegExp(`--md-sys-color-${role}: ([^;]+);`).exec(css)?.[1];
-      }),
-    );
-    expect(syntax).toContain(`--syntax-${token}: light-dark(${values.join(", ")});`);
-  }
   expect(await readFile(join(dir, ".storybook/palette.gen.ts"), "utf8")).toBe(
     await readFile(new URL(".storybook/palette.gen.ts", root), "utf8"),
   );
+  await expect(
+    readFile(join(dir, "src/shared/styles/syntax.gen.css"), "utf8"),
+  ).rejects.toMatchObject({ code: "ENOENT" });
   await generate();
-  expect(await readFile(join(dir, "src/shared/styles/syntax.gen.css"), "utf8")).toBe(syntax);
   for (const [theme, css] of outputs) {
     expect(await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8")).toBe(css);
   }

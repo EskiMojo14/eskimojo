@@ -1,37 +1,12 @@
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { argbFromRgb, hexFromArgb } from "@material/material-color-utilities";
+import { hexFromArgb } from "@material/material-color-utilities";
 
 import {
   imageSourceColor,
   imageColorScheme,
   readableImageColor as readable,
 } from "#/shared/lib/image-palette";
-
-const syntaxStandardPattern = /%syntax-standard\s*\{([^}]+)\}/;
-const syntaxColorPattern =
-  /--syntax-([\w-]+):\s*light-dark\(rgb\((\d+) (\d+) (\d+)\), rgb\((\d+) (\d+) (\d+)\)\)/g;
-
-function readSyntaxColors() {
-  const css = readFileSync(resolve("src/shared/styles/syntax.gen.css"), "utf8");
-  const standard = syntaxStandardPattern.exec(css)?.[1];
-  if (!standard) throw new Error("Missing standard syntax palette in syntax.gen.css");
-  const colors = new Map<string, [number, number]>();
-  for (const [, role, r, g, b, dr, dg, db] of standard.matchAll(syntaxColorPattern)) {
-    if (!role) throw new Error("Missing syntax color role");
-    colors.set(role, [
-      argbFromRgb(Number(r), Number(g), Number(b)),
-      argbFromRgb(Number(dr), Number(dg), Number(db)),
-    ]);
-  }
-  for (const role of ["keyword", "string", "function", "number", "type", "parameter"]) {
-    if (!colors.has(role)) throw new Error(`Missing syntax color ${role}`);
-  }
-  return colors;
-}
-
-const syntaxColors = readSyntaxColors();
 
 export async function generateProjectPalette(logo: { light: string; dark?: string }) {
   const light = await imageSourceColor(resolve("public", logo.light.slice(1)));
@@ -64,14 +39,6 @@ export async function generateProjectPalette(logo: { light: string; dark?: strin
         tertiary: readable(scheme.tertiary, background, target, scheme.isDark),
         error: readable(scheme.error, background, target, scheme.isDark),
       };
-      for (const [role, [lightColor, darkColor]] of syntaxColors) {
-        colors[`syntax-${role}`] = readable(
-          scheme.isDark ? darkColor : lightColor,
-          scheme.surfaceContainerLow,
-          target,
-          scheme.isDark,
-        );
-      }
       return colors;
     });
     const [l, d] = values;

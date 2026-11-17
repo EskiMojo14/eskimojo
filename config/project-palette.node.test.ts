@@ -49,24 +49,6 @@ test.each([
         });
       }
     }
-    const codeBackgrounds = schemes(palette[`--project-${level}-surface-container-low`]);
-    for (const role of ["keyword", "string", "function", "number", "type", "parameter"]) {
-      schemes(palette[`--project-${level}-syntax-${role}`]).forEach((foreground, index) => {
-        const background = codeBackgrounds[index];
-        if (!background) throw new Error("Missing project code background");
-        expect(Contrast.ratioOfTones(foreground.tone, background.tone)).toBeGreaterThanOrEqual(
-          target,
-        );
-      });
-    }
-    const keywords = schemes(palette[`--project-${level}-syntax-keyword`]);
-    const functions = schemes(palette[`--project-${level}-syntax-function`]);
-    keywords.forEach((keyword, index) => {
-      const fn = functions[index];
-      if (!fn) throw new Error("Missing syntax function color");
-      const difference = Math.abs(keyword.hue - fn.hue);
-      expect(Math.min(difference, 360 - difference)).toBeGreaterThan(30);
-    });
   }
 });
 

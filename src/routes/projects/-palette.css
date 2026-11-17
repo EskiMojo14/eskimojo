@@ -14,12 +14,6 @@
   --md-sys-color-secondary: var(--project-standard-secondary);
   --md-sys-color-tertiary: var(--project-standard-tertiary);
   --md-sys-color-error: var(--project-standard-error);
-  --syntax-keyword: var(--project-standard-syntax-keyword);
-  --syntax-string: var(--project-standard-syntax-string);
-  --syntax-function: var(--project-standard-syntax-function);
-  --syntax-number: var(--project-standard-syntax-number);
-  --syntax-type: var(--project-standard-syntax-type);
-  --syntax-parameter: var(--project-standard-syntax-parameter);
 }
 
 [data-contrast="medium"]
@@ -39,12 +33,6 @@
   --md-sys-color-secondary: var(--project-medium-secondary);
   --md-sys-color-tertiary: var(--project-medium-tertiary);
   --md-sys-color-error: var(--project-medium-error);
-  --syntax-keyword: var(--project-medium-syntax-keyword);
-  --syntax-string: var(--project-medium-syntax-string);
-  --syntax-function: var(--project-medium-syntax-function);
-  --syntax-number: var(--project-medium-syntax-number);
-  --syntax-type: var(--project-medium-syntax-type);
-  --syntax-parameter: var(--project-medium-syntax-parameter);
 }
 
 [data-contrast="high"]
@@ -64,12 +52,6 @@
   --md-sys-color-secondary: var(--project-high-secondary);
   --md-sys-color-tertiary: var(--project-high-tertiary);
   --md-sys-color-error: var(--project-high-error);
-  --syntax-keyword: var(--project-high-syntax-keyword);
-  --syntax-string: var(--project-high-syntax-string);
-  --syntax-function: var(--project-high-syntax-function);
-  --syntax-number: var(--project-high-syntax-number);
-  --syntax-type: var(--project-high-syntax-type);
-  --syntax-parameter: var(--project-high-syntax-parameter);
 }
 
 @media (prefers-contrast: more) {
@@ -90,11 +72,5 @@
     --md-sys-color-secondary: var(--project-high-secondary);
     --md-sys-color-tertiary: var(--project-high-tertiary);
     --md-sys-color-error: var(--project-high-error);
-    --syntax-keyword: var(--project-high-syntax-keyword);
-    --syntax-string: var(--project-high-syntax-string);
-    --syntax-function: var(--project-high-syntax-function);
-    --syntax-number: var(--project-high-syntax-number);
-    --syntax-type: var(--project-high-syntax-type);
-    --syntax-parameter: var(--project-high-syntax-parameter);
   }
 }
