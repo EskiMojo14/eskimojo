@@ -1,7 +1,7 @@
 import { useId } from "react";
 import BEMHelper from "react-bem-helper";
 
-import { List, ListItem, ListItemContent } from "#/shared/components/list";
+import { ListItemContent } from "#/shared/components/list";
 import { useSyntax, useMatchLight } from "#/shared/components/prefs/context";
 import SyntaxPreview from "#/shared/components/prefs/syntax-preview.mdx";
 import { SelectMenu } from "#/shared/components/select-menu";
@@ -17,49 +17,49 @@ export function SyntaxPanel() {
   const { matchLight, setMatchLight } = useMatchLight();
   const matchLightId = useId();
   const matchLightLabelId = useId();
+  const matchLightDescriptionId = useId();
 
   return (
     <TabPanel value="syntax">
-      <List {...preferencesBem({ element: "syntax-settings" })}>
-        <ListItem>
-          <SelectMenu
-            {...preferencesBem({ element: "select", modifier: "always" })}
-            label="Syntax"
-            name="syntax"
-            value={syntax}
-            onChange={setSyntax}
-            options={syntaxSchema.options.map((value) => ({
-              value,
-              label: syntaxLabels[value],
-              supportingText: value === "nosferatu" ? "High contrast" : undefined,
-              icon: <MdSymbol>code</MdSymbol>,
-            }))}
+      <div {...preferencesBem({ element: "syntax-settings" })}>
+        <SelectMenu
+          {...preferencesBem({ element: "select", modifier: "always" })}
+          label="Syntax"
+          name="syntax"
+          value={syntax}
+          onChange={setSyntax}
+          options={syntaxSchema.options.map((value) => ({
+            value,
+            label: syntaxLabels[value],
+            supportingText: value === "nosferatu" ? "High contrast" : undefined,
+            icon: <MdSymbol>code</MdSymbol>,
+          }))}
+        />
+        <label {...preferencesBem({ element: "toggle" })} htmlFor={matchLightId}>
+          <ListItemContent
+            headline={<span id={matchLightLabelId}>Match light theme</span>}
+            leading={<MdSymbol>light_mode</MdSymbol>}
+            supportingText={
+              <span id={matchLightDescriptionId}>Use Alucard theme for light mode</span>
+            }
+            trailing={
+              <Switch
+                id={matchLightId}
+                aria-labelledby={matchLightLabelId}
+                aria-describedby={matchLightDescriptionId}
+                name="matchLight"
+                checked={matchLight === "on"}
+                onChange={(event) => setMatchLight(event.currentTarget.checked ? "on" : "off")}
+                onIcon={<MdSymbol>check</MdSymbol>}
+                offIcon={<MdSymbol>close</MdSymbol>}
+              />
+            }
           />
-        </ListItem>
-        <ListItem>
-          <label htmlFor={matchLightId}>
-            <ListItemContent
-              headline={<span id={matchLightLabelId}>Match light theme</span>}
-              supportingText="Use Alucard theme for light mode"
-              leading={<MdSymbol>light_mode</MdSymbol>}
-              trailing={
-                <Switch
-                  id={matchLightId}
-                  aria-labelledby={matchLightLabelId}
-                  name="matchLight"
-                  checked={matchLight === "on"}
-                  onChange={(event) => setMatchLight(event.currentTarget.checked ? "on" : "off")}
-                  onIcon={<MdSymbol>check</MdSymbol>}
-                  offIcon={<MdSymbol>close</MdSymbol>}
-                />
-              }
-            />
-          </label>
-        </ListItem>
-        <ListItem {...preferencesBem({ element: "syntax-preview" })}>
+        </label>
+        <div {...preferencesBem({ element: "syntax-preview" })}>
           <SyntaxPreview />
-        </ListItem>
-      </List>
+        </div>
+      </div>
     </TabPanel>
   );
 }

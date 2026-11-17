@@ -1,5 +1,6 @@
 .preferences-dialog,
-.preferences-dialog__theme-settings {
+.preferences-dialog__theme-settings,
+.preferences-dialog__syntax-settings {
   display: grid;
   gap: 1.5rem;
 }
@@ -58,34 +59,21 @@
   }
 }
 
-.preferences-dialog__syntax-settings,
-.preferences-dialog__haptics {
-  margin-inline: -16px;
+.preferences-dialog__toggle {
+  display: block;
+  cursor: pointer;
 
-  .list__content {
-    padding-block: 4px;
+  > .list__content {
+    min-block-size: 48px;
+    padding: 0;
   }
 }
 
-.preferences-dialog__syntax-settings .select-menu {
-  --select-menu-label-background: var(--md-sys-color-surface-container);
-}
-
-.preferences-dialog__syntax-settings > .list__item:first-child {
-  padding: 8px 16px;
-}
-
 .preferences-dialog__syntax-preview {
-  padding: 4px 16px;
-
   > pre {
     margin: 0;
     padding: 8px 12px;
   }
-}
-
-.preferences-dialog__haptics > .list__item {
-  background-color: transparent;
 }
 
 .dialog.preferences-dialog-modal {

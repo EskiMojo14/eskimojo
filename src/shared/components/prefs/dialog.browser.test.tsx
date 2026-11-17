@@ -278,10 +278,11 @@ test("Match light theme defaults on and can be toggled with pointer or keyboard"
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
   const toggle = dialog.getByRole("switch", { name: "Match light theme" });
+  await expect.element(toggle).toHaveAccessibleDescription("Use Alucard theme for light mode");
   await expect.element(toggle).toBeChecked();
   await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
 
-  await toggle.click();
+  await dialog.getByText("Match light theme", { exact: true }).click();
   await expect.element(toggle).not.toBeChecked();
   await expect.element(document.documentElement).toHaveAttribute("data-match-light", "off");
 
@@ -466,10 +467,7 @@ test.each([1280, 390])(
     await expect.element(document.documentElement).toHaveAttribute("data-theme", "dark");
     expect(triggerHaptic).not.toHaveBeenCalled();
     await dialog.getByRole("tab", { name: "Other", exact: true }).click();
-    await dialog
-      .getByRole("listitem")
-      .filter({ hasText: "Haptic feedback" })
-      .click({ position: { x: 4, y: 28 } });
+    await dialog.getByText("Haptic feedback", { exact: true }).click();
     await expect.element(toggle).toBeChecked();
     await expect.element(toggle).toHaveAccessibleName("Haptic feedback");
     expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
