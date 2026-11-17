@@ -34,8 +34,8 @@ physical feel varies with the device.
   never be the only way to understand a change or an error.
 
 The current shared selection components provide feedback for filter-chip
-activation, switch changes, changed button-tab selections, and committed select-menu changes.
-Switch callers should not add duplicate feedback; use `hapticFeedback={false}`
+activation, checkbox and switch changes, changed button-tab selections, and committed select-menu changes.
+Checkbox and switch callers should not add duplicate feedback; use `hapticFeedback={false}`
 only when the caller must own the feedback.
 `InternalLinkChip` and `TabLink` also provide selection feedback when activated
 to change the current URL, including query-string filters. They compare the

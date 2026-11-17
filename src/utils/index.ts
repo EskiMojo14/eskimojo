@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import { up } from "up-fetch";
 
 export function capitalize<T extends string>(str: T): Capitalize<T> {
@@ -78,4 +79,14 @@ export const code = new Proxy(codeTarget, {
 
 export function assert(condition: unknown, message = "Assertion failed"): asserts condition {
   if (!condition) throw new Error(message);
+}
+
+export function mergeRefs<T>(...refs: Array<Ref<T> | null | undefined>) {
+  return (instance: T | null) => {
+    for (const ref of refs) {
+      if (!ref) continue;
+      if (typeof ref === "function") ref(instance);
+      else ref.current = instance;
+    }
+  };
 }
