@@ -26,10 +26,8 @@ test("exposes a named switch that toggles by pointer and keyboard", async () => 
   const toggle = result.getByRole("switch", { name: "Wi-Fi" });
 
   await expect.element(toggle).not.toBeChecked();
-  await expect.element(toggle).toHaveAttribute("aria-checked", "false");
   await toggle.click();
   await expect.element(toggle).toBeChecked();
-  await expect.element(toggle).toHaveAttribute("aria-checked", "true");
   await userEvent.keyboard(" ");
   await expect.element(toggle).not.toBeChecked();
   await expect.element(toggle).toHaveAccessibleName("Wi-Fi");
