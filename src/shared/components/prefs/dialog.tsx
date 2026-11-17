@@ -175,6 +175,7 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                   options={syntaxSchema.options.map((value) => ({
                     value,
                     label: syntaxLabels[value],
+                    supportingText: value === "nosferatu" ? "High contrast" : undefined,
                     icon: <MdSymbol>code</MdSymbol>,
                   }))}
                 />

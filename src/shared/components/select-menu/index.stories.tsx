@@ -36,7 +36,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Controlled MD3 outlined select: 56px transparent field, notched floating label, thin outline with primary-color focus emphasis, trailing arrow, and an elevated menu with 48px option targets and a selected checkmark. Options can provide an icon, shown in both the field and menu. Uses the site's color, typography, bevelled shape, and spring tokens. Set --select-menu-label-background to the surrounding surface token when embedding on a non-default surface, such as a dialog. Pass a value present in options and update it through onChange. An optional name adds a hidden form field; disabled prevents interaction and submission. Uses a native auto popover and CSS anchor positioning (required browser capabilities), not base-select, so Firefox and Safari receive the same themed menu rather than an OS picker. The listbox stays inside its owner (including modal dialogs) but renders in the top layer. Focus remains on the combobox with aria-activedescendant. Arrows/Home/End and type-ahead explore without changing the value; Enter/Space, Tab, or blur commit; Escape or clicking the trigger again cancels. Clicking an option selects and restores focus. Clicking outside light-dismisses. Menus flip to fit available space, scroll long lists, respect reduced motion and forced colors, and close when their field is hidden or disabled. Desktop preference toolbars remain separate consumers.",
+          "Controlled MD3 outlined select: 56px transparent field, notched floating label, thin outline with primary-color focus emphasis, trailing arrow, and an elevated menu with 48px option targets and a selected checkmark. Options can provide an icon, shown in both the field and menu, and supportingText, shown beneath the menu label and included in the option's accessible name. Supporting text wraps and rows grow to fit; the closed field and type-ahead use only the label. Uses the site's color, typography, bevelled shape, and spring tokens. Set --select-menu-label-background to the surrounding surface token when embedding on a non-default surface, such as a dialog. Pass a value present in options and update it through onChange. An optional name adds a hidden form field; disabled prevents interaction and submission. Uses a native auto popover and CSS anchor positioning (required browser capabilities), not base-select, so Firefox and Safari receive the same themed menu rather than an OS picker. The listbox stays inside its owner (including modal dialogs) but renders in the top layer. Focus remains on the combobox with aria-activedescendant. Arrows/Home/End and type-ahead explore without changing the value; Enter/Space, Tab, or blur commit; Escape or clicking the trigger again cancels. Clicking an option selects and restores focus. Clicking outside light-dismisses. Menus flip to fit available space, scroll long lists, respect reduced motion and forced colors, and close when their field is hidden or disabled. Desktop preference toolbars remain separate consumers.",
       },
     },
   },
@@ -65,6 +65,27 @@ export const Open = meta.story({
     await userEvent.click(canvas.getByRole("combobox", { name: "Theme" }));
     const body = within(canvasElement.ownerDocument.body);
     await waitFor(() => expect(body.getByRole("listbox", { name: "Theme" })).toBeVisible());
+  },
+});
+
+export const SupportingText = meta.story({
+  args: {
+    options: options.map((option) => ({
+      ...option,
+      supportingText: option.value === "system" ? "Follow your device's appearance" : undefined,
+    })),
+  },
+  play: async ({ canvas, canvasElement, userEvent, args }) => {
+    const field = canvas.getByRole("combobox", { name: "Theme" });
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(field);
+    const system = body.getByRole("option", { name: "System Follow your device's appearance" });
+    await waitFor(() => expect(system).toBeVisible());
+    await expect(system).toHaveTextContent("Follow your device's appearance");
+    await userEvent.click(body.getByRole("option", { name: "Dark" }));
+    await expect(field).toHaveAccessibleDescription("Dark");
+    await expect(args.onChange).toHaveBeenCalledWith("dark");
+    await userEvent.click(field);
   },
 });
 

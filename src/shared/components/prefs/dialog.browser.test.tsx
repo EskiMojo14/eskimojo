@@ -72,10 +72,11 @@ test("mobile dropdowns save preferences", async () => {
   }
   for (const value of syntaxSchema.options) {
     await syntax.click();
-    await dialog
-      .getByRole("listbox", { name: "Syntax" })
-      .getByRole("option", { name: syntaxLabels[value], exact: true })
-      .click();
+    const option = dialog.getByRole("listbox", { name: "Syntax" }).getByRole("option", {
+      name: value === "nosferatu" ? `${syntaxLabels[value]} High contrast` : syntaxLabels[value],
+      exact: true,
+    });
+    await option.click();
     await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels[value]);
   }
   await userEvent.keyboard("{Escape}");

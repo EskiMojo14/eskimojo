@@ -170,11 +170,22 @@
   &[aria-selected="true"] {
     background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
+
+    .select-menu__option-supporting {
+      color: inherit;
+    }
   }
 
-  .select-menu__option-label {
+  .select-menu__option-text {
+    display: grid;
     flex: 1;
     min-inline-size: 0;
+  }
+
+  .select-menu__option-supporting {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typography-body-medium);
+    font-feature-settings: var(--md-sys-typography-features-body);
   }
 
   &:hover,

@@ -11,6 +11,7 @@ const selectBem = BEMHelper("select-menu");
 export interface SelectMenuOption<Value extends string> {
   value: Value;
   label: string;
+  supportingText?: string;
   icon?: ReactNode;
 }
 
@@ -305,7 +306,14 @@ export function SelectMenu<Value extends string>({
                 {option.icon}
               </span>
             )}
-            <span {...selectBem({ element: "option-label" })}>{option.label}</span>
+            <span {...selectBem({ element: "option-text" })}>
+              <span {...selectBem({ element: "option-label" })}>{option.label}</span>
+              {option.supportingText && (
+                <span {...selectBem({ element: "option-supporting" })}>
+                  {option.supportingText}
+                </span>
+              )}
+            </span>
             {option.value === value && <MdSymbol>check</MdSymbol>}
           </button>
         ))}

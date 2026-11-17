@@ -5,7 +5,7 @@ import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
 
-import { SelectMenu } from "./index";
+import { SelectMenu, type SelectMenuOption } from "./index";
 
 const options = [
   { value: "system", label: "System" },
@@ -14,18 +14,26 @@ const options = [
   { value: "high", label: "High" },
 ];
 
-function Example({ disabled = false, onChange = (_value: string) => {} }) {
+function Example({
+  disabled = false,
+  onChange,
+  menuOptions = options,
+}: {
+  disabled?: boolean;
+  onChange?: (value: string) => void;
+  menuOptions?: ReadonlyArray<SelectMenuOption<string>>;
+}) {
   const [value, setValue] = useState("system");
   return (
     <form aria-label="Settings">
       <SelectMenu
         label="Contrast"
         name="contrast"
-        options={options}
+        options={menuOptions}
         value={value}
         disabled={disabled}
         onChange={(next) => {
-          onChange(next);
+          onChange?.(next);
           setValue(next);
         }}
       />
@@ -55,6 +63,29 @@ test("pointer selection updates the controlled value, form value, and focus", as
   expect(form).toBeInstanceOf(HTMLFormElement);
   if (!(form instanceof HTMLFormElement)) throw new Error("Expected Settings form.");
   expect(new FormData(form).get("contrast")).toBe("high");
+});
+
+test("supporting text is announced in the menu but omitted from the selected display", async () => {
+  const onChange = vi.fn<(value: string) => void>();
+  const result = await page.renderWithProviders(
+    <Example
+      onChange={onChange}
+      menuOptions={[
+        { value: "system", label: "System" },
+        { value: "high", label: "High", supportingText: "For stronger contrast" },
+      ]}
+    />,
+  );
+  const field = result.getByRole("combobox", { name: "Contrast" });
+  await field.click();
+  const high = result.getByRole("option", { name: "High For stronger contrast", exact: true });
+  await expect.element(high.getByText("For stronger contrast")).toBeVisible();
+  await userEvent.keyboard("hi{Enter}");
+  await expect.element(field).toHaveAccessibleDescription("High");
+  await expect.element(field).not.toHaveTextContent("For stronger contrast");
+  await field.click();
+  await expect.element(high).toHaveAttribute("aria-selected", "true");
+  expect(onChange).toHaveBeenCalledExactlyOnceWith("high");
 });
 
 test("arrows explore without changing selection; Escape cancels and Enter commits", async () => {
