@@ -8,6 +8,7 @@ import {
   paletteSchema,
   hapticsSchema,
   syntaxSchema,
+  matchLightSchema,
 } from "#/shared/constants/prefs";
 
 const themeKey = "eskimojo::theme";
@@ -57,3 +58,13 @@ export const getSyntaxFn = createServerFn().handler(() =>
 export const setSyntaxFn = createServerFn()
   .validator(syntaxSchema)
   .handler(({ data: syntax }) => setCookie(syntaxKey, syntax));
+
+const matchLightKey = "eskimojo::match-light";
+
+export const getMatchLightFn = createServerFn().handler(() =>
+  v.parse(matchLightSchema, getCookie(matchLightKey)),
+);
+
+export const setMatchLightFn = createServerFn()
+  .validator(matchLightSchema)
+  .handler(({ data: matchLight }) => setCookie(matchLightKey, matchLight));

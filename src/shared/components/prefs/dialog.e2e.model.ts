@@ -4,6 +4,7 @@ export class PreferencesDialogModel extends ComponentObjectModel {
   dialog = this.page.getByRole("dialog", { name: "Preferences" });
   trigger = this.page.getByRole("button", { name: "Preferences" });
   hapticsSwitch = this.dialog.getByRole("switch", { name: "Haptic feedback" });
+  matchLightSwitch = this.dialog.getByRole("switch", { name: "Match light theme" });
 
   async open() {
     await this.trigger.click();
@@ -18,6 +19,11 @@ export class PreferencesDialogModel extends ComponentObjectModel {
   async setHaptics(enabled: boolean) {
     await this.hapticsSwitch.setChecked(enabled);
     await expect(this.hapticsSwitch).toBeChecked({ checked: enabled });
+  }
+
+  async setMatchLight(enabled: boolean) {
+    await this.matchLightSwitch.setChecked(enabled);
+    await expect(this.matchLightSwitch).toBeChecked({ checked: enabled });
   }
 
   async select(name: string, option: string) {

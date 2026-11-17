@@ -16,6 +16,7 @@ import {
   PaletteContext,
   HapticsContext,
   SyntaxContext,
+  MatchLightContext,
 } from "#/shared/components/prefs/context";
 import {
   themeSchema,
@@ -28,6 +29,8 @@ import {
   type Haptics,
   syntaxSchema,
   type Syntax,
+  matchLightSchema,
+  type MatchLight,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
 import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
@@ -38,6 +41,7 @@ interface TestPreferences {
   palette: Palette;
   haptics: Haptics;
   syntax: Syntax;
+  matchLight: MatchLight;
 }
 
 export interface RenderWithProviderOptions extends RenderOptions {
@@ -77,6 +81,9 @@ function PreferenceProviders({
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
   const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
   const [syntax, setSyntax] = useState(initialPreferences.syntax ?? syntaxSchema.fallback);
+  const [matchLight, setMatchLight] = useState(
+    initialPreferences.matchLight ?? matchLightSchema.fallback,
+  );
 
   useEffect(() => {
     if (!syncToDocument) return undefined;
@@ -87,22 +94,27 @@ function PreferenceProviders({
       contrast: dataset.contrast,
       palette: dataset.palette,
       syntax: dataset.syntax,
+      matchLight: dataset.matchLight,
     };
-    Object.assign(dataset, { theme, contrast, palette, syntax });
+    Object.assign(dataset, { theme, contrast, palette, syntax, matchLight });
     return () => {
       for (const [key, value] of Object.entries(previous)) {
         if (value === undefined) delete dataset[key];
         else dataset[key] = value;
       }
     };
-  }, [syncToDocument, theme, contrast, palette, syntax]);
+  }, [syncToDocument, theme, contrast, palette, syntax, matchLight]);
 
   return (
     <ThemeContext value={{ theme, setTheme }}>
       <ContrastContext value={{ contrast, setContrast }}>
         <PaletteContext value={{ palette, setPalette }}>
           <HapticsContext value={{ haptics, setHaptics }}>
-            <SyntaxContext value={{ syntax, setSyntax }}>{children}</SyntaxContext>
+            <SyntaxContext value={{ syntax, setSyntax }}>
+              <MatchLightContext value={{ matchLight, setMatchLight }}>
+                {children}
+              </MatchLightContext>
+            </SyntaxContext>
           </HapticsContext>
         </PaletteContext>
       </ContrastContext>

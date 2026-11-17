@@ -123,6 +123,32 @@ test("syntax preference updates the document and remains selectable at desktop w
   await expect.element(document.documentElement).toHaveAttribute("data-syntax", "buffy");
 });
 
+test("Match light theme defaults on and can be toggled with pointer or keyboard", async () => {
+  const result = await page.renderWithProviders(<PreferencesDialog open />, {
+    syncPreferencesToDocument: true,
+  });
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+  const toggle = dialog.getByRole("switch", { name: "Match light theme" });
+  await expect.element(toggle).toBeChecked();
+  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
+
+  await toggle.click();
+  await expect.element(toggle).not.toBeChecked();
+  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "off");
+
+  toggle.element().focus();
+  await userEvent.keyboard(" ");
+  await expect.element(toggle).toBeChecked();
+  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
+});
+
+test("preferences show a small syntax preview", async () => {
+  const result = await page.renderWithProviders(<PreferencesDialog open />);
+  const preview = result.getByRole("dialog", { name: "Preferences" }).getByRole("code");
+
+  await expect.element(preview).toHaveTextContent('const syntax = "Dracula Pro";');
+});
+
 test("Escape dismisses the select menu before the preferences dialog", async () => {
   await page.viewport(320, 568);
   const result = await page.renderWithProviders(<NavigationLayout />);
@@ -287,7 +313,10 @@ test.each([1280, 390])(
     await selectTheme("Dark");
     await expect.element(document.documentElement).toHaveAttribute("data-theme", "dark");
     expect(triggerHaptic).not.toHaveBeenCalled();
-    await dialog.getByRole("listitem").click({ position: { x: 4, y: 28 } });
+    await dialog
+      .getByRole("listitem")
+      .filter({ hasText: "Haptic feedback" })
+      .click({ position: { x: 4, y: 28 } });
     await expect.element(toggle).toBeChecked();
     await expect.element(toggle).toHaveAccessibleName("Haptic feedback");
     expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);

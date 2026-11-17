@@ -22,7 +22,8 @@ import {
 } from "#/shared/constants/prefs";
 import { useHapticFeedback } from "#/shared/lib/haptics";
 
-import { useTheme, useContrast, usePalette, useHaptics, useSyntax } from "./context";
+import { useTheme, useContrast, usePalette, useHaptics, useSyntax, useMatchLight } from "./context";
+import SyntaxPreview from "./syntax-preview.mdx";
 
 const preferencesBem = BEMHelper("preferences-dialog");
 
@@ -34,15 +35,17 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
   const { palette, setPalette } = usePalette();
   const { haptics, setHaptics } = useHaptics();
   const { syntax, setSyntax } = useSyntax();
+  const { matchLight, setMatchLight } = useMatchLight();
   const { triggerHapticFeedback, isSupported } = useHapticFeedback();
   const { trigger } = useWebHaptics();
   const hydrated = useHydrated();
   const themeId = useId();
   const contrastId = useId();
   const paletteId = useId();
-  const syntaxId = useId();
   const hapticsId = useId();
   const hapticsLabelId = useId();
+  const matchLightId = useId();
+  const matchLightLabelId = useId();
 
   return (
     <Dialog open={open} onClose={onClose} className="preferences-dialog-modal">
@@ -161,29 +164,54 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                 ))}
               </ButtonGroup>
             </section>
-            <section {...preferencesBem({ element: "section" })} aria-labelledby={syntaxId}>
-              <h3 {...preferencesBem({ element: "label" })} id={syntaxId}>
-                Syntax
-              </h3>
-              <SelectMenu
-                {...preferencesBem({ element: "select", modifier: "always" })}
-                label="Syntax"
-                name="syntax"
-                value={syntax}
-                onChange={setSyntax}
-                options={syntaxSchema.options.map((value) => ({
-                  value,
-                  label: syntaxLabels[value],
-                  icon: <MdSymbol>code</MdSymbol>,
-                }))}
-              />
-            </section>
+            <List {...preferencesBem({ element: "syntax-settings" })}>
+              <ListItem>
+                <SelectMenu
+                  {...preferencesBem({ element: "select", modifier: "always" })}
+                  label="Syntax"
+                  name="syntax"
+                  value={syntax}
+                  onChange={setSyntax}
+                  options={syntaxSchema.options.map((value) => ({
+                    value,
+                    label: syntaxLabels[value],
+                    icon: <MdSymbol>code</MdSymbol>,
+                  }))}
+                />
+              </ListItem>
+              <ListItem>
+                <label htmlFor={matchLightId}>
+                  <ListItemContent
+                    headline={<span id={matchLightLabelId}>Match light theme</span>}
+                    supportingText="Use Alucard theme for light mode"
+                    leading={<MdSymbol>light_mode</MdSymbol>}
+                    trailing={
+                      <Switch
+                        id={matchLightId}
+                        aria-labelledby={matchLightLabelId}
+                        name="matchLight"
+                        checked={matchLight === "on"}
+                        onChange={(event) =>
+                          setMatchLight(event.currentTarget.checked ? "on" : "off")
+                        }
+                        onIcon={<MdSymbol>check</MdSymbol>}
+                        offIcon={<MdSymbol>close</MdSymbol>}
+                      />
+                    }
+                  />
+                </label>
+              </ListItem>
+              <ListItem {...preferencesBem({ element: "syntax-preview" })}>
+                <SyntaxPreview />
+              </ListItem>
+            </List>
             {hydrated && isSupported && (
               <List {...preferencesBem({ element: "haptics" })}>
                 <ListItem>
                   <label htmlFor={hapticsId}>
                     <ListItemContent
                       headline={<span id={hapticsLabelId}>Haptic feedback</span>}
+                      leading={<MdSymbol>mobile_vibrate</MdSymbol>}
                       trailing={
                         <Switch
                           id={hapticsId}

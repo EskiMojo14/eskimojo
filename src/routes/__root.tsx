@@ -9,13 +9,20 @@ import * as v from "valibot";
 
 import { AppBar } from "#/shared/components/app-bar";
 import { Footer } from "#/shared/components/footer";
-import { useTheme, useContrast, usePalette, useSyntax } from "#/shared/components/prefs/context";
+import {
+  useTheme,
+  useContrast,
+  usePalette,
+  useSyntax,
+  useMatchLight,
+} from "#/shared/components/prefs/context";
 import {
   ThemeProvider,
   ContrastProvider,
   PaletteProvider,
   HapticsProvider,
   SyntaxProvider,
+  MatchLightProvider,
 } from "#/shared/components/prefs/provider";
 import { ThemeColor } from "#/shared/components/prefs/theme-color";
 import { Providers } from "#/shared/components/providers.tsx";
@@ -29,6 +36,7 @@ import {
   getPaletteFn,
   getHapticsFn,
   getSyntaxFn,
+  getMatchLightFn,
 } from "#/shared/lib/prefs.ts";
 import type { AppStore } from "#/shared/store";
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -53,6 +61,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       palette: getPaletteFn(),
       haptics: getHapticsFn(),
       syntax: getSyntaxFn(),
+      matchLight: getMatchLightFn(),
     }),
   head: ({ loaderData, match }) => getDocumentHead(loaderData?.palette, match.context.christmas),
   shellComponent: RootDocument,
@@ -60,7 +69,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { theme, contrast, palette, haptics, syntax } = Route.useLoaderData();
+  const { theme, contrast, palette, haptics, syntax, matchLight } = Route.useLoaderData();
   const { christmas } = Route.useRouteContext();
   return (
     <Providers
@@ -70,6 +79,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         [PaletteProvider, { palette }],
         [HapticsProvider, { haptics }],
         [SyntaxProvider, { syntax }],
+        [MatchLightProvider, { matchLight }],
       ]}
     >
       <PreferenceDocument christmas={christmas}>{children}</PreferenceDocument>
@@ -89,6 +99,7 @@ function PreferenceDocument({
   const { contrast } = useContrast();
   const { palette } = usePalette();
   const { syntax } = useSyntax();
+  const { matchLight } = useMatchLight();
   const projectPalette = useMatch({
     from: "/projects/$slug",
     shouldThrow: false,
@@ -102,6 +113,7 @@ function PreferenceDocument({
       data-contrast={contrast}
       data-palette={palette}
       data-syntax={syntax}
+      data-match-light={matchLight}
       data-christmas={christmas ? "true" : undefined}
     >
       <head>

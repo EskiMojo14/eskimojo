@@ -55,3 +55,6 @@ export const syntaxLabels: Record<Syntax, string> = {
   nosferatu: "Nosferatu",
   alucard: "Alucard",
 };
+
+export const matchLightSchema = v.fallback(v.picklist(["on", "off"]), "on");
+export type MatchLight = v.InferOutput<typeof matchLightSchema>;

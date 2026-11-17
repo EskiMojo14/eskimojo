@@ -191,8 +191,11 @@ generated token colors without depending on its generated class names.
 Storybook's docs snippets do not have a `language-` class, so
 `.storybook/syntax.css` sets their background and foreground directly on
 `.docblock-source`. Both kinds of code blocks use the same palette variables,
-selected by the Syntax preference (Dracula PRO by default). The Syntax toolbar
-control in Storybook changes the same `data-syntax` value.
+selected by the Syntax preference (Dracula PRO by default). With **Match light
+theme** enabled, Alucard overrides the selected palette whenever the active
+theme is light, whether the light theme is explicit or follows the system.
+Disable it to use the selected Syntax palette for both color schemes. The Syntax
+and Match light theme toolbar controls in Storybook mirror these preferences.
 
 ```tsx
 import { useState } from "react";

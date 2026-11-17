@@ -15,6 +15,7 @@ import {
   PaletteContext,
   HapticsContext,
   SyntaxContext,
+  MatchLightContext,
 } from "#/shared/components/prefs/context.ts";
 import { Providers } from "#/shared/components/providers.tsx";
 import {
@@ -24,6 +25,7 @@ import {
   hapticsSchema,
   syntaxSchema,
   syntaxLabels,
+  matchLightSchema,
 } from "#/shared/constants/prefs";
 
 import { theme as storybookTheme } from "./theme";
@@ -35,6 +37,7 @@ const globalsSchema = v.object({
   contrast: contrastSchema,
   haptics: hapticsSchema,
   syntax: syntaxSchema,
+  matchLight: matchLightSchema,
   motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
   christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
@@ -110,6 +113,17 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    matchLight: {
+      description: "Match syntax highlighting to the light theme",
+      toolbar: {
+        title: "Match light theme",
+        items: [
+          { value: "on", title: "On" },
+          { value: "off", title: "Off" },
+        ],
+        dynamicTitle: false,
+      },
+    },
     motion: {
       description: "Material 3 spring scheme",
       toolbar: {
@@ -155,16 +169,24 @@ export default definePreview({
     motion: "expressive",
     haptics: "on",
     syntax: "dracula-pro",
+    matchLight: "on",
     christmas: "off",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const { direction, palette, theme, contrast, motion, christmas, haptics, syntax } = v.parse(
-        globalsSchema,
-        globals,
-      );
+      const {
+        direction,
+        palette,
+        theme,
+        contrast,
+        motion,
+        christmas,
+        haptics,
+        syntax,
+        matchLight,
+      } = v.parse(globalsSchema, globals);
       const root = document.documentElement;
       root.dir = direction;
       // Set on <html> so the tokens also reach the body background.
@@ -173,6 +195,7 @@ export default definePreview({
         contrast,
         palette,
         syntax,
+        matchLight,
         motion,
         christmas: christmas === "on" ? "true" : "false",
       });
@@ -221,6 +244,15 @@ export default definePreview({
                 value: {
                   syntax,
                   setSyntax: (nextSyntax) => updateGlobals({ syntax: nextSyntax }),
+                },
+              },
+            ],
+            [
+              MatchLightContext,
+              {
+                value: {
+                  matchLight,
+                  setMatchLight: (nextMatchLight) => updateGlobals({ matchLight: nextMatchLight }),
                 },
               },
             ],
