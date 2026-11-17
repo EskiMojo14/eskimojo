@@ -83,10 +83,27 @@ export function assert(condition: unknown, message = "Assertion failed"): assert
 
 export function mergeRefs<T>(...refs: Array<Ref<T> | null | undefined>) {
   return (instance: T | null) => {
+    const cleanups: Array<() => void> = [];
     for (const ref of refs) {
       if (!ref) continue;
-      if (typeof ref === "function") ref(instance);
-      else ref.current = instance;
+      if (typeof ref === "function") {
+        const cleanup = ref(instance);
+        cleanups.push(
+          typeof cleanup === "function"
+            ? cleanup
+            : () => {
+                ref(null);
+              },
+        );
+      } else {
+        ref.current = instance;
+        cleanups.push(() => {
+          ref.current = null;
+        });
+      }
     }
+    return () => {
+      for (const cleanup of cleanups) cleanup();
+    };
   };
 }

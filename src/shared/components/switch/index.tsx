@@ -32,8 +32,6 @@ export function Switch({
   offIcon,
   hapticFeedback = true,
   className,
-  checked,
-  defaultChecked,
   onChange,
   onKeyDown,
   onKeyUp,
@@ -41,10 +39,7 @@ export function Switch({
   ...props
 }: SwitchProps) {
   const { triggerHapticFeedback } = useHapticFeedback();
-  const [uncontrolledChecked, setUncontrolledChecked] = useState(defaultChecked ?? false);
   const [keyboardPressed, setKeyboardPressed] = useState(false);
-  const isControlled = checked !== undefined;
-  const isChecked = checked ?? uncontrolledChecked;
   const Component = label === undefined ? "span" : "label";
 
   return (
@@ -56,11 +51,9 @@ export function Switch({
         {...switchBem({ element: "input" })}
         {...props}
         {...nativeSwitchAttributes}
-        checked={isChecked}
-        aria-checked={isChecked}
+        // oxlint-disable-next-line jsx-a11y/role-has-required-aria-props
         role="switch"
         onChange={(event) => {
-          if (!isControlled) setUncontrolledChecked(event.currentTarget.checked);
           onChange?.(event);
           if (hapticFeedback && !event.defaultPrevented) triggerHapticFeedback("selection");
         }}
