@@ -1,0 +1,235 @@
+/* Color Palette / Base Dracula PRO */
+%base {
+  --foreground: #f8f8f2;
+  --cyan: #80ffea;
+  --green: #8aff80;
+  --orange: #ffca80;
+  --pink: #ff80bf;
+  --purple: #9580ff;
+  --red: #ff9580;
+  --yellow: #ffff80;
+}
+
+/* Color Palette / Dracula PRO */
+%dracula-pro {
+  --background: #22212c;
+  --comment: #7970a9;
+  --selection: #454158;
+}
+
+/* Color Palette / Dracula PRO - Blade */
+%blade {
+  --background: #212c2a;
+  --comment: #70a99f;
+  --selection: #415854;
+}
+
+/* Color Palette / Dracula PRO - Buffy */
+%buffy {
+  --background: #2a212c;
+  --comment: #9f70a9;
+  --selection: #544158;
+}
+
+/* Color Palette / Dracula PRO - Lincoln */
+%lincoln {
+  --background: #2c2a21;
+  --comment: #a99f70;
+  --selection: #585441;
+}
+
+/* Color Palette / Dracula PRO - Morbius */
+%morbius {
+  --background: #2c2122;
+  --comment: #a97079;
+  --selection: #584145;
+}
+
+/* Color Palette / Dracula PRO - Van Helsing */
+%van-helsing {
+  --background: #0b0d0f;
+  --comment: #708ca9;
+  --selection: #414d58;
+}
+
+/* Color Palette / Dracula PRO - Nosferatu */
+%nosferatu {
+  --foreground: #d2d0cb;
+  --cyan: #8fa9b4;
+  --green: #d0dbc4;
+  --orange: #c9a273;
+  --pink: #ee9440;
+  --purple: #b3a6bc;
+  --red: #ff7d6c;
+  --yellow: #f2c861;
+  --background: #17191b;
+  --comment: #9ea4ac;
+  --selection: #2e3236;
+}
+
+/* Color Palette / Alucard */
+%alucard {
+  --foreground: #1f1f1f;
+  --cyan: #036a96;
+  --green: #14710a;
+  --orange: #a34d14;
+  --pink: #a3144d;
+  --purple: #644ac9;
+  --red: #cb3a2a;
+  --yellow: #846e15;
+  --background: #f5f5f5;
+  --comment: #635d97;
+  --selection: #cfcfde;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Base */
+%terminal-standard-base {
+  --black: #22212c;
+  --red: #ff9580;
+  --green: #8aff80;
+  --yellow: #ffff80;
+  --blue: #9580ff;
+  --magenta: #ff80bf;
+  --cyan: #80ffea;
+  --white: #f8f8f2;
+  --bright-black: #504c67;
+  --bright-red: #ffaa99;
+  --bright-green: #a2ff99;
+  --bright-yellow: #ffff99;
+  --bright-blue: #aa99ff;
+  --bright-magenta: #ff99cc;
+  --bright-cyan: #99ffee;
+  --bright-white: #ffffff;
+  --dim-black: #1b1a23;
+  --dim-red: #cc7766;
+  --dim-green: #6ecc66;
+  --dim-yellow: #cccc66;
+  --dim-blue: #7766cc;
+  --dim-magenta: #cc6699;
+  --dim-cyan: #66ccbb;
+  --dim-white: #c6c6c2;
+  --background: #22212c;
+  --foreground: #f8f8f2;
+  --comment: #7970a9;
+  --selection: #454158;
+  --cursor: #7970a9;
+  --orange: #ffca80;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Blade */
+%terminal-standard-blade {
+  --background: #212c2a;
+  --comment: #70a99f;
+  --selection: #415854;
+  --cursor: #70a99f;
+  --bright-black: #4c6762;
+  --dim-black: #1a2322;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Buffy */
+%terminal-standard-buffy {
+  --background: #2a212c;
+  --comment: #9f70a9;
+  --selection: #544158;
+  --cursor: #9f70a9;
+  --bright-black: #624c67;
+  --dim-black: #221a23;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Lincoln */
+%terminal-standard-lincoln {
+  --background: #2c2a21;
+  --comment: #a99f70;
+  --selection: #585441;
+  --cursor: #a99f70;
+  --bright-black: #67624c;
+  --dim-black: #23221a;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Morbius */
+%terminal-standard-morbius {
+  --background: #2c2122;
+  --comment: #a97079;
+  --selection: #584145;
+  --cursor: #a97079;
+  --bright-black: #674c50;
+  --dim-black: #231a1b;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Van Helsing */
+%terminal-standard-van-helsing {
+  --background: #0b0d0f;
+  --comment: #708ca9;
+  --selection: #414d58;
+  --cursor: #708ca9;
+  --bright-black: #364049;
+  --dim-black: #090a0c;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Nosferatu */
+%terminal-standard-nosferatu {
+  --black: #1f2326;
+  --red: #ff7d6c;
+  --green: #9baf84;
+  --yellow: #f2c861;
+  --blue: #8ca3b5;
+  --magenta: #c28fa3;
+  --cyan: #a6bac0;
+  --white: #d2d0cb;
+  --bright-black: #9ea4ac;
+  --bright-red: #ff9582;
+  --bright-green: #b3c49c;
+  --bright-yellow: #f7d98a;
+  --bright-blue: #a6bacb;
+  --bright-magenta: #d4a6b6;
+  --bright-cyan: #bfd0d4;
+  --bright-white: #f7f4ed;
+  --dim-black: #191c1e;
+  --dim-red: #cc6456;
+  --dim-green: #7c8c6a;
+  --dim-yellow: #c2a04e;
+  --dim-blue: #708291;
+  --dim-magenta: #9b7282;
+  --dim-cyan: #85959a;
+  --dim-white: #a8a6a2;
+  --background: #17191b;
+  --foreground: #d2d0cb;
+  --comment: #9ea4ac;
+  --selection: #2e3236;
+  --cursor: #9ea4ac;
+  --orange: #c9a273;
+}
+
+/* Color Palette - Terminal Standard / Dracula PRO - Alucard */
+%terminal-standard-alucard {
+  --black: #f5f5f5;
+  --red: #cb3a2a;
+  --green: #14710a;
+  --yellow: #846e15;
+  --blue: #644ac9;
+  --magenta: #a3144d;
+  --cyan: #036a96;
+  --white: #1f1f1f;
+  --bright-black: #ffffff;
+  --bright-red: #d74c3d;
+  --bright-green: #198d0c;
+  --bright-yellow: #9e841a;
+  --bright-blue: #7862d0;
+  --bright-magenta: #bf185a;
+  --bright-cyan: #047fb4;
+  --bright-white: #2c2b31;
+  --dim-black: #c4c4c4;
+  --dim-red: #a22e22;
+  --dim-green: #105a08;
+  --dim-yellow: #6a5811;
+  --dim-blue: #503ba1;
+  --dim-magenta: #82103e;
+  --dim-cyan: #025578;
+  --dim-white: #191919;
+  --background: #f5f5f5;
+  --foreground: #1f1f1f;
+  --comment: #635d97;
+  --selection: #cfcfde;
+  --cursor: #635d97;
+  --orange: #a34d14;
+}

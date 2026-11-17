@@ -182,27 +182,16 @@ The rule doesn't look inside `box-shadow`, `text-shadow` or gradients, and it do
 
 ## Syntax highlighting
 
-`syntax.css` is a [Prism](https://prismjs.com/) theme built from the color roles. It's part of the shared styles, so it applies to any Prism-highlighted code on the site as well as Storybook's code blocks. It colors `.token` elements inside `pre` or `code`, and gives `pre[class*="language-"]` blocks a background, padding and rounded corners. The token rules start with `:root` so they override other Prism themes and Storybook's own syntax colors. Storybook's code blocks have no `language-` class, so `.storybook/syntax.css` sets their background.
+`syntax.css` is a [Prism](https://prismjs.com/) theme built from the color
+variables in `theme/palettes/dracula.css`. It applies to ordinary Prism code
+blocks and Storybook's docs snippets. The token selectors are scoped to
+`pre`/`code` descendants and include `:root` so they outrank Storybook's
+generated token colors without depending on its generated class names.
 
-Code follows the **Contrast** toolbar. Storybook's docs code blocks use Storybook's light or dark theme, like the rest of the docs page. That theme follows your system setting rather than the **Theme** toolbar. On the site, code follows the page's theme.
-
-Syntax highlighting uses six accents derived from the existing palettes' standard
-roles.
-
-| Syntax accent | Source role       | Prism tokens                                                    |
-| ------------- | ----------------- | --------------------------------------------------------------- |
-| Keyword       | Goat `primary`    | `keyword`, `operator`, `atrule`, `tag`, `selector`, `important` |
-| String        | Arctic `tertiary` | `string`, `char`, `attr-value`, `url`, `inserted`               |
-| Function      | Arctic `primary`  | `function`, `function-variable`, `attr-name`                    |
-| Number        | Goat `tertiary`   | `number`, `boolean`, `constant`, `symbol`                       |
-| Type          | Arctic `primary`  | `class-name`, `builtin`; JSON `property`                        |
-| Parameter     | Goat `error`      | `parameter`, `regex`, `deleted`                                 |
-
-Plain text and punctuation use `on-surface`; comments use
-`on-surface-variant`. Code blocks use `surface-container-low` as their
-background. Accents meet 4.5:1 contrast in standard mode, 6:1 in medium mode,
-and 7:1 in high mode against both palettes' code backgrounds. Medium and high
-contrast adjust light-mode tones; dark-mode accents remain unchanged.
+Storybook's docs snippets do not have a `language-` class, so
+`.storybook/syntax.css` sets their background and foreground directly on
+`.docblock-source`. Both kinds of code blocks use the same palette variables:
+Dracula PRO for dark system color schemes and Alucard for light ones.
 
 ```tsx
 import { useState } from "react";

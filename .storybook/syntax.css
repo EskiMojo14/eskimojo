@@ -1,10 +1,8 @@
 /*
- * Background for Storybook's docs code blocks, to match pre[class*="language-"] in
- * src/shared/styles/syntax.css (Storybook's blocks don't have a language- class on the
- * pre). Storybook sets color-scheme on .docblock-source to match its docs theme, so
- * light-dark() picks the same scheme as the rest of the docs page.
+ * Storybook's docs code blocks don't have a language- class, so use the same
+ * palette tokens as ordinary Prism code blocks directly on the source container.
  */
-.sbdocs .docblock-source {
-  background: var(--md-sys-color-surface-container-low);
-  color: var(--md-sys-color-on-surface);
+:root .docblock-source {
+  background: var(--background);
+  color: var(--foreground);
 }
