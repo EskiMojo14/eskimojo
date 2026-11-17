@@ -35,7 +35,7 @@ export function setupReduxIntegration<TRouter extends AnyRouter>({
       const originalDehydrated = originalDehydrate ? await originalDehydrate() : {};
       return {
         ...originalDehydrated,
-        redux: {}, // populate if needed
+        redux: { state: {} } satisfies DehydratedReduxOpts,
       };
     };
     return;
@@ -45,6 +45,7 @@ export function setupReduxIntegration<TRouter extends AnyRouter>({
     if (originalHydrate) {
       await originalHydrate(dehydrated);
     }
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const opts = dehydrated.redux as DehydratedReduxOpts;
     if (opts) {
       store.dispatch(hydrated(opts));
