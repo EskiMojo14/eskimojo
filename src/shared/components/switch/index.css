@@ -1,0 +1,214 @@
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 48px;
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typography-body-large);
+  cursor: pointer;
+  user-select: none;
+
+  &:has(> .switch__input:disabled) {
+    color: alpha(
+      from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity)
+    );
+    cursor: default;
+  }
+}
+
+.switch__input {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 52px;
+  block-size: 48px;
+  margin: 0;
+  appearance: none;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.switch__track {
+  --switch-focus-color: var(--md-sys-color-secondary);
+  --switch-thumb-size: 16px;
+  --switch-thumb-offset: 6px;
+
+  flex: 0 0 52px;
+  display: flex;
+  align-items: center;
+  inline-size: 52px;
+  block-size: 32px;
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  transition:
+    background-color var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects),
+    border-color var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects);
+}
+
+.switch__thumb {
+  position: relative;
+  display: grid;
+  flex: 0 0 var(--switch-thumb-size);
+  place-items: center;
+  inline-size: var(--switch-thumb-size);
+  block-size: var(--switch-thumb-size);
+  margin-inline-start: var(--switch-thumb-offset);
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: currentColor;
+  transition:
+    flex-basis var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
+    inline-size var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
+    block-size var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
+    margin-inline-start var(--md-sys-motion-spring-fast-spatial-duration)
+      var(--md-sys-motion-spring-fast-spatial),
+    background-color var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects);
+
+  &::before {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: inherit;
+    background-color: currentColor;
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    translate: -50% -50%;
+    transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects);
+  }
+}
+
+.switch__icon {
+  --icon-size: 16;
+
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inset: 0;
+  inline-size: 16px;
+  block-size: 16px;
+  margin: auto;
+  z-index: 1;
+  color: var(--md-sys-color-primary);
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
+    var(--md-sys-motion-spring-fast-effects);
+
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.switch__label {
+  min-inline-size: 0;
+}
+
+.switch__input:checked + .switch__track {
+  --switch-thumb-size: 24px;
+  --switch-thumb-offset: 22px;
+
+  border-color: transparent;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.switch__input:not(:checked) + .switch__track:has(.switch__icon--unselected) {
+  --switch-thumb-size: 24px;
+  --switch-thumb-offset: 2px;
+}
+
+.switch__input:checked + .switch__track .switch__icon--selected,
+.switch__input:not(:checked) + .switch__track .switch__icon--unselected {
+  opacity: 1;
+}
+
+.switch__icon--unselected {
+  color: var(--md-sys-color-surface-container-highest);
+}
+
+.switch:is(:active, [data-keyboard-pressed]) > .switch__input:not(:disabled) + .switch__track {
+  --switch-thumb-size: 28px;
+  --switch-thumb-offset: 0px;
+}
+
+.switch:is(:active, [data-keyboard-pressed])
+  > .switch__input:not(:disabled):checked
+  + .switch__track {
+  --switch-thumb-offset: 20px;
+}
+
+.switch__input:not(:disabled):hover + .switch__track .switch__thumb::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.switch:is(:active, [data-keyboard-pressed])
+  > .switch__input:not(:disabled)
+  + .switch__track
+  .switch__thumb::before {
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+
+.switch__input:focus-visible + .switch__track {
+  outline: 3px solid var(--switch-focus-color);
+  outline-offset: 3px;
+}
+
+.switch__input:disabled + .switch__track {
+  border-color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity));
+  background-color: transparent;
+  color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity));
+}
+
+.switch__input:disabled:checked + .switch__track {
+  border-color: transparent;
+  background-color: alpha(
+    from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-opacity)
+  );
+  color: var(--md-sys-color-surface);
+}
+
+.switch__input:disabled:checked + .switch__track .switch__icon {
+  color: alpha(from var(--md-sys-color-on-surface) / var(--md-sys-state-disabled-content-opacity));
+}
+
+@media (forced-colors: active) {
+  .switch__track {
+    --switch-track-border-color: ButtonText;
+    --switch-track-background-color: Canvas;
+    --switch-track-color: ButtonText;
+    --switch-focus-color: Highlight;
+
+    border-color: var(--switch-track-border-color);
+    background-color: var(--switch-track-background-color);
+    color: var(--switch-track-color);
+  }
+
+  .switch__input:checked + .switch__track {
+    --switch-track-border-color: Highlight;
+    --switch-track-background-color: Highlight;
+    --switch-track-color: HighlightText;
+  }
+
+  .switch__input:disabled + .switch__track {
+    --switch-track-border-color: GrayText;
+    --switch-track-color: GrayText;
+  }
+
+  .switch__input:disabled:checked + .switch__track {
+    --switch-track-background-color: Canvas;
+    --switch-track-color: GrayText;
+  }
+}
