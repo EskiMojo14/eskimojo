@@ -104,7 +104,7 @@ export async function renderWithProviders(
 ): Promise<RenderWithProvidersResult> {
   const queryClient =
     providedQueryClient ?? providedRouter?.options.context.queryClient ?? createQueryClient();
-  const store = providedStore ?? makeStore(preloadedState);
+  const store = providedStore ?? providedRouter?.options.context.store ?? makeStore(preloadedState);
   const history = providedHistory ?? providedRouter?.history ?? createMemoryHistory(historyOpts);
   const router = providedRouter ?? getRouter({ history, queryClient, store });
 
