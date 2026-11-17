@@ -63,15 +63,19 @@ test("preferences update the controls and page before cookies are saved", async 
     ),
   );
 
-  await preferences.select("Theme", "Dark");
-  await preferences.select("Contrast", "High");
-  await preferences.select("Palette", "Arctic");
-  await preferences.select("Syntax", "Blade");
-  await preferences.setMatchLight(false);
-  await preferences.expectSelected("Theme", "Dark");
-  await preferences.expectSelected("Contrast", "High");
-  await preferences.expectSelected("Palette", "Arctic");
-  await preferences.expectSelected("Syntax", "Blade");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Theme", "Dark");
+  await preferences.theme.setPreference("Contrast", "High");
+  await preferences.theme.setPreference("Palette", "Arctic");
+  await preferences.syntax.select();
+  await preferences.syntax.setSyntax("Blade");
+  await preferences.syntax.setMatchLight(false);
+  await preferences.theme.select();
+  await preferences.theme.expectSelected("Theme", "Dark");
+  await preferences.theme.expectSelected("Contrast", "High");
+  await preferences.theme.expectSelected("Palette", "Arctic");
+  await preferences.syntax.select();
+  await preferences.syntax.expectSelected("Blade");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
@@ -107,7 +111,8 @@ test("preferences update the controls and page before cookies are saved", async 
   await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
   await expect(preferences.documentElement).toHaveAttribute("data-match-light", "off");
   await preferences.open();
-  await expect(preferences.matchLightSwitch).not.toBeChecked();
+  await preferences.syntax.select();
+  await expect(preferences.syntax.matchLightSwitch).not.toBeChecked();
 });
 
 test("rapid changes keep the latest selection and persist in order", async ({
@@ -124,9 +129,10 @@ test("rapid changes keep the latest selection and persist in order", async ({
     }),
   );
 
-  await preferences.select("Theme", "Dark");
-  await preferences.select("Theme", "Light");
-  await preferences.expectSelected("Theme", "Light");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Theme", "Dark");
+  await preferences.theme.setPreference("Theme", "Light");
+  await preferences.theme.expectSelected("Theme", "Light");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
 
   save.resolve();
@@ -136,7 +142,7 @@ test("rapid changes keep the latest selection and persist in order", async ({
     )
     .toBe("light");
   await page.waitForLoadState("networkidle");
-  await preferences.expectSelected("Theme", "Light");
+  await preferences.theme.expectSelected("Theme", "Light");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
@@ -156,8 +162,9 @@ test("haptic feedback saves optimistically and stays off after navigation and re
       return passthrough();
     }),
   );
-  await expect(preferences.hapticsSwitch).toBeChecked();
-  await preferences.setHaptics(false);
+  await preferences.other.select();
+  await expect(preferences.other.hapticsSwitch).toBeChecked();
+  await preferences.other.setHaptics(false);
   expect(
     (await context.cookies()).find(({ name }) => name === "eskimojo::haptics"),
   ).toBeUndefined();
@@ -172,10 +179,12 @@ test("haptic feedback saves optimistically and stays off after navigation and re
   await preferences.close();
   await home.goto({ waitUntil: "networkidle" });
   await preferences.open();
-  await expect(preferences.hapticsSwitch).not.toBeChecked();
+  await preferences.other.select();
+  await expect(preferences.other.hapticsSwitch).not.toBeChecked();
   await page.reload();
   await preferences.open();
-  await expect(preferences.hapticsSwitch).not.toBeChecked();
+  await preferences.other.select();
+  await expect(preferences.other.hapticsSwitch).not.toBeChecked();
 });
 
 test("failed haptics saves roll back, notify, and allow retrying", async ({
@@ -192,9 +201,10 @@ test("failed haptics saves roll back, notify, and allow retrying", async ({
       throw new Error("Unable to save cookie");
     }),
   );
-  await preferences.setHaptics(false);
+  await preferences.other.select();
+  await preferences.other.setHaptics(false);
   save.resolve();
-  await expect(preferences.hapticsSwitch).toBeChecked();
+  await expect(preferences.other.hapticsSwitch).toBeChecked();
   expect(
     (await context.cookies()).find(({ name }) => name === "eskimojo::haptics"),
   ).toBeUndefined();
@@ -204,7 +214,8 @@ test("failed haptics saves roll back, notify, and allow retrying", async ({
   await preferences.open();
 
   network.use(mockServerFn(prefs.setHapticsFn, () => passthrough()));
-  await preferences.setHaptics(false);
+  await preferences.other.select();
+  await preferences.other.setHaptics(false);
   await expect
     .poll(
       async () => (await context.cookies()).find(({ name }) => name === "eskimojo::haptics")?.value,
@@ -213,7 +224,8 @@ test("failed haptics saves roll back, notify, and allow retrying", async ({
   await page.waitForLoadState("networkidle");
   await page.reload();
   await preferences.open();
-  await expect(preferences.hapticsSwitch).not.toBeChecked();
+  await preferences.other.select();
+  await expect(preferences.other.hapticsSwitch).not.toBeChecked();
 });
 
 test("a failed save rolls back and allows retrying", async ({
@@ -232,12 +244,13 @@ test("a failed save rolls back and allows retrying", async ({
     }),
   );
 
-  await preferences.select("Theme", "Dark");
-  await preferences.expectSelected("Theme", "Dark");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Theme", "Dark");
+  await preferences.theme.expectSelected("Theme", "Dark");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#161217"]);
   save.resolve();
-  await preferences.expectSelected("Theme", "System");
+  await preferences.theme.expectSelected("Theme", "System");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "system");
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#fff7fb"]);
 
@@ -247,7 +260,8 @@ test("a failed save rolls back and allows retrying", async ({
   await snackbar.dismiss();
   await expect(snackbar.notifications).not.toContainText("Couldn't save theme preference");
   await preferences.open();
-  await preferences.select("Theme", "Light");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Theme", "Light");
   await page.waitForLoadState("networkidle");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "light");
@@ -269,10 +283,11 @@ test("browser theme colour follows system and saved appearance preferences", asy
     .poll(() => preferences.activeThemeColorMedia())
     .toEqual(["(prefers-color-scheme: dark) and (prefers-contrast: more)"]);
 
-  await preferences.select("Palette", "Arctic");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Palette", "Arctic");
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#121318"]);
-  await preferences.select("Theme", "Light");
-  await preferences.select("Contrast", "Medium");
+  await preferences.theme.setPreference("Theme", "Light");
+  await preferences.theme.setPreference("Contrast", "Medium");
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#faf8ff"]);
   await expect.poll(() => preferences.activeThemeColorMedia()).toEqual([null]);
 
@@ -283,8 +298,9 @@ test("browser theme colour follows system and saved appearance preferences", asy
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#faf8ff"]);
 
   await preferences.open();
-  await preferences.select("Theme", "System");
-  await preferences.select("Contrast", "System");
+  await preferences.theme.select();
+  await preferences.theme.setPreference("Theme", "System");
+  await preferences.theme.setPreference("Contrast", "System");
   await expect.poll(() => preferences.activeThemeColors()).toEqual(["#121318"]);
 });
 

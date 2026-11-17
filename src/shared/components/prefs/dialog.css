@@ -1,6 +1,61 @@
-.preferences-dialog {
+.preferences-dialog,
+.preferences-dialog__theme-settings {
   display: grid;
   gap: 1.5rem;
+}
+
+.preferences-dialog__panels {
+  margin-inline: 1.5rem;
+  view-transition-scope: all;
+
+  &:active-view-transition-type(tab-forward) {
+    --tabs-slide-distance: 24px;
+
+    &:dir(rtl) {
+      --tabs-slide-distance: -24px;
+    }
+  }
+
+  .preferences-dialog__panel-content {
+    display: grid;
+    view-transition-name: tab-content;
+
+    > .tabs__panel {
+      grid-area: 1 / 1;
+      min-inline-size: 0;
+    }
+
+    > .tabs__panel[hidden] {
+      display: block;
+      visibility: hidden;
+    }
+  }
+
+  &:active-view-transition-type(tab-backward) {
+    --tabs-slide-distance: -24px;
+
+    &:dir(rtl) {
+      --tabs-slide-distance: 24px;
+    }
+  }
+
+  &::view-transition-group(root) {
+    animation-duration: var(--md-sys-motion-spring-default-spatial-duration);
+    animation-timing-function: var(--md-sys-motion-spring-default-spatial);
+  }
+
+  &::view-transition-old(root),
+  &::view-transition-new(root) {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::view-transition-group(*),
+    &::view-transition-old(*),
+    &::view-transition-new(*) {
+      animation: none;
+    }
+  }
 }
 
 .preferences-dialog__syntax-settings,
@@ -34,6 +89,10 @@
 }
 
 .dialog.preferences-dialog-modal {
+  .dialog__body {
+    padding-inline: 0;
+  }
+
   @media (--phone) {
     position: fixed;
     inset-block: auto 0;

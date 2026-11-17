@@ -17,9 +17,9 @@ const meta = preview.meta({
     docs: {
       description: {
         story:
-          "Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax and Match light theme share an expressive list surface. The haptic feedback row is transparent to preserve the dialog surface while retaining its full-row click target and ripple. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
+          "The tab bar spans the full dialog or bottom-sheet surface while panel contents stay padded. Panels share the height of the tallest panel without a fixed height; inactive panels remain invisible and unavailable to keyboard and assistive technology. A persistent content wrapper keeps native transition captures valid while the active panel changes. Panel changes use element-scoped transitions with the same directional slide, fade, and spring timing as route tabs, reversing direction in RTL. Reduced motion and browsers without element-scoped transitions switch immediately. Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax and Match light theme share an expressive list surface. The haptic feedback row is transparent to preserve the dialog surface while retaining its full-row click target and ripple. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
-          "Theme, contrast, palette, syntax, Match light theme, and haptic feedback preferences using the existing preference contexts. At viewport widths up to 37.5rem (600px), appearance preferences use an MD3 outlined SelectMenu with a floating label, icons in the selection and options, and a themed, anchored listbox. Larger viewports use connected button groups with icons. Syntax uses an always-available SelectMenu, including Dracula Classic and Alucard Classic from the official Dracula specification. Syntax and Match light theme share an expressive list with a Prism-highlighted code sample that previews the active syntax palette. Match light theme and haptic feedback use whole-row native labels with leading headlines and trailing MD3 switches. Match light theme defaults on and overrides the selected syntax palette when the theme is light, whether explicit or system-driven. Haptic feedback is shown after hydration only when the Vibration API is supported; it defaults to on and turning it off silences feedback without changing interactions. Both layouts share the same selections and save changes immediately. Select menus support arrows, Home/End, type-ahead, Enter/Space to select, and Escape to dismiss without changing the value or closing the dialog. System follows the operating system for theme and contrast. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, changes update the Theme, Contrast, Palette, Syntax, Match light theme, and Haptics globals; the app saves them through its cookie-backed providers.",
+          "Primary tabs group preferences into Theme (theme, contrast, and palette), Syntax (syntax palette, Match light theme, and code preview), and Other (haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End select and focus tabs. At viewport widths up to 37.5rem (600px), appearance preferences use outlined SelectMenus; larger viewports use connected button groups. Syntax always uses a SelectMenu, with a High contrast note for Nosferatu. Match light theme defaults on and uses Alucard when the page theme is light, whether explicit or system-driven. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, preference changes update globals; the app saves them through cookie-backed providers.",
       },
     },
   },
@@ -27,8 +27,22 @@ const meta = preview.meta({
 
 export const Default = meta.story({});
 
+export const Syntax = meta.story({
+  play: async ({ canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(body.getByRole("tab", { name: "Syntax" }));
+    await expect(body.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
+    await expect(body.getByRole("combobox", { name: "Syntax" })).toBeVisible();
+  },
+});
+
 export const HapticsOff = meta.story({
   globals: { haptics: "off" },
+  play: async ({ canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(body.getByRole("tab", { name: "Other" }));
+    await expect(body.getByRole("tabpanel", { name: "Other" })).toBeVisible();
+  },
 });
 
 export const BottomSheet = meta.story({
@@ -96,6 +110,10 @@ export const Interactive = meta.story({
       "aria-pressed",
       String(globals.contrast === "system"),
     );
+    await userEvent.click(dialog.getByRole("tab", { name: "Syntax" }));
+    await expect(dialog.getByRole("combobox", { name: "Syntax" })).toBeVisible();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(dialog.getByRole("tab", { name: "Other" })).toHaveFocus();
     const haptics = dialog.queryByRole("switch", { name: "Haptic feedback" });
     if (haptics) {
       const initiallyOn = globals.haptics !== "off";

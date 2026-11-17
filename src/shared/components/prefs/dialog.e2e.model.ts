@@ -1,10 +1,16 @@
 import { ComponentObjectModel, expect } from "#test/e2e";
 
+import { OtherTab } from "./panels/other.e2e.model";
+import { SyntaxTab } from "./panels/syntax.e2e.model";
+import { ThemeTab } from "./panels/theme.e2e.model";
+
 export class PreferencesDialogModel extends ComponentObjectModel {
   dialog = this.page.getByRole("dialog", { name: "Preferences" });
   trigger = this.page.getByRole("button", { name: "Preferences" });
-  hapticsSwitch = this.dialog.getByRole("switch", { name: "Haptic feedback" });
-  matchLightSwitch = this.dialog.getByRole("switch", { name: "Match light theme" });
+  tabs = this.dialog.getByRole("tablist", { name: "Preferences" });
+  theme = new ThemeTab(this.page, this);
+  syntax = new SyntaxTab(this.page, this);
+  other = new OtherTab(this.page, this);
 
   async open() {
     await this.trigger.click();
@@ -14,45 +20,6 @@ export class PreferencesDialogModel extends ComponentObjectModel {
   async close() {
     await this.page.keyboard.press("Escape");
     await expect(this.dialog).not.toBeVisible();
-  }
-
-  async setHaptics(enabled: boolean) {
-    await this.hapticsSwitch.setChecked(enabled);
-    await expect(this.hapticsSwitch).toBeChecked({ checked: enabled });
-  }
-
-  async setMatchLight(enabled: boolean) {
-    await this.matchLightSwitch.setChecked(enabled);
-    await expect(this.matchLightSwitch).toBeChecked({ checked: enabled });
-  }
-
-  async select(name: string, option: string) {
-    const select = this.dialog.getByRole("combobox", { name });
-    if (await select.isVisible()) {
-      await select.click();
-      await this.dialog
-        .getByRole("listbox", { name })
-        .getByRole("option", { name: option, exact: true })
-        .click();
-    } else {
-      await this.dialog
-        .getByRole("toolbar", { name })
-        .getByRole("button", { name: option, exact: true })
-        .click();
-    }
-  }
-
-  async expectSelected(name: string, option: string) {
-    const select = this.dialog.getByRole("combobox", { name });
-    if (await select.isVisible()) {
-      await expect(select).toHaveAccessibleDescription(option);
-    } else {
-      await expect(
-        this.dialog
-          .getByRole("toolbar", { name })
-          .getByRole("button", { name: option, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-    }
   }
 
   async activeThemeColors() {

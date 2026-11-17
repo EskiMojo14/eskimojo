@@ -177,14 +177,16 @@ new conventions.
 - The page owns the tablist and named tab models, while each tab owns its content
   locators and interactions.
 - Expose a `tabs` locator for the relevant `tablist` on the parent page. Extend
-  `TabObjectModel<ParentPage>` for each tab and provide its route `url` and
-  accessible `tabName`. Construct child tabs with the same Playwright page and
+  `TabObjectModel<ParentPage>` for each tab and provide its accessible `tabName`.
+  Set `url` for route tabs; omit it for local-state tabs such as dialog panels.
+  Construct child tabs with the same Playwright page and
   parent model, for example `artists = new ArtistsTab(this.page, this)`.
 - Register the parent page with `createTest`, not each child tab independently.
   Tests should read as a flow through that page:
   `await music.goto(); await music.artists.select();`.
 - Use the inherited `select()` rather than clicking tab links directly in tests.
-  It verifies the destination URL, `aria-selected="true"` on the selected tab,
+  It verifies the destination URL for route tabs, or that the full URL stays
+  unchanged for local-state tabs, plus `aria-selected="true"` on the selected tab
   and visibility of its associated panel. Keep content-specific assertions in
   the scenario after selection.
 - Scope tab-specific content locators to `this.tabPanel` so similarly named

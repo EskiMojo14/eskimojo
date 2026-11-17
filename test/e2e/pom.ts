@@ -42,7 +42,7 @@ export abstract class TabObjectModel<
     this.parent = parent;
   }
 
-  abstract url: string;
+  url?: string;
 
   matchesUrl(url: URL) {
     return url.pathname === this.url;
@@ -59,8 +59,11 @@ export abstract class TabObjectModel<
   }
 
   async select() {
+    const previousUrl = this.page.url();
     await this.tabLink.click();
-    await expect(this.page).toHaveURL((url) => this.matchesUrl(url));
+    await expect(this.page).toHaveURL(
+      this.url === undefined ? previousUrl : (url) => this.matchesUrl(url),
+    );
     await expect(this.tabLink).toHaveAttribute("aria-selected", "true");
     await expect(this.tabPanel).toBeVisible();
   }
