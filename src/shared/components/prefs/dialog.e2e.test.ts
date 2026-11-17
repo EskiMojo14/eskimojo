@@ -26,10 +26,12 @@ function preferenceRequests(
     mockServerFn(prefs.setContrastFn, resolver),
     mockServerFn(prefs.setPaletteFn, resolver),
     mockServerFn(prefs.setHapticsFn, resolver),
+    mockServerFn(prefs.setSyntaxFn, resolver),
     mockServerFn(prefs.getThemeFn, refresh),
     mockServerFn(prefs.getContrastFn, refresh),
     mockServerFn(prefs.getPaletteFn, refresh),
     mockServerFn(prefs.getHapticsFn, refresh),
+    mockServerFn(prefs.getSyntaxFn, refresh),
   ];
 }
 
@@ -62,12 +64,15 @@ test("preferences update the controls and page before cookies are saved", async 
   await preferences.select("Theme", "Dark");
   await preferences.select("Contrast", "High");
   await preferences.select("Palette", "Arctic");
+  await preferences.select("Syntax", "Blade");
   await preferences.expectSelected("Theme", "Dark");
   await preferences.expectSelected("Contrast", "High");
   await preferences.expectSelected("Palette", "Arctic");
+  await preferences.expectSelected("Syntax", "Blade");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
+  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
   expect(
     (await context.cookies()).filter((cookie) => cookie.name.startsWith("eskimojo::")),
   ).toEqual([]);
@@ -81,16 +86,19 @@ test("preferences update the controls and page before cookies are saved", async 
       "eskimojo::theme": "dark",
       "eskimojo::contrast": "high",
       "eskimojo::palette": "arctic",
+      "eskimojo::syntax": "blade",
     });
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
+  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
   refresh.resolve();
   await page.waitForLoadState("networkidle");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
+  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
 });
 
 test("rapid changes keep the latest selection and persist in order", async ({
@@ -283,14 +291,17 @@ test("browser theme colour works before hydration and with JavaScript disabled",
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#161217"]);
     await noJsPage.emulateMedia({ colorScheme: "light" });
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#fff7fb"]);
+    await expect(noJsPreferences.documentElement).toHaveAttribute("data-syntax", "dracula-pro");
 
     await context.addCookies([
       { name: "eskimojo::palette", value: "arctic", url: page.url() },
       { name: "eskimojo::theme", value: "dark", url: page.url() },
       { name: "eskimojo::contrast", value: "high", url: page.url() },
+      { name: "eskimojo::syntax", value: "buffy", url: page.url() },
     ]);
     await noJsPage.reload();
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#121318"]);
+    await expect(noJsPreferences.documentElement).toHaveAttribute("data-syntax", "buffy");
   } finally {
     await context.close();
   }

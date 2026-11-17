@@ -8,14 +8,26 @@ import {
   type ReactNode,
 } from "react";
 
-import { setThemeFn, setContrastFn, setPaletteFn, setHapticsFn } from "#/shared/lib/prefs";
+import {
+  setThemeFn,
+  setContrastFn,
+  setPaletteFn,
+  setHapticsFn,
+  setSyntaxFn,
+} from "#/shared/lib/prefs";
 import { showSnackbar } from "#/shared/lib/snackbar";
 import { useAppDispatch } from "#/shared/store/hooks";
 import { capitalize } from "#/utils";
 import type { Compute } from "#/utils/types";
 
 import type { PrefContextValue } from "./context";
-import { ThemeContext, ContrastContext, PaletteContext, HapticsContext } from "./context";
+import {
+  ThemeContext,
+  ContrastContext,
+  PaletteContext,
+  HapticsContext,
+  SyntaxContext,
+} from "./context";
 
 type PrefProviderProps<Name extends string, Value> = Compute<
   Record<Name, Value> & { children: ReactNode }
@@ -77,3 +89,4 @@ export const ThemeProvider = createPrefProvider("theme", ThemeContext, setThemeF
 export const ContrastProvider = createPrefProvider("contrast", ContrastContext, setContrastFn);
 export const PaletteProvider = createPrefProvider("palette", PaletteContext, setPaletteFn);
 export const HapticsProvider = createPrefProvider("haptics", HapticsContext, setHapticsFn);
+export const SyntaxProvider = createPrefProvider("syntax", SyntaxContext, setSyntaxFn);

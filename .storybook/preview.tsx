@@ -14,6 +14,7 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
+  SyntaxContext,
 } from "#/shared/components/prefs/context.ts";
 import { Providers } from "#/shared/components/providers.tsx";
 import {
@@ -21,6 +22,8 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
+  syntaxSchema,
+  syntaxLabels,
 } from "#/shared/constants/prefs";
 
 import { theme as storybookTheme } from "./theme";
@@ -31,6 +34,7 @@ const globalsSchema = v.object({
   theme: themeSchema,
   contrast: contrastSchema,
   haptics: hapticsSchema,
+  syntax: syntaxSchema,
   motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
   christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
@@ -95,6 +99,17 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    syntax: {
+      description: "Syntax highlighting theme",
+      toolbar: {
+        title: "Syntax",
+        items: syntaxSchema.options.map((value) => ({
+          value,
+          title: syntaxLabels[value],
+        })),
+        dynamicTitle: true,
+      },
+    },
     motion: {
       description: "Material 3 spring scheme",
       toolbar: {
@@ -139,13 +154,14 @@ export default definePreview({
     contrast: "system",
     motion: "expressive",
     haptics: "on",
+    syntax: "dracula-pro",
     christmas: "off",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const { direction, palette, theme, contrast, motion, christmas, haptics } = v.parse(
+      const { direction, palette, theme, contrast, motion, christmas, haptics, syntax } = v.parse(
         globalsSchema,
         globals,
       );
@@ -156,6 +172,7 @@ export default definePreview({
         theme,
         contrast,
         palette,
+        syntax,
         motion,
         christmas: christmas === "on" ? "true" : "false",
       });
@@ -195,6 +212,15 @@ export default definePreview({
                 value: {
                   haptics,
                   setHaptics: (nextHaptics) => updateGlobals({ haptics: nextHaptics }),
+                },
+              },
+            ],
+            [
+              SyntaxContext,
+              {
+                value: {
+                  syntax,
+                  setSyntax: (nextSyntax) => updateGlobals({ syntax: nextSyntax }),
                 },
               },
             ],

@@ -30,3 +30,28 @@ export const paletteLabels: Record<Palette, { label: string; icon: string }> = {
 
 export const hapticsSchema = v.fallback(v.picklist(["on", "off"]), "on");
 export type Haptics = v.InferOutput<typeof hapticsSchema>;
+
+export const syntaxSchema = v.fallback(
+  v.picklist([
+    "dracula-pro",
+    "blade",
+    "buffy",
+    "lincoln",
+    "morbius",
+    "van-helsing",
+    "nosferatu",
+    "alucard",
+  ]),
+  "dracula-pro",
+);
+export type Syntax = v.InferOutput<typeof syntaxSchema>;
+export const syntaxLabels: Record<Syntax, string> = {
+  "dracula-pro": "Dracula Pro",
+  blade: "Blade",
+  buffy: "Buffy",
+  lincoln: "Lincoln",
+  morbius: "Morbius",
+  "van-helsing": "Van Helsing",
+  nosferatu: "Nosferatu",
+  alucard: "Alucard",
+};

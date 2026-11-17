@@ -7,6 +7,7 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
+  syntaxSchema,
 } from "#/shared/constants/prefs";
 
 const themeKey = "eskimojo::theme";
@@ -46,3 +47,13 @@ export const getHapticsFn = createServerFn().handler(() =>
 export const setHapticsFn = createServerFn()
   .validator(hapticsSchema)
   .handler(({ data: haptics }) => setCookie(hapticsKey, haptics));
+
+const syntaxKey = "eskimojo::syntax";
+
+export const getSyntaxFn = createServerFn().handler(() =>
+  v.parse(syntaxSchema, getCookie(syntaxKey)),
+);
+
+export const setSyntaxFn = createServerFn()
+  .validator(syntaxSchema)
+  .handler(({ data: syntax }) => setCookie(syntaxKey, syntax));

@@ -108,6 +108,10 @@
   }
 }
 
+.preferences-dialog__select--always {
+  display: block;
+}
+
 .preferences-dialog .button[data-palette="goat"] {
   @extend %goat-standard;
 }

@@ -17,10 +17,12 @@ import {
   contrastLabels,
   paletteSchema,
   paletteLabels,
+  syntaxSchema,
+  syntaxLabels,
 } from "#/shared/constants/prefs";
 import { useHapticFeedback } from "#/shared/lib/haptics";
 
-import { useTheme, useContrast, usePalette, useHaptics } from "./context";
+import { useTheme, useContrast, usePalette, useHaptics, useSyntax } from "./context";
 
 const preferencesBem = BEMHelper("preferences-dialog");
 
@@ -31,12 +33,14 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
   const { contrast, setContrast } = useContrast();
   const { palette, setPalette } = usePalette();
   const { haptics, setHaptics } = useHaptics();
+  const { syntax, setSyntax } = useSyntax();
   const { triggerHapticFeedback, isSupported } = useHapticFeedback();
   const { trigger } = useWebHaptics();
   const hydrated = useHydrated();
   const themeId = useId();
   const contrastId = useId();
   const paletteId = useId();
+  const syntaxId = useId();
   const hapticsId = useId();
   const hapticsLabelId = useId();
 
@@ -156,6 +160,23 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
                   </Button>
                 ))}
               </ButtonGroup>
+            </section>
+            <section {...preferencesBem({ element: "section" })} aria-labelledby={syntaxId}>
+              <h3 {...preferencesBem({ element: "label" })} id={syntaxId}>
+                Syntax
+              </h3>
+              <SelectMenu
+                {...preferencesBem({ element: "select", modifier: "always" })}
+                label="Syntax"
+                name="syntax"
+                value={syntax}
+                onChange={setSyntax}
+                options={syntaxSchema.options.map((value) => ({
+                  value,
+                  label: syntaxLabels[value],
+                  icon: <MdSymbol>code</MdSymbol>,
+                }))}
+              />
             </section>
             {hydrated && isSupported && (
               <List {...preferencesBem({ element: "haptics" })}>

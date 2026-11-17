@@ -31,6 +31,9 @@ export const serverFns = {
     getPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getPaletteFn"]>(
       "*/_serverFn/4558a4a690a0c9df6b9eb86a7c8c0e641ab41e2f2aacba3e7ad9c4128c3950c7",
     ),
+    getSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getSyntaxFn"]>(
+      "*/_serverFn/e91868d8d198f435462720a0ea9c875adf22f3b28a74bbb09e65903aa4cfea36",
+    ),
     getThemeFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getThemeFn"]>(
       "*/_serverFn/32d2100666ac5151f7c5ed1a06fa64ec0047ee7c5f5e07d02f3ba1a9cb82304a",
     ),
@@ -42,6 +45,9 @@ export const serverFns = {
     ),
     setPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setPaletteFn"]>(
       "*/_serverFn/d1a07d169904c6702fc34531aa4378a4389ae9a78fbd93ad1884099940ec075c",
+    ),
+    setSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setSyntaxFn"]>(
+      "*/_serverFn/b730c04d3d7c3a8f5462d3839561c801326ac0506dbac0cc70e33a40bc7485af",
     ),
     setThemeFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setThemeFn"]>(
       "*/_serverFn/72331c0160e77b873f4ba8865be622be4f8a905903451a926f224d41d636c918",

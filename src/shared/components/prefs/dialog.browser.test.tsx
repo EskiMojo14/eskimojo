@@ -12,6 +12,8 @@ import {
   contrastLabels,
   paletteSchema,
   paletteLabels,
+  syntaxSchema,
+  syntaxLabels,
 } from "#/shared/constants/prefs";
 
 import { PreferencesDialog } from "./dialog";
@@ -32,11 +34,13 @@ test("mobile dropdowns save preferences", async () => {
   const theme = dialog.getByRole("combobox", { name: "Theme" });
   const contrast = dialog.getByRole("combobox", { name: "Contrast" });
   const palette = dialog.getByRole("combobox", { name: "Palette" });
+  const syntax = dialog.getByRole("combobox", { name: "Syntax" });
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
   await expect.element(palette).toHaveAccessibleDescription("Arctic");
+  await expect.element(syntax).toHaveAccessibleDescription("Dracula Pro");
 
-  for (const name of ["Theme", "Contrast", "Palette"]) {
+  for (const name of ["Theme", "Contrast", "Palette", "Syntax"]) {
     await expect.element(dialog.getByRole("combobox", { name })).toBeVisible();
   }
   await expect.element(dialog.getByRole("toolbar")).not.toBeInTheDocument();
@@ -66,17 +70,29 @@ test("mobile dropdowns save preferences", async () => {
       .click();
     await expect.element(palette).toHaveAccessibleDescription(paletteLabels[value].label);
   }
+  for (const value of syntaxSchema.options) {
+    await syntax.click();
+    await dialog
+      .getByRole("listbox", { name: "Syntax" })
+      .getByRole("option", { name: syntaxLabels[value], exact: true })
+      .click();
+    await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels[value]);
+  }
   await userEvent.keyboard("{Escape}");
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
   await expect.element(palette).toHaveAccessibleDescription("Peach");
+  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard);
 
   await theme.click();
   await page.viewport(600, 800);
   await expect.element(dialog.getByRole("listbox")).not.toBeInTheDocument();
-  await expect.element(dialog.getByRole("combobox")).not.toBeInTheDocument();
+  for (const name of ["Theme", "Contrast", "Palette"]) {
+    await expect.element(dialog.getByRole("combobox", { name })).not.toBeInTheDocument();
+  }
+  await expect.element(syntax).toBeVisible();
   for (const name of ["Dark", "High", "Peach"]) {
     await expect
       .element(dialog.getByRole("button", { name }))
@@ -84,6 +100,27 @@ test("mobile dropdowns save preferences", async () => {
   }
   await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
+  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard);
+});
+
+test("syntax preference updates the document and remains selectable at desktop widths", async () => {
+  const result = await page.renderWithProviders(<PreferencesDialog open />, {
+    preferences: { syntax: "blade" },
+    syncPreferencesToDocument: true,
+  });
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+  const syntax = dialog.getByRole("combobox", { name: "Syntax" });
+  await expect.element(syntax).toBeVisible();
+  await expect.element(syntax).toHaveAccessibleDescription("Blade");
+  await expect.element(document.documentElement).toHaveAttribute("data-syntax", "blade");
+
+  await syntax.click();
+  await dialog
+    .getByRole("listbox", { name: "Syntax" })
+    .getByRole("option", { name: "Buffy", exact: true })
+    .click();
+  await expect.element(syntax).toHaveAccessibleDescription("Buffy");
+  await expect.element(document.documentElement).toHaveAttribute("data-syntax", "buffy");
 });
 
 test("Escape dismisses the select menu before the preferences dialog", async () => {

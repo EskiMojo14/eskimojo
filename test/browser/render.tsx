@@ -15,6 +15,7 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
+  SyntaxContext,
 } from "#/shared/components/prefs/context";
 import {
   themeSchema,
@@ -25,6 +26,8 @@ import {
   type Contrast,
   type Palette,
   type Haptics,
+  syntaxSchema,
+  type Syntax,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
 import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
@@ -34,6 +37,7 @@ interface TestPreferences {
   contrast: Contrast;
   palette: Palette;
   haptics: Haptics;
+  syntax: Syntax;
 }
 
 export interface RenderWithProviderOptions extends RenderOptions {
@@ -72,26 +76,34 @@ function PreferenceProviders({
   const [contrast, setContrast] = useState(initialPreferences.contrast ?? contrastSchema.fallback);
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
   const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
+  const [syntax, setSyntax] = useState(initialPreferences.syntax ?? syntaxSchema.fallback);
 
   useEffect(() => {
     if (!syncToDocument) return undefined;
 
     const { dataset } = document.documentElement;
-    const previous = { theme: dataset.theme, contrast: dataset.contrast, palette: dataset.palette };
-    Object.assign(dataset, { theme, contrast, palette });
+    const previous = {
+      theme: dataset.theme,
+      contrast: dataset.contrast,
+      palette: dataset.palette,
+      syntax: dataset.syntax,
+    };
+    Object.assign(dataset, { theme, contrast, palette, syntax });
     return () => {
       for (const [key, value] of Object.entries(previous)) {
         if (value === undefined) delete dataset[key];
         else dataset[key] = value;
       }
     };
-  }, [syncToDocument, theme, contrast, palette]);
+  }, [syncToDocument, theme, contrast, palette, syntax]);
 
   return (
     <ThemeContext value={{ theme, setTheme }}>
       <ContrastContext value={{ contrast, setContrast }}>
         <PaletteContext value={{ palette, setPalette }}>
-          <HapticsContext value={{ haptics, setHaptics }}>{children}</HapticsContext>
+          <HapticsContext value={{ haptics, setHaptics }}>
+            <SyntaxContext value={{ syntax, setSyntax }}>{children}</SyntaxContext>
+          </HapticsContext>
         </PaletteContext>
       </ContrastContext>
     </ThemeContext>
