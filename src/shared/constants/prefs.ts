@@ -33,6 +33,7 @@ export type Haptics = v.InferOutput<typeof hapticsSchema>;
 
 export const syntaxSchema = v.fallback(
   v.picklist([
+    "dracula-classic",
     "dracula-pro",
     "blade",
     "buffy",
@@ -40,12 +41,14 @@ export const syntaxSchema = v.fallback(
     "morbius",
     "van-helsing",
     "nosferatu",
+    "alucard-classic",
     "alucard",
   ]),
   "dracula-pro",
 );
 export type Syntax = v.InferOutput<typeof syntaxSchema>;
 export const syntaxLabels: Record<Syntax, string> = {
+  "dracula-classic": "Dracula Classic",
   "dracula-pro": "Dracula Pro",
   blade: "Blade",
   buffy: "Buffy",
@@ -53,6 +56,7 @@ export const syntaxLabels: Record<Syntax, string> = {
   morbius: "Morbius",
   "van-helsing": "Van Helsing",
   nosferatu: "Nosferatu",
+  "alucard-classic": "Alucard Classic",
   alucard: "Alucard",
 };
 

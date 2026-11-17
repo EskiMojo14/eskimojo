@@ -11,7 +11,11 @@
   }
 }
 
-@each $syntax in (dracula-pro, blade, buffy, lincoln, morbius, van-helsing, nosferatu, alucard) {
+$syntax-palettes:
+  dracula-classic, dracula-pro, blade, buffy, lincoln, morbius, van-helsing, nosferatu, alucard,
+  alucard-classic;
+
+@each $syntax in $syntax-palettes {
   [data-syntax="$syntax"] {
     @extend %$syntax;
   }
