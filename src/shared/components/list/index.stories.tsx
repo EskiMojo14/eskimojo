@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import { Checkbox } from "#/shared/components/checkbox";
 import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
 
@@ -16,7 +17,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, wrap it in a native link/button or TanStack Link for an action, or use a native label containing one checkbox or switch for a whole-row toggle. Do not nest interactive controls inside row links or buttons. For a trailing Switch, omit its built-in label and supply aria-label or aria-labelledby to avoid nested labels. Direct row actions automatically receive pointer-origin ripples and centered keyboard feedback, including Space activation of labelled switches. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
+          'MD3 list primitives. Expressive is the default: vertical, connected surface-container rows with 2px gaps and larger outer corners, following the site shape tokens. Use variant="navigation" for the responsive navigation layout. ListItemContent supplies headline, optional supportingText, leading and trailing slots. Rows grow to fit wrapping content. Put content directly in ListItem for a static row, wrap it in a native link/button or TanStack Link for an action, or use a native label containing one checkbox or switch for a whole-row toggle. Do not nest interactive controls inside row links or buttons. For a leading/trailing Checkbox or Switch, omit its built-in label and supply aria-label or aria-labelledby to avoid nested labels; slotted controls need htmlFor/id for the linter. Direct row actions automatically receive pointer-origin ripples and centered keyboard feedback, including Space activation of labelled checkboxes and switches. Static rows do not ripple. Disabled controls are ignored and reduced motion uses static feedback. Give decorative images an empty alt and decorative slots aria-hidden content. Native button props control disabled and aria-pressed states. Styles load through the shared head-linked stylesheet.',
       },
     },
   },
@@ -139,6 +140,101 @@ export const SwitchRows = meta.story({
     await userEvent.click(canvas.getByText("Notifications"));
     await expect(toggle).toBeChecked();
     await expect(canvas.getByRole("switch", { name: "Unavailable" })).toBeDisabled();
+  },
+});
+
+function CheckboxList() {
+  const [selected, setSelected] = useState<Array<string>>(["albums"]);
+  const allId = useId();
+  const albumsId = useId();
+  const toursId = useId();
+  const unavailableId = useId();
+  const options = ["albums", "tours"];
+
+  function setOption(option: string, checked: boolean) {
+    setSelected((previous) =>
+      checked ? [...previous, option] : previous.filter((value) => value !== option),
+    );
+  }
+
+  return (
+    <List aria-label="Email subscriptions" style={{ width: "min(100%, 28rem)" }}>
+      <ListItem>
+        <label htmlFor={allId}>
+          <ListItemContent
+            headline="All updates"
+            supportingText="Choose which music updates you receive."
+            trailing={
+              <Checkbox
+                id={allId}
+                aria-label="All updates"
+                checked={selected.length === options.length}
+                indeterminate={selected.length > 0 && selected.length < options.length}
+                onChange={(event) => setSelected(event.currentTarget.checked ? options : [])}
+              />
+            }
+          />
+        </label>
+      </ListItem>
+      <ListItem>
+        <label htmlFor={albumsId}>
+          <ListItemContent
+            headline="Album releases"
+            leading={
+              <Checkbox
+                id={albumsId}
+                aria-label="Album releases"
+                checked={selected.includes("albums")}
+                onChange={(event) => setOption("albums", event.currentTarget.checked)}
+              />
+            }
+          />
+        </label>
+      </ListItem>
+      <ListItem>
+        <label htmlFor={toursId}>
+          <ListItemContent
+            headline="Tour dates"
+            trailing={
+              <Checkbox
+                id={toursId}
+                aria-label="Tour dates"
+                checked={selected.includes("tours")}
+                onChange={(event) => setOption("tours", event.currentTarget.checked)}
+              />
+            }
+          />
+        </label>
+      </ListItem>
+      <ListItem>
+        <label htmlFor={unavailableId}>
+          <ListItemContent
+            headline="Presale access"
+            supportingText="Not currently available."
+            trailing={<Checkbox id={unavailableId} aria-label="Presale access" disabled />}
+          />
+        </label>
+      </ListItem>
+    </List>
+  );
+}
+
+export const CheckboxRows = meta.story({
+  render: () => <CheckboxList />,
+  play: async ({ canvas, userEvent }) => {
+    const all = canvas.getByRole("checkbox", { name: "All updates" });
+    await expect(all).toBePartiallyChecked();
+    await userEvent.click(canvas.getByText("All updates"));
+    await expect(all).toBeChecked();
+    await expect(canvas.getByRole("checkbox", { name: "Album releases" })).toBeChecked();
+    await expect(canvas.getByRole("checkbox", { name: "Tour dates" })).toBeChecked();
+    await userEvent.keyboard(" ");
+    await expect(all).not.toBeChecked();
+    await expect(canvas.getByRole("checkbox", { name: "Album releases" })).not.toBeChecked();
+    await expect(canvas.getByRole("checkbox", { name: "Tour dates" })).not.toBeChecked();
+    await userEvent.click(canvas.getByText("Album releases"));
+    await expect(all).toBePartiallyChecked();
+    await expect(canvas.getByRole("checkbox", { name: "Presale access" })).toBeDisabled();
   },
 });
 

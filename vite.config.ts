@@ -48,7 +48,10 @@ const config = defineConfig({
       "typescript/no-deprecated": "error",
       "react/react-in-jsx-scope": "off",
       "react/rules-of-hooks": "error",
-      "jsx-a11y/label-has-associated-control": ["warn", { controlComponents: ["Switch"] }],
+      "jsx-a11y/label-has-associated-control": [
+        "warn",
+        { controlComponents: ["Checkbox", "Switch"] },
+      ],
     },
     options: {
       typeAware: true,
