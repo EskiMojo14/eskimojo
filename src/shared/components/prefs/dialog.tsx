@@ -18,9 +18,7 @@ export type PreferencesDialogProps = Pick<DialogProps, "open" | "onClose">;
 
 export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
   const [tab, setTab] = useState("theme");
-  const panelsRef = useRef<
-    HTMLDivElement & { startViewTransition?: Document["startViewTransition"] }
-  >(null);
+  const panelsRef = useRef<HTMLDivElement>(null);
 
   function selectTab(nextTab: string) {
     const panels = panelsRef.current;

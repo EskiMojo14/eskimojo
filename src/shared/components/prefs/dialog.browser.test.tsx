@@ -164,12 +164,10 @@ test.runIf("startViewTransition" in HTMLElement.prototype).each([
     const container = dialog.getByRole("tabpanel", { name: "Theme" }).element()
       .parentElement?.parentElement;
     if (!container) throw new Error("Expected a container for the preferences panels.");
-    const panels: HTMLElement & { startViewTransition?: Document["startViewTransition"] } =
-      container;
-    const startViewTransition = panels.startViewTransition?.bind(panels);
+    const startViewTransition = container.startViewTransition?.bind(container);
     if (!startViewTransition) throw new Error("Expected element-scoped transition support.");
     using scopedTransition = vi
-      .spyOn(panels, "startViewTransition")
+      .spyOn(container, "startViewTransition")
       .mockImplementation((options) => {
         if (!options || typeof options === "function" || !options.update) {
           throw new Error("Expected transition options with an update callback.");
@@ -179,7 +177,7 @@ test.runIf("startViewTransition" in HTMLElement.prototype).each([
           ...options,
           update: () => {
             const updateResult = update();
-            panels.getBoundingClientRect();
+            container.getBoundingClientRect();
             return updateResult;
           },
         });
@@ -242,9 +240,7 @@ test.runIf("startViewTransition" in HTMLElement.prototype)(
     const container = dialog.getByRole("tabpanel", { name: "Theme" }).element()
       .parentElement?.parentElement;
     if (!container) throw new Error("Expected a container for the preferences panels.");
-    const panels: HTMLElement & { startViewTransition?: Document["startViewTransition"] } =
-      container;
-    using transition = vi.spyOn(panels, "startViewTransition");
+    using transition = vi.spyOn(container, "startViewTransition");
 
     await dialog.getByRole("tab", { name: "Code", exact: true }).click();
     await expect.element(dialog.getByRole("tabpanel", { name: "Code" })).toBeVisible();

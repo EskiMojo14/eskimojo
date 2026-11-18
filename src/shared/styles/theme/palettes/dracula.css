@@ -1,4 +1,3 @@
-/* Fixed colours, used for select icons */
 %fixed-light {
   --fixed-cyan: #036a96;
   --fixed-green: #14710a;
@@ -19,7 +18,6 @@
   --fixed-yellow: #ffff80;
 }
 
-/* Color Palette / Base Dracula PRO */
 %base {
   --foreground: #f8f8f2;
   --cyan: #80ffea;
@@ -31,49 +29,42 @@
   --yellow: #ffff80;
 }
 
-/* Color Palette / Dracula PRO */
 %dracula-pro {
   --background: #22212c;
   --comment: #7970a9;
   --selection: #454158;
 }
 
-/* Color Palette / Dracula PRO - Blade */
 %blade {
   --background: #212c2a;
   --comment: #70a99f;
   --selection: #415854;
 }
 
-/* Color Palette / Dracula PRO - Buffy */
 %buffy {
   --background: #2a212c;
   --comment: #9f70a9;
   --selection: #544158;
 }
 
-/* Color Palette / Dracula PRO - Lincoln */
 %lincoln {
   --background: #2c2a21;
   --comment: #a99f70;
   --selection: #585441;
 }
 
-/* Color Palette / Dracula PRO - Morbius */
 %morbius {
   --background: #2c2122;
   --comment: #a97079;
   --selection: #584145;
 }
 
-/* Color Palette / Dracula PRO - Van Helsing */
 %van-helsing {
   --background: #0b0d0f;
   --comment: #708ca9;
   --selection: #414d58;
 }
 
-/* Color Palette / Dracula PRO - Nosferatu */
 %nosferatu {
   --foreground: #d2d0cb;
   --cyan: #8fa9b4;
@@ -88,7 +79,6 @@
   --selection: #2e3236;
 }
 
-/* Color Palette / Alucard */
 %alucard {
   --foreground: #1f1f1f;
   --cyan: #036a96;
@@ -103,7 +93,6 @@
   --selection: #cfcfde;
 }
 
-/* Classic palettes: https://draculatheme.com/spec */
 %dracula-classic {
   --foreground: #f8f8f2;
   --cyan: #8be9fd;
@@ -134,7 +123,6 @@
   --selection: #cfcfde;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Base */
 %terminal-base {
   --black: #22212c;
   --red: #ff9580;
@@ -168,7 +156,6 @@
   --orange: #ffca80;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Blade */
 %terminal-blade {
   --background: #212c2a;
   --comment: #70a99f;
@@ -178,7 +165,6 @@
   --dim-black: #1a2322;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Buffy */
 %terminal-buffy {
   --background: #2a212c;
   --comment: #9f70a9;
@@ -188,7 +174,6 @@
   --dim-black: #221a23;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Lincoln */
 %terminal-lincoln {
   --background: #2c2a21;
   --comment: #a99f70;
@@ -198,7 +183,6 @@
   --dim-black: #23221a;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Morbius */
 %terminal-morbius {
   --background: #2c2122;
   --comment: #a97079;
@@ -208,7 +192,6 @@
   --dim-black: #231a1b;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Van Helsing */
 %terminal-van-helsing {
   --background: #0b0d0f;
   --comment: #708ca9;
@@ -218,7 +201,6 @@
   --dim-black: #090a0c;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Nosferatu */
 %terminal-nosferatu {
   --black: #1f2326;
   --red: #ff7d6c;
@@ -252,7 +234,6 @@
   --orange: #c9a273;
 }
 
-/* Color Palette - Terminal Standard / Dracula PRO - Alucard */
 %terminal-alucard {
   --black: #f5f5f5;
   --red: #cb3a2a;
@@ -286,7 +267,6 @@
   --orange: #a34d14;
 }
 
-/* Color Palette - Terminal Standard / Dracula Classic */
 %terminal-dracula-classic {
   --black: #21222c;
   --red: #ff5555;
@@ -312,7 +292,6 @@
   --orange: #ffb86c;
 }
 
-/* Color Palette - Terminal Standard / Alucard Classic */
 %terminal-alucard-classic {
   --black: #fffbeb;
   --red: #cb3a2a;
