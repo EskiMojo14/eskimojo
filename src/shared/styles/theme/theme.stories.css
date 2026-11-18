@@ -1,3 +1,28 @@
+@import "./palettes/dracula.css";
+
+.theme-group[data-syntax-swatch] {
+  @extend %base;
+
+  padding: 1rem;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+:where(.theme-group[data-syntax-swatch]) {
+  --current-line: var(--comment);
+}
+
+$syntax-swatches:
+  alucard, alucard-classic, dracula-classic, dracula-pro, blade, buffy, lincoln, morbius,
+  van-helsing, nosferatu;
+
+@each $palette in $syntax-swatches {
+  .theme-group[data-syntax-swatch="$palette"] {
+    @extend %$palette;
+  }
+}
+
 .theme-page {
   display: grid;
   gap: 2rem;
@@ -20,6 +45,12 @@
 .theme-group__swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.theme-group__syntax-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 6rem), 1fr));
   gap: 1rem;
 }
 
@@ -55,4 +86,9 @@
 
 .theme-swatch__name {
   color: var(--md-sys-color-on-surface);
+}
+
+.theme-group[data-syntax-swatch]
+  :is(.theme-group__title, .theme-swatch__caption, .theme-swatch__name) {
+  color: inherit;
 }

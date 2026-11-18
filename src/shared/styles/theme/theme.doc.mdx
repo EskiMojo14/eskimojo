@@ -234,6 +234,14 @@ Each tile shows a background role with sample text in its `on-` partner. Use the
 
 <Canvas of={ThemeStories.Swatches} />
 
+### Syntax swatches
+
+The light and dark syntax palettes are shown together for comparison. Each
+section uses its palette's background and foreground from the **Code** tab,
+independent of the syntax theme toolbar selections.
+
+<Canvas of={ThemeStories.SyntaxSwatches} />
+
 ## Updating the export
 
 1. Add or replace the six files in `theme/exports/<name>/` with a Material Theme Builder CSS export. Keep the names `light.css`, `dark.css`, `light-mc.css`, `dark-mc.css`, `light-hc.css` and `dark-hc.css`. Their selectors don't matter, because only the token declarations are read.

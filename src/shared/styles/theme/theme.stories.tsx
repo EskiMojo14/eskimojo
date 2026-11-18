@@ -1,6 +1,7 @@
 import BEMHelper from "react-bem-helper";
 
 import preview from "#.storybook/preview";
+import { darkSyntaxOptions, lightSyntaxOptions, syntaxLabels } from "#/shared/constants/prefs";
 
 import "./theme.stories.css";
 
@@ -109,15 +110,20 @@ const groups: Array<{ title: string; swatches: Array<Swatch> }> = [
 
 const token = (role: string) => `var(--md-sys-color-${role})`;
 
-function SwatchTile({ bg, fg, border }: Swatch) {
+function SwatchTile({
+  bg,
+  fg,
+  border,
+  resolveToken = token,
+}: Swatch & { resolveToken?: (role: string) => string }) {
   return (
     <figure {...themeSwatchBem()}>
       <div
         {...themeSwatchBem({ element: "tile", modifiers: { border: Boolean(border) } })}
         style={{
-          "--swatch-bg": token(bg),
-          "--swatch-fg": fg && token(fg),
-          "--swatch-border": border && token(border),
+          "--swatch-bg": resolveToken(bg),
+          "--swatch-fg": fg && resolveToken(fg),
+          "--swatch-border": border && resolveToken(border),
         }}
       >
         {fg && "Aa"}
@@ -159,6 +165,50 @@ export const Swatches = meta.story({
               <SwatchTile key={`${swatch.bg}-${swatch.fg}-${swatch.border}`} {...swatch} />
             ))}
           </div>
+        </section>
+      ))}
+    </div>
+  ),
+});
+
+const syntaxGroups = [
+  { title: "Light", palettes: lightSyntaxOptions.options },
+  { title: "Dark", palettes: darkSyntaxOptions.options },
+];
+
+const syntaxRoles = [
+  "background",
+  "foreground",
+  "comment",
+  "current-line",
+  "selection",
+  "pink",
+  "green",
+  "cyan",
+  "yellow",
+  "orange",
+  "purple",
+  "red",
+];
+
+const syntaxToken = (role: string) => `var(--${role})`;
+
+export const SyntaxSwatches = meta.story({
+  render: () => (
+    <div {...themePageBem()}>
+      {syntaxGroups.map(({ title, palettes }) => (
+        <section key={title} {...themeGroupBem()}>
+          <h2 {...themeGroupBem({ element: "title" })}>{title} syntax themes</h2>
+          {palettes.map((palette) => (
+            <section key={palette} {...themeGroupBem()} data-syntax-swatch={palette}>
+              <h3 {...themeGroupBem({ element: "title" })}>{syntaxLabels[palette].label}</h3>
+              <div {...themeGroupBem({ element: "syntax-swatches" })}>
+                {syntaxRoles.map((role) => (
+                  <SwatchTile key={role} bg={role} resolveToken={syntaxToken} />
+                ))}
+              </div>
+            </section>
+          ))}
         </section>
       ))}
     </div>
