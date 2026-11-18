@@ -13,16 +13,16 @@ import {
   useTheme,
   useContrast,
   usePalette,
-  useSyntax,
-  useMatchLight,
+  useDarkSyntax,
+  useLightSyntax,
 } from "#/shared/components/prefs/context";
 import {
   ThemeProvider,
   ContrastProvider,
   PaletteProvider,
   HapticsProvider,
-  SyntaxProvider,
-  MatchLightProvider,
+  DarkSyntaxProvider,
+  LightSyntaxProvider,
 } from "#/shared/components/prefs/provider";
 import { ThemeColor } from "#/shared/components/prefs/theme-color";
 import { Providers } from "#/shared/components/providers.tsx";
@@ -35,8 +35,8 @@ import {
   getContrastFn,
   getPaletteFn,
   getHapticsFn,
-  getSyntaxFn,
-  getMatchLightFn,
+  getDarkSyntaxFn,
+  getLightSyntaxFn,
 } from "#/shared/lib/prefs.ts";
 import type { AppStore } from "#/shared/store";
 import { promiseAllKeyed } from "#/utils/index.ts";
@@ -60,8 +60,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       contrast: getContrastFn(),
       palette: getPaletteFn(),
       haptics: getHapticsFn(),
-      syntax: getSyntaxFn(),
-      matchLight: getMatchLightFn(),
+      darkSyntax: getDarkSyntaxFn(),
+      lightSyntax: getLightSyntaxFn(),
     }),
   head: ({ loaderData, match }) => getDocumentHead(loaderData?.palette, match.context.christmas),
   shellComponent: RootDocument,
@@ -69,7 +69,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { theme, contrast, palette, haptics, syntax, matchLight } = Route.useLoaderData();
+  const { theme, contrast, palette, haptics, darkSyntax, lightSyntax } = Route.useLoaderData();
   const { christmas } = Route.useRouteContext();
   return (
     <Providers
@@ -78,8 +78,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         [ContrastProvider, { contrast }],
         [PaletteProvider, { palette }],
         [HapticsProvider, { haptics }],
-        [SyntaxProvider, { syntax }],
-        [MatchLightProvider, { matchLight }],
+        [DarkSyntaxProvider, { darkSyntax }],
+        [LightSyntaxProvider, { lightSyntax }],
       ]}
     >
       <PreferenceDocument christmas={christmas}>{children}</PreferenceDocument>
@@ -98,8 +98,8 @@ function PreferenceDocument({
   const { theme } = useTheme();
   const { contrast } = useContrast();
   const { palette } = usePalette();
-  const { syntax } = useSyntax();
-  const { matchLight } = useMatchLight();
+  const { darkSyntax } = useDarkSyntax();
+  const { lightSyntax } = useLightSyntax();
   const projectPalette = useMatch({
     from: "/projects/$slug",
     shouldThrow: false,
@@ -112,8 +112,8 @@ function PreferenceDocument({
       data-theme={theme}
       data-contrast={contrast}
       data-palette={palette}
-      data-syntax={syntax}
-      data-match-light={matchLight}
+      data-dark-syntax={darkSyntax}
+      data-light-syntax={lightSyntax}
       data-christmas={christmas ? "true" : undefined}
     >
       <head>

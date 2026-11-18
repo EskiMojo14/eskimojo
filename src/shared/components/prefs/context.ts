@@ -6,8 +6,8 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
-  syntaxSchema,
-  matchLightSchema,
+  darkSyntaxSchema,
+  lightSyntaxSchema,
 } from "#/shared/constants/prefs";
 import { capitalize } from "#/utils";
 import type { Compute } from "#/utils/types";
@@ -31,8 +31,11 @@ export const { ThemeContext, useTheme } = createPrefContext("theme", themeSchema
 export const { ContrastContext, useContrast } = createPrefContext("contrast", contrastSchema);
 export const { PaletteContext, usePalette } = createPrefContext("palette", paletteSchema);
 export const { HapticsContext, useHaptics } = createPrefContext("haptics", hapticsSchema);
-export const { SyntaxContext, useSyntax } = createPrefContext("syntax", syntaxSchema);
-export const { MatchLightContext, useMatchLight } = createPrefContext(
-  "matchLight",
-  matchLightSchema,
+export const { DarkSyntaxContext, useDarkSyntax } = createPrefContext(
+  "darkSyntax",
+  darkSyntaxSchema,
+);
+export const { LightSyntaxContext, useLightSyntax } = createPrefContext(
+  "lightSyntax",
+  lightSyntaxSchema,
 );

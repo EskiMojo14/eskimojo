@@ -5,29 +5,37 @@
   @extend %base, %dracula-pro;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    @extend %base, %alucard;
-  }
-}
-
-$syntax-palettes:
-  dracula-classic, dracula-pro, blade, buffy, lincoln, morbius, van-helsing, nosferatu, alucard,
-  alucard-classic;
-
-@each $syntax in $syntax-palettes {
-  [data-syntax="$syntax"] {
-    @extend %$syntax;
-  }
-}
-
-:root[data-match-light="on"][data-theme="light"] {
+:root[data-theme="light"] {
   @extend %alucard;
 }
 
 @media (prefers-color-scheme: light) {
-  :root[data-match-light="on"][data-theme="system"] {
+  :root[data-theme="system"] {
     @extend %alucard;
+  }
+}
+
+:root[data-theme="light"][data-light-syntax="alucard-classic"] {
+  @extend %alucard-classic;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"][data-light-syntax="alucard-classic"] {
+    @extend %alucard-classic;
+  }
+}
+
+$dark-syntax-variants: dracula-classic, blade, buffy, lincoln, morbius, van-helsing, nosferatu;
+
+@each $syntax in $dark-syntax-variants {
+  :root[data-theme="dark"][data-dark-syntax="$syntax"] {
+    @extend %$syntax;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="system"][data-dark-syntax="$syntax"] {
+      @extend %$syntax;
+    }
   }
 }
 

@@ -26,14 +26,14 @@ function preferenceRequests(
     mockServerFn(prefs.setContrastFn, resolver),
     mockServerFn(prefs.setPaletteFn, resolver),
     mockServerFn(prefs.setHapticsFn, resolver),
-    mockServerFn(prefs.setSyntaxFn, resolver),
-    mockServerFn(prefs.setMatchLightFn, resolver),
+    mockServerFn(prefs.setDarkSyntaxFn, resolver),
+    mockServerFn(prefs.setLightSyntaxFn, resolver),
     mockServerFn(prefs.getThemeFn, refresh),
     mockServerFn(prefs.getContrastFn, refresh),
     mockServerFn(prefs.getPaletteFn, refresh),
     mockServerFn(prefs.getHapticsFn, refresh),
-    mockServerFn(prefs.getSyntaxFn, refresh),
-    mockServerFn(prefs.getMatchLightFn, refresh),
+    mockServerFn(prefs.getDarkSyntaxFn, refresh),
+    mockServerFn(prefs.getLightSyntaxFn, refresh),
   ];
 }
 
@@ -68,19 +68,20 @@ test("preferences update the controls and page before cookies are saved", async 
   await preferences.theme.setPreference("Contrast", "High");
   await preferences.theme.setPreference("Palette", "Arctic");
   await preferences.syntax.select();
-  await preferences.syntax.setSyntax("Blade");
-  await preferences.syntax.setMatchLight(false);
+  await preferences.syntax.setPreference("Light theme", "Alucard Classic");
+  await preferences.syntax.setPreference("Dark theme", "Dracula Classic");
   await preferences.theme.select();
   await preferences.theme.expectSelected("Theme", "Dark");
   await preferences.theme.expectSelected("Contrast", "High");
   await preferences.theme.expectSelected("Palette", "Arctic");
   await preferences.syntax.select();
-  await preferences.syntax.expectSelected("Blade");
+  await preferences.syntax.expectSelected("Light theme", "Alucard Classic");
+  await preferences.syntax.expectSelected("Dark theme", "Dracula Classic");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
-  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
-  await expect(preferences.documentElement).toHaveAttribute("data-match-light", "off");
+  await expect(preferences.documentElement).toHaveAttribute("data-light-syntax", "alucard-classic");
+  await expect(preferences.documentElement).toHaveAttribute("data-dark-syntax", "dracula-classic");
   expect(
     (await context.cookies()).filter((cookie) => cookie.name.startsWith("eskimojo::")),
   ).toEqual([]);
@@ -94,25 +95,26 @@ test("preferences update the controls and page before cookies are saved", async 
       "eskimojo::theme": "dark",
       "eskimojo::contrast": "high",
       "eskimojo::palette": "arctic",
-      "eskimojo::syntax": "blade",
-      "eskimojo::match-light": "off",
+      "eskimojo::light-syntax": "alucard-classic",
+      "eskimojo::dark-syntax": "dracula-classic",
     });
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
-  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
-  await expect(preferences.documentElement).toHaveAttribute("data-match-light", "off");
+  await expect(preferences.documentElement).toHaveAttribute("data-light-syntax", "alucard-classic");
+  await expect(preferences.documentElement).toHaveAttribute("data-dark-syntax", "dracula-classic");
   refresh.resolve();
   await page.waitForLoadState("networkidle");
   await page.reload();
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
-  await expect(preferences.documentElement).toHaveAttribute("data-syntax", "blade");
-  await expect(preferences.documentElement).toHaveAttribute("data-match-light", "off");
+  await expect(preferences.documentElement).toHaveAttribute("data-light-syntax", "alucard-classic");
+  await expect(preferences.documentElement).toHaveAttribute("data-dark-syntax", "dracula-classic");
   await preferences.open();
   await preferences.syntax.select();
-  await expect(preferences.syntax.matchLightSwitch).not.toBeChecked();
+  await preferences.syntax.expectSelected("Light theme", "Alucard Classic");
+  await preferences.syntax.expectSelected("Dark theme", "Dracula Classic");
 });
 
 test("rapid changes keep the latest selection and persist in order", async ({
@@ -316,20 +318,29 @@ test("browser theme colour works before hydration and with JavaScript disabled",
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#161217"]);
     await noJsPage.emulateMedia({ colorScheme: "light" });
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#fff7fb"]);
-    await expect(noJsPreferences.documentElement).toHaveAttribute("data-syntax", "dracula-pro");
-    await expect(noJsPreferences.documentElement).toHaveAttribute("data-match-light", "on");
+    await expect(noJsPreferences.documentElement).toHaveAttribute(
+      "data-dark-syntax",
+      "dracula-pro",
+    );
+    await expect(noJsPreferences.documentElement).toHaveAttribute("data-light-syntax", "alucard");
 
     await context.addCookies([
       { name: "eskimojo::palette", value: "arctic", url: page.url() },
       { name: "eskimojo::theme", value: "dark", url: page.url() },
       { name: "eskimojo::contrast", value: "high", url: page.url() },
-      { name: "eskimojo::syntax", value: "buffy", url: page.url() },
-      { name: "eskimojo::match-light", value: "off", url: page.url() },
+      { name: "eskimojo::dark-syntax", value: "dracula-classic", url: page.url() },
+      { name: "eskimojo::light-syntax", value: "alucard-classic", url: page.url() },
     ]);
     await noJsPage.reload();
     await expect.poll(() => noJsPreferences.activeThemeColors()).toEqual(["#121318"]);
-    await expect(noJsPreferences.documentElement).toHaveAttribute("data-syntax", "buffy");
-    await expect(noJsPreferences.documentElement).toHaveAttribute("data-match-light", "off");
+    await expect(noJsPreferences.documentElement).toHaveAttribute(
+      "data-dark-syntax",
+      "dracula-classic",
+    );
+    await expect(noJsPreferences.documentElement).toHaveAttribute(
+      "data-light-syntax",
+      "alucard-classic",
+    );
   } finally {
     await context.close();
   }

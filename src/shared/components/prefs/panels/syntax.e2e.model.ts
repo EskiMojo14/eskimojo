@@ -2,31 +2,24 @@ import { expect } from "#test/e2e";
 
 import { PreferencesTab } from "./tab.e2e.model";
 
+type SyntaxPreferenceName = "Light theme" | "Dark theme";
+
 export class SyntaxTab extends PreferencesTab {
   tabName = "Syntax";
 
-  get syntaxSelect() {
-    return this.tabPanel.getByRole("combobox", { name: "Syntax", exact: true });
+  syntaxSelect(name: SyntaxPreferenceName) {
+    return this.tabPanel.getByRole("combobox", { name, exact: true });
   }
 
-  get matchLightSwitch() {
-    return this.tabPanel.getByRole("switch", { name: "Match light theme" });
-  }
-
-  async setSyntax(option: string) {
-    await this.syntaxSelect.click();
+  async setPreference(name: SyntaxPreferenceName, option: string) {
+    await this.syntaxSelect(name).click();
     await this.tabPanel
-      .getByRole("listbox", { name: "Syntax" })
+      .getByRole("listbox", { name, exact: true })
       .getByRole("option", { name: option, exact: true })
       .click();
   }
 
-  async expectSelected(option: string) {
-    await expect(this.syntaxSelect).toHaveAccessibleDescription(option);
-  }
-
-  async setMatchLight(enabled: boolean) {
-    await this.matchLightSwitch.setChecked(enabled);
-    await expect(this.matchLightSwitch).toBeChecked({ checked: enabled });
+  async expectSelected(name: SyntaxPreferenceName, option: string) {
+    await expect(this.syntaxSelect(name)).toHaveAccessibleDescription(option);
   }
 }

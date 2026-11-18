@@ -14,8 +14,8 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
-  SyntaxContext,
-  MatchLightContext,
+  DarkSyntaxContext,
+  LightSyntaxContext,
 } from "#/shared/components/prefs/context.ts";
 import { Providers } from "#/shared/components/providers.tsx";
 import {
@@ -23,9 +23,11 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
-  syntaxSchema,
+  darkSyntaxOptions,
+  lightSyntaxOptions,
   syntaxLabels,
-  matchLightSchema,
+  darkSyntaxSchema,
+  lightSyntaxSchema,
 } from "#/shared/constants/prefs";
 
 import { theme as storybookTheme } from "./theme";
@@ -36,8 +38,8 @@ const globalsSchema = v.object({
   theme: themeSchema,
   contrast: contrastSchema,
   haptics: hapticsSchema,
-  syntax: syntaxSchema,
-  matchLight: matchLightSchema,
+  darkSyntax: darkSyntaxSchema,
+  lightSyntax: lightSyntaxSchema,
   motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
   christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
@@ -102,26 +104,26 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
-    syntax: {
-      description: "Syntax highlighting theme",
+    lightSyntax: {
+      description: "Syntax highlighting in light mode",
       toolbar: {
-        title: "Syntax",
-        items: syntaxSchema.options.map((value) => ({
+        title: "Light syntax theme",
+        items: lightSyntaxOptions.options.map((value) => ({
           value,
           title: syntaxLabels[value].label,
         })),
         dynamicTitle: true,
       },
     },
-    matchLight: {
-      description: "Match syntax highlighting to the light theme",
+    darkSyntax: {
+      description: "Syntax highlighting in dark mode",
       toolbar: {
-        title: "Match light theme",
-        items: [
-          { value: "on", title: "On" },
-          { value: "off", title: "Off" },
-        ],
-        dynamicTitle: false,
+        title: "Dark syntax theme",
+        items: darkSyntaxOptions.options.map((value) => ({
+          value,
+          title: syntaxLabels[value].label,
+        })),
+        dynamicTitle: true,
       },
     },
     motion: {
@@ -168,8 +170,8 @@ export default definePreview({
     contrast: "system",
     motion: "expressive",
     haptics: "on",
-    syntax: "dracula-pro",
-    matchLight: "on",
+    darkSyntax: darkSyntaxSchema.fallback,
+    lightSyntax: lightSyntaxSchema.fallback,
     christmas: "off",
   },
 
@@ -184,8 +186,8 @@ export default definePreview({
         motion,
         christmas,
         haptics,
-        syntax,
-        matchLight,
+        darkSyntax,
+        lightSyntax,
       } = v.parse(globalsSchema, globals);
       const root = document.documentElement;
       root.dir = direction;
@@ -194,8 +196,8 @@ export default definePreview({
         theme,
         contrast,
         palette,
-        syntax,
-        matchLight,
+        darkSyntax,
+        lightSyntax,
         motion,
         christmas: christmas === "on" ? "true" : "false",
       });
@@ -239,20 +241,20 @@ export default definePreview({
               },
             ],
             [
-              SyntaxContext,
+              DarkSyntaxContext,
               {
                 value: {
-                  syntax,
-                  setSyntax: (nextSyntax) => updateGlobals({ syntax: nextSyntax }),
+                  darkSyntax,
+                  setDarkSyntax: (value) => updateGlobals({ darkSyntax: value }),
                 },
               },
             ],
             [
-              MatchLightContext,
+              LightSyntaxContext,
               {
                 value: {
-                  matchLight,
-                  setMatchLight: (nextMatchLight) => updateGlobals({ matchLight: nextMatchLight }),
+                  lightSyntax,
+                  setLightSyntax: (value) => updateGlobals({ lightSyntax: value }),
                 },
               },
             ],

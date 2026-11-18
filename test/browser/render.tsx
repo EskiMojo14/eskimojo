@@ -15,8 +15,8 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
-  SyntaxContext,
-  MatchLightContext,
+  DarkSyntaxContext,
+  LightSyntaxContext,
 } from "#/shared/components/prefs/context";
 import {
   themeSchema,
@@ -27,10 +27,10 @@ import {
   type Contrast,
   type Palette,
   type Haptics,
-  syntaxSchema,
-  type Syntax,
-  matchLightSchema,
-  type MatchLight,
+  darkSyntaxSchema,
+  lightSyntaxSchema,
+  type DarkSyntax,
+  type LightSyntax,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
 import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
@@ -40,8 +40,8 @@ interface TestPreferences {
   contrast: Contrast;
   palette: Palette;
   haptics: Haptics;
-  syntax: Syntax;
-  matchLight: MatchLight;
+  darkSyntax: DarkSyntax;
+  lightSyntax: LightSyntax;
 }
 
 export interface RenderWithProviderOptions extends RenderOptions {
@@ -80,9 +80,11 @@ function PreferenceProviders({
   const [contrast, setContrast] = useState(initialPreferences.contrast ?? contrastSchema.fallback);
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
   const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
-  const [syntax, setSyntax] = useState(initialPreferences.syntax ?? syntaxSchema.fallback);
-  const [matchLight, setMatchLight] = useState(
-    initialPreferences.matchLight ?? matchLightSchema.fallback,
+  const [darkSyntax, setDarkSyntax] = useState(
+    initialPreferences.darkSyntax ?? darkSyntaxSchema.fallback,
+  );
+  const [lightSyntax, setLightSyntax] = useState(
+    initialPreferences.lightSyntax ?? lightSyntaxSchema.fallback,
   );
 
   useEffect(() => {
@@ -93,28 +95,28 @@ function PreferenceProviders({
       theme: dataset.theme,
       contrast: dataset.contrast,
       palette: dataset.palette,
-      syntax: dataset.syntax,
-      matchLight: dataset.matchLight,
+      darkSyntax: dataset.darkSyntax,
+      lightSyntax: dataset.lightSyntax,
     };
-    Object.assign(dataset, { theme, contrast, palette, syntax, matchLight });
+    Object.assign(dataset, { theme, contrast, palette, darkSyntax, lightSyntax });
     return () => {
       for (const [key, value] of Object.entries(previous)) {
         if (value === undefined) delete dataset[key];
         else dataset[key] = value;
       }
     };
-  }, [syncToDocument, theme, contrast, palette, syntax, matchLight]);
+  }, [syncToDocument, theme, contrast, palette, darkSyntax, lightSyntax]);
 
   return (
     <ThemeContext value={{ theme, setTheme }}>
       <ContrastContext value={{ contrast, setContrast }}>
         <PaletteContext value={{ palette, setPalette }}>
           <HapticsContext value={{ haptics, setHaptics }}>
-            <SyntaxContext value={{ syntax, setSyntax }}>
-              <MatchLightContext value={{ matchLight, setMatchLight }}>
+            <DarkSyntaxContext value={{ darkSyntax, setDarkSyntax }}>
+              <LightSyntaxContext value={{ lightSyntax, setLightSyntax }}>
                 {children}
-              </MatchLightContext>
-            </SyntaxContext>
+              </LightSyntaxContext>
+            </DarkSyntaxContext>
           </HapticsContext>
         </PaletteContext>
       </ContrastContext>

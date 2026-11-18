@@ -13,8 +13,8 @@ import {
   setContrastFn,
   setPaletteFn,
   setHapticsFn,
-  setSyntaxFn,
-  setMatchLightFn,
+  setDarkSyntaxFn,
+  setLightSyntaxFn,
 } from "#/shared/lib/prefs";
 import { showSnackbar } from "#/shared/lib/snackbar";
 import { useAppDispatch } from "#/shared/store/hooks";
@@ -27,8 +27,8 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
-  SyntaxContext,
-  MatchLightContext,
+  DarkSyntaxContext,
+  LightSyntaxContext,
 } from "./context";
 
 type PrefProviderProps<Name extends string, Value> = Compute<
@@ -91,9 +91,13 @@ export const ThemeProvider = createPrefProvider("theme", ThemeContext, setThemeF
 export const ContrastProvider = createPrefProvider("contrast", ContrastContext, setContrastFn);
 export const PaletteProvider = createPrefProvider("palette", PaletteContext, setPaletteFn);
 export const HapticsProvider = createPrefProvider("haptics", HapticsContext, setHapticsFn);
-export const SyntaxProvider = createPrefProvider("syntax", SyntaxContext, setSyntaxFn);
-export const MatchLightProvider = createPrefProvider(
-  "matchLight",
-  MatchLightContext,
-  setMatchLightFn,
+export const DarkSyntaxProvider = createPrefProvider(
+  "darkSyntax",
+  DarkSyntaxContext,
+  setDarkSyntaxFn,
+);
+export const LightSyntaxProvider = createPrefProvider(
+  "lightSyntax",
+  LightSyntaxContext,
+  setLightSyntaxFn,
 );

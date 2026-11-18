@@ -7,8 +7,10 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
-  syntaxSchema,
-  matchLightSchema,
+  darkSyntaxOptions,
+  lightSyntaxOptions,
+  lightSyntaxSchema,
+  darkSyntaxSchema,
 } from "#/shared/constants/prefs";
 
 const themeKey = "eskimojo::theme";
@@ -49,22 +51,21 @@ export const setHapticsFn = createServerFn()
   .validator(hapticsSchema)
   .handler(({ data: haptics }) => setCookie(hapticsKey, haptics));
 
-const syntaxKey = "eskimojo::syntax";
+const darkSyntaxKey = "eskimojo::dark-syntax";
+const lightSyntaxKey = "eskimojo::light-syntax";
 
-export const getSyntaxFn = createServerFn().handler(() =>
-  v.parse(syntaxSchema, getCookie(syntaxKey)),
+export const getDarkSyntaxFn = createServerFn().handler(() =>
+  v.parse(darkSyntaxSchema, getCookie(darkSyntaxKey)),
 );
 
-export const setSyntaxFn = createServerFn()
-  .validator(syntaxSchema)
-  .handler(({ data: syntax }) => setCookie(syntaxKey, syntax));
+export const setDarkSyntaxFn = createServerFn()
+  .validator(darkSyntaxOptions)
+  .handler(({ data }) => setCookie(darkSyntaxKey, data));
 
-const matchLightKey = "eskimojo::match-light";
-
-export const getMatchLightFn = createServerFn().handler(() =>
-  v.parse(matchLightSchema, getCookie(matchLightKey)),
+export const getLightSyntaxFn = createServerFn().handler(() =>
+  v.parse(lightSyntaxSchema, getCookie(lightSyntaxKey)),
 );
 
-export const setMatchLightFn = createServerFn()
-  .validator(matchLightSchema)
-  .handler(({ data: matchLight }) => setCookie(matchLightKey, matchLight));
+export const setLightSyntaxFn = createServerFn()
+  .validator(lightSyntaxOptions)
+  .handler(({ data }) => setCookie(lightSyntaxKey, data));

@@ -25,17 +25,17 @@ export const serverFns = {
     getContrastFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getContrastFn"]>(
       "*/_serverFn/6217dac80714f0c95244fcd9031a37964187f27873561265a6cad38629dda34c",
     ),
+    getDarkSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getDarkSyntaxFn"]>(
+      "*/_serverFn/f8d46c3ada938edae6daf35ca452c791e874e4a85d21d6e3f6487a995f0bb7f1",
+    ),
     getHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getHapticsFn"]>(
       "*/_serverFn/0c3ff8d95e9a617d67c8be57a892ecd98773fb220cba30ce6c793430c9aa24b4",
     ),
-    getMatchLightFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getMatchLightFn"]>(
-      "*/_serverFn/69de2dfaea956e5e0bccb4375bcde37006000b061ab6d040e1cd18825c9b600b",
+    getLightSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getLightSyntaxFn"]>(
+      "*/_serverFn/975394cf4c3df9c4d14e4d0a51e3acee53d5b102301e05cd3f184651c5e9e3fd",
     ),
     getPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getPaletteFn"]>(
       "*/_serverFn/4558a4a690a0c9df6b9eb86a7c8c0e641ab41e2f2aacba3e7ad9c4128c3950c7",
-    ),
-    getSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getSyntaxFn"]>(
-      "*/_serverFn/e91868d8d198f435462720a0ea9c875adf22f3b28a74bbb09e65903aa4cfea36",
     ),
     getThemeFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getThemeFn"]>(
       "*/_serverFn/32d2100666ac5151f7c5ed1a06fa64ec0047ee7c5f5e07d02f3ba1a9cb82304a",
@@ -43,17 +43,17 @@ export const serverFns = {
     setContrastFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setContrastFn"]>(
       "*/_serverFn/d97b50e9e66f6f44e47850c1c2f8a2d92fa341064e539f670e9b767686b4f4cd",
     ),
+    setDarkSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setDarkSyntaxFn"]>(
+      "*/_serverFn/b67926f550c27fb4d67ff8dce6bc4244aae49cf146ba5d944e5149b76f7e139e",
+    ),
     setHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setHapticsFn"]>(
       "*/_serverFn/d2e9a9568090983d9139048d3978ad28c524808c45f86c7d327d49c3389f151b",
     ),
-    setMatchLightFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setMatchLightFn"]>(
-      "*/_serverFn/a28ad61dcff36d6dd349799d9c074312209bba474c11df7132613ff35aaca8e1",
+    setLightSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setLightSyntaxFn"]>(
+      "*/_serverFn/1738e20442066ad9ec0e3aa5d9ea7a3909a1f5bb230783f167f8c35e3cfae318",
     ),
     setPaletteFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setPaletteFn"]>(
       "*/_serverFn/d1a07d169904c6702fc34531aa4378a4389ae9a78fbd93ad1884099940ec075c",
-    ),
-    setSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setSyntaxFn"]>(
-      "*/_serverFn/b730c04d3d7c3a8f5462d3839561c801326ac0506dbac0cc70e33a40bc7485af",
     ),
     setThemeFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setThemeFn"]>(
       "*/_serverFn/72331c0160e77b873f4ba8865be622be4f8a905903451a926f224d41d636c918",

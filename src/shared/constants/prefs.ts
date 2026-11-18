@@ -31,23 +31,22 @@ export const paletteLabels: Record<Palette, { label: string; icon: string }> = {
 export const hapticsSchema = v.fallback(v.picklist(["on", "off"]), "on");
 export type Haptics = v.InferOutput<typeof hapticsSchema>;
 
-export const syntaxSchema = v.fallback(
-  v.picklist([
-    "dracula-classic",
-    "dracula-pro",
-    "blade",
-    "buffy",
-    "lincoln",
-    "morbius",
-    "van-helsing",
-    "nosferatu",
-    "alucard-classic",
-    "alucard",
-  ]),
+export const darkSyntaxOptions = v.picklist([
+  "dracula-classic",
   "dracula-pro",
-);
-export type Syntax = v.InferOutput<typeof syntaxSchema>;
-export const syntaxLabels: Record<Syntax, { label: string; color: string }> = {
+  "blade",
+  "buffy",
+  "lincoln",
+  "morbius",
+  "van-helsing",
+  "nosferatu",
+]);
+export const lightSyntaxOptions = v.picklist(["alucard-classic", "alucard"]);
+export const lightSyntaxSchema = v.fallback(lightSyntaxOptions, "alucard");
+export const darkSyntaxSchema = v.fallback(darkSyntaxOptions, "dracula-pro");
+export type LightSyntax = v.InferOutput<typeof lightSyntaxSchema>;
+export type DarkSyntax = v.InferOutput<typeof darkSyntaxSchema>;
+export const syntaxLabels: Record<LightSyntax | DarkSyntax, { label: string; color: string }> = {
   "dracula-classic": { label: "Dracula Classic", color: "purple" },
   "dracula-pro": { label: "Dracula Pro", color: "purple" },
   blade: { label: "Blade", color: "green" },
@@ -59,6 +58,3 @@ export const syntaxLabels: Record<Syntax, { label: string; color: string }> = {
   "alucard-classic": { label: "Alucard Classic", color: "md-sys-color-on-surface-variant" },
   alucard: { label: "Alucard", color: "md-sys-color-on-surface-variant" },
 };
-
-export const matchLightSchema = v.fallback(v.picklist(["on", "off"]), "on");
-export type MatchLight = v.InferOutput<typeof matchLightSchema>;

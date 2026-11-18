@@ -1,16 +1,33 @@
-import { useId, type ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import BEMHelper from "react-bem-helper";
 
-import { ListItemContent } from "#/shared/components/list";
-import { useSyntax, useMatchLight } from "#/shared/components/prefs/context";
+import { useDarkSyntax, useLightSyntax } from "#/shared/components/prefs/context";
 import SyntaxPreview from "#/shared/components/prefs/syntax-preview.mdx" with { type: "mdx" };
 import { SelectMenu } from "#/shared/components/select-menu";
-import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabPanel } from "#/shared/components/tabs";
-import { syntaxSchema, syntaxLabels } from "#/shared/constants/prefs";
+import {
+  darkSyntaxOptions,
+  lightSyntaxOptions,
+  syntaxLabels,
+  type DarkSyntax,
+  type LightSyntax,
+} from "#/shared/constants/prefs";
 
 const preferencesBem = BEMHelper("preferences-dialog");
+
+function syntaxOption<Value extends LightSyntax | DarkSyntax>(value: Value) {
+  const { label, color } = syntaxLabels[value];
+  return {
+    value,
+    label,
+    supportingText: value === "nosferatu" ? "High contrast" : undefined,
+    icon: <MdSymbol style={{ color: `var(--${color})` }}>code</MdSymbol>,
+  };
+}
+
+const lightOptions = lightSyntaxOptions.options.map(syntaxOption<LightSyntax>);
+const darkOptions = darkSyntaxOptions.options.map(syntaxOption<DarkSyntax>);
 
 function SyntaxPreviewCodeBlock(props: ComponentPropsWithoutRef<"pre">) {
   // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role, jsx-a11y/no-noninteractive-tabindex -- Keep preformatted code keyboard-scrollable and named.
@@ -18,51 +35,28 @@ function SyntaxPreviewCodeBlock(props: ComponentPropsWithoutRef<"pre">) {
 }
 
 export function SyntaxPanel() {
-  const { syntax, setSyntax } = useSyntax();
-  const { matchLight, setMatchLight } = useMatchLight();
-  const matchLightId = useId();
-  const matchLightLabelId = useId();
-  const matchLightDescriptionId = useId();
+  const { lightSyntax, setLightSyntax } = useLightSyntax();
+  const { darkSyntax, setDarkSyntax } = useDarkSyntax();
 
   return (
     <TabPanel value="syntax">
       <div {...preferencesBem({ element: "syntax-settings" })}>
         <SelectMenu
           {...preferencesBem({ element: "select", modifier: "always" })}
-          label="Syntax"
-          name="syntax"
-          value={syntax}
-          onChange={setSyntax}
-          options={syntaxSchema.options.map((value) => ({
-            value,
-            label: syntaxLabels[value].label,
-            supportingText: value === "nosferatu" ? "High contrast" : undefined,
-            icon: (
-              <MdSymbol style={{ color: `var(--${syntaxLabels[value].color})` }}>code</MdSymbol>
-            ),
-          }))}
+          label="Light theme"
+          name="lightSyntax"
+          value={lightSyntax}
+          onChange={setLightSyntax}
+          options={lightOptions}
         />
-        <label {...preferencesBem({ element: "toggle" })} htmlFor={matchLightId}>
-          <ListItemContent
-            headline={<span id={matchLightLabelId}>Match light theme</span>}
-            leading={<MdSymbol>light_mode</MdSymbol>}
-            supportingText={
-              <span id={matchLightDescriptionId}>Use Alucard theme for light mode</span>
-            }
-            trailing={
-              <Switch
-                id={matchLightId}
-                aria-labelledby={matchLightLabelId}
-                aria-describedby={matchLightDescriptionId}
-                name="matchLight"
-                checked={matchLight === "on"}
-                onChange={(event) => setMatchLight(event.currentTarget.checked ? "on" : "off")}
-                onIcon={<MdSymbol>check</MdSymbol>}
-                offIcon={<MdSymbol>close</MdSymbol>}
-              />
-            }
-          />
-        </label>
+        <SelectMenu
+          {...preferencesBem({ element: "select", modifier: "always" })}
+          label="Dark theme"
+          name="darkSyntax"
+          value={darkSyntax}
+          onChange={setDarkSyntax}
+          options={darkOptions}
+        />
         <div {...preferencesBem({ element: "syntax-preview" })}>
           <SyntaxPreview components={{ pre: SyntaxPreviewCodeBlock }} />
         </div>

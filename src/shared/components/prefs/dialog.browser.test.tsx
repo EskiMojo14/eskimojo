@@ -12,7 +12,7 @@ import {
   contrastLabels,
   paletteSchema,
   paletteLabels,
-  syntaxSchema,
+  darkSyntaxOptions,
   syntaxLabels,
 } from "#/shared/constants/prefs";
 
@@ -34,7 +34,7 @@ test("mobile dropdowns save preferences", async () => {
   const theme = dialog.getByRole("combobox", { name: "Theme" });
   const contrast = dialog.getByRole("combobox", { name: "Contrast" });
   const palette = dialog.getByRole("combobox", { name: "Palette" });
-  const syntax = dialog.getByRole("combobox", { name: "Syntax" });
+  const syntax = dialog.getByRole("combobox", { name: "Dark theme" });
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
   await expect.element(palette).toHaveAccessibleDescription("Arctic");
@@ -71,9 +71,9 @@ test("mobile dropdowns save preferences", async () => {
   }
   await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
   await expect.element(syntax).toHaveAccessibleDescription("Dracula Pro");
-  for (const value of syntaxSchema.options) {
+  for (const value of darkSyntaxOptions.options) {
     await syntax.click();
-    const option = dialog.getByRole("listbox", { name: "Syntax" }).getByRole("option", {
+    const option = dialog.getByRole("listbox", { name: "Dark theme" }).getByRole("option", {
       name:
         value === "nosferatu"
           ? `${syntaxLabels[value].label} High contrast`
@@ -86,7 +86,7 @@ test("mobile dropdowns save preferences", async () => {
   await userEvent.keyboard("{Escape}");
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
-  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard.label);
+  await expect.element(syntax).toHaveAccessibleDescription("Nosferatu");
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
@@ -109,7 +109,7 @@ test("mobile dropdowns save preferences", async () => {
   await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard.label);
+  await expect.element(syntax).toHaveAccessibleDescription("Nosferatu");
 });
 
 test.each([1280, 390])(
@@ -123,7 +123,9 @@ test.each([1280, 390])(
     await expect.element(themeTab).toHaveAttribute("aria-selected", "true");
     await expect.element(dialog.getByRole("tabpanel", { name: "Theme" })).toBeVisible();
     const panelHeight = dialog.getByRole("tabpanel", { name: "Theme" }).element().clientHeight;
-    await expect.element(dialog.getByRole("combobox", { name: "Syntax" })).not.toBeInTheDocument();
+    await expect
+      .element(dialog.getByRole("combobox", { name: "Dark theme" }))
+      .not.toBeInTheDocument();
     await expect
       .element(dialog.getByRole("switch", { name: "Haptic feedback" }))
       .not.toBeInTheDocument();
@@ -133,8 +135,8 @@ test.each([1280, 390])(
     expect(dialog.getByRole("tabpanel", { name: "Syntax" }).element().clientHeight).toBe(
       panelHeight,
     );
-    await expect.element(dialog.getByRole("combobox", { name: "Syntax" })).toBeVisible();
-    await expect.element(dialog.getByRole("switch", { name: "Match light theme" })).toBeVisible();
+    await expect.element(dialog.getByRole("combobox", { name: "Dark theme" })).toBeVisible();
+    await expect.element(dialog.getByRole("combobox", { name: "Light theme" })).toBeVisible();
     await expect.element(dialog.getByRole("tabpanel", { name: "Theme" })).not.toBeInTheDocument();
 
     await userEvent.keyboard("{ArrowRight}");
@@ -253,46 +255,37 @@ test.runIf("startViewTransition" in HTMLElement.prototype)(
   },
 );
 
-test("syntax preference updates the document and remains selectable at desktop widths", async () => {
-  const result = await page.renderWithProviders(<PreferencesDialog open />, {
-    preferences: { syntax: "blade" },
-    syncPreferencesToDocument: true,
-  });
-  const dialog = result.getByRole("dialog", { name: "Preferences" });
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-  const syntax = dialog.getByRole("combobox", { name: "Syntax" });
-  await expect.element(syntax).toBeVisible();
-  await expect.element(syntax).toHaveAccessibleDescription("Blade");
-  await expect.element(document.documentElement).toHaveAttribute("data-syntax", "blade");
-
-  await syntax.click();
-  await dialog
-    .getByRole("listbox", { name: "Syntax" })
-    .getByRole("option", { name: "Buffy", exact: true })
-    .click();
-  await expect.element(syntax).toHaveAccessibleDescription("Buffy");
-  await expect.element(document.documentElement).toHaveAttribute("data-syntax", "buffy");
-});
-
-test("Match light theme defaults on and can be toggled with pointer or keyboard", async () => {
+test("light and dark syntax palettes can be changed independently at desktop widths", async () => {
   const result = await page.renderWithProviders(<PreferencesDialog open />, {
     syncPreferencesToDocument: true,
   });
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-  const toggle = dialog.getByRole("switch", { name: "Match light theme" });
-  await expect.element(toggle).toHaveAccessibleDescription("Use Alucard theme for light mode");
-  await expect.element(toggle).toBeChecked();
-  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
+  const light = dialog.getByRole("combobox", { name: "Light theme" });
+  const dark = dialog.getByRole("combobox", { name: "Dark theme" });
+  await expect.element(light).toHaveAccessibleDescription("Alucard");
+  await expect.element(dark).toHaveAccessibleDescription("Dracula Pro");
 
-  await dialog.getByText("Match light theme", { exact: true }).click();
-  await expect.element(toggle).not.toBeChecked();
-  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "off");
+  await light.click();
+  const lightMenu = dialog.getByRole("listbox", { name: "Light theme" });
+  await expect.element(lightMenu.getByRole("option")).toHaveLength(2);
+  await lightMenu.getByRole("option", { name: "Alucard Classic", exact: true }).click();
+  await expect.element(light).toHaveAccessibleDescription("Alucard Classic");
+  await expect.element(dark).toHaveAccessibleDescription("Dracula Pro");
 
-  toggle.element().focus();
-  await userEvent.keyboard(" ");
-  await expect.element(toggle).toBeChecked();
-  await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
+  dark.element().focus();
+  await userEvent.keyboard("{Enter}");
+  const darkMenu = dialog.getByRole("listbox", { name: "Dark theme" });
+  await expect.element(darkMenu.getByRole("option", { name: /Alucard/ })).not.toBeInTheDocument();
+  await userEvent.keyboard("{Home}{Enter}");
+  await expect.element(dark).toHaveAccessibleDescription("Dracula Classic");
+  await expect.element(light).toHaveAccessibleDescription("Alucard Classic");
+  await expect
+    .element(document.documentElement)
+    .toHaveAttribute("data-light-syntax", "alucard-classic");
+  await expect
+    .element(document.documentElement)
+    .toHaveAttribute("data-dark-syntax", "dracula-classic");
 });
 
 test.each([1280, 390])(
@@ -311,7 +304,7 @@ test.each([1280, 390])(
     expect(preview.element().scrollHeight).toBeGreaterThan(preview.element().clientHeight);
     expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
 
-    dialog.getByRole("switch", { name: "Match light theme" }).element().focus();
+    dialog.getByRole("combobox", { name: "Dark theme" }).element().focus();
     await userEvent.keyboard("{Tab}");
     await expect.element(preview).toHaveFocus();
     await userEvent.keyboard("{End}");
@@ -336,7 +329,7 @@ test.each([390, 320])(
     expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(width);
 
-    dialog.getByRole("switch", { name: "Match light theme" }).element().focus();
+    dialog.getByRole("combobox", { name: "Dark theme" }).element().focus();
     await userEvent.keyboard("{Tab}{ArrowRight}");
     await expect.element(preview).toHaveFocus();
     await expect.poll(() => preview.element().scrollLeft).toBeGreaterThan(0);
