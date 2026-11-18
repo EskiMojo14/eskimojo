@@ -152,6 +152,7 @@ const config = defineConfig({
       viteReact: { default: viteReact },
       msw: { msw },
       rehypePrism: { default: rehypePrism },
+      prismTokens: { prismTokens },
       remarkFrontmatter: { default: remarkFrontmatter },
       remarkGfm: { default: remarkGfm },
       remarkMdxFrontmatter: { default: remarkMdxFrontmatter },
@@ -168,6 +169,7 @@ const config = defineConfig({
       viteReact: import("@vitejs/plugin-react"),
       msw: import("msw/vite"),
       rehypePrism: import("rehype-prism-plus"),
+      prismTokens: import("./vite/prism-tokens.ts"),
       remarkFrontmatter: import("remark-frontmatter"),
       remarkGfm: import("remark-gfm"),
       remarkMdxFrontmatter: import("remark-mdx-frontmatter"),
@@ -177,7 +179,7 @@ const config = defineConfig({
     });
     const applicationMdx = mdx({
       remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
-      rehypePlugins: [rehypePrism],
+      rehypePlugins: [rehypePrism, prismTokens],
     });
     return [
       devtools(),

@@ -188,6 +188,13 @@ blocks and Storybook's docs snippets. The token selectors are scoped to
 `pre`/`code` descendants and include `:root` so they outrank Storybook's
 generated token colors without depending on its generated class names.
 
+The token colours follow the [Dracula syntax specification](https://draculatheme.com/spec#syntax-highlighting-rules),
+with foreground as the fallback. CSS numbers follow the spec's CSS example
+and use purple. The application MDX compiler marks JavaScript and TypeScript
+`this` and `super` separately from ordinary keywords so they can be purple
+and italic. Storybook Docs keeps its own tokenizer and uses the shared styles
+for the token classes it emits.
+
 Storybook's docs snippets do not have a `language-` class, so
 `.storybook/syntax.css` sets their background and foreground directly on
 `.docblock-source`. Both kinds of code blocks use the same palette variables,
