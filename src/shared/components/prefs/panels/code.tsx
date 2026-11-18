@@ -17,11 +17,11 @@ import {
 const preferencesBem = BEMHelper("preferences-dialog");
 
 function syntaxOption<Value extends LightSyntax | DarkSyntax>(value: Value) {
-  const { label, color } = syntaxLabels[value];
+  const { label, color, supporting } = syntaxLabels[value];
   return {
     value,
     label,
-    supportingText: value === "nosferatu" ? "High contrast" : undefined,
+    supportingText: supporting,
     icon: <MdSymbol style={{ color: `var(--fixed-${color})` }}>palette</MdSymbol>,
   };
 }

@@ -93,6 +93,23 @@
   --selection: #cfcfde;
 }
 
+%utarefson {
+  --foreground: #414141;
+  --cyan: #164b62;
+  --green: #304e0e;
+  --orange: #57432a;
+  --pink: #6e3806;
+  --purple: #5f3180;
+  --red: #80281c;
+  --yellow: #5a430b;
+  --background: #f5f5f5;
+  --comment: #424952;
+  --current-line: #d1cdc9;
+  --selection: #e8e4e0;
+  --green-30: alpha(var(--green) / 0.08);
+  --red-30: alpha(var(--red) / 0.08);
+}
+
 %dracula-classic {
   --foreground: #f8f8f2;
   --cyan: #8be9fd;

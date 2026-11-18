@@ -262,10 +262,17 @@ test("light and dark syntax palettes can be changed independently at desktop wid
 
   await light.click();
   const lightMenu = dialog.getByRole("listbox", { name: "Light theme" });
-  await expect.element(lightMenu.getByRole("option")).toHaveLength(2);
+  await expect.element(lightMenu.getByRole("option")).toHaveLength(3);
   await lightMenu.getByRole("option", { name: "Alucard Classic", exact: true }).click();
   await expect.element(light).toHaveAccessibleDescription("Alucard Classic");
   await expect.element(dark).toHaveAccessibleDescription("Dracula Pro");
+
+  await light.click();
+  await dialog
+    .getByRole("listbox", { name: "Light theme" })
+    .getByRole("option", { name: "Utarefson High contrast", exact: true })
+    .click();
+  await expect.element(light).toHaveAccessibleDescription("Utarefson");
 
   dark.element().focus();
   await userEvent.keyboard("{Enter}");
@@ -273,10 +280,8 @@ test("light and dark syntax palettes can be changed independently at desktop wid
   await expect.element(darkMenu.getByRole("option", { name: /Alucard/ })).not.toBeInTheDocument();
   await userEvent.keyboard("{Home}{Enter}");
   await expect.element(dark).toHaveAccessibleDescription("Dracula Classic");
-  await expect.element(light).toHaveAccessibleDescription("Alucard Classic");
-  await expect
-    .element(document.documentElement)
-    .toHaveAttribute("data-light-syntax", "alucard-classic");
+  await expect.element(light).toHaveAccessibleDescription("Utarefson");
+  await expect.element(document.documentElement).toHaveAttribute("data-light-syntax", "utarefson");
   await expect
     .element(document.documentElement)
     .toHaveAttribute("data-dark-syntax", "dracula-classic");

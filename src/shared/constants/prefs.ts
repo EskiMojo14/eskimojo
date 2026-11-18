@@ -41,12 +41,15 @@ export const darkSyntaxOptions = v.picklist([
   "van-helsing",
   "nosferatu",
 ]);
-export const lightSyntaxOptions = v.picklist(["alucard-classic", "alucard"]);
+export const lightSyntaxOptions = v.picklist(["alucard-classic", "alucard", "utarefson"]);
 export const lightSyntaxSchema = v.fallback(lightSyntaxOptions, "alucard");
 export const darkSyntaxSchema = v.fallback(darkSyntaxOptions, "dracula-pro");
 export type LightSyntax = v.InferOutput<typeof lightSyntaxSchema>;
 export type DarkSyntax = v.InferOutput<typeof darkSyntaxSchema>;
-export const syntaxLabels: Record<LightSyntax | DarkSyntax, { label: string; color?: string }> = {
+export const syntaxLabels: Record<
+  LightSyntax | DarkSyntax,
+  { label: string; color?: string; supporting?: string }
+> = {
   "dracula-classic": { label: "Dracula Classic", color: "purple" },
   "dracula-pro": { label: "Dracula Pro", color: "purple" },
   blade: { label: "Blade", color: "green" },
@@ -54,7 +57,8 @@ export const syntaxLabels: Record<LightSyntax | DarkSyntax, { label: string; col
   lincoln: { label: "Lincoln", color: "yellow" },
   morbius: { label: "Morbius", color: "red" },
   "van-helsing": { label: "Van Helsing", color: "cyan" },
-  nosferatu: { label: "Nosferatu", color: "orange" },
+  nosferatu: { label: "Nosferatu", color: "orange", supporting: "High contrast" },
   "alucard-classic": { label: "Alucard Classic" },
   alucard: { label: "Alucard" },
+  utarefson: { label: "Utarefson", supporting: "High contrast (unofficial)" },
 };

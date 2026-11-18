@@ -19,9 +19,19 @@
   @extend %alucard-classic;
 }
 
+:root[data-theme="light"][data-light-syntax="utarefson"] {
+  @extend %utarefson;
+}
+
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"][data-light-syntax="alucard-classic"] {
     @extend %alucard-classic;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"][data-light-syntax="utarefson"] {
+    @extend %utarefson;
   }
 }
 

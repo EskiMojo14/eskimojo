@@ -14,7 +14,7 @@
 }
 
 $syntax-swatches:
-  alucard, alucard-classic, dracula-classic, dracula-pro, blade, buffy, lincoln, morbius,
+  alucard, alucard-classic, utarefson, dracula-classic, dracula-pro, blade, buffy, lincoln, morbius,
   van-helsing, nosferatu;
 
 @each $palette in $syntax-swatches {
