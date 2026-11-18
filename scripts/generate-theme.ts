@@ -8,8 +8,9 @@
  * - .storybook/palette.gen.ts: goat's standard-contrast roles as literal hex values for
  *   Storybook's own UI, plus an accent for its colorSecondary that meets WCAG AA.
  *
- * Syntax colours combine the two palettes' standard accents, adjusting their
- * light-mode tones only as far as each contrast target requires.
+ * Syntax colours combine Goat and Arctic standard accents, adjusting their
+ * light-mode tones only as far as each contrast target requires. Peach is a
+ * separately selectable palette and does not contribute to syntax accents.
  */
 import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 

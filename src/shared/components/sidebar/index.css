@@ -65,6 +65,11 @@
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%);
     mask-image: linear-gradient(to bottom, transparent, black 20%);
   }
+
+  [data-palette="peach"] &::before,
+  [data-palette="peach"] &::after {
+    content: none;
+  }
 }
 
 .site-sidebar--desktop {

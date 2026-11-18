@@ -132,6 +132,18 @@
   @extend %arctic-high;
 }
 
+.preferences-dialog .button[data-palette="peach"] {
+  @extend %peach-standard;
+}
+
+.preferences-dialog .button[data-palette="peach"][data-contrast="medium"] {
+  @extend %peach-medium;
+}
+
+.preferences-dialog .button[data-palette="peach"][data-contrast="high"] {
+  @extend %peach-high;
+}
+
 @media (prefers-contrast: more) {
   .preferences-dialog .button[data-palette="goat"][data-contrast="system"] {
     @extend %goat-high;
@@ -141,5 +153,11 @@
 @media (prefers-contrast: more) {
   .preferences-dialog .button[data-palette="arctic"][data-contrast="system"] {
     @extend %arctic-high;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .preferences-dialog .button[data-palette="peach"][data-contrast="system"] {
+    @extend %peach-high;
   }
 }
