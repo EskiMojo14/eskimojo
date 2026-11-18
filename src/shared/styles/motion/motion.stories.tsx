@@ -50,10 +50,12 @@ function Track({
   );
 }
 
-function Demo({ children }: { children: ReactNode }) {
+type MotionScheme = "expressive" | "standard";
+
+function Demo({ children, motion }: { children: ReactNode; motion?: MotionScheme }) {
   const [played, setPlayed] = useState(false);
   return (
-    <main {...motionPageBem()} data-played={played || undefined}>
+    <main {...motionPageBem()} data-played={played || undefined} data-motion={motion}>
       <button type="button" {...motionPlayBem()} onClick={() => setPlayed((p) => !p)}>
         {played ? "Play back" : "Play"}
       </button>
@@ -109,8 +111,12 @@ export const Duration = meta.story({
 });
 
 export const Springs = meta.story({
-  render: () => (
-    <Demo>
+  args: { motion: "expressive" },
+  argTypes: {
+    motion: { name: "Motion", control: "select", options: ["expressive", "standard"] },
+  },
+  render: ({ motion }: { motion?: MotionScheme }) => (
+    <Demo motion={motion}>
       {(["spatial", "effects"] as const).flatMap((type) =>
         speeds.map((speed) => {
           const token = `--md-sys-motion-spring-${speed}-${type}`;

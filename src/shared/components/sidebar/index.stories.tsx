@@ -11,7 +11,6 @@ const meta = preview.meta({
   title: "Components/Sidebar",
   component: NavigationLayout,
   argTypes: { christmas: { control: false } },
-  render: (_, { globals }) => <NavigationLayout christmas={globals.christmas === "on"} />,
   parameters: {
     layout: "fullscreen",
     tanstack: { router: { route: HomeRoute } },
@@ -27,7 +26,7 @@ const meta = preview.meta({
 function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-christmas={christmas || undefined}>
       <Sidebar open={open} onClose={() => setOpen(false)} christmas={christmas} />
       <div className="app-shell__main">
         <AppBar navigationOpen={open} onOpenNavigation={() => setOpen(true)} />
@@ -39,7 +38,7 @@ function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
 export const Default = meta.story({});
 
 export const Christmas = meta.story({
-  globals: { christmas: "on" },
+  args: { christmas: true },
   play: async ({ canvasElement }) => {
     await expect(
       canvasElement.querySelector('img[src="/Goat-avatar-christmas.webp"]'),
@@ -48,9 +47,9 @@ export const Christmas = meta.story({
 });
 
 export const ScrollingPage = meta.story({
-  render: (_, { globals }) => (
+  render: () => (
     <div className="app-shell">
-      <Sidebar open={false} onClose={() => {}} christmas={globals.christmas === "on"} />
+      <Sidebar open={false} onClose={() => {}} />
       <main className="app-shell__main">
         {Array.from({ length: 40 }, (_value, index) => (
           <p key={index}>Page content {index + 1}. The desktop navigation stays in place.</p>

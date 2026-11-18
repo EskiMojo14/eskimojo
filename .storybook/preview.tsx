@@ -2,7 +2,7 @@ import addonA11y from "@storybook/addon-a11y";
 import addonDocs from "@storybook/addon-docs";
 import { definePreview } from "@storybook/tanstack-react";
 import addonMsw from "msw-storybook-addon";
-import { useGlobals } from "storybook/preview-api";
+import { useGlobals, useState } from "storybook/preview-api";
 
 import "#/shared/styles/index.css";
 import "./syntax.css";
@@ -23,9 +23,6 @@ import {
   contrastSchema,
   paletteSchema,
   hapticsSchema,
-  darkSyntaxOptions,
-  lightSyntaxOptions,
-  syntaxLabels,
   darkSyntaxSchema,
   lightSyntaxSchema,
 } from "#/shared/constants/prefs";
@@ -37,11 +34,6 @@ const globalsSchema = v.object({
   palette: paletteSchema,
   theme: themeSchema,
   contrast: contrastSchema,
-  haptics: hapticsSchema,
-  darkSyntax: darkSyntaxSchema,
-  lightSyntax: lightSyntaxSchema,
-  motion: v.fallback(v.picklist(["standard", "expressive"]), "expressive"),
-  christmas: v.fallback(v.picklist(["off", "on"]), "off"),
 });
 
 export default definePreview({
@@ -104,91 +96,27 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
-    lightSyntax: {
-      description: "Syntax highlighting in light mode",
-      toolbar: {
-        title: "Light syntax theme",
-        items: lightSyntaxOptions.options.map((value) => ({
-          value,
-          title: syntaxLabels[value].label,
-        })),
-        dynamicTitle: true,
-      },
-    },
-    darkSyntax: {
-      description: "Syntax highlighting in dark mode",
-      toolbar: {
-        title: "Dark syntax theme",
-        items: darkSyntaxOptions.options.map((value) => ({
-          value,
-          title: syntaxLabels[value].label,
-        })),
-        dynamicTitle: true,
-      },
-    },
-    motion: {
-      description: "Material 3 spring scheme",
-      toolbar: {
-        title: "Motion",
-        icon: "lightning",
-        items: [
-          { value: "standard", title: "Standard motion" },
-          { value: "expressive", title: "Expressive motion" },
-        ],
-        dynamicTitle: true,
-      },
-    },
-    haptics: {
-      description: "Haptic feedback",
-      toolbar: {
-        title: "Haptics",
-        icon: "lightning",
-        items: [
-          { value: "on", title: "Haptics on" },
-          { value: "off", title: "Haptics off" },
-        ],
-        dynamicTitle: true,
-      },
-    },
-    christmas: {
-      description: "Christmas artwork",
-      toolbar: {
-        title: "Christmas",
-        icon: "sun",
-        items: [
-          { value: "off", title: "Christmas off" },
-          { value: "on", title: "Christmas on" },
-        ],
-        dynamicTitle: true,
-      },
-    },
   },
   initialGlobals: {
     direction: "ltr",
     palette: "goat",
     theme: "system",
     contrast: "system",
-    motion: "expressive",
-    haptics: "on",
-    darkSyntax: darkSyntaxSchema.fallback,
-    lightSyntax: lightSyntaxSchema.fallback,
-    christmas: "off",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const {
-        direction,
-        palette,
-        theme,
-        contrast,
-        motion,
-        christmas,
-        haptics,
-        darkSyntax,
-        lightSyntax,
-      } = v.parse(globalsSchema, globals);
+      const { direction, palette, theme, contrast } = v.parse(globalsSchema, globals);
+      const [haptics, setHaptics] = useState<v.InferOutput<typeof hapticsSchema>>(
+        hapticsSchema.fallback,
+      );
+      const [darkSyntax, setDarkSyntax] = useState<v.InferOutput<typeof darkSyntaxSchema>>(
+        darkSyntaxSchema.fallback,
+      );
+      const [lightSyntax, setLightSyntax] = useState<v.InferOutput<typeof lightSyntaxSchema>>(
+        lightSyntaxSchema.fallback,
+      );
       const root = document.documentElement;
       root.dir = direction;
       // Set on <html> so the tokens also reach the body background.
@@ -198,8 +126,6 @@ export default definePreview({
         palette,
         darkSyntax,
         lightSyntax,
-        motion,
-        christmas: christmas === "on" ? "true" : "false",
       });
       return (
         <Providers
@@ -236,7 +162,7 @@ export default definePreview({
               {
                 value: {
                   haptics,
-                  setHaptics: (nextHaptics) => updateGlobals({ haptics: nextHaptics }),
+                  setHaptics,
                 },
               },
             ],
@@ -245,7 +171,7 @@ export default definePreview({
               {
                 value: {
                   darkSyntax,
-                  setDarkSyntax: (value) => updateGlobals({ darkSyntax: value }),
+                  setDarkSyntax,
                 },
               },
             ],
@@ -254,7 +180,7 @@ export default definePreview({
               {
                 value: {
                   lightSyntax,
-                  setLightSyntax: (value) => updateGlobals({ lightSyntax: value }),
+                  setLightSyntax,
                 },
               },
             ],

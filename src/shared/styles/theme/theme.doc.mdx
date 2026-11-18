@@ -201,9 +201,8 @@ Storybook's docs snippets do not have a `language-` class, so
 selected independently for light and dark mode in the **Code** tab. Light mode
 offers **Alucard** (the default) and **Alucard Classic**. Dark mode offers the
 remaining palettes and defaults to **Dracula Pro**. The active page theme
-chooses the palette, whether set explicitly or following the system. Storybook's
-**Light syntax theme** and **Dark syntax theme** toolbar controls mirror these
-preferences.
+chooses the palette, whether set explicitly or following the system. In Storybook,
+use the Preferences dialog's **Code** tab to change the palettes for that story.
 
 ```tsx
 import { useState } from "react";
@@ -237,8 +236,8 @@ Each tile shows a background role with sample text in its `on-` partner. Use the
 ### Syntax swatches
 
 The light and dark syntax palettes are shown together for comparison. Each
-section uses its palette's background and foreground from the **Code** tab,
-independent of the syntax theme toolbar selections.
+section uses its palette's background and foreground, regardless of the active
+theme.
 
 <Canvas of={ThemeStories.SyntaxSwatches} />
 

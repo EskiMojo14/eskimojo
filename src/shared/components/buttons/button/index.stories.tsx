@@ -145,7 +145,7 @@ export const Toggle = meta.story({
     docs: {
       description: {
         story:
-          "Shape changes use the fast spatial spring; container, label, border, shadow, and state-layer changes use fast effects springs. The full radius is capped at half the chosen minimum height so the visible corners interpolate immediately rather than staying clamped near 9999px. Switch the Motion toolbar between standard and expressive to compare springs. Reduced motion disables transitions.",
+          "Shape changes use the fast spatial spring; container, label, border, shadow, and state-layer changes use fast effects springs. The full radius is capped at half the chosen minimum height so the visible corners interpolate immediately rather than staying clamped near 9999px. Compare standard and expressive in Foundations/Motion → Springs. Reduced motion disables transitions.",
       },
     },
   },
