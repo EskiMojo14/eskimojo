@@ -1,3 +1,24 @@
+/* Fixed colours, used for select icons */
+%fixed-light {
+  --fixed-cyan: #036a96;
+  --fixed-green: #14710a;
+  --fixed-orange: #a34d14;
+  --fixed-pink: #a3144d;
+  --fixed-purple: #644ac9;
+  --fixed-red: #cb3a2a;
+  --fixed-yellow: #846e15;
+}
+
+%fixed-dark {
+  --fixed-cyan: #80ffea;
+  --fixed-green: #8aff80;
+  --fixed-orange: #ffca80;
+  --fixed-pink: #ff80bf;
+  --fixed-purple: #9580ff;
+  --fixed-red: #ff9580;
+  --fixed-yellow: #ffff80;
+}
+
 /* Color Palette / Base Dracula PRO */
 %base {
   --foreground: #f8f8f2;

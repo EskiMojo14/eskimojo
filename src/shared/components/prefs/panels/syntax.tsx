@@ -22,7 +22,7 @@ function syntaxOption<Value extends LightSyntax | DarkSyntax>(value: Value) {
     value,
     label,
     supportingText: value === "nosferatu" ? "High contrast" : undefined,
-    icon: <MdSymbol style={{ color: `var(--${color})` }}>code</MdSymbol>,
+    icon: <MdSymbol style={{ color: `var(--fixed-${color})` }}>palette</MdSymbol>,
   };
 }
 

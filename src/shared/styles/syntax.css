@@ -2,16 +2,16 @@
 @import "./theme/palettes/dracula.css";
 
 :root {
-  @extend %base, %dracula-pro;
+  @extend %base, %dracula-pro, %fixed-dark;
 }
 
 :root[data-theme="light"] {
-  @extend %alucard;
+  @extend %alucard, %fixed-light;
 }
 
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"] {
-    @extend %alucard;
+    @extend %alucard, %fixed-light;
   }
 }
 
