@@ -71,13 +71,13 @@ test("mobile dropdowns save preferences", async () => {
   await trigger.click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
-  await expect.element(palette).toHaveAccessibleDescription("Arctic");
+  await expect.element(palette).toHaveAccessibleDescription("Peach");
 
   await theme.click();
   await page.viewport(600, 800);
   await expect.element(dialog.getByRole("listbox")).not.toBeInTheDocument();
   await expect.element(dialog.getByRole("combobox")).not.toBeInTheDocument();
-  for (const name of ["Dark", "High", "Arctic"]) {
+  for (const name of ["Dark", "High", "Peach"]) {
     await expect
       .element(dialog.getByRole("button", { name }))
       .toHaveAttribute("aria-pressed", "true");
