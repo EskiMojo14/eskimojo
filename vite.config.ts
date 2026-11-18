@@ -15,7 +15,8 @@ import fmtConfig from "./config/fmt.config.ts";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 const clientImportSpecifiers = [/^sharp(?:\/|$)/, /^@material\/material-color-utilities(?:\/|$)/];
-const viteReactInclude = /\.(js|jsx|ts|tsx|mdx)$/;
+const mdxContentInclude = /\.mdx\?content$/;
+const viteReactInclude = [/\.(js|jsx|ts|tsx|mdx)$/, mdxContentInclude];
 
 // Set HEADLESS=false to watch browser and Storybook tests run.
 const headless = process.env.HEADLESS !== "false";
@@ -144,6 +145,7 @@ const config = defineConfig({
     const {
       contentCollections: { default: contentCollections },
       mdx: { default: mdx },
+      mdxContent: { mdxContentAttributes },
       netlify: { default: netlify },
       devtools: { devtools },
       tanstackStart: { tanstackStart },
@@ -159,6 +161,7 @@ const config = defineConfig({
     } = await promiseAllKeyed({
       contentCollections: import("@content-collections/vite"),
       mdx: import("@mdx-js/rollup"),
+      mdxContent: import("./vite/mdx-content.ts"),
       netlify: import("@netlify/vite-plugin-tanstack-start"),
       devtools: import("@tanstack/devtools-vite"),
       tanstackStart: import("@tanstack/react-start/plugin/vite"),
@@ -172,8 +175,13 @@ const config = defineConfig({
       serverFnRegistry: import("./vite/server-fn-registry.ts"),
       svgr: import("vite-plugin-svgr"),
     });
+    const applicationMdx = mdx({
+      remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+      rehypePlugins: [rehypePrism],
+    });
     return [
       devtools(),
+      mdxContentAttributes(),
       contentCollections({ configPath: "config/content-collections.ts" }),
       process.env.VITEST !== "true" && process.env.STORYBOOK !== "true" && netlify(),
       process.env.STORYBOOK !== "true" &&
@@ -188,12 +196,14 @@ const config = defineConfig({
       process.env.VITEST !== "true" &&
         process.env.STORYBOOK !== "true" &&
         serverFnRegistry({ output: new URL("./test/e2e/server-fns.gen.ts", import.meta.url) }),
-      process.env.STORYBOOK !== "true" && {
+      {
         enforce: "pre",
-        ...mdx({
-          remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
-          rehypePlugins: [rehypePrism],
-        }),
+        ...applicationMdx,
+        transform: {
+          // Storybook owns docs MDX; ?content selects the application's compiler.
+          filter: process.env.STORYBOOK === "true" ? { id: mdxContentInclude } : undefined,
+          handler: applicationMdx.transform,
+        },
       },
       viteReact({ include: viteReactInclude }),
       svgr(),

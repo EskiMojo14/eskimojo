@@ -108,7 +108,7 @@ export default definePreview({
         title: "Syntax",
         items: syntaxSchema.options.map((value) => ({
           value,
-          title: syntaxLabels[value],
+          title: syntaxLabels[value].label,
         })),
         dynamicTitle: true,
       },

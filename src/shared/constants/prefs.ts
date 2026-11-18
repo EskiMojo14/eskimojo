@@ -47,17 +47,17 @@ export const syntaxSchema = v.fallback(
   "dracula-pro",
 );
 export type Syntax = v.InferOutput<typeof syntaxSchema>;
-export const syntaxLabels: Record<Syntax, string> = {
-  "dracula-classic": "Dracula Classic",
-  "dracula-pro": "Dracula Pro",
-  blade: "Blade",
-  buffy: "Buffy",
-  lincoln: "Lincoln",
-  morbius: "Morbius",
-  "van-helsing": "Van Helsing",
-  nosferatu: "Nosferatu",
-  "alucard-classic": "Alucard Classic",
-  alucard: "Alucard",
+export const syntaxLabels: Record<Syntax, { label: string; color: string }> = {
+  "dracula-classic": { label: "Dracula Classic", color: "purple" },
+  "dracula-pro": { label: "Dracula Pro", color: "purple" },
+  blade: { label: "Blade", color: "green" },
+  buffy: { label: "Buffy", color: "pink" },
+  lincoln: { label: "Lincoln", color: "yellow" },
+  morbius: { label: "Morbius", color: "red" },
+  "van-helsing": { label: "Van Helsing", color: "cyan" },
+  nosferatu: { label: "Nosferatu", color: "orange" },
+  "alucard-classic": { label: "Alucard Classic", color: "md-sys-color-on-surface-variant" },
+  alucard: { label: "Alucard", color: "md-sys-color-on-surface-variant" },
 };
 
 export const matchLightSchema = v.fallback(v.picklist(["on", "off"]), "on");

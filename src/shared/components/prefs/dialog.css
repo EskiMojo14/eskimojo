@@ -70,9 +70,18 @@
 }
 
 .preferences-dialog__syntax-preview {
+  min-inline-size: 0;
+
   > pre {
+    max-block-size: 12rem;
     margin: 0;
     padding: 8px 12px;
+    overflow: auto;
+
+    &:focus-visible {
+      outline: 3px solid var(--md-sys-color-secondary);
+      outline-offset: 2px;
+    }
   }
 }
 

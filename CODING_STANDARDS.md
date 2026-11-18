@@ -77,7 +77,9 @@ new conventions.
 - The root `tsconfig.json` checks application code, tooling, and tests together.
   Run `vp run typecheck` for the full check. Vitest's type-test project uses
   `config/tsconfig.type-tests.json` to disable MDX content mapping and discovers
-  `src/**/*.test-d.ts`. The assertion-type checks under `test/browser/` and
+  `src/**/*.test-d.ts`. Only that project loads the generic `types/mdx.d.ts`
+  fallback; the full check excludes it and verifies MDX inference through
+  `vite/mdx-content.test-d.ts`. The assertion-type checks under `test/browser/` and
   `test/e2e/` run through the full type check and verify that Vitest and
   Playwright expose distinct assertion APIs without separate compiler projects.
 - Put tests and stories beside the file they cover:
@@ -88,6 +90,12 @@ new conventions.
   - `foo.stories.tsx` for Storybook stories;
   - `foo.doc.mdx` for Storybook documentation. Plain `.mdx` files are application
     content and are not indexed by Storybook.
+- Import application MDX with `with { type: "mdx" }` when it is also rendered in
+  Storybook. A Vite pre-transform selects the application's MDX/Prism compiler
+  without running Storybook's docs compiler. Keep the `.mdx` import path intact
+  so the content mapper can infer its types; do not add wildcard MDX module
+  declarations, which mask attributed imports with `any`. Storybook documentation
+  keeps its own syntax highlighter.
 - Add focused tests for non-trivial logic and behavior. Use stories to document
   and exercise UI states; a story is not a substitute for a logic test.
 - Cover meaningful edge cases and user-visible behavior without coupling tests

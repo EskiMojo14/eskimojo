@@ -74,16 +74,19 @@ test("mobile dropdowns save preferences", async () => {
   for (const value of syntaxSchema.options) {
     await syntax.click();
     const option = dialog.getByRole("listbox", { name: "Syntax" }).getByRole("option", {
-      name: value === "nosferatu" ? `${syntaxLabels[value]} High contrast` : syntaxLabels[value],
+      name:
+        value === "nosferatu"
+          ? `${syntaxLabels[value].label} High contrast`
+          : syntaxLabels[value].label,
       exact: true,
     });
     await option.click();
-    await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels[value]);
+    await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels[value].label);
   }
   await userEvent.keyboard("{Escape}");
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
-  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard);
+  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard.label);
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
@@ -106,7 +109,7 @@ test("mobile dropdowns save preferences", async () => {
   await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard);
+  await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels.alucard.label);
 });
 
 test.each([1280, 390])(
@@ -292,13 +295,53 @@ test("Match light theme defaults on and can be toggled with pointer or keyboard"
   await expect.element(document.documentElement).toHaveAttribute("data-match-light", "on");
 });
 
-test("preferences show a small syntax preview", async () => {
-  const result = await page.renderWithProviders(<PreferencesDialog open />);
-  await result.getByRole("tab", { name: "Syntax", exact: true }).click();
-  const preview = result.getByRole("dialog", { name: "Preferences" }).getByRole("code");
+test.each([1280, 390])(
+  "syntax preview is capped and keyboard-scrollable at %ipx",
+  async (width) => {
+    await page.viewport(width, 844);
+    const result = await page.renderWithProviders(<PreferencesDialog open />);
+    await result.getByRole("tab", { name: "Syntax", exact: true }).click();
+    const dialog = result.getByRole("dialog", { name: "Preferences" });
+    const preview = dialog.getByRole("region", { name: "Syntax preview" });
+    const snippet = preview.getByRole("code");
 
-  await expect.element(preview).toHaveTextContent('const syntax = "Dracula Pro";');
-});
+    await expect.element(snippet).toMatchTextContent(/class Vampire/);
+    await expect.element(snippet).toMatchTextContent(/weaknesses: \["Sunlight", "Garlic"\]/);
+    expect(preview.element().clientHeight).toBeLessThanOrEqual(192);
+    expect(preview.element().scrollHeight).toBeGreaterThan(preview.element().clientHeight);
+    expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
+
+    dialog.getByRole("switch", { name: "Match light theme" }).element().focus();
+    await userEvent.keyboard("{Tab}");
+    await expect.element(preview).toHaveFocus();
+    await userEvent.keyboard("{End}");
+    await expect
+      .poll(() => preview.element().scrollTop + preview.element().clientHeight)
+      .toBeGreaterThanOrEqual(preview.element().scrollHeight - 1);
+  },
+);
+
+test.each([390, 320])(
+  "syntax preview scrolls horizontally without widening the bottom sheet at %ipx",
+  async (width) => {
+    await page.viewport(width, 844);
+    const result = await page.renderWithProviders(<PreferencesDialog open />);
+    await result.getByRole("tab", { name: "Syntax", exact: true }).click();
+    const dialog = result.getByRole("dialog", { name: "Preferences" });
+    const preview = dialog.getByRole("region", { name: "Syntax preview" });
+
+    await expect.element(preview).toBeVisible();
+    expect(preview.element().scrollWidth).toBeGreaterThan(preview.element().clientWidth);
+    expect(dialog.element().getBoundingClientRect().width).toBeLessThanOrEqual(width);
+    expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(width);
+
+    dialog.getByRole("switch", { name: "Match light theme" }).element().focus();
+    await userEvent.keyboard("{Tab}{ArrowRight}");
+    await expect.element(preview).toHaveFocus();
+    await expect.poll(() => preview.element().scrollLeft).toBeGreaterThan(0);
+  },
+);
 
 test("Escape dismisses the select menu before the preferences dialog", async () => {
   await page.viewport(320, 568);

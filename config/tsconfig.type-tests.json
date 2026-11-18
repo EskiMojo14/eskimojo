@@ -1,4 +1,6 @@
 {
   "extends": "../tsconfig.json",
+  "files": ["../types/mdx.d.ts"],
+  "exclude": ["../node_modules", "../vite/mdx-content.test-d.ts"],
   "contentMappers": []
 }

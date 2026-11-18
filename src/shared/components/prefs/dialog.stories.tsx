@@ -17,7 +17,7 @@ const meta = preview.meta({
     docs: {
       description: {
         story:
-          "The tab bar spans the full dialog or bottom-sheet surface while panel contents stay padded. Panels share the height of the tallest panel without a fixed height; inactive panels remain invisible and unavailable to keyboard and assistive technology. A persistent content wrapper keeps native transition captures valid while the active panel changes. Panel changes use element-scoped transitions with the same directional slide, fade, and spring timing as route tabs, reversing direction in RTL. Reduced motion and browsers without element-scoped transitions switch immediately. Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax controls and the code preview sit directly on the dialog surface, using the same spacing as Theme settings. Match light theme and Haptic feedback use plain full-row labels rather than list surfaces; Match light theme also provides accessible supporting text. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
+          "The tab bar spans the full dialog or bottom-sheet surface while panel contents stay padded. Panels share the height of the tallest panel without a fixed height; inactive panels remain invisible and unavailable to keyboard and assistive technology. A persistent content wrapper keeps native transition captures valid while the active panel changes. Panel changes use element-scoped transitions with the same directional slide, fade, and spring timing as route tabs, reversing direction in RTL. Reduced motion and browsers without element-scoped transitions switch immediately. Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax controls and the code preview sit directly on the dialog surface, using the same spacing as Theme settings. The preview is capped at 12rem and scrolls independently; keyboard users can focus its named region to scroll through the full snippet. Match light theme and Haptic feedback use plain full-row labels rather than list surfaces; Match light theme also provides accessible supporting text. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
           "Primary tabs group preferences into Theme (theme, contrast, and palette), Syntax (syntax palette, Match light theme, and code preview), and Other (haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End select and focus tabs. At viewport widths up to 37.5rem (600px), appearance preferences use outlined SelectMenus; larger viewports use connected button groups. Syntax always uses a SelectMenu, with a High contrast note for Nosferatu. Match light theme defaults on and uses Alucard when the page theme is light, whether explicit or system-driven. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, preference changes update globals; the app saves them through cookie-backed providers.",
       },
@@ -31,8 +31,10 @@ export const Syntax = meta.story({
   play: async ({ canvasElement, userEvent }) => {
     const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(body.getByRole("tab", { name: "Syntax" }));
-    await expect(body.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
+    await waitFor(() => expect(body.getByRole("tabpanel", { name: "Syntax" })).toBeVisible());
     await expect(body.getByRole("combobox", { name: "Syntax" })).toBeVisible();
+    const syntaxPreview = within(body.getByRole("region", { name: "Syntax preview" }));
+    await expect(syntaxPreview.getByText("class", { exact: true })).toBeVisible();
   },
 });
 
@@ -41,7 +43,7 @@ export const HapticsOff = meta.story({
   play: async ({ canvasElement, userEvent }) => {
     const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(body.getByRole("tab", { name: "Other" }));
-    await expect(body.getByRole("tabpanel", { name: "Other" })).toBeVisible();
+    await waitFor(() => expect(body.getByRole("tabpanel", { name: "Other" })).toBeVisible());
   },
 });
 
@@ -111,7 +113,7 @@ export const Interactive = meta.story({
       String(globals.contrast === "system"),
     );
     await userEvent.click(dialog.getByRole("tab", { name: "Syntax" }));
-    await expect(dialog.getByRole("combobox", { name: "Syntax" })).toBeVisible();
+    await waitFor(() => expect(dialog.getByRole("combobox", { name: "Syntax" })).toBeVisible());
     await userEvent.keyboard("{ArrowRight}");
     await expect(dialog.getByRole("tab", { name: "Other" })).toHaveFocus();
     const haptics = dialog.queryByRole("switch", { name: "Haptic feedback" });

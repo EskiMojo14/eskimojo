@@ -57,7 +57,7 @@ export const anyAbortSignal = (...signals: Array<AbortSignal | undefined>): Abor
 
 export const upfetch = up(fetch);
 
-type CodeLanguage = "css" | "esquery" | "js" | "regex" | "ts";
+type CodeLanguage = "css" | "esquery" | "js" | "regex" | "ts" | "tsx";
 
 // The proxy getter supplies every supported key while keeping the target empty.
 // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- The get trap below guarantees every language key.

@@ -1,9 +1,9 @@
-import { useId } from "react";
+import { useId, type ComponentPropsWithoutRef } from "react";
 import BEMHelper from "react-bem-helper";
 
 import { ListItemContent } from "#/shared/components/list";
 import { useSyntax, useMatchLight } from "#/shared/components/prefs/context";
-import SyntaxPreview from "#/shared/components/prefs/syntax-preview.mdx";
+import SyntaxPreview from "#/shared/components/prefs/syntax-preview.mdx" with { type: "mdx" };
 import { SelectMenu } from "#/shared/components/select-menu";
 import { Switch } from "#/shared/components/switch";
 import { MdSymbol } from "#/shared/components/symbol";
@@ -11,6 +11,11 @@ import { TabPanel } from "#/shared/components/tabs";
 import { syntaxSchema, syntaxLabels } from "#/shared/constants/prefs";
 
 const preferencesBem = BEMHelper("preferences-dialog");
+
+function SyntaxPreviewCodeBlock(props: ComponentPropsWithoutRef<"pre">) {
+  // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role, jsx-a11y/no-noninteractive-tabindex -- Keep preformatted code keyboard-scrollable and named.
+  return <pre {...props} role="region" aria-label="Syntax preview" tabIndex={0} />;
+}
 
 export function SyntaxPanel() {
   const { syntax, setSyntax } = useSyntax();
@@ -30,9 +35,11 @@ export function SyntaxPanel() {
           onChange={setSyntax}
           options={syntaxSchema.options.map((value) => ({
             value,
-            label: syntaxLabels[value],
+            label: syntaxLabels[value].label,
             supportingText: value === "nosferatu" ? "High contrast" : undefined,
-            icon: <MdSymbol>code</MdSymbol>,
+            icon: (
+              <MdSymbol style={{ color: `var(--${syntaxLabels[value].color})` }}>code</MdSymbol>
+            ),
           }))}
         />
         <label {...preferencesBem({ element: "toggle" })} htmlFor={matchLightId}>
@@ -57,7 +64,7 @@ export function SyntaxPanel() {
           />
         </label>
         <div {...preferencesBem({ element: "syntax-preview" })}>
-          <SyntaxPreview />
+          <SyntaxPreview components={{ pre: SyntaxPreviewCodeBlock }} />
         </div>
       </div>
     </TabPanel>
