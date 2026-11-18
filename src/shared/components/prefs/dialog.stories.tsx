@@ -19,7 +19,7 @@ const meta = preview.meta({
         story:
           "The tab bar spans the full dialog or bottom-sheet surface while panel contents stay padded. Panels share the height of the tallest panel without a fixed height; inactive panels remain invisible and unavailable to keyboard and assistive technology. A persistent content wrapper keeps native transition captures valid while the active panel changes. Panel changes use element-scoped transitions with the same directional slide, fade, and spring timing as route tabs, reversing direction in RTL. Reduced motion and browsers without element-scoped transitions switch immediately. Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax controls and the code preview sit directly on the dialog surface, using the same spacing as Theme settings. The preview is capped at 12rem and scrolls independently; keyboard users can focus its named region to scroll through the full snippet. Haptic feedback uses a plain full-row label rather than a list surface. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
-          "Primary tabs group preferences into Theme (theme, contrast, and palette), Syntax (light and dark syntax palettes and a code preview), and Other (haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End select and focus tabs. At viewport widths up to 37.5rem (600px), appearance preferences use outlined SelectMenus; larger viewports use connected button groups. Syntax uses two SelectMenus with a High contrast note for Nosferatu. The preview follows the active page theme, defaulting to Alucard in light mode and Dracula Pro in dark mode. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, preference changes update globals; the app saves them through cookie-backed providers.",
+          "Primary tabs group preferences into Theme (theme, contrast, and palette), Code (light and dark syntax palettes and a code preview), and Other (haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End select and focus tabs. At viewport widths up to 37.5rem (600px), appearance preferences use outlined SelectMenus; larger viewports use connected button groups. Code uses two SelectMenus with a High contrast note for Nosferatu. The preview follows the active page theme, defaulting to Alucard in light mode and Dracula Pro in dark mode. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, preference changes update globals; the app saves them through cookie-backed providers.",
       },
     },
   },
@@ -27,15 +27,15 @@ const meta = preview.meta({
 
 export const Default = meta.story({});
 
-export const Syntax = meta.story({
+export const Code = meta.story({
   play: async ({ canvasElement, userEvent }) => {
     const body = within(canvasElement.ownerDocument.body);
-    await userEvent.click(body.getByRole("tab", { name: "Syntax" }));
-    await waitFor(() => expect(body.getByRole("tabpanel", { name: "Syntax" })).toBeVisible());
+    await userEvent.click(body.getByRole("tab", { name: "Code" }));
+    await waitFor(() => expect(body.getByRole("tabpanel", { name: "Code" })).toBeVisible());
     await expect(body.getByRole("combobox", { name: "Light theme" })).toBeVisible();
     await expect(body.getByRole("combobox", { name: "Dark theme" })).toBeVisible();
-    const syntaxPreview = within(body.getByRole("region", { name: "Syntax preview" }));
-    await expect(syntaxPreview.getByText("class", { exact: true })).toBeVisible();
+    const codePreview = within(body.getByRole("region", { name: "Code preview" }));
+    await expect(codePreview.getByText("class", { exact: true })).toBeVisible();
   },
 });
 
@@ -113,7 +113,7 @@ export const Interactive = meta.story({
       "aria-pressed",
       String(globals.contrast === "system"),
     );
-    await userEvent.click(dialog.getByRole("tab", { name: "Syntax" }));
+    await userEvent.click(dialog.getByRole("tab", { name: "Code" }));
     await waitFor(() =>
       expect(dialog.getByRole("combobox", { name: "Light theme" })).toBeVisible(),
     );

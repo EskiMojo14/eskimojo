@@ -67,16 +67,16 @@ test("preferences update the controls and page before cookies are saved", async 
   await preferences.theme.setPreference("Theme", "Dark");
   await preferences.theme.setPreference("Contrast", "High");
   await preferences.theme.setPreference("Palette", "Arctic");
-  await preferences.syntax.select();
-  await preferences.syntax.setPreference("Light theme", "Alucard Classic");
-  await preferences.syntax.setPreference("Dark theme", "Dracula Classic");
+  await preferences.code.select();
+  await preferences.code.setPreference("Light theme", "Alucard Classic");
+  await preferences.code.setPreference("Dark theme", "Dracula Classic");
   await preferences.theme.select();
   await preferences.theme.expectSelected("Theme", "Dark");
   await preferences.theme.expectSelected("Contrast", "High");
   await preferences.theme.expectSelected("Palette", "Arctic");
-  await preferences.syntax.select();
-  await preferences.syntax.expectSelected("Light theme", "Alucard Classic");
-  await preferences.syntax.expectSelected("Dark theme", "Dracula Classic");
+  await preferences.code.select();
+  await preferences.code.expectSelected("Light theme", "Alucard Classic");
+  await preferences.code.expectSelected("Dark theme", "Dracula Classic");
   await expect(preferences.documentElement).toHaveAttribute("data-theme", "dark");
   await expect(preferences.documentElement).toHaveAttribute("data-contrast", "high");
   await expect(preferences.documentElement).toHaveAttribute("data-palette", "arctic");
@@ -112,9 +112,9 @@ test("preferences update the controls and page before cookies are saved", async 
   await expect(preferences.documentElement).toHaveAttribute("data-light-syntax", "alucard-classic");
   await expect(preferences.documentElement).toHaveAttribute("data-dark-syntax", "dracula-classic");
   await preferences.open();
-  await preferences.syntax.select();
-  await preferences.syntax.expectSelected("Light theme", "Alucard Classic");
-  await preferences.syntax.expectSelected("Dark theme", "Dracula Classic");
+  await preferences.code.select();
+  await preferences.code.expectSelected("Light theme", "Alucard Classic");
+  await preferences.code.expectSelected("Dark theme", "Dracula Classic");
 });
 
 test("rapid changes keep the latest selection and persist in order", async ({

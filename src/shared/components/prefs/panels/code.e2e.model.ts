@@ -4,8 +4,8 @@ import { PreferencesTab } from "./tab.e2e.model";
 
 type SyntaxPreferenceName = "Light theme" | "Dark theme";
 
-export class SyntaxTab extends PreferencesTab {
-  tabName = "Syntax";
+export class CodeTab extends PreferencesTab {
+  tabName = "Code";
 
   syntaxSelect(name: SyntaxPreferenceName) {
     return this.tabPanel.getByRole("combobox", { name, exact: true });

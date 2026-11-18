@@ -1,6 +1,6 @@
 .preferences-dialog,
 .preferences-dialog__theme-settings,
-.preferences-dialog__syntax-settings {
+.preferences-dialog__code-settings {
   display: grid;
   gap: 1.5rem;
 }
@@ -69,7 +69,7 @@
   }
 }
 
-.preferences-dialog__syntax-preview {
+.preferences-dialog__code-preview {
   min-inline-size: 0;
 
   > pre {

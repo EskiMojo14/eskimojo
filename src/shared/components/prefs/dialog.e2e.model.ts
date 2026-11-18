@@ -1,7 +1,7 @@
 import { ComponentObjectModel, expect } from "#test/e2e";
 
+import { CodeTab } from "./panels/code.e2e.model";
 import { OtherTab } from "./panels/other.e2e.model";
-import { SyntaxTab } from "./panels/syntax.e2e.model";
 import { ThemeTab } from "./panels/theme.e2e.model";
 
 export class PreferencesDialogModel extends ComponentObjectModel {
@@ -9,7 +9,7 @@ export class PreferencesDialogModel extends ComponentObjectModel {
   trigger = this.page.getByRole("button", { name: "Preferences" });
   tabs = this.dialog.getByRole("tablist", { name: "Preferences" });
   theme = new ThemeTab(this.page, this);
-  syntax = new SyntaxTab(this.page, this);
+  code = new CodeTab(this.page, this);
   other = new OtherTab(this.page, this);
 
   async open() {

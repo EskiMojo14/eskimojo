@@ -4,14 +4,15 @@ import { flushSync } from "react-dom";
 
 import { Button } from "#/shared/components/buttons/button";
 import { Dialog, DialogContent, type DialogProps } from "#/shared/components/dialog";
+import { MdSymbol } from "#/shared/components/symbol/index.tsx";
 import { Tab, TabList, Tabs } from "#/shared/components/tabs";
 
+import { CodePanel } from "./panels/code";
 import { OtherPanel } from "./panels/other";
-import { SyntaxPanel } from "./panels/syntax";
 import { ThemePanel } from "./panels/theme";
 
 const preferencesBem = BEMHelper("preferences-dialog");
-const preferenceTabs = ["theme", "syntax", "other"];
+const preferenceTabs = ["theme", "code", "other"];
 
 export type PreferencesDialogProps = Pick<DialogProps, "open" | "onClose">;
 
@@ -59,14 +60,20 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
         >
           <Tabs {...preferencesBem()} value={tab} onValueChange={selectTab}>
             <TabList aria-label="Preferences">
-              <Tab value="theme">Theme</Tab>
-              <Tab value="syntax">Syntax</Tab>
-              <Tab value="other">Other</Tab>
+              <Tab icon={<MdSymbol>palette</MdSymbol>} value="theme">
+                Theme
+              </Tab>
+              <Tab icon={<MdSymbol>code</MdSymbol>} value="code">
+                Code
+              </Tab>
+              <Tab icon={<MdSymbol>settings</MdSymbol>} value="other">
+                Other
+              </Tab>
             </TabList>
             <div {...preferencesBem({ element: "panels" })} ref={panelsRef}>
               <div {...preferencesBem({ element: "panel-content" })}>
                 <ThemePanel />
-                <SyntaxPanel />
+                <CodePanel />
                 <OtherPanel />
               </div>
             </div>

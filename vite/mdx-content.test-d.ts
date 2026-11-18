@@ -1,6 +1,6 @@
 import { expectTypeOf } from "vite-plus/test";
 
-import SyntaxPreview from "#/shared/components/prefs/syntax-preview.mdx" with { type: "mdx" };
+import CodePreview from "#/shared/components/prefs/code-preview.mdx" with { type: "mdx" };
 
-expectTypeOf(SyntaxPreview).not.toBeAny();
-expectTypeOf(SyntaxPreview).toBeCallableWith({});
+expectTypeOf(CodePreview).not.toBeAny();
+expectTypeOf(CodePreview).toBeCallableWith({});

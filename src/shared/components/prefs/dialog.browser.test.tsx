@@ -69,7 +69,7 @@ test("mobile dropdowns save preferences", async () => {
       .click();
     await expect.element(palette).toHaveAccessibleDescription(paletteLabels[value].label);
   }
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
+  await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.element(syntax).toHaveAccessibleDescription("Dracula Pro");
   for (const value of darkSyntaxOptions.options) {
     await syntax.click();
@@ -98,7 +98,7 @@ test("mobile dropdowns save preferences", async () => {
   for (const name of ["Theme", "Contrast", "Palette"]) {
     await expect.element(dialog.getByRole("combobox", { name })).not.toBeInTheDocument();
   }
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
+  await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.element(syntax).toBeVisible();
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
   for (const name of ["Dark", "High", "Peach"]) {
@@ -108,7 +108,7 @@ test("mobile dropdowns save preferences", async () => {
   }
   await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
+  await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.element(syntax).toHaveAccessibleDescription("Nosferatu");
 });
 
@@ -130,11 +130,9 @@ test.each([1280, 390])(
       .element(dialog.getByRole("switch", { name: "Haptic feedback" }))
       .not.toBeInTheDocument();
 
-    await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-    await expect.element(dialog.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
-    expect(dialog.getByRole("tabpanel", { name: "Syntax" }).element().clientHeight).toBe(
-      panelHeight,
-    );
+    await dialog.getByRole("tab", { name: "Code", exact: true }).click();
+    await expect.element(dialog.getByRole("tabpanel", { name: "Code" })).toBeVisible();
+    expect(dialog.getByRole("tabpanel", { name: "Code" }).element().clientHeight).toBe(panelHeight);
     await expect.element(dialog.getByRole("combobox", { name: "Dark theme" })).toBeVisible();
     await expect.element(dialog.getByRole("combobox", { name: "Light theme" })).toBeVisible();
     await expect.element(dialog.getByRole("tabpanel", { name: "Theme" })).not.toBeInTheDocument();
@@ -188,8 +186,8 @@ test.runIf("startViewTransition" in HTMLElement.prototype).each([
       });
     using documentTransition = vi.spyOn(document, "startViewTransition");
 
-    await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-    await expect.element(dialog.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
+    await dialog.getByRole("tab", { name: "Code", exact: true }).click();
+    await expect.element(dialog.getByRole("tabpanel", { name: "Code" })).toBeVisible();
     expect(scopedTransition).toHaveBeenLastCalledWith(
       expect.objectContaining({ types: ["tab-forward"], update: expect.any(Function) }),
     );
@@ -221,8 +219,8 @@ test("tab changes still work without element-scoped transition support", async (
   Object.defineProperty(panels, "startViewTransition", { value: undefined, configurable: true });
   using documentTransition = vi.spyOn(document, "startViewTransition");
 
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-  await expect.element(dialog.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
+  await dialog.getByRole("tab", { name: "Code", exact: true }).click();
+  await expect.element(dialog.getByRole("tabpanel", { name: "Code" })).toBeVisible();
   await userEvent.keyboard("{ArrowRight}");
   await expect.element(dialog.getByRole("tabpanel", { name: "Other" })).toBeVisible();
   expect(documentTransition).not.toHaveBeenCalled();
@@ -248,8 +246,8 @@ test.runIf("startViewTransition" in HTMLElement.prototype)(
       container;
     using transition = vi.spyOn(panels, "startViewTransition");
 
-    await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
-    await expect.element(dialog.getByRole("tabpanel", { name: "Syntax" })).toBeVisible();
+    await dialog.getByRole("tab", { name: "Code", exact: true }).click();
+    await expect.element(dialog.getByRole("tabpanel", { name: "Code" })).toBeVisible();
     expect(media).toHaveBeenCalledWith("(prefers-reduced-motion: reduce)");
     expect(transition).not.toHaveBeenCalled();
   },
@@ -260,7 +258,7 @@ test("light and dark syntax palettes can be changed independently at desktop wid
     syncPreferencesToDocument: true,
   });
   const dialog = result.getByRole("dialog", { name: "Preferences" });
-  await dialog.getByRole("tab", { name: "Syntax", exact: true }).click();
+  await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   const light = dialog.getByRole("combobox", { name: "Light theme" });
   const dark = dialog.getByRole("combobox", { name: "Dark theme" });
   await expect.element(light).toHaveAccessibleDescription("Alucard");
@@ -288,40 +286,37 @@ test("light and dark syntax palettes can be changed independently at desktop wid
     .toHaveAttribute("data-dark-syntax", "dracula-classic");
 });
 
-test.each([1280, 390])(
-  "syntax preview is capped and keyboard-scrollable at %ipx",
-  async (width) => {
-    await page.viewport(width, 844);
-    const result = await page.renderWithProviders(<PreferencesDialog open />);
-    await result.getByRole("tab", { name: "Syntax", exact: true }).click();
-    const dialog = result.getByRole("dialog", { name: "Preferences" });
-    const preview = dialog.getByRole("region", { name: "Syntax preview" });
-    const snippet = preview.getByRole("code");
+test.each([1280, 390])("code preview is capped and keyboard-scrollable at %ipx", async (width) => {
+  await page.viewport(width, 844);
+  const result = await page.renderWithProviders(<PreferencesDialog open />);
+  await result.getByRole("tab", { name: "Code", exact: true }).click();
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+  const preview = dialog.getByRole("region", { name: "Code preview" });
+  const snippet = preview.getByRole("code");
 
-    await expect.element(snippet).toMatchTextContent(/class Vampire/);
-    await expect.element(snippet).toMatchTextContent(/weaknesses: \["Sunlight", "Garlic"\]/);
-    expect(preview.element().clientHeight).toBeLessThanOrEqual(192);
-    expect(preview.element().scrollHeight).toBeGreaterThan(preview.element().clientHeight);
-    expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
+  await expect.element(snippet).toMatchTextContent(/class Vampire/);
+  await expect.element(snippet).toMatchTextContent(/weaknesses: \["Sunlight", "Garlic"\]/);
+  expect(preview.element().clientHeight).toBeLessThanOrEqual(192);
+  expect(preview.element().scrollHeight).toBeGreaterThan(preview.element().clientHeight);
+  expect(dialog.element().scrollWidth).toBeLessThanOrEqual(dialog.element().clientWidth);
 
-    dialog.getByRole("combobox", { name: "Dark theme" }).element().focus();
-    await userEvent.keyboard("{Tab}");
-    await expect.element(preview).toHaveFocus();
-    await userEvent.keyboard("{End}");
-    await expect
-      .poll(() => preview.element().scrollTop + preview.element().clientHeight)
-      .toBeGreaterThanOrEqual(preview.element().scrollHeight - 1);
-  },
-);
+  dialog.getByRole("combobox", { name: "Dark theme" }).element().focus();
+  await userEvent.keyboard("{Tab}");
+  await expect.element(preview).toHaveFocus();
+  await userEvent.keyboard("{End}");
+  await expect
+    .poll(() => preview.element().scrollTop + preview.element().clientHeight)
+    .toBeGreaterThanOrEqual(preview.element().scrollHeight - 1);
+});
 
 test.each([390, 320])(
-  "syntax preview scrolls horizontally without widening the bottom sheet at %ipx",
+  "code preview scrolls horizontally without widening the bottom sheet at %ipx",
   async (width) => {
     await page.viewport(width, 844);
     const result = await page.renderWithProviders(<PreferencesDialog open />);
-    await result.getByRole("tab", { name: "Syntax", exact: true }).click();
+    await result.getByRole("tab", { name: "Code", exact: true }).click();
     const dialog = result.getByRole("dialog", { name: "Preferences" });
-    const preview = dialog.getByRole("region", { name: "Syntax preview" });
+    const preview = dialog.getByRole("region", { name: "Code preview" });
 
     await expect.element(preview).toBeVisible();
     expect(preview.element().scrollWidth).toBeGreaterThan(preview.element().clientWidth);
