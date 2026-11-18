@@ -8,6 +8,7 @@ import { usePalette } from "#/shared/components/prefs/context";
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 import { withTooltip } from "#/shared/components/tooltip";
+import { paletteLabels } from "#/shared/constants/prefs";
 import { useHapticFeedback } from "#/shared/lib/haptics";
 
 import { links } from "./groups";
@@ -29,7 +30,7 @@ function SidebarContents({
   const { triggerHapticFeedback } = useHapticFeedback();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(undefined, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
-  const nextPaletteLabel = nextPalette === "goat" ? "Goat" : "Arctic";
+  const nextPaletteLabel = paletteLabels[nextPalette].label;
   return (
     <>
       <div {...siteSidebarBem({ element: "header" })}>

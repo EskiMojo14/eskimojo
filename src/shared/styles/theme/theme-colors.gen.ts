@@ -28,4 +28,18 @@ export const themeColors = {
       dark: "#161217",
     },
   },
+  peach: {
+    standard: {
+      light: "#fff8f6",
+      dark: "#1a110f",
+    },
+    medium: {
+      light: "#fff8f6",
+      dark: "#1a110f",
+    },
+    high: {
+      light: "#fff8f6",
+      dark: "#1a110f",
+    },
+  },
 } as const;

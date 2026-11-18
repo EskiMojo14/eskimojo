@@ -52,11 +52,11 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   });
   await generate();
   expect(new Set(await readdir(join(dir, themePath, "palettes")))).toEqual(
-    new Set(["arctic.gen.css", "goat.gen.css", "new-theme.gen.css"]),
+    new Set(["arctic.gen.css", "goat.gen.css", "peach.gen.css", "new-theme.gen.css"]),
   );
 
   const outputs = new Map<string, string>();
-  for (const theme of ["arctic", "goat", "new-theme"]) {
+  for (const theme of ["arctic", "goat", "peach", "new-theme"]) {
     const css = await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8");
     outputs.set(theme, css);
     for (const [level, suffix] of [
@@ -89,6 +89,8 @@ test("generates a separate palette for every theme and preserves the goat Storyb
     }
   }
   expect(outputs.get("arctic")).not.toBe(outputs.get("goat"));
+  expect(outputs.get("peach")).not.toBe(outputs.get("goat"));
+  expect(outputs.get("peach")).not.toBe(outputs.get("arctic"));
   const syntax = await readFile(join(dir, "src/shared/styles/syntax.gen.css"), "utf8");
   for (const [level, target] of Object.entries({ standard: 4.5, medium: 6, high: 7 })) {
     const block = new RegExp(`%syntax-${level} \\{([^}]+)\\}`).exec(syntax)?.[1];
