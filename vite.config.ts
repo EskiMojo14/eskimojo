@@ -35,6 +35,8 @@ const config = defineConfig({
     plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
     jsPlugins: [
       { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
+      { name: "landmines-testing", specifier: "@interfere/landmines/testing" },
+      { name: "landmines-structure", specifier: "@interfere/landmines/structure" },
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
       { name: "e18e", specifier: "@e18e/eslint-plugin" },
       { name: "@tanstack/router", specifier: "@tanstack/eslint-plugin-router" },
@@ -63,6 +65,9 @@ const config = defineConfig({
       "anti-slop/no-widen-then-assert": "error",
       "anti-slop/require-readable-spacing": "error",
       "anti-slop/require-safety-comment-for-type-assertion": "error",
+      "landmines-testing/no-fixed-sleep": "error",
+      "landmines-testing/no-unsignaled-poll": "error",
+      "landmines-structure/test-file-names": "error",
       ...eslintPluginE18e.configs.recommended.rules,
       "vite-plus/prefer-vite-plus-imports": "error",
       "import/first": "error",

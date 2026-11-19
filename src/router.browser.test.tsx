@@ -10,6 +10,8 @@ import {
 import { expect, test, vi } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
+import { observeViewTransitions } from "#test/browser/view-transition.test-utils";
+
 import { getRouter } from "./router";
 
 function createTransitionRouter(initialEntry = "/projects") {
@@ -101,39 +103,38 @@ test("interrupted navigation transitions do not leave unhandled rejections", asy
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("link", { name: "Home" })).toBeVisible();
   const original = document.startViewTransition.bind(document);
+  const transitions = observeViewTransitions();
+  let interruptedTransition: ReturnType<Document["startViewTransition"]> | undefined;
+  let interruptedNavigation: Promise<void> | undefined;
 
-  using startViewTransition = vi
-    .spyOn(document, "startViewTransition")
-    .mockImplementationOnce((update) => {
-      const transition = original(update);
-      // Navigating again before this transition is ready skips it.
-      void router.navigate({ to: "/projects/$slug", params: { slug: "history-adapter" } });
-
-      return transition;
+  using startViewTransition = transitions.spy;
+  startViewTransition.mockImplementationOnce((update) => {
+    interruptedTransition = original(update);
+    // Navigating again before this transition is ready skips it.
+    interruptedNavigation = router.navigate({
+      to: "/projects/$slug",
+      params: { slug: "history-adapter" },
     });
 
-  const rejections: Array<unknown> = [];
-
-  const onRejection = (event: PromiseRejectionEvent) => {
-    rejections.push(event.reason);
-    event.preventDefault();
-  };
-
-  window.addEventListener("unhandledrejection", onRejection);
+    return interruptedTransition;
+  });
 
   try {
+    const secondTransitionPromise = transitions.next();
     await router.navigate({ to: "/" });
-    await expect.poll(() => startViewTransition.mock.calls.length).toBe(2);
+    const secondTransition = await secondTransitionPromise;
 
+    if (!interruptedTransition || !interruptedNavigation) {
+      throw new Error("Expected the interrupted navigation to start a second transition");
+    }
+
+    await interruptedNavigation;
+    await Promise.all([interruptedTransition.finished, secondTransition.finished]);
+    expect(startViewTransition).toHaveBeenCalledTimes(2);
+  } finally {
     for (const entry of startViewTransition.mock.results) {
       if (entry.type === "return") await entry.value.finished;
     }
-
-    // Unhandled rejection events are dispatched in a later task.
-    await new Promise((resolve) => setTimeout(resolve));
-    expect(rejections).toEqual([]);
-  } finally {
-    window.removeEventListener("unhandledrejection", onRejection);
   }
 });
 
@@ -185,24 +186,27 @@ test.each([
     await expect.poll(() => router.state.status).toBe("idle");
 
     for (const animation of document.getAnimations()) animation.finish();
-    using startTransition = vi.spyOn(document, "startViewTransition");
+    const transitions = observeViewTransitions();
+    using startTransition = transitions.spy;
 
     try {
+      const backTransitionPromise = transitions.next();
       router.history.back();
       await expect.poll(() => router.state.location.href).toBe(from);
-      await expect.poll(() => startTransition.mock.calls.length).toBe(1);
+      const backTransition = await backTransitionPromise;
       expect(startTransition).toHaveBeenLastCalledWith(
         expect.objectContaining({ types: backwardTypes }),
       );
-      await startTransition.mock.results.at(-1)?.value.finished;
+      await backTransition.finished;
 
+      const forwardTransitionPromise = transitions.next();
       router.history.forward();
       await expect.poll(() => router.state.location.href).toBe(to);
-      await expect.poll(() => startTransition.mock.calls.length).toBe(2);
+      const forwardTransition = await forwardTransitionPromise;
       expect(startTransition).toHaveBeenLastCalledWith(
         expect.objectContaining({ types: forwardTypes }),
       );
-      await startTransition.mock.results.at(-1)?.value.finished;
+      await forwardTransition.finished;
     } finally {
       for (const entry of startTransition.mock.results) {
         if (entry.type === "return") await entry.value.finished;

@@ -2,7 +2,7 @@ import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
 import exampleCoverUrl from "#/routes/music.{-$breakdown}/-components/artwork/example-cover.svg?url";
-import { fixturePalette } from "#/routes/music.{-$breakdown}/-components/artwork/story-fixtures";
+import { fixturePalette } from "#/routes/music.{-$breakdown}/-components/artwork/stories.fixture.ts";
 
 import { MusicTopList } from "./index";
 

@@ -12,6 +12,7 @@ import { page, userEvent } from "vite-plus/test/browser";
 
 import { generateMetadata } from "#/shared/lib/document-head";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
+import { observeViewTransitions } from "#test/browser/view-transition.test-utils";
 
 import { AppBar } from "./index";
 
@@ -106,7 +107,8 @@ test("bottom navigation starts page transitions in destination order", async () 
   await expect.poll(() => router.state.status).toBe("idle");
 
   for (const animation of document.getAnimations()) animation.finish();
-  using startTransition = vi.spyOn(document, "startViewTransition");
+  const transitions = observeViewTransitions();
+  using startTransition = transitions.spy;
 
   try {
     const nav = result.getByRole("navigation", { name: "Primary" });
@@ -115,8 +117,9 @@ test("bottom navigation starts page transitions in destination order", async () 
       { name: "Gigs", type: "page-forward" },
       { name: "Projects", type: "page-backward" },
     ].entries()) {
+      const transitionPromise = transitions.next();
       await nav.getByRole("link", { name, exact: true }).click();
-      await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
+      await transitionPromise;
       expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
       await expect
         .element(nav.getByRole("link", { name, exact: true }))

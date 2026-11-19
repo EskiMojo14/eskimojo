@@ -8,7 +8,7 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import * as v from "valibot";
-import { expect, test, vi } from "vite-plus/test";
+import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { MusicBreakdownTabs } from "#/routes/music.{-$breakdown}/-components/tabs";
@@ -20,6 +20,7 @@ import { musicBreakdownSchema, musicTypeSchema } from "#/routes/music.{-$breakdo
 import { periodSchema } from "#/routes/music.{-$breakdown}/-query";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
+import { observeViewTransitions } from "#test/browser/view-transition.test-utils";
 
 import { MusicPeriodPicker } from "./index";
 
@@ -111,17 +112,14 @@ test("both tab levels slide while period and other navigation crossfade", async 
   await expect.poll(() => router.state.status).toBe("idle");
 
   for (const animation of document.getAnimations()) animation.finish();
-  using startTransition = vi.spyOn(document, "startViewTransition");
+  const transitions = observeViewTransitions();
+  using startTransition = transitions.spy;
 
   try {
+    const periodTransition = transitions.next();
     await allTime.click();
     await expect.element(allTime).toHaveAttribute("aria-current", "page");
-    await expect.poll(() => startTransition.mock.results.length).toBe(1);
-
-    const transitionResult = startTransition.mock.results[0];
-
-    if (transitionResult?.type !== "return") throw new Error("Expected a native view transition");
-    const transition = transitionResult.value;
+    const transition = await periodTransition;
     await transition.ready;
     expect(startTransition.mock.calls[0]?.[0]).toMatchObject({ types: ["music-period"] });
     expect(
@@ -137,14 +135,12 @@ test("both tab levels slide while period and other navigation crossfade", async 
     await expect.element(result.getByText("Results for overall")).toBeVisible();
     await transition.finished;
 
+    const recentTracksTransition = transitions.next();
     await result.getByRole("tab", { name: "Recently played" }).click();
     await expect.poll(() => router.state.location.pathname).toBe("/music/recent");
-    await expect.poll(() => startTransition.mock.results.length).toBe(2);
+    const tabTransition = await recentTracksTransition;
     expect(startTransition.mock.calls[1]?.[0]).toMatchObject({ types: ["tab-forward"] });
-    const tabTransition = startTransition.mock.results[1];
-
-    if (tabTransition?.type !== "return") throw new Error("Expected a tab view transition");
-    await tabTransition.value.ready;
+    await tabTransition.ready;
     expect(
       transitionKeyframes("::view-transition-new(tab-content)").some(
         (frame) => frame.translate !== undefined,
@@ -153,61 +149,53 @@ test("both tab levels slide while period and other navigation crossfade", async 
     await expect
       .element(result.getByRole("tab", { name: "Recently played" }))
       .toHaveAttribute("aria-current", "page");
-    await tabTransition.value.finished;
+    await tabTransition.finished;
 
+    const topMusicTransition = transitions.next();
     await result.getByRole("tab", { name: "Top music" }).click();
-    await expect.poll(() => startTransition.mock.results.length).toBe(3);
+    const backwards = await topMusicTransition;
     expect(startTransition.mock.calls[2]?.[0]).toMatchObject({ types: ["tab-backward"] });
-    const backwards = startTransition.mock.results[2];
-
-    if (backwards?.type !== "return") throw new Error("Expected a backwards tab transition");
-    await backwards.value.ready;
+    await backwards.ready;
     await expect
       .element(result.getByRole("tab", { name: "Top music" }))
       .toHaveAttribute("aria-current", "page");
-    await backwards.value.finished;
+    await backwards.finished;
 
+    const albumsTransition = transitions.next();
     await result.getByRole("tab", { name: "Albums", exact: true }).click();
-    await expect.poll(() => startTransition.mock.results.length).toBe(4);
+    const albums = await albumsTransition;
     expect(startTransition.mock.calls[3]?.[0]).toMatchObject({
       types: ["tab-forward", "music-type"],
     });
-    const albums = startTransition.mock.results[3];
-
-    if (albums?.type !== "return") throw new Error("Expected an album tab transition");
-    await albums.value.ready;
+    await albums.ready;
     expect(
       transitionKeyframes("::view-transition-new(tab-content)").some(
         (frame) => frame.translate !== undefined,
       ),
     ).toBe(true);
-    await albums.value.finished;
+    await albums.finished;
     await expect
       .element(result.getByRole("tabpanel", { name: "Albums", exact: true }))
       .toBeVisible();
 
+    const tracksTransition = transitions.next();
     await result.getByRole("tab", { name: "Tracks", exact: true }).click();
-    await expect.poll(() => startTransition.mock.results.length).toBe(5);
+    const tracks = await tracksTransition;
     expect(startTransition.mock.calls[4]?.[0]).toMatchObject({
       types: ["tab-backward", "music-type"],
     });
-    const tracks = startTransition.mock.results[4];
-
-    if (tracks?.type !== "return") throw new Error("Expected a track tab transition");
-    await tracks.value.ready;
+    await tracks.ready;
     expect(
       transitionKeyframes("::view-transition-new(tab-content)").some(
         (frame) => frame.translate !== undefined,
       ),
     ).toBe(true);
-    await tracks.value.finished;
+    await tracks.finished;
 
+    const homeTransition = transitions.next();
     await result.getByRole("link", { name: "Home", exact: true }).click();
-    await expect.poll(() => startTransition.mock.results.length).toBe(6);
-    const home = startTransition.mock.results[5];
-
-    if (home?.type !== "return") throw new Error("Expected a page transition");
-    await home.value.ready;
+    const home = await homeTransition;
+    await home.ready;
     expect(
       transitionKeyframes("::view-transition-old(music-results)").some(
         (frame) => frame.opacity !== undefined,
@@ -218,7 +206,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
         (frame) => frame.translate !== undefined,
       ),
     ).toBe(false);
-    await home.value.finished;
+    await home.finished;
   } finally {
     for (const entry of startTransition.mock.results) {
       if (entry.type === "return") await entry.value.finished;

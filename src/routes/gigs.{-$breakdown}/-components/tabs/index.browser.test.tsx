@@ -5,10 +5,11 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
-import { expect, test, vi } from "vite-plus/test";
+import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
+import { observeViewTransitions } from "#test/browser/view-transition.test-utils";
 
 import { GigsBreakdownTabs } from "./index";
 
@@ -39,7 +40,8 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Gigs breakdown" })).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");
-  using startTransition = vi.spyOn(document, "startViewTransition");
+  const transitions = observeViewTransitions();
+  using startTransition = transitions.spy;
 
   try {
     for (const [index, label, destination, type] of [
@@ -50,18 +52,16 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
     ] as const) {
       const link = result.getByRole("tab", { name: label, exact: true });
       await expect.element(link).toHaveAttribute("href", destination);
+      const transitionPromise = transitions.next();
       await link.click();
-      await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
+      const transition = await transitionPromise;
       expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
-      const transition = startTransition.mock.results[index];
-
-      if (transition?.type !== "return") throw new Error("Expected a native tab transition");
-      await transition.value.ready;
+      await transition.ready;
       await expect.element(link).toHaveAttribute("aria-current", "page");
       await expect.element(link).toHaveAttribute("aria-selected", "true");
       expect(router.state.location.pathname).toBe(destination);
       await expect.element(result.getByText("Gig breakdown content")).toBeVisible();
-      await transition.value.finished;
+      await transition.finished;
     }
   } finally {
     for (const entry of startTransition.mock.results) {

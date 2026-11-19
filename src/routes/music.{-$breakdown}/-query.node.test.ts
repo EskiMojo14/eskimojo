@@ -168,7 +168,13 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
     retryAfterMs: 30_000,
   };
 
-  const queryFn = vi.fn<() => Promise<typeof response>>().mockResolvedValue(response);
+  const queryFnStarted = Promise.withResolvers<void>();
+
+  const queryFn = vi.fn<() => Promise<typeof response>>(() => {
+    queryFnStarted.resolve();
+
+    return Promise.resolve(response);
+  });
 
   const options = {
     ...query.getMusicArtwork({
@@ -189,7 +195,8 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
   const afterCooldown = new QueryObserver(client, options);
   const unsubscribeAfterCooldown = afterCooldown.subscribe(() => {});
   onTestFinished(unsubscribeAfterCooldown);
-  await vi.waitFor(() => expect(queryFn).toHaveBeenCalledOnce());
+  await queryFnStarted.promise;
+  expect(queryFn).toHaveBeenCalledOnce();
 });
 
 test("filters unsafe and placeholder Last.fm image URLs", () => {
