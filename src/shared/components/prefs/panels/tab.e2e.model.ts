@@ -6,7 +6,6 @@ export abstract class PreferencesTab extends TabObjectModel<PreferencesDialogMod
     return this.parent.dialog.getByRole("tabpanel", {
       name: this.tabName,
       exact: true,
-      includeHidden: true,
     });
   }
 }
