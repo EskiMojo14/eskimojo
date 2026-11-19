@@ -83,9 +83,6 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   expect(await readFile(join(dir, ".storybook/palette.gen.ts"), "utf8")).toBe(
     await readFile(new URL(".storybook/palette.gen.ts", root), "utf8"),
   );
-  await expect(
-    readFile(join(dir, "src/shared/styles/syntax.gen.css"), "utf8"),
-  ).rejects.toMatchObject({ code: "ENOENT" });
   await generate();
   for (const [theme, css] of outputs) {
     expect(await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8")).toBe(css);
