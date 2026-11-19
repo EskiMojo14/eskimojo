@@ -16,6 +16,7 @@ test("reuses artwork cached with omitted groups for requests with explicit empty
   network.use(
     http.post(getMusicArtworkFn.url, () => {
       requests++;
+
       return HttpResponse.text("Service unavailable", { status: 503 });
     }),
   );
@@ -39,6 +40,7 @@ test("skips the artwork request when all groups are omitted", async () => {
   network.use(
     http.post(getMusicArtworkFn.url, () => {
       requests++;
+
       return HttpResponse.text("Unexpected artwork request", { status: 500 });
     }),
   );
@@ -63,6 +65,7 @@ test("recovers a failed artwork POST with validated images and a retry delay", a
   );
   const legacyUrl = "https://lastfm-img.freetls.fastly.net/i/u/300x300/cover.png";
   const normalizedUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/cover.png";
+
   const options = getMusicArtwork({
     tracks: [
       { name: "Covered", artist: "Example Artist", lastfmArtworkUrl: legacyUrl },
@@ -111,17 +114,20 @@ test("propagates artwork request cancellation without logging or caching fallbac
     http.post(getMusicArtworkFn.url, async () => {
       started.resolve();
       await pending.promise;
+
       return HttpResponse.text("Service unavailable", { status: 503 });
     }),
   );
   const controller = new AbortController();
   onTestFinished(() => controller.abort());
+
   const options = getMusicArtwork(
     {
       tracks: [{ name: "Cancelled Track", artist: "Example Artist" }],
     },
     controller.signal,
   );
+
   const reason = new DOMException("Artwork request cancelled", "AbortError");
   const request = client.query(options);
   const cancellation = started.promise.then(() => controller.abort(reason));

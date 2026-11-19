@@ -24,6 +24,7 @@ export const Route = createFileRoute("/projects/")({
       description:
         "Explore eskimojo's projects, TypeScript utilities, and open-source contributions.",
     });
+
     return {
       ...metadata,
       links: [...metadata.links, { rel: "stylesheet", href: styles }],
@@ -61,6 +62,7 @@ function RouteComponent() {
       {projectKindSchema.options.map((kind) => {
         const entries = projectsByKind[kind];
         const title = projectKindLabels[kind].label;
+
         if (!entries?.length || (selectedKind !== undefined && selectedKind !== kind)) return null;
 
         return (

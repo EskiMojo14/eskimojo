@@ -58,6 +58,7 @@ test("synchronizes native Escape dismissal and restores focus", async () => {
 
 test("forwards the native close event and form return value", async () => {
   const onClose = vi.fn<(returnValue: string) => void>();
+
   const result = await page.renderWithProviders(
     <Dialog open onClose={(event) => onClose(event.currentTarget.returnValue)}>
       <DialogContent title="Confirm">
@@ -67,6 +68,7 @@ test("forwards the native close event and form return value", async () => {
       </DialogContent>
     </Dialog>,
   );
+
   const dialog = result.getByRole("dialog", { name: "Confirm" }).element();
 
   await result.getByRole("button", { name: "Confirm" }).click();
@@ -77,6 +79,7 @@ test("forwards the native close event and form return value", async () => {
 for (const value of ["keep", "discard"]) {
   test(`returns ${value} from an action associated with a dialog form`, async () => {
     const onClose = vi.fn<(returnValue: string) => void>();
+
     const result = await page.renderWithProviders(
       <Dialog open onClose={(event) => onClose(event.currentTarget.returnValue)}>
         <DialogContent
@@ -96,6 +99,7 @@ for (const value of ["keep", "discard"]) {
         </DialogContent>
       </Dialog>,
     );
+
     const dialog = result.getByRole("dialog", { name: "Choose an action" }).element();
 
     await result
@@ -108,11 +112,13 @@ for (const value of ["keep", "discard"]) {
 
 test("fires onClose when the open prop becomes false", async () => {
   const onClose = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Dialog open aria-label="Controlled" onClose={onClose}>
       Content
     </Dialog>,
   );
+
   const dialog = result.getByRole("dialog", { name: "Controlled" }).element();
 
   await result.rerender(
@@ -127,6 +133,7 @@ test("fires onClose when the open prop becomes false", async () => {
 for (const closedby of ["any", "closerequest"] as const) {
   test(`respects closedby=${closedby} for Escape dismissal`, async () => {
     const onClose = vi.fn<() => void>();
+
     const result = await page.renderWithProviders(
       <Dialog open aria-label="Dismissal policy" closedby={closedby} onClose={onClose}>
         <form method="dialog">
@@ -134,6 +141,7 @@ for (const closedby of ["any", "closerequest"] as const) {
         </form>
       </Dialog>,
     );
+
     const dialog = result.getByRole("dialog", { name: "Dismissal policy" }).element();
 
     expect(dialog.getAttribute("closedby")).toBe(closedby);
@@ -145,6 +153,7 @@ for (const closedby of ["any", "closerequest"] as const) {
 
 test("closedby=none requires an explicit close action", async () => {
   const onClose = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Dialog open aria-label="Explicit dismissal" closedby="none" onClose={onClose}>
       <form method="dialog">
@@ -152,6 +161,7 @@ test("closedby=none requires an explicit close action", async () => {
       </form>
     </Dialog>,
   );
+
   const dialog = result.getByRole("dialog", { name: "Explicit dismissal" }).element();
 
   expect(dialog.getAttribute("closedby")).toBe("none");
@@ -166,6 +176,7 @@ test("closedby=none requires an explicit close action", async () => {
 for (const returnValue of ["keep", "discard", undefined]) {
   test(`render-prop close forwards return value ${String(returnValue)}`, async () => {
     const onClose = vi.fn<(value: string) => void>();
+
     const result = await page.renderWithProviders(
       <Dialog open closedby="none" onClose={(event) => onClose(event.currentTarget.returnValue)}>
         {({ close }) => (
@@ -175,6 +186,7 @@ for (const returnValue of ["keep", "discard", undefined]) {
         )}
       </Dialog>,
     );
+
     const dialog = result.getByRole("dialog", { name: "Render prop" }).element();
 
     await result.getByRole("button", { name: "Close", exact: true }).click();
@@ -191,6 +203,7 @@ test("updates accessible descriptions when content changes", async () => {
       </DialogContent>
     </Dialog>,
   );
+
   const dialog = result.getByRole("dialog", { name: "Content" }).element();
   await expect.element(dialog).toHaveAccessibleDescription("Supporting text");
 
@@ -206,6 +219,7 @@ test("updates accessible descriptions when content changes", async () => {
 test("onCancel can prevent requests and Escape, but not definitive close", async () => {
   const onCancel = vi.fn<NonNullable<DialogProps["onCancel"]>>((event) => event.preventDefault());
   const onClose = vi.fn<(value: string) => void>();
+
   const result = await page.renderWithProviders(
     <Dialog open onCancel={onCancel} onClose={(event) => onClose(event.currentTarget.returnValue)}>
       {({ close, requestClose }) => (
@@ -216,6 +230,7 @@ test("onCancel can prevent requests and Escape, but not definitive close", async
       )}
     </Dialog>,
   );
+
   const dialog = result.getByRole("dialog", { name: "Guarded dialog" }).element();
 
   await result.getByRole("button", { name: "Request close" }).click();
@@ -237,6 +252,7 @@ test("onCancel can prevent requests and Escape, but not definitive close", async
 for (const nativeRequestClose of [true, false]) {
   test(`requestClose returns its value with native support=${nativeRequestClose}`, async () => {
     const events: Array<string> = [];
+
     const result = await page.renderWithProviders(
       <Dialog
         open
@@ -251,7 +267,9 @@ for (const nativeRequestClose of [true, false]) {
         )}
       </Dialog>,
     );
+
     const dialog = result.getByRole("dialog", { name: "Requested dismissal" }).element();
+
     if (!nativeRequestClose) {
       Object.defineProperty(dialog, "requestClose", { value: undefined });
     }

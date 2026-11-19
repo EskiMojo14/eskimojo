@@ -37,6 +37,7 @@ export type TooltipProps = {
 );
 
 type TriggerProps = HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> };
+
 type TriggerStyle = CSSProperties & { "--tooltip-delay"?: string };
 
 let interestPolyfill: Promise<void> | undefined;
@@ -78,15 +79,19 @@ export function withTooltip<P extends TriggerProps>(
       void loadInterestPolyfill().catch((error: unknown) => {
         console.error("Unable to load tooltip browser support.", error);
       });
+
       const dismiss = (event: KeyboardEvent) => {
         const hint = document.getElementById(tooltipId);
+
         if (event.key === "Escape" && !event.defaultPrevented && hint?.matches(":popover-open")) {
           // Consume Escape so it cannot also close an enclosing popover.
           event.preventDefault();
           hint.hidePopover();
         }
       };
+
       document.addEventListener("keydown", dismiss, true);
+
       return () => document.removeEventListener("keydown", dismiss, true);
     }, [hasTooltip, tooltipId]);
 
@@ -146,5 +151,6 @@ export function withTooltip<P extends TriggerProps>(
   }
 
   WithTooltip.displayName = `withTooltip(${Component.displayName ?? Component.name})`;
+
   return WithTooltip;
 }

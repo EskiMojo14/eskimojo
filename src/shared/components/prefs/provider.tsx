@@ -44,6 +44,7 @@ function createPrefProvider<Name extends string, Value extends string>(
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [optimisticValue, setOptimisticValue] = useOptimistic<Value>(value);
+
     const [, savePref] = useActionState<null, Value>(async (_, data) => {
       try {
         await serverFn({ data });
@@ -60,6 +61,7 @@ function createPrefProvider<Name extends string, Value extends string>(
           }),
         );
       }
+
       return null;
     }, null);
 
@@ -69,6 +71,7 @@ function createPrefProvider<Name extends string, Value extends string>(
         savePref(data);
       });
     }
+
     return (
       <Ctx
         value={
@@ -83,7 +86,9 @@ function createPrefProvider<Name extends string, Value extends string>(
       </Ctx>
     );
   };
+
   PrefProvider.displayName = `${capitalize(name)}Provider`;
+
   return PrefProvider;
 }
 
@@ -91,11 +96,13 @@ export const ThemeProvider = createPrefProvider("theme", ThemeContext, setThemeF
 export const ContrastProvider = createPrefProvider("contrast", ContrastContext, setContrastFn);
 export const PaletteProvider = createPrefProvider("palette", PaletteContext, setPaletteFn);
 export const HapticsProvider = createPrefProvider("haptics", HapticsContext, setHapticsFn);
+
 export const DarkSyntaxProvider = createPrefProvider(
   "darkSyntax",
   DarkSyntaxContext,
   setDarkSyntaxFn,
 );
+
 export const LightSyntaxProvider = createPrefProvider(
   "lightSyntax",
   LightSyntaxContext,

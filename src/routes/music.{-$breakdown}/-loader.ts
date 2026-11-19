@@ -37,6 +37,7 @@ export function preloadMusic({
   type: MusicType;
 }) {
   const preloadedImages = new Set<string>();
+
   const preloadImages = (urls: Array<string | undefined>) => {
     for (const url of urls) {
       if (!url || preloadedImages.has(url)) continue;
@@ -46,6 +47,7 @@ export function preloadMusic({
       );
     }
   };
+
   const preloadArtwork = (params: Parameters<typeof getMusicArtwork>[0]) => {
     preloadImages(
       [...(params.tracks ?? []), ...(params.albums ?? []), ...(params.artists ?? [])].map(
@@ -59,7 +61,9 @@ export function preloadMusic({
       )
       .catch(reportArtworkPreloadError);
   };
+
   queryClient.query({ ...getUserData(), staleTime: "static" }).catch(reportPreloadError);
+
   switch (breakdown) {
     case "recent":
       void queryClient
@@ -124,6 +128,7 @@ export function preloadMusic({
           )
           .catch(reportPreloadError);
       }
+
       break;
     }
   }

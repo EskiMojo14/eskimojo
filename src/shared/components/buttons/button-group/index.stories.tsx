@@ -48,6 +48,7 @@ export const Standard = meta.story({
 
 function ThemeButtons(props: ButtonGroupProps) {
   const [theme, setTheme] = useState("system");
+
   return (
     <ButtonGroup {...props} aria-label="Theme">
       {["system", "light", "dark"].map((value) => (
@@ -92,6 +93,7 @@ export const Connected = meta.story({
 
 function FormattingButtons(props: ButtonGroupProps) {
   const [selected, setSelected] = useState<Array<string>>([]);
+
   return (
     <ButtonGroup {...props} aria-label="Formatting">
       {["Bold", "Italic", "Underline"].map((value) => (
@@ -123,6 +125,7 @@ export const MultipleSelection = meta.story({
       await userEvent.click(button);
       await expect(button).toHaveAttribute("aria-pressed", "true");
     }
+
     await expect(canvas.getByRole("button", { name: "Bold" })).toHaveAttribute(
       "aria-pressed",
       "true",

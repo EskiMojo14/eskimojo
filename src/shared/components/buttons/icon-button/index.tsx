@@ -32,6 +32,7 @@ function IconButtonBase({
   ...props
 }: IconButtonBaseProps) {
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props, true);
+
   return (
     <button
       {...props}

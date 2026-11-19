@@ -122,6 +122,7 @@ function createDemoRouter() {
       </>
     ),
   });
+
   return createRouter({
     routeTree: root.addChildren([
       createRoute({ getParentRoute: () => root, path: "/", component: () => <p>Home</p> }),
@@ -137,6 +138,7 @@ function createDemoRouter() {
 
 function InternalDemo() {
   const [router] = useState(createDemoRouter);
+
   return <RouterProvider router={router} />;
 }
 

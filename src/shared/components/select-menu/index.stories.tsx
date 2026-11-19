@@ -14,6 +14,7 @@ const options = [
 
 function ControlledSelect(props: SelectMenuProps<string>) {
   const [value, setValue] = useState(props.value);
+
   return (
     <SelectMenu
       {...props}
@@ -122,9 +123,11 @@ export const LongList = meta.story({
     const field = canvas.getByRole("combobox", { name: "Time zone" });
     await userEvent.click(field);
     await userEvent.keyboard("{End}");
+
     const option = within(canvasElement.ownerDocument.body).getByRole("option", {
       name: "Time zone 30",
     });
+
     await expect(field).toHaveAttribute("aria-activedescendant", option.id);
     await userEvent.keyboard("{Enter}");
     await expect(field).toHaveTextContent("Time zone 30");

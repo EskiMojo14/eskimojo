@@ -12,6 +12,7 @@ test("groups cities, sorts counts and events, and scales dot area with event cou
     { city: "London", date: "2024-01-01" },
     { city: "Bath", date: "2024-03-01" },
   ];
+
   const cities = getCityMapData(events);
   const [firstEvent, secondEvent, thirdEvent] = events;
   assert(firstEvent && secondEvent && thirdEvent, "Expected four city-map event fixtures.");
@@ -31,6 +32,7 @@ test("locates every archive city in England and counts every event once", () => 
   const cities = getCityMapData(gigs.events);
   expect(cities.reduce((total, { count }) => total + count, 0)).toBe(gigs.events.length);
   expect(cities).toHaveLength(7);
+
   for (const {
     coordinates: [longitude, latitude],
   } of cities) {
@@ -39,6 +41,7 @@ test("locates every archive city in England and counts every event once", () => 
     expect(latitude).toBeGreaterThan(50);
     expect(latitude).toBeLessThan(56);
   }
+
   const bristol = cities.find(({ city }) => city === "Bristol")!;
   const london = cities.find(({ city }) => city === "London")!;
   expect(bristol.coordinates[0]).toBeLessThan(london.coordinates[0]);

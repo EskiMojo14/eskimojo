@@ -43,6 +43,7 @@ test("queues global calls, gives each message its full timeout, and cancels queu
 
 test("pauses the remaining timeout on hover and keyboard focus, then restores focus on dismissal", async () => {
   setupTimers();
+
   const { store, ...result } = await page.renderWithProviders(
     <>
       <button
@@ -55,6 +56,7 @@ test("pauses the remaining timeout on hover and keyboard focus, then restores fo
       <SnackbarHost />
     </>,
   );
+
   const trigger = result.getByRole("button", { name: "Save", exact: true });
   await trigger.click();
   await expect.element(trigger).toHaveFocus();
@@ -76,12 +78,14 @@ test("pauses the remaining timeout on hover and keyboard focus, then restores fo
 
 test("resumes rather than resets the timeout after hovering", async () => {
   setupTimers();
+
   const { store, ...result } = await page.renderWithProviders(
     <>
       <button>Outside</button>
       <SnackbarHost />
     </>,
   );
+
   store.dispatch(showSnackbar({ message: "Saved", showCloseButton: true }));
   const close = result.getByRole("button", { name: "Dismiss notification" });
   await expect.element(close).toBeVisible();
@@ -103,12 +107,14 @@ test("resumes rather than resets the timeout after hovering", async () => {
 test("keeps action messages until the action is activated and does not light-dismiss", async () => {
   setupTimers();
   const undo = vi.fn<() => void>();
+
   const { store, ...result } = await page.renderWithProviders(
     <>
       <button>Outside</button>
       <SnackbarHost />
     </>,
   );
+
   store.dispatch(
     showSnackbar({ message: "Item removed", action: { label: "Undo", onClick: undo } }),
   );
@@ -126,9 +132,11 @@ test("keeps action messages until the action is activated and does not light-dis
 test("clearing an action message unregisters its callback", async () => {
   const undo = vi.fn<() => void>();
   const { store, ...result } = await page.renderWithProviders(<SnackbarHost />);
+
   const id = store.dispatch(
     showSnackbar({ message: "Item removed", action: { label: "Undo", onClick: undo } }),
   );
+
   await expect.element(result.getByRole("button", { name: "Undo" })).toBeVisible();
 
   store.dispatch(snackbarsCleared());
@@ -140,6 +148,7 @@ test("clearing an action message unregisters its callback", async () => {
 
 test("defers messages and timing while a native modal is open", async () => {
   setupTimers();
+
   const { store, ...result } = await page.renderWithProviders(
     <>
       <button onClick={() => document.querySelector("dialog")?.showModal()}>Open editor</button>
@@ -151,6 +160,7 @@ test("defers messages and timing while a native modal is open", async () => {
       <SnackbarHost />
     </>,
   );
+
   await result.getByRole("button", { name: "Open editor" }).click();
   store.dispatch(showSnackbar({ message: "Saved after editing", showCloseButton: true }));
   await vi.advanceTimersByTimeAsync(10_000);
@@ -207,12 +217,14 @@ test("rejects empty messages, empty action labels, and out-of-range durations wi
 test("keeps snackbar text and controls above bottom navigation and returns to the bottom when navigation is hidden", async () => {
   await page.viewport(390, 844);
   onTestFinished(() => page.viewport(1280, 800));
+
   const { store, ...result } = await page.renderWithProviders(
     <>
       <AppBar navigationOpen={false} onOpenNavigation={() => {}} />
       <SnackbarHost />
     </>,
   );
+
   store.dispatch(showSnackbar({ message: "Changes saved", duration: null }));
   const navigation = result.getByRole("navigation", { name: "Primary" });
   const close = result.getByRole("button", { name: "Dismiss notification" });
@@ -234,11 +246,13 @@ test("displays messages queued before hydration without a hydration mismatch", a
   const container = document.createElement("div");
   document.body.append(container);
   onTestFinished(() => container.remove());
+
   const app = (
     <Provider store={store}>
       <SnackbarHost />
     </Provider>
   );
+
   container.innerHTML = renderToString(app);
   store.dispatch(showSnackbar({ message: "Queued before hydration", duration: null }));
   const onRecoverableError = vi.fn<(error: unknown) => void>();

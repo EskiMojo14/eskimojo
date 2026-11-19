@@ -23,6 +23,7 @@ export function SummaryPanel() {
     ...getUserData(),
     staleTime: "static",
   });
+
   return <MusicSummary user={user} asOf={dataUpdatedAt} />;
 }
 
@@ -40,6 +41,7 @@ export function RecentTracksPanel() {
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: "always",
   });
+
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
       tracks: recentTracks.map(({ name, artist, lastfmArtworkUrl }) => ({
@@ -49,16 +51,21 @@ export function RecentTracksPanel() {
       })),
     }),
   );
+
   const tracks = recentTracks.map((track, index) => {
     const artwork = artworkQuery.data?.tracks[index];
+
     return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
   });
+
   useEffect(() => {
     if (isRefetchError) console.error("Failed to refresh recent tracks.", error);
+
     if (artworkQuery.isError) {
       console.error("Failed to load artwork for recent tracks.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError, error, isRefetchError]);
+
   return (
     <>
       {isRefetchError && (
@@ -78,10 +85,12 @@ export function RecentTracksPanel() {
 
 export function TopTracksPanel() {
   const { period = periodSchema.fallback } = musicRoute.useSearch();
+
   const tracks = useSuspenseQuery({
     ...getTopTracks({ limit: 10, period }),
     staleTime: "static",
   });
+
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
       tracks: tracks.data.map(({ name, artist, lastfmArtworkUrl }) => ({
@@ -91,24 +100,30 @@ export function TopTracksPanel() {
       })),
     }),
   );
+
   const topTracks = tracks.data.map((track, index) => {
     const artwork = artworkQuery.data?.tracks[index];
+
     return artwork ? { ...track, artwork: artwork.artwork, palette: artwork.palette } : track;
   });
+
   useEffect(() => {
     if (artworkQuery.isError) {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
+
   return <MusicTopMusic tracks={topTracks} />;
 }
 
 export function TopAlbumsPanel() {
   const { period = periodSchema.fallback } = musicRoute.useSearch();
+
   const albums = useSuspenseQuery({
     ...getTopAlbums({ limit: 10, period }),
     staleTime: "static",
   });
+
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
       albums: albums.data.map(({ name, artist, lastfmArtworkUrl }) => ({
@@ -118,37 +133,47 @@ export function TopAlbumsPanel() {
       })),
     }),
   );
+
   const topAlbums = albums.data.map((album, index) => {
     const artwork = artworkQuery.data?.albums[index];
+
     return artwork ? { ...album, artwork: artwork.artwork, palette: artwork.palette } : album;
   });
+
   useEffect(() => {
     if (artworkQuery.isError) {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
+
   return <MusicTopMusic albums={topAlbums} />;
 }
 
 export function TopArtistsPanel() {
   const { period = periodSchema.fallback } = musicRoute.useSearch();
+
   const artists = useSuspenseQuery({
     ...getTopArtists({ limit: 10, period }),
     staleTime: "static",
   });
+
   const artworkQuery = useSuspenseQuery(
     getMusicArtwork({
       artists: artists.data.map(({ name, lastfmArtworkUrl }) => ({ name, lastfmArtworkUrl })),
     }),
   );
+
   const topArtists = artists.data.map((artist, index) => {
     const artwork = artworkQuery.data?.artists[index];
+
     return artwork ? { ...artist, artwork: artwork.artwork, palette: artwork.palette } : artist;
   });
+
   useEffect(() => {
     if (artworkQuery.isError) {
       console.error("Failed to load artwork for top music.", artworkQuery.error);
     }
   }, [artworkQuery.error, artworkQuery.isError]);
+
   return <MusicTopMusic artists={topArtists} />;
 }

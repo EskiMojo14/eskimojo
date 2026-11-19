@@ -22,6 +22,7 @@ export function AssistChip({
   ...props
 }: AssistChipProps) {
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
+
   return (
     <button {...props} {...handlers} type={type} {...chipBem({ extra: className })}>
       {ripple}
@@ -41,6 +42,7 @@ export interface FilterChipProps extends Omit<AssistChipProps, "aria-pressed"> {
 
 function SelectionIcon({ icon }: Pick<AssistChipProps, "icon">) {
   const maskId = useId();
+
   return (
     <span
       {...chipBem({
@@ -85,6 +87,7 @@ export function FilterChip({
 }: FilterChipProps) {
   const { triggerHapticFeedback } = useHapticFeedback();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
+
   return (
     <button
       {...props}
@@ -94,6 +97,7 @@ export function FilterChip({
       aria-pressed={selected}
       onClick={(event) => {
         onClick?.(event);
+
         if (
           !event.defaultPrevented &&
           !event.currentTarget.disabled &&
@@ -116,6 +120,7 @@ export interface ExternalLinkChipProps extends ComponentPropsWithRef<"a"> {
 
 function LinkChipBase({ icon, className, children, ...props }: ExternalLinkChipProps) {
   const { handlers, ripple } = useRipple<HTMLAnchorElement>(props);
+
   return (
     <a {...props} {...handlers} {...chipBem({ extra: className })}>
       {ripple}
@@ -134,6 +139,7 @@ const RouterLinkChip = createLink(LinkChipBase);
 export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
   const router = useRouter();
   const triggerSelectionLinkHaptic = useSelectionLinkHaptic();
+
   const linkProps = {
     ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {
@@ -144,6 +150,7 @@ export const InternalLinkChip: LinkComponent<typeof LinkChipBase> = (props) => {
       );
     },
   };
+
   return <RouterLinkChip resetScroll={false} {...linkProps} />;
 };
 

@@ -4,6 +4,7 @@ import { listenerEnhancer } from "./listener";
 import { rootReducer } from "./reducer";
 
 export type PreloadedState = Parameters<typeof rootReducer>[0];
+
 export type ExtraArgument = undefined;
 
 export function makeStore(
@@ -26,8 +27,11 @@ export function makeStore(
 }
 
 export type AppStore = ReturnType<typeof makeStore>;
+
 export type RootState = ReturnType<AppStore["getState"]>;
+
 export type AppDispatch = AppStore["dispatch"];
+
 export type AppThunk<ReturnType = void> = (
   dispatch: AppDispatch,
   getState: () => RootState,

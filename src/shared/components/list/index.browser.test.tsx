@@ -21,6 +21,7 @@ test("renders semantic static rows and optional content", async () => {
       </ListItem>
     </List>,
   );
+
   await expect.element(result.getByRole("list", { name: "Recent tracks" })).toBeVisible();
   expect(result.getByRole("listitem").all()).toHaveLength(2);
   await expect.element(result.getByText("Tame Impala")).toBeVisible();
@@ -30,6 +31,7 @@ test("renders semantic static rows and optional content", async () => {
 
 test("keeps row actions native and respects disabled buttons", async () => {
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <List variant="expressive">
       <ListItem>
@@ -44,6 +46,7 @@ test("keeps row actions native and respects disabled buttons", async () => {
       </ListItem>
     </List>,
   );
+
   await expect.element(result.getByRole("button", { name: "Save track" })).toBeDisabled();
   await expect
     .element(result.getByRole("link", { name: "View artist" }))
@@ -63,6 +66,7 @@ test("preserves the existing navigation API", async () => {
       </List>
     </nav>,
   );
+
   await expect
     .element(result.getByRole("link", { name: "Music" }))
     .toHaveAttribute("aria-current", "page");
@@ -70,6 +74,7 @@ test("preserves the existing navigation API", async () => {
 
 test("switch rows toggle once from empty space, either edge, and the keyboard", async () => {
   const onChange = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <List style={{ width: 320 }}>
       <ListItem>
@@ -84,6 +89,7 @@ test("switch rows toggle once from empty space, either edge, and the keyboard", 
       </ListItem>
     </List>,
   );
+
   const row = result.getByRole("listitem");
   const toggle = result.getByRole("switch", { name: "Notifications" });
   await row.click({ position: { x: 160, y: 36 } });

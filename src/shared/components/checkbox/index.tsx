@@ -52,14 +52,17 @@ export function Checkbox({
         })}
         onChange={(event) => {
           onChange?.(event);
+
           if (hapticFeedback && !event.defaultPrevented) triggerHapticFeedback("selection");
         }}
         onKeyDown={(event) => {
           onKeyDown?.(event);
+
           if (event.key === " " && !event.defaultPrevented) setKeyboardPressed(true);
         }}
         onKeyUp={(event) => {
           onKeyUp?.(event);
+
           if (event.key === " ") setKeyboardPressed(false);
         }}
         onBlur={(event) => {

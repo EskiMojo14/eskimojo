@@ -63,6 +63,7 @@ const snackbarLifecycleSlice = createSlice({
       if (state.remaining !== null && state.startedAt !== null) {
         state.remaining = Math.max(0, state.remaining - (action.payload - state.startedAt));
       }
+
       state.startedAt = null;
     },
   },
@@ -76,14 +77,17 @@ const mountSnackbar =
   ): AppThunk<() => void> =>
   (dispatch) => {
     const controller = new AbortController();
+
     let localState: SnackbarLifecycleState = {
       ...snackbarLifecycleSlice.getInitialState(),
       previousFocus: document.activeElement,
       remaining: message.duration,
     };
+
     const lifecycleDispatch = (action: UnknownAction) => {
       localState = snackbarLifecycleSlice.reducer(localState, action);
     };
+
     let timeout: ReturnType<typeof setTimeout> | undefined;
 
     const pause = () => {
@@ -92,14 +96,18 @@ const mountSnackbar =
       timeout = undefined;
       lifecycleDispatch(snackbarLifecycleSlice.actions.timerPaused(performance.now()));
     };
+
     const synchronize = () => {
       if (controller.signal.aborted) return;
       const canShow = !document.hidden && !document.querySelector("dialog:modal");
+
       if (canShow !== localState.visible) {
         lifecycleDispatch(snackbarLifecycleSlice.actions.visibilityChanged(canShow));
+
         if (localState.visible) {
           surface.showPopover();
           const text = `${message.message}${message.action ? " Actions available." : ""}`;
+
           if (document.ariaNotify) {
             document.ariaNotify(text, { priority: "normal" });
           } else {
@@ -119,20 +127,25 @@ const mountSnackbar =
         timeout = setTimeout(dispatch, localState.remaining, snackbarDismissed(message.id));
       }
     };
+
     const pointerEnter = () => {
       lifecycleDispatch(snackbarLifecycleSlice.actions.pointerEntered());
       synchronize();
     };
+
     const pointerLeave = () => {
       lifecycleDispatch(snackbarLifecycleSlice.actions.pointerLeft());
       synchronize();
     };
+
     const focusChanged = (event: FocusEvent) => {
       if (event.target instanceof HTMLElement && !surface.contains(event.target)) {
         lifecycleDispatch(snackbarLifecycleSlice.actions.externalFocusChanged(event.target));
       }
+
       synchronize();
     };
+
     const focusLeft = () => queueMicrotask(synchronize);
     // Native dialogs can be opened by any caller, including outside React.
     const observer = new MutationObserver(synchronize);
@@ -142,15 +155,18 @@ const mountSnackbar =
       attributes: true,
       attributeFilter: ["open"],
     });
+
     const unsubscribeDocument = radEventListeners(document, {
       visibilitychange: synchronize,
       focus: [focusChanged, { capture: true }],
     });
+
     const unsubscribeSurface = radEventListeners(surface, {
       pointerenter: pointerEnter,
       pointerleave: pointerLeave,
       blur: [focusLeft, { capture: true }],
     });
+
     synchronize();
 
     return () => {
@@ -162,6 +178,7 @@ const mountSnackbar =
       const restoreFocus = surface.contains(document.activeElement);
       surface.hidePopover();
       const { previousFocus } = localState;
+
       if (restoreFocus && previousFocus instanceof HTMLElement && previousFocus.isConnected) {
         previousFocus.focus();
       }
@@ -180,6 +197,7 @@ function Snackbar({
 
   useLayoutEffect(() => {
     const surface = surfaceRef.current;
+
     return surface ? dispatch(mountSnackbar(surface, message, announce)) : undefined;
   }, [message, announce, dispatch]);
 

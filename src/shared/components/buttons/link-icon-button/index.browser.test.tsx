@@ -6,6 +6,7 @@ import { ExternalLinkIconButton } from "./index";
 
 test("forwards anchor props and refs and hides the decorative icon", async () => {
   const ref = createRef<HTMLAnchorElement>();
+
   const result = await page.renderWithProviders(
     <ExternalLinkIconButton
       ref={ref}
@@ -18,6 +19,7 @@ test("forwards anchor props and refs and hides the decorative icon", async () =>
       }
     />,
   );
+
   const link = result.getByRole("link", { name: "Visit site", exact: true });
   await expect.element(link).toHaveAttribute("href", "https://example.com");
   await expect.element(link).toHaveAttribute("target", "_blank");
@@ -38,5 +40,6 @@ test("supports an accessible name from a referenced label", async () => {
       />
     </>,
   );
+
   await expect.element(result.getByRole("link", { name: "Watch on YouTube" })).toBeVisible();
 });

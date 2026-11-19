@@ -108,15 +108,19 @@ export default definePreview({
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
       const { direction, palette, theme, contrast } = v.parse(globalsSchema, globals);
+
       const [haptics, setHaptics] = useState<v.InferOutput<typeof hapticsSchema>>(
         hapticsSchema.fallback,
       );
+
       const [darkSyntax, setDarkSyntax] = useState<v.InferOutput<typeof darkSyntaxSchema>>(
         darkSyntaxSchema.fallback,
       );
+
       const [lightSyntax, setLightSyntax] = useState<v.InferOutput<typeof lightSyntaxSchema>>(
         lightSyntaxSchema.fallback,
       );
+
       const root = document.documentElement;
       root.dir = direction;
       // Set on <html> so the tokens also reach the body background.
@@ -127,6 +131,7 @@ export default definePreview({
         darkSyntax,
         lightSyntax,
       });
+
       return (
         <Providers
           providers={[

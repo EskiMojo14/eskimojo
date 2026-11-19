@@ -18,6 +18,7 @@ const preferencesBem = BEMHelper("preferences-dialog");
 
 function syntaxOption<Value extends LightSyntax | DarkSyntax>(value: Value) {
   const { label, color, supporting } = syntaxLabels[value];
+
   return {
     value,
     label,

@@ -201,6 +201,7 @@ function createDemoRouter({
       </div>
     ),
   });
+
   const home = createRoute({
     getParentRoute: () => root,
     path: "/",
@@ -210,6 +211,7 @@ function createDemoRouter({
       </TabLinkPanel>
     ),
   });
+
   const projects = createRoute({
     getParentRoute: () => root,
     path: "/projects",
@@ -219,6 +221,7 @@ function createDemoRouter({
       </TabLinkPanel>
     ),
   });
+
   const music = createRoute({
     getParentRoute: () => root,
     path: "/music/{-$breakdown}",
@@ -228,6 +231,7 @@ function createDemoRouter({
       </TabLinkPanel>
     ),
   });
+
   return createRouter({
     routeTree: root.addChildren([home, projects, music]),
     history: createMemoryHistory({ initialEntries: ["/"] }),
@@ -236,6 +240,7 @@ function createDemoRouter({
 
 function RouterTabsDemo(props: Pick<TabNavProps, "variant" | "orientation">) {
   const [router] = useState(() => createDemoRouter(props));
+
   return <RouterProvider router={router} />;
 }
 
@@ -405,6 +410,7 @@ export const VerticalSecondary = meta.story({
 
 function ControlledTabs() {
   const [value, setValue] = useState("about");
+
   return (
     <>
       <Tabs value={value} onValueChange={setValue}>

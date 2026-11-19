@@ -26,6 +26,7 @@ async function fixture() {
     `,
   );
   const output = pathToFileURL(path.join(root, "server-fns.gen.ts"));
+
   async function compile(source: string, { write = false, fail = false } = {}) {
     const result = await build({
       configFile: false,
@@ -61,13 +62,17 @@ async function fixture() {
         },
       },
     });
+
     if (Array.isArray(result) || !("output" in result))
       throw new Error("Expected a single build output.");
     const registry = result.output.find((item) => item.fileName === "server-fns.gen.ts");
+
     if (registry?.type !== "asset" || typeof registry.source !== "string")
       throw new Error("Expected a generated registry asset.");
+
     return registry.source;
   }
+
   return { compile, output };
 }
 
@@ -99,16 +104,19 @@ test("generates typed descriptors from imported RPC metadata, including export a
 
 test("ignores lookalike RPC calls from unrelated imports", async () => {
   const { compile } = await fixture();
+
   const registry = await compile(code.js`
     ${provider}
     import { createServerRpc } from "unrelated/server-rpc";
     export const unrelated = createServerRpc({ id: "unrelated" }, () => {});
   `);
+
   expect(registry).not.toContain("unrelated");
 });
 
 test("ignores nested RPC calls whose bindings shadow the imported alias", async () => {
   const { compile } = await fixture();
+
   const registry = await compile(code.js`
     ${provider}
     export function nested(rpc) {
@@ -116,6 +124,7 @@ test("ignores nested RPC calls whose bindings shadow the imported alias", async 
       return get;
     }
   `);
+
   expect(registry).toContain("*/custom/functions/get-id");
   expect(registry).not.toContain("nested-id");
 });

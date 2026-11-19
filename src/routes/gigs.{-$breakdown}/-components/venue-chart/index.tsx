@@ -20,6 +20,7 @@ import { getVenueChartData } from "./data";
 function firstEvent(row: ReturnType<typeof getVenueChartData>[number]) {
   const event = row.events[0];
   assert(event, `Venue chart row has no events: ${row.venue}`);
+
   return event;
 }
 
@@ -29,6 +30,7 @@ export function GigsVenueChart({
   events: ReadonlyArray<ArtistEvent & { venue: string; city: string; date: string }>;
 }) {
   const venues = useMemo(() => getVenueChartData(events), [events]);
+
   const definition = useMemo(
     () =>
       defineChart({
@@ -80,6 +82,7 @@ export function GigsVenueChart({
               ticks: {
                 format: (value) => {
                   const row = venues.find(({ venue }) => venue === value);
+
                   return row ? firstEvent(row).venue : value;
                 },
               },
@@ -102,6 +105,7 @@ export function GigsVenueChart({
           sticky: true,
           content: (points) => {
             const venue = points[0]?.datum;
+
             return {
               title: venue?.venue ?? "",
               rows: venue ? [{ label: "Gigs", value: String(venue.count) }] : [],

@@ -3,6 +3,7 @@ import stylelint from "stylelint";
 import type { Rule, RuleBase } from "stylelint";
 
 export const ruleName = "local/use-custom-media-for-width";
+
 const messages = {
   rejected: "Use a named custom media query instead of a viewport width feature.",
 };
@@ -25,6 +26,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
       if (node.type !== "function" || node.value !== "") return;
 
       const feature = node.nodes.find((child) => child.type === "word");
+
       if (feature && isWidthFeature(feature.value)) hasWidthFeature = true;
     });
 

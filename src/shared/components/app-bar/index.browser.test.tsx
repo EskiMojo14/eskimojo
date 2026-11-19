@@ -37,6 +37,7 @@ test("primary navigation works with pointer and keyboard activation", async () =
   const nav = result.getByRole("navigation", { name: "Primary" });
   const projects = nav.getByRole("link", { name: "Projects", exact: true });
   using startTransition = vi.spyOn(document, "startViewTransition");
+
   try {
     await projects.click();
     await expect.element(projects).toHaveAttribute("aria-current", "page");
@@ -74,6 +75,7 @@ test.each([
 
 test("bottom navigation starts page transitions in destination order", async () => {
   await page.viewport(390, 844);
+
   const root = createRootRoute({
     component: () => (
       <div className="app-shell__main">
@@ -84,6 +86,7 @@ test("bottom navigation starts page transitions in destination order", async () 
       </div>
     ),
   });
+
   const router = createRouter({
     history: createMemoryHistory({ initialEntries: ["/music/top/artists"] }),
     routeTree: root.addChildren(
@@ -97,13 +100,17 @@ test("bottom navigation starts page transitions in destination order", async () 
       ),
     ),
   });
+
   addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.poll(() => router.state.status).toBe("idle");
+
   for (const animation of document.getAnimations()) animation.finish();
   using startTransition = vi.spyOn(document, "startViewTransition");
+
   try {
     const nav = result.getByRole("navigation", { name: "Primary" });
+
     for (const [index, { name, type }] of [
       { name: "Gigs", type: "page-forward" },
       { name: "Projects", type: "page-backward" },
@@ -124,6 +131,7 @@ test("bottom navigation starts page transitions in destination order", async () 
 
 test("keeps subtitles paired with the deepest titled route and removes them on navigation", async () => {
   await page.viewport(390, 844);
+
   const root = createRootRoute({
     staticData: { title: "Site", subtitle: "Site subtitle" },
     head: () => generateMetadata({ title: "Site" }),
@@ -134,32 +142,38 @@ test("keeps subtitles paired with the deepest titled route and removes them on n
       </>
     ),
   });
+
   const home = createRoute({
     getParentRoute: () => root,
     path: "/",
     staticData: { title: "Home", subtitle: "Projects, music, and other interests" },
     head: () => generateMetadata({ title: "Home" }),
   });
+
   const projects = createRoute({
     getParentRoute: () => root,
     path: "/projects",
     staticData: { title: "Projects" },
     head: () => generateMetadata({ title: "Projects" }),
   });
+
   const music = createRoute({
     getParentRoute: () => root,
     path: "/music/{-$breakdown}/{-$type}",
   });
+
   const gigs = createRoute({
     getParentRoute: () => root,
     path: "/gigs",
     staticData: { title: "Gigs", subtitle: "" },
     head: () => generateMetadata({ title: "Gigs" }),
   });
+
   const router = createRouter({
     history: createMemoryHistory({ initialEntries: ["/"] }),
     routeTree: root.addChildren([home, projects, music, gigs]),
   });
+
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   const banner = result.getByRole("banner");
   const homeSubtitle = banner.getByText("Projects, music, and other interests");

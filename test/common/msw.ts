@@ -16,10 +16,12 @@ type UnhandledFrameCallback = Extract<
  */
 export function bypassLocalRequests(appUrl: string): UnhandledFrameCallback {
   const { host } = new URL(appUrl);
+
   return ({ frame, defaults }) => {
     if (frame instanceof HttpNetworkFrame) {
       const { request } = frame.data;
       const url = new URL(request.url);
+
       if (
         url.host === host ||
         url.hostname === "fonts.gstatic.com" ||
@@ -28,9 +30,11 @@ export function bypassLocalRequests(appUrl: string): UnhandledFrameCallback {
         return;
       }
     }
+
     if (frame instanceof WebSocketNetworkFrame && frame.data.connection.client.url.host === host) {
       return;
     }
+
     defaults.warn();
   };
 }

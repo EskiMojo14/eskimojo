@@ -40,6 +40,7 @@ export const Route = createFileRoute("/_home/")({
       description:
         "Welcome to eskimojo's personal website. Explore projects, music, and live gigs.",
     });
+
     return {
       ...metadata,
       links: [

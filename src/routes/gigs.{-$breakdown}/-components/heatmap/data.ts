@@ -37,6 +37,7 @@ export function getGigHeatmapData<TEvent extends Pick<GigEvent, "date">>(
     const year = Number(date.slice(0, 4));
     firstYear = Math.min(firstYear, year);
     lastYear = Math.max(lastYear, year);
+
     return date.slice(0, 7);
   });
 
@@ -48,9 +49,11 @@ export function getGigHeatmapData<TEvent extends Pick<GigEvent, "date">>(
     events.length === 0
       ? []
       : Array.from({ length: lastYear - firstYear + 1 }, (_, index) => String(firstYear + index));
+
   const cells: Array<GigMonth<TEvent>> = years.flatMap((year) =>
     gigMonths.map((month, index) => {
       const monthEvents = eventsByMonth.get(`${year}-${String(index + 1).padStart(2, "0")}`) ?? [];
+
       return { year, month, count: monthEvents.length, events: monthEvents };
     }),
   );

@@ -7,6 +7,7 @@ test("preserves foundation overrides and generated-file exclusions with an expli
     codeFilename: "src/shared/styles/typography.css",
     configFile: "./config/stylelint.config.ts",
   });
+
   expect(foundation.results[0]?.warnings).toEqual([]);
 
   const generated = await stylelint.lint({
@@ -14,6 +15,7 @@ test("preserves foundation overrides and generated-file exclusions with an expli
     codeFilename: "src/shared/styles/theme/palettes/fixture.gen.css",
     configFile: "./config/stylelint.config.ts",
   });
+
   expect(generated.results[0]?.ignored).toBe(true);
 });
 

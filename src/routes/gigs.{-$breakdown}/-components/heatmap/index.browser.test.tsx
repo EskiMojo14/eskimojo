@@ -9,25 +9,30 @@ import { GigsHeatmap } from "./index";
 import "#/routes/gigs.{-$breakdown}/index.css";
 
 const [firstArchiveEvent, secondArchiveEvent] = gigs.events;
+
 assert(firstArchiveEvent && secondArchiveEvent, "Expected archive events for the heatmap test.");
 
 test("moves to a different month on every horizontal arrow press", async () => {
   const result = await page.renderWithProviders(
     <GigsHeatmap events={[{ ...firstArchiveEvent, date: "2024-01-01" }]} />,
   );
+
   const chart = result.getByRole("img", { name: "Gigs by month and year" });
   await expect.element(chart).toBeVisible();
   chart.element().focus();
   await userEvent.keyboard("{Home}");
   await expect.element(result.getByRole("heading", { name: "Jan 2024" })).toBeVisible();
+
   for (const month of ["Feb", "Mar", "Apr"]) {
     await userEvent.keyboard("{ArrowRight}");
     await expect.element(result.getByRole("heading", { name: `${month} 2024` })).toBeVisible();
   }
+
   for (const month of ["Mar", "Feb", "Jan"]) {
     await userEvent.keyboard("{ArrowLeft}");
     await expect.element(result.getByRole("heading", { name: `${month} 2024` })).toBeVisible();
   }
+
   await expect.element(chart).toHaveFocus();
 });
 
@@ -38,10 +43,12 @@ test("visits each archive cell once without stopping on its label", async () => 
   chart.element().focus();
   await userEvent.keyboard("{Home}");
   await expect.element(result.getByRole("heading", { name: "Jan 2015" })).toBeVisible();
+
   for (const year of ["2016", "2017", "2018"]) {
     await userEvent.keyboard("{ArrowDown}");
     await expect.element(result.getByRole("heading", { name: `Jan ${year}` })).toBeVisible();
   }
+
   await userEvent.keyboard("{ArrowUp}");
   await expect.element(result.getByRole("heading", { name: "Jan 2017" })).toBeVisible();
   await userEvent.keyboard("{ArrowRight}");
@@ -83,6 +90,7 @@ test("shows complete monthly event details and supports keyboard pinning and dis
       ]}
     />,
   );
+
   const chart = result.getByRole("img", { name: "Gigs by month and year" });
   await expect.element(chart).toBeVisible();
   chart.element().focus();

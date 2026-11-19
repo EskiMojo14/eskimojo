@@ -22,6 +22,7 @@ const colorMix = code.regex`/^color-mix\(\s*in\s+[a-z0-9-]+(?:\s+(?:shorter|long
 const alphaColor = code.regex`/^alpha\(\s*from\s+(?:${colorToken}|currentcolor)\s*\/\s*(?:\d+(?:\.\d+)?%?|\.\d+%?|var\(--md-sys-[a-z-]+-opacity\))\s*\)$/i`;
 
 const globalKeywords = ["inherit", "initial", "unset", "revert", "revert-layer"];
+
 const colorValues = [
   ...globalKeywords,
   "transparent",
@@ -34,6 +35,7 @@ const colorValues = [
 
 // The plugin can't expand these shorthands, so it checks each word: allow the non-colour ones.
 const lineWords = String.raw`/^(?:[\d.]+[a-z]*|thin|medium|thick|auto|solid|dashed|dotted|double|groove|ridge|inset|outset|wavy)$/`;
+
 const shorthandWords: Record<string, Array<string>> = {
   outline: [lineWords],
   "text-decoration": [
@@ -46,6 +48,7 @@ const radiusProperty = "/^border(-[a-z]+)*-radius$/";
 const radiusProperties = [radiusProperty];
 
 const fontProperties = ["font", "font-family", "font-weight"];
+
 const colorProperties = [
   "/color$/",
   "background",

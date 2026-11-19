@@ -40,6 +40,7 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
       title: "Gigs",
       description: "Explore eskimojo's live gig history by month, artist, venue, and city.",
     });
+
     return {
       ...metadata,
       links: [...metadata.links, { rel: "stylesheet", href: breakdownCss }],
@@ -51,17 +52,22 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
 function RouteComponent() {
   const { breakdown = "by-month" } = Route.useParams();
   const { artist, city, venue } = Route.useSearch();
+
   const filteredGigs = useMemo(
     () =>
       gigs.events.filter((gig) => {
         if (artist && !(gig.artists.includes(artist) || gig.support?.includes(artist)))
           return false;
+
         if (city && gig.city !== city) return false;
+
         if (venue && formatVenue(gig) !== venue) return false;
+
         return true;
       }),
     [artist, city, venue],
   );
+
   return (
     <main>
       <div className="gigs-intro">

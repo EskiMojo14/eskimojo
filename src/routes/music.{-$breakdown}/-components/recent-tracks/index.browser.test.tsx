@@ -20,6 +20,7 @@ test("renders now playing and repeated completed tracks with semantic timestamps
     artist: "Tame Impala",
     album: "Currents",
   };
+
   const result = await page.renderWithProviders(
     <RecentTracks
       tracks={[
@@ -29,6 +30,7 @@ test("renders now playing and repeated completed tracks with semantic timestamps
       ]}
     />,
   );
+
   await expect.element(result.getByRole("region", { name: "Recently played" })).toBeVisible();
   expect(result.getByRole("listitem").all()).toHaveLength(3);
   await expect.element(result.getByText("Now playing")).toBeVisible();
@@ -50,12 +52,14 @@ test("keeps the section and list named without a visible heading", async () => {
       ]}
     />,
   );
+
   await expect.element(result.getByRole("region", { name: "Recently played" })).toBeVisible();
   await expect.element(result.getByRole("list", { name: "Recently played" })).toBeVisible();
 });
 
 test("shows Last.fm artwork and preserves music search links", async () => {
   mockLastfmArtwork();
+
   const result = await page.renderWithProviders(
     <RecentTracks
       tracks={[
@@ -71,6 +75,7 @@ test("shows Last.fm artwork and preserves music search links", async () => {
       ]}
     />,
   );
+
   await expect
     .element(result.getByAltText(""))
     .toHaveAttribute("src", "https://lastfm.freetls.fastly.net/i/u/300x300/currents");

@@ -24,6 +24,7 @@ function Example({
   menuOptions?: ReadonlyArray<SelectMenuOption<string>>;
 }) {
   const [value, setValue] = useState("system");
+
   return (
     <form aria-label="Settings">
       <SelectMenu
@@ -61,12 +62,14 @@ test("pointer selection updates the controlled value, form value, and focus", as
   expect(onChange).toHaveBeenCalledExactlyOnceWith("high");
   const form = result.getByRole("form", { name: "Settings" }).element();
   expect(form).toBeInstanceOf(HTMLFormElement);
+
   if (!(form instanceof HTMLFormElement)) throw new Error("Expected Settings form.");
   expect(new FormData(form).get("contrast")).toBe("high");
 });
 
 test("supporting text is announced in the menu but omitted from the selected display", async () => {
   const onChange = vi.fn<(value: string) => void>();
+
   const result = await page.renderWithProviders(
     <Example
       onChange={onChange}
@@ -76,6 +79,7 @@ test("supporting text is announced in the menu but omitted from the selected dis
       ]}
     />,
   );
+
   const field = result.getByRole("combobox", { name: "Contrast" });
   await field.click();
   const high = result.getByRole("option", { name: "High For stronger contrast", exact: true });
@@ -165,6 +169,7 @@ test("disabled fields cannot open and do not submit a value", async () => {
   const result = await page.renderWithProviders(<Example disabled />);
   await expect.element(result.getByRole("combobox", { name: "Contrast" })).toBeDisabled();
   const form = result.getByRole("form", { name: "Settings" }).element();
+
   if (!(form instanceof HTMLFormElement)) throw new Error("Expected Settings form.");
   expect(new FormData(form).has("contrast")).toBe(false);
 });
@@ -181,11 +186,13 @@ test("icons appear in the selected value and menu options without changing acces
       onChange={vi.fn<(value: string) => void>()}
     />,
   );
+
   const field = result.getByRole("combobox", { name: "Theme", exact: true });
   const selectedIcon = field.element().querySelector<HTMLElement>('[aria-hidden="true"]');
   await expect.element(selectedIcon).toBeVisible();
   await expect.element(field).toHaveAccessibleDescription("Dark");
   await field.click();
+
   for (const name of ["Light", "Dark"]) {
     const option = result.getByRole("option", { name, exact: true });
     await expect.element(option).toBeVisible();

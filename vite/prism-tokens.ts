@@ -14,13 +14,16 @@ export const prismTokens: typeof rehypePrism = () => (tree) => {
     if (node.type !== "element") return;
 
     const classes = node.properties.className;
+
     if (Array.isArray(classes)) {
       const language = classes.find(
         (name) => typeof name === "string" && name.startsWith("language-"),
       );
+
       if (typeof language === "string") javascript = jsLanguages.has(language);
 
       const [text] = node.children;
+
       if (
         javascript &&
         classes.includes("token") &&

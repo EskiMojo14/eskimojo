@@ -21,6 +21,7 @@ export const fetchLastfm = createServerOnlyFn(
     onResponse?: (response: Response) => void;
   }) => {
     const { LASTFM_API_KEY, LASTFM_USER } = getServerEnv();
+
     return upfetch("https://ws.audioscrobbler.com/2.0/", {
       params: {
         api_key: LASTFM_API_KEY,
@@ -37,6 +38,7 @@ export const fetchLastfm = createServerOnlyFn(
 );
 
 const imageSizeSchema = v.picklist(["small", "medium", "large", "extralarge", "mega"]);
+
 type ImageSize = v.InferOutput<typeof imageSizeSchema>;
 
 const artworkHosts = new Set(["lastfm-img.freetls.fastly.net", "lastfm.freetls.fastly.net"]);
@@ -45,6 +47,7 @@ const placeholderFilename = "2a96cbd8b46e442fc41c2b86b821562f.png";
 function normalizeArtworkUrl(src: string | undefined) {
   if (!src || src.length > 2048 || !URL.canParse(src)) return undefined;
   const url = new URL(src);
+
   if (
     url.protocol !== "https:" ||
     !artworkHosts.has(url.hostname) ||
@@ -55,10 +58,12 @@ function normalizeArtworkUrl(src: string | undefined) {
   ) {
     return undefined;
   }
+
   if (url.hostname === "lastfm-img.freetls.fastly.net") {
     // The legacy hostname can serve stale cached 404s for otherwise available artwork.
     url.hostname = "lastfm.freetls.fastly.net";
   }
+
   return url.href;
 }
 
@@ -67,7 +72,9 @@ export const imageSchema = v.pipe(
   v.transform((images) =>
     images.reduce<Partial<Record<ImageSize, string>>>((acc, image) => {
       const src = normalizeArtworkUrl(image["#text"]);
+
       if (src) acc[image.size] = src;
+
       return acc;
     }, {}),
   ),
@@ -82,6 +89,7 @@ export function withLastfmArtwork<T extends { image?: Partial<Record<ImageSize, 
 ): Omit<T, "image"> & { lastfmArtworkUrl?: string } {
   const { image, ...rest } = item;
   const lastfmArtworkUrl = bestLastfmArtwork(image);
+
   return lastfmArtworkUrl ? { ...rest, lastfmArtworkUrl } : rest;
 }
 
@@ -91,6 +99,7 @@ export function addLastfmArtworkFallback<
   return items.map(({ artwork, lastfmArtworkUrl, ...item }) => {
     if (artwork) return { ...item, artwork };
     const imageUrl = normalizeArtworkUrl(lastfmArtworkUrl);
+
     return imageUrl ? { ...item, artwork: { imageUrl } } : item;
   });
 }

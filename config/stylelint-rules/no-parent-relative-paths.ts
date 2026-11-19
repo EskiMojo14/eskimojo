@@ -6,6 +6,7 @@ export const ruleName = "local/no-parent-relative-paths";
 
 const absoluteUrlPattern = /^(?:[a-z][a-z\d+.-]*:|\/\/)/i;
 const quotedStringPattern = /^(["'])(.*)\1$/;
+
 const messages = {
   rejected: (path: string) =>
     `Use a #/ import or a root-absolute URL instead of parent-relative path "${path}".`,
@@ -23,6 +24,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
   root.walk((node) => {
     let value: string;
     let isImport = false;
+
     if (node.type === "decl") {
       value = node.value;
     } else if (node.type === "atrule" && node.name.toLowerCase() === "import") {
@@ -31,6 +33,7 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
     } else return;
 
     const parsed = valueParser(value);
+
     const importPath = isImport
       ? parsed.nodes.find((part) => part.type !== "space" && part.type !== "comment")
       : undefined;
@@ -50,11 +53,13 @@ const ruleFunction: RuleBase<boolean> = (primary) => (root, result) => {
       if (part.type === "function" && part.value.toLowerCase() === "url") {
         const path = valueParser.stringify(part.nodes).trim().replace(quotedStringPattern, "$2");
         reportIfRelative(path);
+
         return false;
       }
 
       if (part !== importPath || part.type !== "string") return true;
       reportIfRelative(part.value);
+
       return false;
     });
   });

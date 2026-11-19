@@ -14,6 +14,7 @@ import { MdSymbol } from "#/shared/components/symbol";
 const summaryBem = BEMHelper("music-summary");
 const skeletonBem = BEMHelper("music-skeleton");
 const numberFormat = new Intl.NumberFormat("en-GB");
+
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
@@ -96,9 +97,11 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   useLayoutEffect(() => {
     const element = summaryRef.current;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
     if (!element || reducedMotion.matches) return undefined;
 
     const style = getComputedStyle(element);
+
     // Let the browser sample the same spring curve used by CSS transitions.
     const animation = element.animate([], {
       duration: Number.parseFloat(
@@ -107,28 +110,38 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
       easing: style.getPropertyValue("--md-sys-motion-spring-default-effects").trim(),
       fill: "both",
     });
+
     const effect = animation.effect;
+
     if (!effect) throw new Error("Summary count animation requires an animation effect");
     setProgress(0);
+
     function finish() {
       cancelAnimationFrame(frameRef.current);
       animation.cancel();
       setProgress(1);
     }
+
     const tick = () => {
       if (animation.playState === "finished") {
         finish();
+
         return;
       }
+
       const eased = effect.getComputedTiming().progress;
+
       if (typeof eased === "number") setProgress(Math.min(1, Math.max(0, eased)));
       frameRef.current = requestAnimationFrame(tick);
     };
+
     function onMotionChange() {
       if (reducedMotion.matches) finish();
     }
+
     frameRef.current = requestAnimationFrame(tick);
     reducedMotion.addEventListener("change", onMotionChange);
+
     return () => {
       cancelAnimationFrame(frameRef.current);
       animation.cancel();
@@ -138,6 +151,7 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
   const registered = new Date(user.registered.unixtime * 1000);
   const days = Math.max(1, Math.floor((asOf - registered.getTime()) / 86_400_000));
   const average = Math.round(user.playcount / days);
+
   return (
     <MusicSummaryLayout
       ref={summaryRef}
@@ -155,6 +169,7 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
 
 function SummaryCount({ value, progress }: { value: number; progress: number }) {
   const start = Math.ceil(value * 0.95);
+
   return (
     <>
       <span {...summaryBem({ element: "count-final" })}>{numberFormat.format(value)}</span>

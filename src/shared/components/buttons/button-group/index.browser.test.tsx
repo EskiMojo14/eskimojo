@@ -8,6 +8,7 @@ import { ButtonGroup } from "./index";
 for (const variant of ["standard", "connected"] as const) {
   test(`${variant} has one tab stop and arrows move focus without selecting`, async () => {
     const onClick = vi.fn<() => void>();
+
     const result = await page.renderWithProviders(
       <>
         <ButtonGroup variant={variant} aria-label="Theme">
@@ -20,6 +21,7 @@ for (const variant of ["standard", "connected"] as const) {
         <Button>Done</Button>
       </>,
     );
+
     const system = result.getByRole("button", { name: "System" });
     const light = result.getByRole("button", { name: "Light" });
     await expect.element(result.getByRole("toolbar", { name: "Theme" })).toBeVisible();
@@ -55,6 +57,7 @@ test("starts at the selected button and remembers pointer focus on re-entry", as
       <Button>Done</Button>
     </>,
   );
+
   await userEvent.tab();
   await expect.element(result.getByRole("button", { name: "Light" })).toHaveFocus();
   await result.getByRole("button", { name: "Dark" }).click();
@@ -74,6 +77,7 @@ test("skips disabled, aria-disabled, and hidden children", async () => {
       <Button>Last</Button>
     </ButtonGroup>,
   );
+
   await userEvent.tab();
   await userEvent.keyboard("{ArrowRight}");
   await expect.element(result.getByRole("button", { name: "Last" })).toHaveFocus();
@@ -88,6 +92,7 @@ test("left and right follow RTL layout", async () => {
       <Button>Last</Button>
     </ButtonGroup>,
   );
+
   await userEvent.tab();
   await userEvent.keyboard("{ArrowLeft}");
   await expect.element(result.getByRole("button", { name: "Last" })).toHaveFocus();
@@ -107,7 +112,9 @@ test("does not consume boundary, modified, vertical, or caller-handled keys", as
       <Button>Last</Button>
     </ButtonGroup>,
   );
+
   const first = result.getByRole("button", { name: "First" }).element();
+
   for (const init of [
     { key: "ArrowLeft" },
     { key: "ArrowUp" },
@@ -117,6 +124,7 @@ test("does not consume boundary, modified, vertical, or caller-handled keys", as
     const event = new KeyboardEvent("keydown", { ...init, bubbles: true, cancelable: true });
     expect(first.dispatchEvent(event)).toBe(true);
   }
+
   await userEvent.tab();
   await userEvent.keyboard("{End}");
   await expect.element(first).toHaveFocus();
@@ -129,6 +137,7 @@ test("repairs the tab stop when a button is disabled, removed, or added", async 
       <Button>Last</Button>
     </ButtonGroup>,
   );
+
   await result.rerender(
     <ButtonGroup aria-label="Actions">
       <Button disabled>First</Button>
@@ -158,6 +167,7 @@ test("empty and entirely disabled groups do not trap keyboard focus", async () =
       <Button>Done</Button>
     </>,
   );
+
   await userEvent.tab();
   await expect.element(result.getByRole("button", { name: "Done" })).toHaveFocus();
 });
@@ -173,6 +183,7 @@ test("nested controls and groups keep their own keyboard handling", async () => 
       </ButtonGroup>
     </ButtonGroup>,
   );
+
   await result.getByRole("textbox", { name: "Text" }).fill("text");
   await userEvent.keyboard("{ArrowLeft}");
   await expect.element(result.getByRole("textbox", { name: "Text" })).toHaveFocus();

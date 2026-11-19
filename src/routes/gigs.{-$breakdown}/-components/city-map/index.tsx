@@ -23,11 +23,14 @@ export function GigsCityMap({
   events: ReadonlyArray<ArtistEvent & { city: string; date: string; venue: string }>;
 }) {
   const cities = useMemo(() => getCityMapData(events), [events]);
+
   const definition = useMemo(() => {
     const fit = getCityMapFit(cities);
     const padding = 35 + Math.max(0, ...cities.map(({ radius }) => radius));
+
     const projection = ({ chart }: { chart: ChartBounds }) => {
       const inset = Math.min(padding, Math.max(0, (Math.min(chart.width, chart.height) - 1) / 2));
+
       return geoMercator()
         .fitExtent(
           [
@@ -41,11 +44,13 @@ export function GigsCityMap({
           [chart.x + chart.width - 0.5, chart.y + chart.height - 0.5],
         ]);
     };
+
     const features = cities.map((city) => ({
       type: "Feature" as const,
       geometry: { type: "Point" as const, coordinates: city.coordinates },
       properties: city,
     }));
+
     return defineChart({
       marks: [
         decorative(
@@ -79,6 +84,7 @@ export function GigsCityMap({
         sticky: true,
         content: (points) => {
           const city = points[0]?.datum.properties;
+
           return {
             title: city?.city ?? "",
             rows: city ? [{ label: "Gigs", value: String(city.count) }] : [],

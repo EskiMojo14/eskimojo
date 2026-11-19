@@ -54,6 +54,7 @@ type MotionScheme = "expressive" | "standard";
 
 function Demo({ children, motion }: { children: ReactNode; motion?: MotionScheme }) {
   const [played, setPlayed] = useState(false);
+
   return (
     <main {...motionPageBem()} data-played={played || undefined} data-motion={motion}>
       <button type="button" {...motionPlayBem()} onClick={() => setPlayed((p) => !p)}>
@@ -85,6 +86,7 @@ export const Easing = meta.story({
     <Demo>
       {easings.map((easing) => {
         const token = `--md-sys-motion-easing-${easing}`;
+
         return (
           <Row key={token} token={token}>
             <Track duration="var(--md-sys-motion-duration-long2)" easing={`var(${token})`} />
@@ -100,6 +102,7 @@ export const Duration = meta.story({
     <Demo>
       {durations.map((duration) => {
         const token = `--md-sys-motion-duration-${duration}`;
+
         return (
           <Row key={token} token={token}>
             <Track duration={`var(${token})`} easing="var(--md-sys-motion-easing-standard)" />
@@ -120,6 +123,7 @@ export const Springs = meta.story({
       {(["spatial", "effects"] as const).flatMap((type) =>
         speeds.map((speed) => {
           const token = `--md-sys-motion-spring-${speed}-${type}`;
+
           return (
             <Row key={token} token={token}>
               <Track

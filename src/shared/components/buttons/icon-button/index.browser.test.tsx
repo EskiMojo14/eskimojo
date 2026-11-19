@@ -38,6 +38,7 @@ test("defaults to button type and forwards native button props", async () => {
 
 test("forwards toggle state and leaves its state controlled by the caller", async () => {
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <IconButton
       aria-label="Favorite"
@@ -46,6 +47,7 @@ test("forwards toggle state and leaves its state controlled by the caller", asyn
       onClick={onClick}
     />,
   );
+
   const button = result.getByRole("button", { name: "Favorite" });
 
   await userEvent.click(button);

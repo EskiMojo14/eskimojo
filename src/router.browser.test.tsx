@@ -14,6 +14,7 @@ import { getRouter } from "./router";
 
 function createTransitionRouter(initialEntry = "/projects") {
   const root = createRootRoute({ component: Outlet });
+
   return createRouter({
     history: createMemoryHistory({ initialEntries: [initialEntry] }),
     defaultViewTransition: getRouter().options.defaultViewTransition,
@@ -100,26 +101,34 @@ test("interrupted navigation transitions do not leave unhandled rejections", asy
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("link", { name: "Home" })).toBeVisible();
   const original = document.startViewTransition.bind(document);
+
   using startViewTransition = vi
     .spyOn(document, "startViewTransition")
     .mockImplementationOnce((update) => {
       const transition = original(update);
       // Navigating again before this transition is ready skips it.
       void router.navigate({ to: "/projects/$slug", params: { slug: "history-adapter" } });
+
       return transition;
     });
+
   const rejections: Array<unknown> = [];
+
   const onRejection = (event: PromiseRejectionEvent) => {
     rejections.push(event.reason);
     event.preventDefault();
   };
+
   window.addEventListener("unhandledrejection", onRejection);
+
   try {
     await router.navigate({ to: "/" });
     await expect.poll(() => startViewTransition.mock.calls.length).toBe(2);
+
     for (const entry of startViewTransition.mock.results) {
       if (entry.type === "return") await entry.value.finished;
     }
+
     // Unhandled rejection events are dispatched in a later task.
     await new Promise((resolve) => setTimeout(resolve));
     expect(rejections).toEqual([]);
@@ -158,6 +167,7 @@ test.each([
   "history navigation selects transitions for %s and %s",
   async (from, to, forwardTypes, backwardTypes) => {
     const root = createRootRoute({ component: Outlet });
+
     const router = createRouter({
       history: createMemoryHistory({ initialEntries: [from, to] }),
       defaultViewTransition: getRouter().options.defaultViewTransition,
@@ -169,11 +179,14 @@ test.each([
         }),
       ]),
     });
+
     const result = await page.renderWithProviders(<RouterProvider router={router} />);
     await expect.element(result.getByText("Destination content")).toBeVisible();
     await expect.poll(() => router.state.status).toBe("idle");
+
     for (const animation of document.getAnimations()) animation.finish();
     using startTransition = vi.spyOn(document, "startViewTransition");
+
     try {
       router.history.back();
       await expect.poll(() => router.state.location.href).toBe(from);

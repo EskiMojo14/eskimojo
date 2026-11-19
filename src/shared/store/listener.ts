@@ -23,6 +23,7 @@ export const listenerEnhancer =
   (createStore) =>
   (reducer, preloadedState) => {
     const store = createStore(reducer, preloadedState);
+
     return {
       ...store,
       startListening: listenerMiddleware.startListening,

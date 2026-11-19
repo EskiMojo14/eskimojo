@@ -20,6 +20,7 @@ export function LinearProgress({
   ...props
 }: LinearProgressProps) {
   const progress = getProgressValue(value, max);
+
   return (
     <span
       {...props}

@@ -121,6 +121,7 @@ export const Sizes = meta.story({
 
 function ToggleButtons(props: ButtonProps) {
   const [pressed, setPressed] = useState(false);
+
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
       {variants.map((variant) => (

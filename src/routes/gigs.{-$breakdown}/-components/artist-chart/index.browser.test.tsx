@@ -21,6 +21,7 @@ test("renders exact artist counts and shows the focused appearance role", async 
       ]}
     />,
   );
+
   const table = result.getByRole("table", { name: "Recorded appearances per artist" });
   await expect
     .element(table.getByRole("row", { name: "A 2 1 3", exact: true }))
@@ -70,9 +71,11 @@ test("shows only the hovered artist appearance role", async () => {
       ]}
     />,
   );
+
   const chart = result.getByRole("img", { name: "Gigs by artist" });
   const supportBar = chart.element().querySelectorAll("rect")[1];
   const mainBar = chart.element().querySelectorAll("rect")[0];
+
   if (!supportBar || !mainBar) throw new Error("Expected both artist bar segments.");
 
   await userEvent.hover(supportBar);

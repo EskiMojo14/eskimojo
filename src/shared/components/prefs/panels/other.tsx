@@ -35,6 +35,7 @@ export function OtherPanel() {
                 onChange={(event) => {
                   const enabled = event.currentTarget.checked;
                   setHaptics(enabled ? "on" : "off");
+
                   if (enabled && isSupported) void trigger("selection");
                 }}
                 onIcon={<MdSymbol>check</MdSymbol>}

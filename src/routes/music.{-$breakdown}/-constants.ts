@@ -6,10 +6,12 @@ export const periodSchema = v.fallback(
   v.picklist(["7day", "1month", "3month", "6month", "12month", "overall"]),
   "overall",
 );
+
 export type Period = v.InferOutput<typeof periodSchema>;
 
 export const strictMusicTypeSchema = v.picklist(["tracks", "albums", "artists"]);
 export const musicTypeSchema = v.fallback(strictMusicTypeSchema, "tracks");
+
 export type MusicType = v.InferOutput<typeof musicTypeSchema>;
 
 export const musicTypeLabels = {
@@ -20,6 +22,7 @@ export const musicTypeLabels = {
 
 export const strictMusicBreakdownSchema = v.picklist(["top", "recent"]);
 export const musicBreakdownSchema = v.fallback(strictMusicBreakdownSchema, "top");
+
 export type MusicBreakdown = v.InferOutput<typeof musicBreakdownSchema>;
 
 export const musicBreakdownLabels: Record<MusicBreakdown, { label: string; icon: string }> = {

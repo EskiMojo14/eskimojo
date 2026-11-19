@@ -1,4 +1,5 @@
 import * as child_process from "child_process";
+
 export function getSystemColorScheme(): "light" | "dark" | undefined {
   if (process.platform === "darwin") {
     try {

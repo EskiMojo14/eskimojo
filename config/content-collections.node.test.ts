@@ -40,6 +40,7 @@ test("preserves themed and social logo images", () => {
     dark: "/projects/neocities-light.svg",
     social: "/sources/Goat_square-1.jpeg",
   };
+
   expect(v.parse(projectLogoSchema, logo)).toEqual(logo);
 });
 

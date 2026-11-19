@@ -25,6 +25,7 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 function MusicTabsContent() {
   const { breakdown: param } = musicRoute.useParams();
   const breakdown = v.parse(musicBreakdownSchema, param);
+
   return (
     <>
       <MusicBreakdownTabs />
@@ -59,6 +60,7 @@ function MusicTabsDemo({
 }) {
   const [router] = useState(() => {
     const root = createRootRoute();
+
     const music = createRoute({
       getParentRoute: () => root,
       path: "/music/{-$breakdown}/{-$type}",
@@ -73,13 +75,17 @@ function MusicTabsDemo({
       validateSearch: v.object({ period: v.optional(v.string()) }),
       component: MusicTabsContent,
     });
+
     const demoRouter = createRouter({
       routeTree: root.addChildren([music]),
       history: createMemoryHistory({ initialEntries: [initialEntry] }),
     });
+
     addNavigationTransitions(demoRouter);
+
     return demoRouter;
   });
+
   return <RouterProvider router={router} />;
 }
 

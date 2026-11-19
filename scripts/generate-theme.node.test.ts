@@ -27,6 +27,7 @@ async function fixture() {
   });
   await mkdir(join(dir, ".storybook"));
   await symlink(fileURLToPath(new URL("node_modules/", root)), join(dir, "node_modules"));
+
   return {
     dir,
     generate: () => exec(process.execPath, ["scripts/generate-theme.ts"], { cwd: dir }),
@@ -45,9 +46,11 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   );
 
   const outputs = new Map<string, string>();
+
   for (const theme of ["arctic", "goat", "peach", "new-theme"]) {
     const css = await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8");
     outputs.set(theme, css);
+
     for (const [level, suffix] of [
       ["standard", ""],
       ["medium", "-mc"],
@@ -55,28 +58,34 @@ test("generates a separate palette for every theme and preserves the goat Storyb
     ]) {
       const block = new RegExp(`%${theme}-${level} \\{([^}]+)\\}`).exec(css)?.[1];
       expect(block).toBeDefined();
+
       const light = await readFile(
         join(dir, themePath, `exports/${theme}/light${suffix}.css`),
         "utf8",
       );
+
       const dark = await readFile(
         join(dir, themePath, `exports/${theme}/dark${suffix}.css`),
         "utf8",
       );
+
       const darkTokens = new Map(
         [...dark.matchAll(/(--md-sys-color-[\w-]+): ([^;]+);/g)].map(([, name, value]) => [
           name,
           value,
         ]),
       );
+
       for (const [, name, l] of light.matchAll(/(--md-sys-color-[\w-]+): ([^;]+);/g)) {
         const d = darkTokens.get(name);
         expect(d).toBeDefined();
         expect(block).toContain(`${name}: ${l === d ? l : `light-dark(${l}, ${d})`};`);
       }
+
       expect(block).not.toMatch(/--md-sys-color-(?:green|yellow|teal)/);
     }
   }
+
   expect(outputs.get("arctic")).not.toBe(outputs.get("goat"));
   expect(outputs.get("peach")).not.toBe(outputs.get("goat"));
   expect(outputs.get("peach")).not.toBe(outputs.get("arctic"));
@@ -84,6 +93,7 @@ test("generates a separate palette for every theme and preserves the goat Storyb
     await readFile(new URL(".storybook/palette.gen.ts", root), "utf8"),
   );
   await generate();
+
   for (const [theme, css] of outputs) {
     expect(await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8")).toBe(css);
   }

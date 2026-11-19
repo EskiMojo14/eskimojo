@@ -9,6 +9,7 @@ import { Radio } from "./index";
 
 function ControlledRadioGroup() {
   const [quality, setQuality] = useState("normal");
+
   return (
     <>
       <fieldset>
@@ -62,6 +63,7 @@ test("native groups select exclusively, skip disabled choices, and confirm only 
 
 test("uncontrolled groups keep native form values, reset behavior and forwarded refs", async () => {
   const ref = createRef<HTMLInputElement>();
+
   const result = await page.renderWithProviders(
     <form>
       <Radio label="MP3" name="format" value="mp3" defaultChecked ref={ref} />
@@ -70,7 +72,9 @@ test("uncontrolled groups keep native form values, reset behavior and forwarded 
       <button type="reset">Reset format</button>
     </form>,
   );
+
   const form = result.container.querySelector("form");
+
   if (!form) throw new Error("Radio form was not rendered.");
   expect(ref.current).toBe(result.getByRole("radio", { name: "MP3" }).element());
   expect(new FormData(form).get("format")).toBe("mp3");
@@ -98,6 +102,7 @@ test("required groups expose their description and become valid after a choice",
       <p id="radio-delivery-help">Choose how to receive your receipt.</p>
     </fieldset>,
   );
+
   const email = result.getByRole("radio", { name: "Email" });
   await expect.element(email).toBeRequired();
   await expect.element(email).toBeInvalid();
@@ -109,6 +114,7 @@ test("required groups expose their description and become valid after a choice",
 test("disabled controls, canceled changes and caller-owned feedback remain quiet", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onChange = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <>
       <Radio label="Unavailable" name="quiet" value="disabled" disabled onChange={onChange} />
@@ -121,6 +127,7 @@ test("disabled controls, canceled changes and caller-owned feedback remain quiet
       />
     </>,
   );
+
   const disabled = result.getByRole("radio", { name: "Unavailable" });
   await expect.element(disabled).toBeDisabled();
   await disabled.click({ force: true });
@@ -134,9 +141,11 @@ test("disabled controls, canceled changes and caller-owned feedback remain quiet
 
 test("saved haptics opt-out preserves radio selection", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+
   const result = await page.renderWithProviders(<ControlledRadioGroup />, {
     preferences: { haptics: "off" },
   });
+
   await result.getByRole("radio", { name: "Lossless" }).click();
   await expect.element(result.getByRole("radio", { name: "Lossless" })).toBeChecked();
   await userEvent.keyboard("{ArrowUp}");
@@ -147,6 +156,7 @@ test("saved haptics opt-out preserves radio selection", async () => {
 test("leading and trailing list radios select from row edges and whitespace without duplicates", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onChange = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <List aria-label="Playback quality" style={{ width: 320 }}>
       <ListItem>
@@ -194,6 +204,7 @@ test("leading and trailing list radios select from row edges and whitespace with
       </ListItem>
     </List>,
   );
+
   const normal = result.getByRole("radio", { name: "Normal" });
   const lossless = result.getByRole("radio", { name: "Lossless" });
   const rows = result.getByRole("listitem");

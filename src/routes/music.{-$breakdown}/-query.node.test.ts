@@ -21,6 +21,7 @@ test("uses existing Last.fm artwork and palettes without additional metadata loo
   })
     .png()
     .toBuffer();
+
   const lastfmArtworkUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/first-choice.png";
   let requests = 0;
   network.use(
@@ -33,9 +34,11 @@ test("uses existing Last.fm artwork and palettes without additional metadata loo
     ),
     http.get("https://ws.audioscrobbler.com/2.0/", () => {
       requests++;
+
       return new HttpResponse(null, { status: 503 });
     }),
   );
+
   const result = await query.resolveMusicArtwork(
     {
       tracks: [{ name: "Covered Song", artist: "Example Artist", lastfmArtworkUrl }],
@@ -44,6 +47,7 @@ test("uses existing Last.fm artwork and palettes without additional metadata loo
     },
     new AbortController().signal,
   );
+
   expect(result.tracks[0]?.artwork).toEqual({ imageUrl: lastfmArtworkUrl });
   expect(result.artists[0]?.artwork).toEqual({ imageUrl: lastfmArtworkUrl });
   expect(result.tracks[0]?.palette).toBeDefined();
@@ -60,11 +64,13 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
   onTestFinished(() => {
     vi.unstubAllEnvs();
   });
+
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background: "#ca2020" },
   })
     .png()
     .toBuffer();
+
   const existingUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/existing.png";
   const trackUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/track-cover.png";
   const artistUrl = "https://lastfm.freetls.fastly.net/i/u/300x300/artist-album.png";
@@ -85,19 +91,23 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
         params.get("limit"),
         params.get("album"),
       ]);
+
       if (method === "track.getInfo") {
         return HttpResponse.json({
           track: { album: { image: [{ size: "extralarge", "#text": trackUrl }] } },
         });
       }
+
       if (method === "album.getInfo") {
         return HttpResponse.json({ album: { image: [{ size: "extralarge", "#text": albumUrl }] } });
       }
+
       return HttpResponse.json({
         topalbums: { album: [{ image: [{ size: "extralarge", "#text": artistUrl }] }] },
       });
     }),
   );
+
   const params = {
     tracks: [
       { name: "Covered Track", artist: "Example Artist", lastfmArtworkUrl: existingUrl },
@@ -117,6 +127,7 @@ test("resolves only missing covers from Last.fm, preserves order, and caches the
       { name: "Missing Album", artist: "Example Artist" },
     ],
   };
+
   const result = await query.resolveMusicArtwork(params, new AbortController().signal);
   expect(result.tracks.map(({ name, artwork }) => [name, artwork?.imageUrl])).toEqual([
     ["Covered Track", existingUrl],
@@ -149,19 +160,23 @@ test("keeps artwork fresh throughout a retry cooldown when the tab remounts", as
   onTestFinished(() => dateNow.mockRestore());
   const client = new QueryClient();
   onTestFinished(() => client.clear());
+
   const response = {
     tracks: [{ name: "Retry Song", artist: "Example Artist", artwork: undefined }],
     artists: [],
     albums: [],
     retryAfterMs: 30_000,
   };
+
   const queryFn = vi.fn<() => Promise<typeof response>>().mockResolvedValue(response);
+
   const options = {
     ...query.getMusicArtwork({
       tracks: [{ name: "Retry Song", artist: "Example Artist" }],
     }),
     queryFn,
   };
+
   client.setQueryData(options.queryKey, response);
   now += 20_000;
   const observer = new QueryObserver(client, options);
@@ -187,6 +202,7 @@ test("filters unsafe and placeholder Last.fm image URLs", () => {
     },
     { size: "extralarge", "#text": "http://lastfm.freetls.fastly.net/i/u/174s/extralarge.png" },
   ]);
+
   expect(image).toEqual({
     small: "https://lastfm.freetls.fastly.net/i/u/34x34/small.png",
     large: "https://lastfm.freetls.fastly.net/i/u/300x300/real.jpg",

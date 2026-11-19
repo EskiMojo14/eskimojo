@@ -33,6 +33,7 @@ export function MdSymbol({
   ...props
 }: MdSymbolProps) {
   const labelled = Boolean(ariaLabel || ariaLabelledBy);
+
   return (
     <span
       {...props}

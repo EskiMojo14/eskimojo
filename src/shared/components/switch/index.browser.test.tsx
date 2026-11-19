@@ -9,6 +9,7 @@ import { Switch } from "./index";
 
 function ControlledSwitch() {
   const [checked, setChecked] = useState(false);
+
   return (
     <Switch
       label="Wi-Fi"
@@ -37,9 +38,11 @@ test("exposes a named switch that toggles by pointer and keyboard", async () => 
 
 test("saved haptics opt-out keeps switches usable without feedback", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+
   const result = await page.renderWithProviders(<ControlledSwitch />, {
     preferences: { haptics: "off" },
   });
+
   const toggle = result.getByRole("switch", { name: "Wi-Fi" });
   await toggle.click();
   await expect.element(toggle).toBeChecked();
@@ -50,9 +53,11 @@ test("saved haptics opt-out keeps switches usable without feedback", async () =>
 
 test("callers can own switch feedback without an automatic duplicate", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+
   const result = await page.renderWithProviders(
     <Switch label="Custom feedback" hapticFeedback={false} />,
   );
+
   const toggle = result.getByRole("switch", { name: "Custom feedback" });
   await toggle.click();
   await expect.element(toggle).toBeChecked();
@@ -66,8 +71,10 @@ test("supports uncontrolled form submission and disabled switches", async () => 
       <Switch label="Unavailable" name="unavailable" disabled defaultChecked />
     </form>,
   );
+
   const toggle = result.getByRole("switch", { name: "Receive updates" });
   const form = result.container.querySelector("form");
+
   if (!form) throw new Error("Switch form was not rendered.");
 
   expect(new FormData(form).get("updates")).toBe("yes");

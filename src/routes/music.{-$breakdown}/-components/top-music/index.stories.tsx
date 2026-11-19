@@ -34,7 +34,9 @@ function TopMusicContent({
   loading?: boolean;
 }) {
   const { type = musicTypeSchema.fallback } = musicRoute.useParams();
+
   if (loading) return <MusicTopMusicSkeleton type={type} />;
+
   return {
     tracks: <MusicTopMusic tracks={tracks} />,
     albums: <MusicTopMusic albums={albums} />,
@@ -44,6 +46,7 @@ function TopMusicContent({
 
 function createDemoRouter(children: ReactNode, initialEntry: string) {
   const root = createRootRoute();
+
   const music = createRoute({
     getParentRoute: () => root,
     path: "/music/{-$breakdown}/{-$type}",
@@ -63,11 +66,14 @@ function createDemoRouter(children: ReactNode, initialEntry: string) {
       </>
     ),
   });
+
   const router = createRouter({
     routeTree: root.addChildren([music]),
     history: createMemoryHistory({ initialEntries: [initialEntry] }),
   });
+
   addNavigationTransitions(router);
+
   return router;
 }
 
@@ -79,6 +85,7 @@ function TopMusicDemo({
   initialEntry?: string;
 }) {
   const router = useMemo(() => createDemoRouter(children, initialEntry), [children, initialEntry]);
+
   return <RouterProvider router={router} />;
 }
 

@@ -14,6 +14,7 @@ export const serverEnvSchema = v.object({
   // LASTFM_SECRET: v.string(),
   LASTFM_USER: v.string(),
 });
+
 export type ServerEnv = v.InferOutput<typeof serverEnvSchema>;
 
 export const getServerEnv = createServerOnlyFn(() =>

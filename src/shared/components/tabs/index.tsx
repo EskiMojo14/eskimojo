@@ -49,6 +49,7 @@ export function TabNav({
 }: TabNavProps) {
   const anchorId = useId().replaceAll(":", "");
   const { handleKeyDown, listRef } = useTabListNavigation(orientation);
+
   return (
     <nav
       {...props}
@@ -90,12 +91,14 @@ function TabLinkBase({
     ...props,
     onKeyDown,
   });
+
   return (
     <a
       {...props}
       {...handlers}
       onKeyDown={(event) => {
         handlers.onKeyDown?.(event);
+
         if (
           !event.defaultPrevented &&
           !event.altKey &&
@@ -106,6 +109,7 @@ function TabLinkBase({
           event.key === " "
         ) {
           event.preventDefault();
+
           if (!event.repeat) event.currentTarget.click();
         }
       }}
@@ -126,6 +130,7 @@ const RouterTabLink = createLink(TabLinkBase);
 export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
   const router = useRouter();
   const triggerSelectionLinkHaptic = useSelectionLinkHaptic();
+
   const linkProps = {
     ...props,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {
@@ -136,6 +141,7 @@ export const TabLink: LinkComponent<typeof TabLinkBase> = (props) => {
       );
     },
   };
+
   return <RouterTabLink resetScroll={false} {...linkProps} />;
 };
 
@@ -149,7 +155,9 @@ const TabsContext = createContext<TabsContextValue | null>(null);
 
 function useTabsContext() {
   const context = useContext(TabsContext);
+
   if (!context) throw new Error("Tab components must be rendered inside Tabs.");
+
   return context;
 }
 
@@ -174,10 +182,12 @@ export function Tabs({
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const value = controlledValue ?? uncontrolledValue;
   const id = useId().replaceAll(":", "");
+
   const context: TabsContextValue = {
     value,
     select: (nextValue) => {
       if (nextValue === value) return;
+
       if (controlledValue === undefined) setUncontrolledValue(nextValue);
       triggerHapticFeedback("selection");
       onValueChange?.(nextValue);
@@ -215,19 +225,24 @@ function useTabListNavigation(
 
   useEffect(() => {
     const list = listRef.current;
+
     if (!list) return undefined;
 
     const originalTabIndexes = new Map<HTMLElement, string | null>();
+
     const synchronizeTabStops = () => {
       const tabs = [...list.querySelectorAll<HTMLElement>(":scope > [role='tab']")];
+
       for (const tab of tabs) {
         if (!originalTabIndexes.has(tab)) {
           originalTabIndexes.set(tab, tab.getAttribute("tabindex"));
         }
       }
+
       const available = availableTabs(list);
       const selected = tabs.find((tab) => tab.getAttribute("aria-selected") === "true");
       const tabStop = selected && available.includes(selected) ? selected : available[0];
+
       for (const tab of tabs) {
         tab.tabIndex = tab === tabStop ? 0 : -1;
       }
@@ -244,6 +259,7 @@ function useTabListNavigation(
 
     return () => {
       observer.disconnect();
+
       for (const [tab, tabIndex] of originalTabIndexes) {
         if (tabIndex === null) tab.removeAttribute("tabindex");
         else tab.setAttribute("tabindex", tabIndex);
@@ -253,6 +269,7 @@ function useTabListNavigation(
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     onKeyDown?.(event);
+
     if (
       event.defaultPrevented ||
       event.altKey ||
@@ -265,10 +282,12 @@ function useTabListNavigation(
 
     const list = event.currentTarget;
     const current = event.target;
+
     if (!(current instanceof HTMLElement) || current.getAttribute("role") !== "tab") return;
 
     const tabs = availableTabs(list);
     const index = tabs.indexOf(current);
+
     if (index === -1) return;
     const rtl = getComputedStyle(list).direction === "rtl";
     let next: HTMLElement | undefined;
@@ -301,10 +320,13 @@ function useTabListNavigation(
     if (!next || next === current) return;
     event.preventDefault();
     next.focus();
+
     if (next instanceof HTMLAnchorElement) {
       for (const tab of tabs) tab.tabIndex = tab === next ? 0 : -1;
     }
+
     const nextValue = next.dataset.value;
+
     if (nextValue !== undefined) select?.(nextValue);
     next.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
@@ -366,6 +388,7 @@ export function Tab({ value, icon, className, children, onClick, ...props }: Tab
   const context = useTabsContext();
   const { handlers, ripple } = useRipple<HTMLButtonElement>(props);
   const selected = context.value === value;
+
   const disabled =
     props.disabled || props["aria-disabled"] === true || props["aria-disabled"] === "true";
 
@@ -384,9 +407,12 @@ export function Tab({ value, icon, className, children, onClick, ...props }: Tab
       onClick={(event) => {
         if (disabled) {
           event.preventDefault();
+
           return;
         }
+
         onClick?.(event);
+
         if (!event.defaultPrevented) context.select(value);
       }}
     >

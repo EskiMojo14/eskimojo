@@ -14,6 +14,8 @@ export const projectsByKind: Partial<Record<ProjectKind, typeof projects>> = Obj
 
 export function getProject(slug: string) {
   const project = projects.find((entry) => entry.slug === slug);
+
   if (!project) throw notFound();
+
   return project;
 }

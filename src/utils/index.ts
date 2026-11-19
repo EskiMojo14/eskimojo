@@ -7,8 +7,10 @@ export function capitalize<T extends string>(str: T): Capitalize<T> {
 }
 
 export const unsafeKeys: <T extends object>(obj: T) => Array<keyof T> = Object.keys;
+
 export const unsafeEntries: <T extends object>(obj: T) => Array<[keyof T, T[keyof T]]> =
   Object.entries;
+
 export const unsafeFromEntries: <
   const TEntries extends ReadonlyArray<readonly [PropertyKey, unknown]>,
 >(
@@ -23,6 +25,7 @@ const enumerableKeys = (obj: object) =>
 /** A manually resolved promise that also resolves on disposal to release waiting work. */
 export function disposablePromise() {
   const promise = Promise.withResolvers<void>();
+
   return { ...promise, [Symbol.dispose]: () => promise.resolve() };
 }
 
@@ -43,11 +46,14 @@ export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unkno
 }> => {
   const keys = enumerableKeys(keyed);
   const results = await Promise.allSettled(keys.map((key) => keyed[key]));
+
   const entries = keys.map((key, index) => {
     const result = results[index];
     assert(result, "Missing settled result for enumerable key.");
+
     return [key, result] as const;
   });
+
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return unsafeFromEntries(entries) as never;
 };
@@ -84,8 +90,10 @@ export function assert(condition: unknown, message = "Assertion failed"): assert
 export function mergeRefs<T>(...refs: Array<Ref<T> | null | undefined>) {
   return (instance: T | null) => {
     const cleanups: Array<() => void> = [];
+
     for (const ref of refs) {
       if (!ref) continue;
+
       if (typeof ref === "function") {
         const cleanup = ref(instance);
         cleanups.push(
@@ -102,6 +110,7 @@ export function mergeRefs<T>(...refs: Array<Ref<T> | null | undefined>) {
         });
       }
     }
+
     return () => {
       for (const cleanup of cleanups) cleanup();
     };

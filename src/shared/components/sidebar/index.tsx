@@ -31,6 +31,7 @@ function SidebarContents({
   const { handlers, ripple } = useRipple<HTMLButtonElement>(undefined, true);
   const nextPalette = palette === "goat" ? "arctic" : "goat";
   const nextPaletteLabel = paletteLabels[nextPalette].label;
+
   return (
     <>
       <div {...siteSidebarBem({ element: "header" })}>

@@ -43,8 +43,10 @@ let topLayerExitSupported: boolean | undefined;
 
 function supportsTopLayerExit() {
   if (topLayerExitSupported !== undefined) return topLayerExitSupported;
+
   if (!CSS.supports("overlay", "auto") || !CSS.supports("transition-behavior", "allow-discrete")) {
     topLayerExitSupported = false;
+
     return false;
   }
 
@@ -57,6 +59,7 @@ function supportsTopLayerExit() {
   topLayerExitSupported =
     initialDisplay === "block" && getComputedStyle(probe).display === initialDisplay;
   probe.remove();
+
   return topLayerExitSupported;
 }
 
@@ -103,11 +106,14 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
   const requestRef = useRef<{ returnValue?: string } | null>(null);
   const [lifecycle, transition] = useLocalSlice(dialogLifecycleSlice);
   const close = useCallback((returnValue?: string) => closeRef.current?.(returnValue), []);
+
   const requestClose = useCallback((returnValue?: string) => {
     const dialog = dialogRef.current;
+
     if (!dialog?.open || dialog.hasAttribute("data-closing")) return;
 
     requestRef.current = { returnValue };
+
     try {
       if (typeof dialog.requestClose === "function") {
         dialog.requestClose(returnValue);
@@ -121,10 +127,13 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
 
   useEffect(() => {
     const dialog = dialogRef.current;
+
     const closeDialog: DialogClose = (returnValue) => {
       if (!dialog?.open || dialog.hasAttribute("data-closing")) return;
+
       if (supportsTopLayerExit()) {
         dialog.close(returnValue);
+
         return;
       }
 
@@ -132,6 +141,7 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
       dialog.setAttribute("data-closing", "");
       transition.exitStarted(returnValue);
     };
+
     const handleBackdropClick = (event: MouseEvent) => {
       if (
         dialog &&
@@ -140,6 +150,7 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
         !Reflect.has(dialog, "closedBy")
       ) {
         const bounds = dialog.getBoundingClientRect();
+
         if (
           event.clientX < bounds.left ||
           event.clientX > bounds.right ||
@@ -164,6 +175,7 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
 
     return () => {
       closeRef.current = null;
+
       if (dialog) {
         dialog.removeEventListener("click", handleBackdropClick);
       }
@@ -173,15 +185,18 @@ function useDialogLifecycle({ open, closedby }: Pick<DialogProps, "open" | "clos
   useEffect(() => {
     if (lifecycle.exitPhase !== "closing") return undefined;
     const dialog = dialogRef.current;
+
     if (!dialog) return undefined;
 
     let cancelled = false;
     let finished = false;
     let timeout: ReturnType<typeof setTimeout> | undefined;
+
     const finishClosing = () => {
       if (cancelled || finished) return;
       finished = true;
       clearTimeout(timeout);
+
       if (dialog.open) dialog.close(lifecycle.returnValue);
       dialog.removeAttribute("data-closing");
       transition.exitFinished();
@@ -220,6 +235,7 @@ export function Dialog({
   "aria-describedby": ariaDescribedBy,
 }: DialogProps) {
   const [labels, setLabels] = useState<DialogLabels | null>(null);
+
   const { close, dialogRef, exitFinished, isClosing, requestClose, requestRef } =
     useDialogLifecycle({ open, closedby });
 
@@ -238,7 +254,9 @@ export function Dialog({
       }}
       onCancel={(event) => {
         onCancel?.(event);
+
         if (event.defaultPrevented) return;
+
         if (closedby === "none" && !requestRef.current) {
           event.preventDefault();
         } else if (!supportsTopLayerExit()) {
@@ -276,6 +294,7 @@ export function DialogContent({
 
   useEffect(() => {
     setLabels?.({ titleId, descriptionId: hasDescription ? descriptionId : undefined });
+
     return () => setLabels?.(null);
   }, [setLabels, titleId, descriptionId, hasDescription]);
 

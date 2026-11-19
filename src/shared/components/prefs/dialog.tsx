@@ -22,11 +22,13 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
 
   function selectTab(nextTab: string) {
     const panels = panelsRef.current;
+
     if (
       !panels?.startViewTransition ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       setTab(nextTab);
+
       return;
     }
 
@@ -38,6 +40,7 @@ export function PreferencesDialog({ open, onClose }: PreferencesDialogProps) {
       ],
       update: () => flushSync(() => setTab(nextTab)),
     });
+
     void transition.ready.catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Could not animate the preferences tab change.", error);

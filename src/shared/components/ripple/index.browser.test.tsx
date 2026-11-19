@@ -20,6 +20,7 @@ import { Tab, TabLink, TabList, TabNav, Tabs } from "#/shared/components/tabs";
 
 function press(element: Element, x = 8, y = 8, pointerId = 1, button = 0) {
   const rect = element.getBoundingClientRect();
+
   return element.dispatchEvent(
     new PointerEvent("pointerdown", {
       bubbles: true,
@@ -36,7 +37,9 @@ function press(element: Element, x = 8, y = 8, pointerId = 1, button = 0) {
 
 function wave(element: Element) {
   const node = element.querySelector(".ripple__wave");
+
   if (!(node instanceof HTMLSpanElement)) throw new Error("Expected an active ripple wave");
+
   return node;
 }
 
@@ -61,12 +64,15 @@ test("switch rows ripple on pointer and Space presses, but not Enter or disabled
       </ListItem>
     </List>,
   );
+
   const toggle = result.getByRole("switch", { name: "Notifications" });
   const row = toggle.element().closest("label");
+
   const disabledRow = result
     .getByRole("switch", { name: "Unavailable" })
     .element()
     .closest("label");
+
   if (!row || !disabledRow) throw new Error("Expected native label rows.");
   press(row);
   expect(wave(row).isConnected).toBe(true);
@@ -87,6 +93,7 @@ test("chips and interactive list rows ripple without changing static rows or eve
   const ref = createRef<HTMLButtonElement>();
   const onPointerDown = vi.fn<() => void>();
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <>
       <AssistChip>Assist</AssistChip>
@@ -130,6 +137,7 @@ test("chips and interactive list rows ripple without changing static rows or eve
       </TabNav>
     </>,
   );
+
   for (const [role, name] of [
     ["button", "Assist"],
     ["button", "Filter"],
@@ -149,10 +157,12 @@ test("chips and interactive list rows ripple without changing static rows or eve
     document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
     expect(element.querySelector(".ripple__wave")).toBeNull();
   }
+
   expect(onPointerDown).toHaveBeenCalledOnce();
   const row = result.getByRole("button", { name: "Row action" });
   expect(ref.current).toBe(row.element());
   const previous = result.getByRole("link", { name: "Row link" }).element();
+
   if (!(previous instanceof HTMLElement)) throw new Error("Expected a focusable link");
   previous.focus();
   press(row.element());
@@ -175,6 +185,7 @@ test("chips and interactive list rows ripple without changing static rows or eve
 
 test("tab ripples preserve keyboard selection, disabled states, and prevented events", async () => {
   const onKeyDown = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Tabs defaultValue="first">
       <TabList aria-label="Keyboard tabs">
@@ -193,6 +204,7 @@ test("tab ripples preserve keyboard selection, disabled states, and prevented ev
       </TabList>
     </Tabs>,
   );
+
   await userEvent.tab();
   const first = result.getByRole("tab", { name: "First" });
   await userEvent.keyboard("{Space>}");
@@ -204,6 +216,7 @@ test("tab ripples preserve keyboard selection, disabled states, and prevented ev
   await expect
     .element(result.getByRole("tab", { name: "Last" }))
     .toHaveAttribute("aria-selected", "true");
+
   for (const name of ["Disabled", "Unavailable", "Last"]) {
     const tab = result.getByRole("tab", { name }).element();
     press(tab);
@@ -213,6 +226,7 @@ test("tab ripples preserve keyboard selection, disabled states, and prevented ev
 
 test("chips and list actions show unbounded keyboard ripples and retain controlled selection", async () => {
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <>
       <FilterChip selected onClick={onClick}>
@@ -232,6 +246,7 @@ test("chips and list actions show unbounded keyboard ripples and retain controll
       </List>
     </>,
   );
+
   for (const name of ["Keyboard chip", "Keyboard row"]) {
     const control = result.getByRole("button", { name });
     await userEvent.tab();
@@ -239,6 +254,7 @@ test("chips and list actions show unbounded keyboard ripples and retain controll
     expect(wave(control.element()).isConnected).toBe(true);
     await userEvent.keyboard("{/Space}");
   }
+
   expect(onClick).toHaveBeenCalledTimes(2);
   await expect
     .element(result.getByRole("button", { name: "Keyboard chip" }))
@@ -264,6 +280,7 @@ test("labelled buttons, links, and icon controls ripple on press", async () => {
       />
     </>,
   );
+
   for (const [role, name] of [
     ["button", "Action"],
     ["link", "Project"],
@@ -292,16 +309,19 @@ test("middle presses ripple on links without preventing navigation or affecting 
       <Button>Action</Button>
     </>,
   );
+
   for (const name of ["Social profile, @social, opens in a new tab", "Project"]) {
     const link = result.getByRole("link", { name }).element();
     expect(press(link, 8, 8, 1, 1)).toBe(true);
     const ripple = wave(link);
     document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+
     for (const animation of ripple.getAnimations()) animation.finish();
     await expect.poll(() => link.querySelector(".ripple__wave")).toBeNull();
     press(link, 8, 8, 1, 2);
     expect(link.querySelector(".ripple__wave")).toBeNull();
   }
+
   for (const [role, name] of [
     ["link", "Disabled link"],
     ["link", "Prevented link"],
@@ -318,11 +338,13 @@ test("holds until release and cleans up after fading, even when released outside
   const button = result.getByRole("button", { name: "Hold" }).element();
   press(button);
   const ripple = wave(button);
+
   for (const animation of ripple.getAnimations()) animation.finish();
   expect(button.contains(ripple)).toBe(true);
   document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 2 }));
   expect(button.contains(ripple)).toBe(true);
   document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+
   for (const animation of ripple.getAnimations()) animation.finish();
   await expect.poll(() => button.querySelector(".ripple__wave")).toBeNull();
 });
@@ -330,6 +352,7 @@ test("holds until release and cleans up after fading, even when released outside
 test("preserves ripple timings when production CSS expresses durations in seconds", async () => {
   const result = await page.renderWithProviders(<Button>Production ripple</Button>);
   const button = result.getByRole("button", { name: "Production ripple" }).element();
+
   if (!(button instanceof HTMLElement)) throw new Error("Expected a button element");
   button.style.setProperty("--md-comp-ripple-grow-duration", ".45s");
   button.style.setProperty("--md-comp-ripple-fade-in-duration", ".105s");
@@ -346,6 +369,7 @@ test("preserves ripple timings when production CSS expresses durations in second
   const fade = ripple.getAnimations()[2];
   expect(fade?.effect?.getTiming().duration).toBe(375);
   expect(fade?.effect?.getTiming().delay).toBe(175);
+
   for (const animation of ripple.getAnimations()) animation.finish();
   await expect.poll(() => button.querySelector(".ripple__wave")).toBeNull();
 });
@@ -354,11 +378,13 @@ test("keyboard feedback is unbounded and preserves callbacks, refs, and native a
   const ref = createRef<HTMLButtonElement>();
   const onClick = vi.fn<() => void>();
   const onKeyDown = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Button ref={ref} onClick={onClick} onKeyDown={onKeyDown}>
       Keyboard
     </Button>,
   );
+
   const button = result.getByRole("button", { name: "Keyboard" });
   await userEvent.tab();
   await userEvent.keyboard("{Space>}");
@@ -379,11 +405,13 @@ test("ignores disabled, aria-disabled, secondary, and prevented presses", async 
       <Button onKeyDown={(event) => event.preventDefault()}>Prevented keyboard</Button>
     </>,
   );
+
   for (const name of ["Disabled", "ARIA disabled", "Prevented"]) {
     const element = result.getByRole("button", { name, exact: true }).element();
     press(element);
     expect(element.querySelector(".ripple__wave")).toBeNull();
   }
+
   const button = result.getByRole("button", { name: "Prevented keyboard" }).element();
   button.dispatchEvent(
     new PointerEvent("pointerdown", { bubbles: true, button: 2, isPrimary: true }),
@@ -417,13 +445,17 @@ test("cleans up interrupted presses, replaced waves, disabling, and unmount", as
 
 test("reduced motion uses static pressed feedback without animations", async () => {
   const original = window.matchMedia.bind(window);
+
   using matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((query) => {
     const result = original(query);
+
     if (query === "(prefers-reduced-motion: reduce)") {
       Object.defineProperty(result, "matches", { value: true });
     }
+
     return result;
   });
+
   const result = await page.renderWithProviders(<Button>Reduced motion</Button>);
   const button = result.getByRole("button", { name: "Reduced motion" }).element();
   press(button);

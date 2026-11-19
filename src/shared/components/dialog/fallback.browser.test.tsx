@@ -6,6 +6,7 @@ import { Dialog, DialogContent, type DialogProps } from "./index";
 test("waits for exit animations before closing when top-layer exit is unsupported", async () => {
   using supports = vi.spyOn(CSS, "supports").mockReturnValue(false);
   const onClose = vi.fn<NonNullable<DialogProps["onClose"]>>();
+
   const result = await page.renderWithProviders(
     <Dialog open aria-label="Fallback dialog" onClose={onClose}>
       {({ close }) => (
@@ -15,10 +16,13 @@ test("waits for exit animations before closing when top-layer exit is unsupporte
       )}
     </Dialog>,
   );
+
   const dialogElement = result.getByRole("dialog", { name: "Fallback dialog" }).element();
+
   if (!(dialogElement instanceof HTMLDialogElement)) {
     throw new Error("Expected a native dialog element.");
   }
+
   const dialog = dialogElement;
   const exitAnimation = dialog.animate([], { duration: 10_000 });
 

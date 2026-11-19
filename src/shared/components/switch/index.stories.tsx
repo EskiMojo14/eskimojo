@@ -24,6 +24,7 @@ const meta = preview.meta({
 
 function ControlledSwitch({ initialChecked = false }: { initialChecked?: boolean }) {
   const [checked, setChecked] = useState(initialChecked);
+
   return (
     <Switch
       label="Wi-Fi"

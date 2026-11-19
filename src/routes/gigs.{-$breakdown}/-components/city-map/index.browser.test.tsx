@@ -23,6 +23,7 @@ test("shows city counts in a table and chronological events in marker tooltips",
       ]}
     />,
   );
+
   const table = result.getByRole("table", { name: "Recorded gigs per city" });
   await expect.element(table.getByRole("row", { name: "Bristol 2" })).toBeInTheDocument();
   const chart = result.getByRole("img", { name: "Map of England" });

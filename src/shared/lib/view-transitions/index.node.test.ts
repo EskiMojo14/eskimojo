@@ -14,6 +14,7 @@ import { defineFilterGroup } from "./factories";
 import { addNavigationTransitions, createNavigationTransitionTypes } from "./index";
 
 const root = createRootRoute();
+
 const router = createRouter({
   routeTree: root.addChildren(
     [
@@ -49,6 +50,7 @@ const router = createRouter({
     ),
   ),
 });
+
 const getNavigationTransitionTypes = createNavigationTransitionTypes(router.matchRoutes);
 
 test("filter callbacks receive effective defaults in both navigation directions", () => {
@@ -58,9 +60,11 @@ test("filter callbacks receive effective defaults in both navigation directions"
     defaultValue: "overall",
     types: (from, to) => [`${from}:${to}`],
   });
+
   const absent = router.matchRoutes("/music", {}).at(-1);
   const explicitDefault = router.matchRoutes("/music", { period: "overall" }).at(-1);
   const selected = router.matchRoutes("/music", { period: "7day" }).at(-1);
+
   if (!absent || !explicitDefault || !selected) throw new Error("Expected Music route matches");
 
   expect(group.getTypes(absent, selected)).toEqual(["overall:7day"]);
@@ -75,11 +79,13 @@ test("filters reuse inherited function validators and their defaults", () => {
       type: search.type === "project" ? "project" : "package",
     }),
   });
+
   const inheritedRouter = createRouter({
     routeTree: parent.addChildren([
       createRoute({ getParentRoute: () => parent, path: "/projects" }),
     ]),
   });
+
   const selectTypes = createNavigationTransitionTypes(inheritedRouter.matchRoutes);
   expect(
     selectTypes({
@@ -94,6 +100,7 @@ test("filters reuse inherited function validators and their defaults", () => {
     }),
   ).toEqual([]);
 });
+
 test("installing navigation transitions preserves the router's existing options", () => {
   const { context, history, routeTree, defaultPreload } = router.options;
   addNavigationTransitions(router);
@@ -102,9 +109,11 @@ test("installing navigation transitions preserves the router's existing options"
   expect(router.options.routeTree).toBe(routeTree);
   expect(router.options.defaultPreload).toBe(defaultPreload);
   const transition = router.options.defaultViewTransition;
+
   if (typeof transition !== "object" || typeof transition.types !== "function") {
     throw new Error("Expected a navigation transition selector");
   }
+
   expect(
     transition.types({
       fromLocation: location("/projects"),
@@ -118,6 +127,7 @@ test("installing navigation transitions preserves the router's existing options"
 
 function location(href: string) {
   const url = new URL(href, "https://example.test");
+
   return {
     href,
     pathname: url.pathname,

@@ -27,6 +27,7 @@ export function List<TOrdered extends boolean = false>({
   ...props
 }: ListProps<TOrdered>) {
   const Component = ordered ? "ol" : "ul";
+
   // @ts-expect-error Component can be "ul" or "ol"
   return <Component {...props} {...listBem({ modifier: variant, extra: className })} />;
 }
@@ -35,6 +36,7 @@ type ListItemActionProps = HTMLAttributes<HTMLElement> & { disabled?: boolean };
 
 function ListItemAction({ action }: { action: ReactElement<ListItemActionProps> }) {
   const { handlers, ripple } = useRipple<HTMLElement>(action.props);
+
   return cloneElement(action, handlers, ripple, action.props.children);
 }
 
@@ -45,6 +47,7 @@ export function ListItem({ className, children, ...props }: ComponentPropsWithRe
       children.type === "button" ||
       children.type === "label" ||
       children.type === Link);
+
   return (
     <li {...props} {...listBem({ element: "item", extra: className })}>
       {interactive ? <ListItemAction action={children} /> : children}

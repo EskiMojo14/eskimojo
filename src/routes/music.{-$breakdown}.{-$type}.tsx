@@ -41,7 +41,9 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
         }),
         params,
       );
+
       if (!parseResult.success) throw notFound();
+
       return parseResult.output;
     },
   },
@@ -62,6 +64,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
   loaderDeps: ({ search: { period } }) => ({ period }),
   beforeLoad: ({ params, search }) => {
     const breakdown = params.breakdown === "recent" ? "recent" : "top";
+
     if (
       params.breakdown === undefined ||
       (breakdown === "top" && params.type === undefined) ||
@@ -80,6 +83,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
   },
   loader: ({ context: { queryClient }, params, deps: { period = periodSchema.fallback } }) => {
     const breakdown: MusicBreakdown = params.breakdown === "recent" ? "recent" : "top";
+
     return preloadMusic({
       queryClient,
       breakdown,
@@ -93,6 +97,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
       description:
         "See what eskimojo is listening to, with recent tracks and top music from Last.fm.",
     });
+
     return {
       ...metadata,
       links: [...metadata.links, { rel: "stylesheet", href: styles }],
@@ -105,12 +110,15 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
 function RouteComponent() {
   const { breakdown = musicBreakdownSchema.fallback, type = musicTypeSchema.fallback } =
     Route.useParams();
+
   const { period = periodSchema.fallback } = Route.useSearch();
+
   const TopMusicPanel = {
     tracks: TopTracksPanel,
     albums: TopAlbumsPanel,
     artists: TopArtistsPanel,
   }[type];
+
   return (
     <main>
       <MusicDataBoundary

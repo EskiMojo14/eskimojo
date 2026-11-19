@@ -11,6 +11,7 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 
 export function MusicBreakdownTabs() {
   const { period } = musicRoute.useSearch();
+
   return (
     <TabNav aria-label="Music breakdown" variant="primary" responsive>
       {musicBreakdownSchema.options.map((value) =>

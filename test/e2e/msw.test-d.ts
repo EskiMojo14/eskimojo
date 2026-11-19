@@ -13,6 +13,7 @@ mockServerFn(prefs.setThemeFn, (data) => {
 
 mockServerFn(prefs.getThemeFn, (data) => {
   expectTypeOf(data).toEqualTypeOf<undefined>();
+
   return "dark";
 });
 

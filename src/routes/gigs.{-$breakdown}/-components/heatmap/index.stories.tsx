@@ -9,6 +9,7 @@ import { GigsHeatmap } from "./index";
 import "./index.css";
 
 const [firstArchiveEvent, secondArchiveEvent] = gigs.events;
+
 assert(firstArchiveEvent && secondArchiveEvent, "Expected archive events for the heatmap stories.");
 
 const meta = preview.meta({

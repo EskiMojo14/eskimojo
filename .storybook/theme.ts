@@ -4,6 +4,7 @@ import { palette } from "./palette.gen";
 
 const font = '"Paper Mono", monospace';
 const scheme = getPreferredColorScheme();
+
 // Storybook derives tints from these values, so they must be literal colors rather
 // than CSS variables. scripts/generate-theme.ts generates palette.gen.ts from the export.
 const c = palette[scheme];

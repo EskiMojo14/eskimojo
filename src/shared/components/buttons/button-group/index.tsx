@@ -39,14 +39,17 @@ export function ButtonGroup({
 
   useEffect(() => {
     const group = groupRef.current;
+
     if (!group) return undefined;
     const originalTabIndexes = new Map<HTMLButtonElement, string | null>();
+
     const synchronize = () => {
       for (const button of buttonsIn(group)) {
         if (!originalTabIndexes.has(button)) {
           originalTabIndexes.set(button, button.getAttribute("tabindex"));
         }
       }
+
       const available = availableButtons(group);
       const active = activeRef.current;
       activeRef.current =
@@ -56,6 +59,7 @@ export function ButtonGroup({
             available[0]);
       setTabStop(group, activeRef.current);
     };
+
     synchronize();
     const observer = new MutationObserver(synchronize);
     observer.observe(group, {
@@ -64,6 +68,7 @@ export function ButtonGroup({
       attributes: true,
       attributeFilter: ["disabled", "aria-disabled", "hidden", "inert", "aria-pressed"],
     });
+
     // A mounted group may become visible when its enclosing dialog opens.
     for (let ancestor = group.parentElement; ancestor; ancestor = ancestor.parentElement) {
       observer.observe(ancestor, {
@@ -71,8 +76,10 @@ export function ButtonGroup({
         attributeFilter: ["open", "hidden", "inert", "class", "style"],
       });
     }
+
     return () => {
       observer.disconnect();
+
       for (const [button, tabIndex] of originalTabIndexes) {
         if (tabIndex === null) button.removeAttribute("tabindex");
         else button.setAttribute("tabindex", tabIndex);
@@ -91,6 +98,7 @@ export function ButtonGroup({
       onFocus={(event) => {
         onFocus?.(event);
         const buttons = availableButtons(event.currentTarget);
+
         if (event.target instanceof HTMLButtonElement && buttons.includes(event.target)) {
           activeRef.current = event.target;
           setTabStop(event.currentTarget, event.target);
@@ -98,6 +106,7 @@ export function ButtonGroup({
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event);
+
         if (
           event.defaultPrevented ||
           event.altKey ||
@@ -110,12 +119,15 @@ export function ButtonGroup({
         const group = event.currentTarget;
         const buttons = availableButtons(group);
         const target = event.target;
+
         if (!(target instanceof HTMLButtonElement)) return;
         const index = buttons.indexOf(target);
+
         if (index === -1) return;
 
         const rtl = getComputedStyle(group).direction === "rtl";
         let next: HTMLButtonElement | undefined;
+
         switch (event.key) {
           case "ArrowRight":
             next = buttons[index + (rtl ? -1 : 1)];
@@ -132,6 +144,7 @@ export function ButtonGroup({
           default:
             return;
         }
+
         if (!next || next === target) return;
         event.preventDefault();
         next.focus();

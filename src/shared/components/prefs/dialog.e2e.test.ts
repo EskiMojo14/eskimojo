@@ -54,10 +54,12 @@ test("preferences update the controls and page before cookies are saved", async 
     ...preferenceRequests(
       async () => {
         await save.promise;
+
         return passthrough();
       },
       async () => {
         await refresh.promise;
+
         return passthrough();
       },
     ),
@@ -127,6 +129,7 @@ test("rapid changes keep the latest selection and persist in order", async ({
   network.use(
     ...preferenceRequests(async (value) => {
       if (value === "dark") await save.promise;
+
       return passthrough();
     }),
   );
@@ -161,6 +164,7 @@ test("haptic feedback saves optimistically and stays off after navigation and re
   network.use(
     mockServerFn(prefs.setHapticsFn, async () => {
       await save.promise;
+
       return passthrough();
     }),
   );
@@ -311,6 +315,7 @@ test("browser theme colour works before hydration and with JavaScript disabled",
   page,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
+
   try {
     const noJsPage = await context.newPage();
     const noJsPreferences = new PreferencesDialogModel(noJsPage);

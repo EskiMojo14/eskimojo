@@ -7,6 +7,7 @@ import materialSymbols from "./symbols";
 async function compile(source: string, knownSymbols: Array<string> = []) {
   const warnings: Array<string> = [];
   const warningLocations: Array<{ file?: string; line: number; column: number }> = [];
+
   const result = await build({
     configFile: false,
     logLevel: "silent",
@@ -38,6 +39,7 @@ async function compile(source: string, knownSymbols: Array<string> = []) {
         onLog(level, log, defaultHandler) {
           if (level === "warn") {
             warnings.push(log.message);
+
             if (log.loc) warningLocations.push(log.loc);
           } else defaultHandler(level, log);
         },
@@ -46,15 +48,19 @@ async function compile(source: string, knownSymbols: Array<string> = []) {
       },
     },
   });
+
   if (Array.isArray(result) || !("output" in result))
     throw new Error("Expected a single build output");
+
   const code = result.output
     .filter((item) => item.type === "chunk")
     .map((item) => item.code)
     .join("\n");
+
   const html = result.output.find(
     (item) => item.type === "asset" && item.fileName === "iframe.html",
   );
+
   return { code, html, warnings, warningLocations };
 }
 
@@ -67,6 +73,7 @@ test("extracts real JSX children, deduplicates and sorts the production request"
   const { code, html, warnings } = await compile(`${prefix}
     export const icons = [<MdSymbol>search</MdSymbol>, <MdSymbol>favorite</MdSymbol>, <MdSymbol>{"search"}</MdSymbol>];
   `);
+
   expect(code).toContain(`${symbolsUrl}&icon_names=favorite,search`);
   expect(html).toMatchObject({
     source: `<link rel="stylesheet" href="${symbolsUrl}&icon_names=favorite,search">`,
@@ -81,6 +88,7 @@ test("warns about expressions and includes explicitly registered dynamic symbols
   `,
     ["warning", "close", "warning"],
   );
+
   expect(code).toContain(`${symbolsUrl}&icon_names=close,warning`);
   expect(warnings).toEqual([expect.stringContaining("dynamic MdSymbol children")]);
 });
@@ -89,6 +97,7 @@ test("extracts both branches of nested ternaries without manual registration", a
   const { code, warnings } = await compile(`${prefix}
     export const icon = <MdSymbol>{globalThis.paused ? "play_arrow" : globalThis.stopped ? "stop" : "pause"}</MdSymbol>;
   `);
+
   expect(code).toContain(`${symbolsUrl}&icon_names=pause,play_arrow,stop`);
   expect(warnings).toEqual([]);
 });
@@ -97,6 +106,7 @@ test("extracts literal ternary branches while warning about unresolved branches"
   const { code, warnings } = await compile(`${prefix}
     export const icon = <MdSymbol>{globalThis.paused ? "play_arrow" : globalThis.icon}</MdSymbol>;
   `);
+
   expect(code).toContain(`${symbolsUrl}&icon_names=play_arrow`);
   expect(warnings).toEqual([expect.stringContaining("dynamic MdSymbol children")]);
 });
@@ -126,6 +136,7 @@ test("reports a source location for each unresolved use", async () => {
     export const first = <MdSymbol>{globalThis.first}</MdSymbol>;
     export const second = <MdSymbol>{globalThis.second}</MdSymbol>;
   `);
+
   expect(warnings).toHaveLength(2);
   expect(warnings[0]).toContain("/symbol-fixture.tsx:5:");
   expect(warnings[1]).toContain("/symbol-fixture.tsx:6:");
@@ -143,5 +154,6 @@ test("recognizes jsxDEV, jsxs, and classic createElement calls", async () => {
       globalThis.React.createElement(MdSymbol, null, "close"),
     ];
   `);
+
   expect(code).toContain(`${symbolsUrl}&icon_names=check,close,home`);
 });

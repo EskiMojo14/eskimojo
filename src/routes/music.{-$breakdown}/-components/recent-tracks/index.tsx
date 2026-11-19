@@ -13,6 +13,7 @@ import { SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
 
 const recentTracksBem = BEMHelper("recent-tracks");
+
 const playedAt = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
   timeStyle: "short",
