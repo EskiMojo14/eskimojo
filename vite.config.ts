@@ -14,6 +14,7 @@ import fmtConfig from "./config/fmt.config.ts";
 
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+
 const clientImportSpecifiers = [/^sharp(?:\/|$)/, /^@material\/material-color-utilities(?:\/|$)/];
 const mdxContentInclude = /\.mdx\?content$/;
 const viteReactInclude = [/\.(js|jsx|ts|tsx|mdx)$/, mdxContentInclude];
@@ -33,6 +34,7 @@ const config = defineConfig({
   lint: {
     plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
     jsPlugins: [
+      { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
       { name: "e18e", specifier: "@e18e/eslint-plugin" },
       { name: "@tanstack/router", specifier: "@tanstack/eslint-plugin-router" },
@@ -40,6 +42,25 @@ const config = defineConfig({
       { name: "no-relative", specifier: "eslint-plugin-no-relative-import-paths" },
     ],
     rules: {
+      "oxc/no-accumulating-spread": "error",
+      "anti-slop/no-array-filter-map": "error",
+      "anti-slop/no-reduce-accumulator-copy": "error",
+      "anti-slop/no-chained-type-assertions": "error",
+      "anti-slop/no-conditional-empty-object-spread": "error",
+      "anti-slop/no-known-value-widening": "error",
+      "anti-slop/no-module-mocking": "error",
+      "anti-slop/no-object-parameters": "error",
+      "anti-slop/no-reflect-apply": "error",
+      "anti-slop/no-reflect-get": "error",
+      "anti-slop/no-runtime-typeof": "error",
+      "anti-slop/no-shape-in-symbol-names": "error",
+      "anti-slop/no-unknown-parameters": "error",
+      "anti-slop/no-unknown-returns": "error",
+      "anti-slop/no-unknown-type-aliases": "error",
+      "anti-slop/no-unsafe-dictionary-type": "error",
+      "anti-slop/no-widen-then-assert": "error",
+      "anti-slop/require-readable-spacing": "error",
+      "anti-slop/require-safety-comment-for-type-assertion": "error",
       ...eslintPluginE18e.configs.recommended.rules,
       "vite-plus/prefer-vite-plus-imports": "error",
       "import/first": "error",
@@ -63,7 +84,21 @@ const config = defineConfig({
       correctness: "error",
       suspicious: "warn",
     },
-    ignorePatterns: ["**/*.gen.*"],
+    ignorePatterns: [
+      ".agent/**",
+      ".agents/**",
+      ".claude/**",
+      ".codex/**",
+      ".continue/**",
+      ".cursor/**",
+      ".gemini/**",
+      ".opencode/**",
+      ".pi/**",
+      ".roo/**",
+      ".windsurf/**",
+      "**/*.gen.*",
+      "tools/oxlint/anti-slop/**",
+    ],
     settings: {
       vitest: { typecheck: true },
     },
@@ -177,10 +212,12 @@ const config = defineConfig({
       serverFnRegistry: import("./vite/server-fn-registry.ts"),
       svgr: import("vite-plugin-svgr"),
     });
+
     const applicationMdx = mdx({
       remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
       rehypePlugins: [rehypePrism, prismTokens],
     });
+
     return [
       devtools(),
       mdxContentAttributes(),
@@ -264,6 +301,7 @@ const config = defineConfig({
         extends: true,
         plugins: lazyPlugins(async () => {
           const { storybookTest } = await import("@storybook/addon-vitest/vitest-plugin");
+
           return [
             // The plugin will run tests for the stories defined in your Storybook config
             // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
@@ -285,4 +323,5 @@ const config = defineConfig({
     ],
   },
 });
+
 export default config;
