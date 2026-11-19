@@ -38,6 +38,7 @@ function useSelectMenuInteraction<Value extends string>({
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
   const [menuState, menuDispatch] = useLocalSlice({
     slice: "select-menu",
     initialState: {
@@ -51,6 +52,7 @@ function useSelectMenuInteraction<Value extends string>({
       },
       popoverStateChanged(state, action: { payload: { newState: string; selectedIndex: number } }) {
         state.expanded = action.payload.newState === "open";
+
         if (state.expanded) state.activeIndex = action.payload.selectedIndex;
       },
       typeaheadUpdated(
@@ -65,20 +67,25 @@ function useSelectMenuInteraction<Value extends string>({
       },
     },
   });
+
   const { activeIndex, expanded } = menuState;
 
   useEffect(() => {
     const root = rootRef.current;
     const menu = menuRef.current;
+
     if (!root || !menu) return undefined;
+
     const dismissHidden = () => {
       if (menu.matches(":popover-open") && (disabled || !root.checkVisibility())) {
         menu.hidePopover();
       }
     };
+
     dismissHidden();
     const observer = new ResizeObserver(dismissHidden);
     observer.observe(root);
+
     return () => observer.disconnect();
   }, [disabled]);
 
@@ -107,10 +114,12 @@ function useSelectMenuInteraction<Value extends string>({
 
   function commit(index: number) {
     const option = options[index];
+
     if (option && option.value !== value) {
       onChange(option.value);
       triggerHapticFeedback("selection");
     }
+
     close();
   }
 
@@ -126,6 +135,7 @@ function useSelectMenuInteraction<Value extends string>({
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (event.ctrlKey || event.metaKey || event.nativeEvent.isComposing) return;
     const isOpen = menuRef.current?.matches(":popover-open");
+
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
@@ -133,6 +143,7 @@ function useSelectMenuInteraction<Value extends string>({
         break;
       case "ArrowUp":
         event.preventDefault();
+
         if (event.altKey && isOpen) commit(activeIndex);
         else open(isOpen ? Math.max(activeIndex - 1, 0) : selectedIndex);
         break;
@@ -144,6 +155,7 @@ function useSelectMenuInteraction<Value extends string>({
       case "Enter":
       case " ":
         event.preventDefault();
+
         if (isOpen) commit(activeIndex);
         else open();
         break;
@@ -153,6 +165,7 @@ function useSelectMenuInteraction<Value extends string>({
           event.stopPropagation();
           close();
         }
+
         break;
       case "Tab":
         if (isOpen) commit(activeIndex);
@@ -161,18 +174,24 @@ function useSelectMenuInteraction<Value extends string>({
         if (event.altKey || event.key.length !== 1) return;
         event.preventDefault();
         const time = performance.now();
+
         const text =
           (time - menuState.search.time < 500 ? menuState.search.text : "") +
           event.key.toLowerCase();
+
         const first = text.charAt(0);
         const query = text === first.repeat(text.length) ? first : text;
         const start = isOpen ? menuState.activeIndex : selectedIndex;
+
         const match = options.findIndex((_, offset) => {
           const index = (start + offset + (query.length === 1 ? 1 : 0)) % options.length;
+
           return options[index]?.label.toLowerCase().startsWith(query);
         });
+
         const index =
           match < 0 ? start : (start + match + (query.length === 1 ? 1 : 0)) % options.length;
+
         showPopover();
         menuDispatch.typeaheadUpdated({ text, time, activeIndex: index });
       }
@@ -218,6 +237,7 @@ export function SelectMenu<Value extends string>({
   const anchorName = `--select-${id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
   const selectedIndex = options.findIndex((option) => option.value === value);
   const selected = options[selectedIndex];
+
   const {
     activeIndex,
     expanded,

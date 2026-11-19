@@ -5,6 +5,7 @@ import BEMHelper from "react-bem-helper";
 import { useHapticFeedback } from "#/shared/lib/haptics";
 
 const switchBem = BEMHelper("switch");
+
 const nativeSwitchAttributes = {
   type: "checkbox",
   switch: "",
@@ -55,14 +56,17 @@ export function Switch({
         role="switch"
         onChange={(event) => {
           onChange?.(event);
+
           if (hapticFeedback && !event.defaultPrevented) triggerHapticFeedback("selection");
         }}
         onKeyDown={(event) => {
           onKeyDown?.(event);
+
           if (event.key === " " && !event.defaultPrevented) setKeyboardPressed(true);
         }}
         onKeyUp={(event) => {
           onKeyUp?.(event);
+
           if (event.key === " ") setKeyboardPressed(false);
         }}
         onBlur={(event) => {

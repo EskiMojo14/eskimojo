@@ -12,12 +12,14 @@ mockServerFn(setThemeFn, (data) => {
 
 mockServerFn(getThemeFn, (data) => {
   expectTypeOf(data).toEqualTypeOf<undefined>();
+
   return "dark";
 });
 
 mockServerFn(getThemeFn, async () => "light");
 
 const tracks: Array<TopTrack> = [];
+
 mockServerFn(getTopTracksFn, async () => ({ toptracks: { track: tracks } }));
 
 // @ts-expect-error The input is a theme, not a number.

@@ -8,6 +8,7 @@ const gigsRoute = getRouteApi("/gigs/{-$breakdown}/");
 
 export function GigsBreakdownTabs() {
   const { breakdown } = gigsRoute.useParams();
+
   return (
     <TabNav aria-label="Gigs breakdown" variant="primary" responsive>
       {gigBreakdownSchema.options.map((value) => (

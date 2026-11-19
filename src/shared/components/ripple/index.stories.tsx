@@ -47,6 +47,7 @@ export const Origins = meta.story({
 
 function KeyboardDemo() {
   const [count, setCount] = useState(0);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <Button onClick={() => setCount((value) => value + 1)}>Keyboard action</Button>

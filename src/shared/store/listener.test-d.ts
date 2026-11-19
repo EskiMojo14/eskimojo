@@ -10,6 +10,7 @@ import { addAppListener, listenerEnhancer } from "./listener";
 describe("listenerEnhancer", () => {
   it("should infer types from store", () => {
     const middleware = createListenerMiddleware();
+
     const store = configureStore({
       reducer: (state: number = 0) => ++state,
       middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(middleware.middleware),
@@ -17,6 +18,7 @@ describe("listenerEnhancer", () => {
         // oxlint-disable-next-line e18e/prefer-spread-syntax
         getDefaultEnhancers().concat(listenerEnhancer(middleware)),
     });
+
     expectTypeOf(store.getState()).toEqualTypeOf<number>();
     store.startListening({
       type: "increment",

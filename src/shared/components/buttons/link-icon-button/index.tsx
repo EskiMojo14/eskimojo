@@ -31,6 +31,7 @@ function LinkIconButtonBase({
   ...props
 }: LinkIconButtonBaseProps) {
   const { handlers, ripple } = useRipple<HTMLAnchorElement>(props, true);
+
   return (
     <a {...props} {...handlers} {...iconButtonBem({ modifier: [variant, size], extra: className })}>
       {ripple}
@@ -44,4 +45,5 @@ function LinkIconButtonBase({
 export const ExternalLinkIconButton = withTooltip((props: LinkIconButtonBaseProps) => (
   <LinkIconButtonBase target="_blank" rel="noopener noreferrer" {...props} />
 ));
+
 export const InternalLinkIconButton = createLink(withTooltip(LinkIconButtonBase));

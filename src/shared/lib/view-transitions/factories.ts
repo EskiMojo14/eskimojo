@@ -3,7 +3,9 @@ import { trimPathRight, type AnyRouteMatch } from "@tanstack/react-router";
 import type { FileRoutesByTo } from "#/routeTree.gen";
 
 type RoutePath = keyof FileRoutesByTo;
+
 type RouteParams<TPath extends RoutePath> = FileRoutesByTo[TPath]["types"]["allParams"];
+
 type RouteSearch<TPath extends RoutePath> = FileRoutesByTo[TPath]["types"]["fullSearchSchema"];
 
 type FilterGroupOptions<
@@ -91,13 +93,17 @@ export function defineFilterGroup<
     getTypes: (fromMatch: AnyRouteMatch, toMatch: AnyRouteMatch) => {
       if (!isValidatedRouteMatch(fromMatch, route) || !isValidatedRouteMatch(toMatch, route))
         return undefined;
+
       if (defaultValue !== undefined) {
         const from = fromMatch.search[parameter] ?? defaultValue;
         const to = toMatch.search[parameter] ?? defaultValue;
+
         return from !== to ? types(from, to) : undefined;
       }
+
       const from = fromMatch.search[parameter];
       const to = toMatch.search[parameter];
+
       return from !== to ? types(from, to) : undefined;
     },
   };

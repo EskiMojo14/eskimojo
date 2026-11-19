@@ -23,6 +23,7 @@ const meta = preview.meta({
 
 function SingleSelectDemo() {
   const [selected, setSelected] = useState("7 days");
+
   return (
     <ChipGroup aria-label="Listening period">
       {["7 days", "30 days", "All time"].map((period) => (
@@ -54,6 +55,7 @@ export const Assist = meta.story({
 
 function ToggleDemo() {
   const [selected, setSelected] = useState(false);
+
   return (
     <ChipGroup aria-label="Toggle filters">
       <FilterChip selected={selected} onClick={() => setSelected(!selected)}>

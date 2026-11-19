@@ -24,6 +24,7 @@ const meta = preview.meta({
 function RadioGroup() {
   const name = useId();
   const [quality, setQuality] = useState("normal");
+
   return (
     <fieldset style={{ display: "grid", border: 0, margin: 0, padding: 0 }}>
       <legend>Playback quality</legend>

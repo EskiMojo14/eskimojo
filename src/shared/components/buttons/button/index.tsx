@@ -8,6 +8,7 @@ import { withTooltip, type TooltipProps } from "#/shared/components/tooltip";
 const buttonBem = BEMHelper("button");
 
 export type ButtonVariant = "filled" | "tonal" | "elevated" | "outlined" | "text";
+
 export type ButtonSize = "extra-small" | "small" | "medium" | "large" | "extra-large";
 
 export type ButtonProps = ComponentPropsWithRef<"button"> &
@@ -33,6 +34,7 @@ function ButtonBase({
     ...props,
     "aria-disabled": loading || props["aria-disabled"],
   });
+
   return (
     <button
       {...props}
@@ -44,8 +46,10 @@ function ButtonBase({
       onClick={(event) => {
         if (loading) {
           event.preventDefault();
+
           return;
         }
+
         onClick?.(event);
       }}
     >

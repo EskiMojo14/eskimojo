@@ -10,11 +10,14 @@ import {
 
 export async function generateProjectPalette(logo: { light: string; dark?: string }) {
   const light = await imageSourceColor(resolve("public", logo.light.slice(1)));
+
   const dark =
     logo.dark && logo.dark !== logo.light
       ? await imageSourceColor(resolve("public", logo.dark.slice(1)))
       : light;
+
   const palette: Record<`--project-${string}`, string> = {};
+
   for (const [level, contrast, target] of [
     ["standard", 0, 4.5],
     ["medium", 0.5, 6],
@@ -23,8 +26,10 @@ export async function generateProjectPalette(logo: { light: string; dark?: strin
     const schemes = [light, dark].map((source, index) =>
       imageColorScheme(source, index === 1, contrast),
     );
+
     const values = schemes.map((scheme): Record<string, string> => {
       const background = scheme.surfaceContainerHighest;
+
       const colors: Record<string, string> = {
         surface: hexFromArgb(scheme.surface),
         "surface-container-low": hexFromArgb(scheme.surfaceContainerLow),
@@ -39,15 +44,21 @@ export async function generateProjectPalette(logo: { light: string; dark?: strin
         tertiary: readable(scheme.tertiary, background, target, scheme.isDark),
         error: readable(scheme.error, background, target, scheme.isDark),
       };
+
       return colors;
     });
+
     const [l, d] = values;
+
     if (!l || !d) throw new Error(`Missing ${level} project card scheme`);
+
     for (const [role, lightColor] of Object.entries(l)) {
       const darkColor = d[role];
+
       if (!darkColor) throw new Error(`Missing ${level}/${role} dark card color`);
       palette[`--project-${level}-${role}`] = `light-dark(${lightColor}, ${darkColor})`;
     }
   }
+
   return palette;
 }

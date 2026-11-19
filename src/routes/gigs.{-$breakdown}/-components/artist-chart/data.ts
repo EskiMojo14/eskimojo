@@ -12,11 +12,13 @@ export function getArtistChartData<TEvent extends ArtistEvent>(events: ReadonlyA
       event,
     })),
   ]);
+
   return Array.from(
     Map.groupBy(appearances, ({ artist }) => artist),
     ([artist, entries]) => {
       const main = entries.filter(({ role }) => role === "Main").length;
       const support = entries.filter(({ role }) => role === "Support").length;
+
       return { artist, main, support, total: main + support, appearances: entries };
     },
   ).toSorted(

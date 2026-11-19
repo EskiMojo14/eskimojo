@@ -51,6 +51,7 @@ export function getDocumentHead(palette: Palette = "goat", christmas = false) {
     title: "eskimojo",
     description: "eskimojo's personal website: projects, music, and live gigs.",
   });
+
   return {
     ...metadata,
     meta: [

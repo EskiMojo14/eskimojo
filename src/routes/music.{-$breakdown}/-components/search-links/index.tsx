@@ -8,6 +8,7 @@ const searchLinksBem = BEMHelper("music-search-links");
 
 export function MusicSearchLinks({ name, artist }: { name: string; artist?: string }) {
   const query = artist ? `${name} ${artist}` : name;
+
   return (
     <span {...searchLinksBem()}>
       <ExternalLinkButton

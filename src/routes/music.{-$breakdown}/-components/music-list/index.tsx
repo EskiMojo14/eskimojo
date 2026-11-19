@@ -12,6 +12,7 @@ const searchLinksBem = BEMHelper("music-search-links");
 
 export function MusicListSkeleton({ title, kind }: { title: string; kind: "recent" | MusicType }) {
   const ranked = kind !== "recent";
+
   return (
     <MusicListLayout
       title={title}

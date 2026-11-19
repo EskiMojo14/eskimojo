@@ -31,10 +31,12 @@ export const { ThemeContext, useTheme } = createPrefContext("theme", themeSchema
 export const { ContrastContext, useContrast } = createPrefContext("contrast", contrastSchema);
 export const { PaletteContext, usePalette } = createPrefContext("palette", paletteSchema);
 export const { HapticsContext, useHaptics } = createPrefContext("haptics", hapticsSchema);
+
 export const { DarkSyntaxContext, useDarkSyntax } = createPrefContext(
   "darkSyntax",
   darkSyntaxSchema,
 );
+
 export const { LightSyntaxContext, useLightSyntax } = createPrefContext(
   "lightSyntax",
   lightSyntaxSchema,

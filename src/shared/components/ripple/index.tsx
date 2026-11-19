@@ -22,9 +22,11 @@ interface ActiveRipple {
 function durationInMilliseconds(style: CSSStyleDeclaration, property: string) {
   const value = style.getPropertyValue(property).trim();
   const duration = Number.parseFloat(value);
+
   if (!Number.isFinite(duration) || !value.endsWith("s")) {
     throw new Error(`Expected a CSS time for ${property}, received "${value}"`);
   }
+
   return duration * (value.endsWith("ms") ? 1 : 1000);
 }
 
@@ -34,8 +36,10 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
 
   const clear = useCallback(() => {
     const active = activeRef.current;
+
     if (!active) return;
     active.listeners.abort();
+
     for (const animation of active.animations) animation.cancel();
     active.wave.remove();
     layerRef.current?.removeAttribute("data-active");
@@ -46,6 +50,7 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
 
   const disabled =
     props.disabled || props["aria-disabled"] === true || props["aria-disabled"] === "true";
+
   useEffect(() => {
     if (disabled) clear();
   }, [disabled, clear]);
@@ -53,15 +58,20 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
   function release() {
     const active = activeRef.current;
     const layer = layerRef.current;
+
     if (!active || !layer || active.released) return;
     active.released = true;
     active.listeners.abort();
+
     if (active.reducedMotion) {
       clear();
+
       return;
     }
+
     const style = getComputedStyle(layer);
     const duration = durationInMilliseconds(style, "--md-comp-ripple-fade-duration");
+
     const fade = active.wave.animate([{ opacity: 1 }, { opacity: 0 }], {
       duration,
       delay: Math.max(
@@ -72,6 +82,7 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
       easing: style.getPropertyValue("--md-sys-motion-easing-linear").trim(),
       fill: "forwards",
     });
+
     active.animations.push(fade);
     fade.onfinish = () => {
       if (activeRef.current === active) clear();
@@ -80,9 +91,11 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
 
   function start(host: T, point?: { x: number; y: number }, pointerId?: number, key?: string) {
     const layer = layerRef.current;
+
     if (!layer || host.matches(":disabled, [aria-disabled='true'], label:has(input:disabled)")) {
       return;
     }
+
     clear();
     const rect = layer.getBoundingClientRect();
     const x = unbounded || !point ? rect.width / 2 : point.x - rect.left;
@@ -95,6 +108,7 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
     wave.className = "ripple__wave";
     const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
     const reducedMotion = motionPreference.matches;
+
     if (!reducedMotion) {
       Object.assign(wave.style, {
         width: `${initialSize}px`,
@@ -105,8 +119,10 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
     } else {
       wave.style.background = "currentColor";
     }
+
     layer.append(wave);
     layer.dataset.active = "";
+
     const active: ActiveRipple = {
       wave,
       animations: [],
@@ -117,7 +133,9 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
       pointerId,
       key,
     };
+
     activeRef.current = active;
+
     if (!reducedMotion) {
       const style = getComputedStyle(layer);
       active.animations.push(
@@ -141,6 +159,7 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
         }),
       );
     }
+
     const options = { signal: active.listeners.signal, capture: true };
     motionPreference.addEventListener("change", clear, options);
     host.ownerDocument.addEventListener(
@@ -165,20 +184,24 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
   const handlers: RippleHandlers<T> = {
     onPointerDown(event) {
       props.onPointerDown?.(event);
+
       const middleClickLink =
         event.button === 1 &&
         event.pointerType === "mouse" &&
         event.currentTarget.matches("a[href]");
+
       if (!event.defaultPrevented && event.isPrimary && (event.button === 0 || middleClickLink)) {
         start(event.currentTarget, { x: event.clientX, y: event.clientY }, event.pointerId);
       }
     },
     onPointerLeave(event) {
       props.onPointerLeave?.(event);
+
       if (activeRef.current?.pointerId === event.pointerId) release();
     },
     onKeyDown(event) {
       props.onKeyDown?.(event);
+
       const activates =
         (event.key === "Enter" && event.currentTarget.tagName !== "LABEL") ||
         (event.key === " " &&
@@ -192,12 +215,14 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
               !event.metaKey &&
               !event.shiftKey &&
               !event.nativeEvent.isComposing)));
+
       if (!event.defaultPrevented && !event.repeat && activates) {
         start(event.currentTarget, undefined, undefined, event.key);
       }
     },
     onKeyUp(event) {
       props.onKeyUp?.(event);
+
       if (event.key === activeRef.current?.key) release();
     },
     onBlur(event) {

@@ -64,6 +64,7 @@ function createTabRouter(
       </>
     ),
   });
+
   return createRouter({
     history: createMemoryHistory({ initialEntries: [initialEntry] }),
     routeTree: root.addChildren([
@@ -178,16 +179,20 @@ test("deep links, typed params, and keyboard navigation use native anchors", asy
 test("tab navigation preserves the current scroll position", async () => {
   const router = createTabRouter();
   router.update({ scrollRestoration: true });
+
   const result = await page.renderWithProviders(
     <div style={{ minBlockSize: "3000px" }}>
       <RouterProvider router={router} />
     </div>,
   );
+
   await expect.element(result.getByRole("tab", { name: "Projects" })).toBeVisible();
   const projects = result.getByRole("tab", { name: "Projects" }).element();
+
   if (!(projects instanceof HTMLAnchorElement)) throw new Error("Tab link must be an anchor");
   window.scrollTo({ top: 200, behavior: "instant" });
   expect(window.scrollY).toBe(200);
+
   try {
     projects.click();
     await expect.element(result.getByText("Project content")).toBeInTheDocument();
@@ -229,6 +234,7 @@ test("cancelled and modified clicks do not navigate the current router", async (
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const router = createTabRouter();
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <RouterContextProvider router={router}>
       <TabNav aria-label="Sections">
@@ -257,6 +263,7 @@ test("cancelled and modified clicks do not navigate the current router", async (
       </TabNav>
     </RouterContextProvider>,
   );
+
   await result.getByRole("tab", { name: "Cancelled" }).click();
   expect(onClick).toHaveBeenCalledOnce();
   expect(router.state.location.pathname).toBe("/");

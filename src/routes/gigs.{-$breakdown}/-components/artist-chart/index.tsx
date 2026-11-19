@@ -97,6 +97,7 @@ export function GigsArtistChart({
           content: (points, context) => {
             const candidate = context.primaryPoint?.datum ?? points[0]?.datum;
             const appearance = isArtistTooltipAppearance(candidate) ? candidate : undefined;
+
             return {
               title: appearance?.artist ?? "",
               rows: appearance ? [{ label: appearance.role, value: String(appearance.count) }] : [],
@@ -139,6 +140,7 @@ export function GigsArtistChart({
           if (typeof content === "string") return content;
 
           const role = primaryPoint?.datum.role;
+
           const appearances = primaryPoint?.datum.appearances
             .filter((appearance) => appearance.role === role)
             .toSorted((a, b) => a.event.date.localeCompare(b.event.date));

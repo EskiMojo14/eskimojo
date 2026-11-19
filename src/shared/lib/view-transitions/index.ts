@@ -22,12 +22,14 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
     toLocation: ParsedLocation<Record<string, unknown>>;
   }): Array<string> | false {
     if (!fromLocation) return [];
+
     if (fromLocation.href === toLocation.href) return false;
 
     const fromMatches = matchRoutes(fromLocation.pathname, fromLocation.search);
     const toMatches = matchRoutes(toLocation.pathname, toLocation.search);
     const fromMatch = fromMatches.at(-1);
     const toMatch = toMatches.at(-1);
+
     if (
       !fromMatch ||
       !toMatch ||
@@ -46,11 +48,13 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
         (fromRoute === listRoute && toRoute === detailRoute) ||
         (toRoute === listRoute && fromRoute === detailRoute),
     );
+
     if (detailGroup) return [detailGroup.type];
 
     const routeTabGroups = tabGroups.filter(
       ({ route }) => route === fromRoute && route === toRoute,
     );
+
     for (const tabGroup of routeTabGroups) {
       const { order, parameter, defaultTab } = tabGroup;
       const fromParams: Record<string, unknown> = fromMatch.params;
@@ -59,6 +63,7 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
       const toTab = toParams[parameter] ?? defaultTab;
       const fromIndex = order.findIndex((tab) => tab === fromTab);
       const toIndex = order.findIndex((tab) => tab === toTab);
+
       if (fromIndex !== toIndex) {
         return [
           toIndex > fromIndex ? "tab-forward" : "tab-backward",
@@ -70,8 +75,10 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
     for (const { route, getTypes } of filterGroups) {
       if (route !== fromRoute || route !== toRoute) continue;
       const types = getTypes(fromMatch, toMatch);
+
       if (types !== undefined) return types;
     }
+
     if (
       routeTabGroups.length > 0 &&
       trimPathRight(fromLocation.pathname) !== trimPathRight(toLocation.pathname)
@@ -83,14 +90,17 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
         route === fromRoute ||
         detailGroups.some((group) => group.detailRoute === fromRoute && group.listRoute === route),
     );
+
     const toIndex = sections.findIndex(
       (route) =>
         route === toRoute ||
         detailGroups.some((group) => group.detailRoute === toRoute && group.listRoute === route),
     );
+
     if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
       return [toIndex > fromIndex ? "page-forward" : "page-backward"];
     }
+
     return [];
   };
 }

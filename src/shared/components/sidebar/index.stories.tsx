@@ -25,6 +25,7 @@ const meta = preview.meta({
 
 function NavigationLayout({ christmas = false }: { christmas?: boolean }) {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="app-shell" data-christmas={christmas || undefined}>
       <Sidebar open={open} onClose={() => setOpen(false)} christmas={christmas} />

@@ -9,6 +9,7 @@ export class ThemeTab extends PreferencesTab {
 
   async setPreference(name: ThemePreferenceName, option: string) {
     const select = this.tabPanel.getByRole("combobox", { name, exact: true });
+
     if (await select.isVisible()) {
       await select.click();
       await this.tabPanel
@@ -25,6 +26,7 @@ export class ThemeTab extends PreferencesTab {
 
   async expectSelected(name: ThemePreferenceName, option: string) {
     const select = this.tabPanel.getByRole("combobox", { name, exact: true });
+
     if (await select.isVisible()) {
       await expect(select).toHaveAccessibleDescription(option);
     } else {

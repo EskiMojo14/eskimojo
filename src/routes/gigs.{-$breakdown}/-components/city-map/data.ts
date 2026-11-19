@@ -10,6 +10,7 @@ export function getCityMapFit(cities: ReadonlyArray<{ coordinates: [number, numb
   const east = Math.max(...longitudes);
   const south = Math.min(...latitudes);
   const north = Math.max(...latitudes);
+
   // Keep a finite local frame even when all events are in one city.
   return {
     type: "MultiPoint" as const,
@@ -19,6 +20,7 @@ export function getCityMapFit(cities: ReadonlyArray<{ coordinates: [number, numb
     ],
   };
 }
+
 const cityCoordinates = new Map<string, [number, number]>([
   ["London", [-0.1276, 51.5072]],
   ["Birmingham", [-1.8904, 52.4862]],
@@ -36,7 +38,9 @@ export function getCityMapData<TEvent extends { city: string; date: string }>(
     Map.groupBy(events, ({ city }) => city),
     ([city, entries]) => {
       const coordinates = cityCoordinates.get(city);
+
       if (!coordinates) throw new Error(`Missing map coordinates for city: ${city}`);
+
       return {
         city,
         count: entries.length,

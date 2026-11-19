@@ -13,11 +13,13 @@ const toRelativeRgb = (value: string) => {
 
     const fromIndex = node.nodes.findIndex((child) => child.type !== "space");
     const from = node.nodes[fromIndex];
+
     if (from?.type !== "word" || from.value.toLowerCase() !== "from") return;
 
     const originIndex = node.nodes.findIndex(
       (child, index) => index > fromIndex && child.type !== "space",
     );
+
     if (originIndex === -1) return;
 
     node.value = "rgb";
@@ -28,6 +30,7 @@ const toRelativeRgb = (value: string) => {
       sourceEndIndex: 0,
     });
   });
+
   return valueParser.stringify(parsed.nodes);
 };
 
@@ -38,4 +41,5 @@ export const postcssAlphaToRgb: PluginCreator<void> = () => ({
     if (alphaFunction.test(decl.value)) decl.value = toRelativeRgb(decl.value);
   },
 });
+
 postcssAlphaToRgb.postcss = true;

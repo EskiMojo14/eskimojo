@@ -32,10 +32,12 @@ test.each([
   })
     .png()
     .toBuffer();
+
   let requests = 0;
   network.use(
     http.get(src, () => {
       requests++;
+
       return new HttpResponse(new Uint8Array(image), {
         headers: { "Content-Type": "image/png" },
       });
@@ -47,6 +49,7 @@ test.each([
   expect(tracks[1]?.palette).toEqual(palette);
   await addArtworkPalettes([track(src)], new AbortController().signal);
   expect(requests).toBe(1);
+
   for (const [level, target] of [
     ["standard", 4.5],
     ["medium", 6],
@@ -55,13 +58,18 @@ test.each([
     const colors = (role: string) => {
       const value = palette?.[`--artwork-${level}-${role}`];
       const match = /^light-dark\((#[\da-f]{6}), (#[\da-f]{6})\)$/.exec(value ?? "");
+
       if (!match?.[1] || !match[2]) throw new Error(`Missing artwork color ${role}`);
+
       return [match[1], match[2]].map((hex) => Hct.fromInt(argbFromHex(hex)));
     };
+
     const surfaces = colors("surface");
+
     for (const role of ["on-surface", "on-surface-variant", "primary", "secondary", "tertiary"]) {
       colors(role).forEach((color, index) => {
         const surface = surfaces[index];
+
         if (!surface) throw new Error("Missing artwork surface");
         expect(Contrast.ratioOfTones(color.tone, surface.tone)).toBeGreaterThanOrEqual(target);
       });
@@ -71,11 +79,13 @@ test.each([
 
 test("generates artwork palettes for ranked artists", async () => {
   const src = "https://lastfm.freetls.fastly.net/i/u/300x300/radiohead-palette";
+
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background: "#2040ca" },
   })
     .png()
     .toBuffer();
+
   network.use(
     http.get(
       src,
@@ -105,11 +115,13 @@ test("generates a palette after redirects to supported artwork hosts", async () 
   const src = "https://lastfm-img.freetls.fastly.net/i/u/300x300/redirect-start.png";
   const next = "https://lastfm-img.freetls.fastly.net/i/u/300x300/redirect-next.png";
   const destination = "https://lastfm.freetls.fastly.net/i/u/300x300/redirect-image.png";
+
   const image = await sharp({
     create: { width: 8, height: 8, channels: 4, background: "#2040ca" },
   })
     .png()
     .toBuffer();
+
   network.use(
     http.get(
       src,
@@ -146,6 +158,7 @@ test.each([
     http.get(next, () => HttpResponse.redirect(destination)),
     http.get("*", () => {
       destinationRequests++;
+
       return new HttpResponse(null, { status: 500 });
     }),
   );
@@ -175,6 +188,7 @@ test("stops a redirect loop without losing listening history", async () => {
   network.use(
     http.get(src, () => {
       requests++;
+
       return HttpResponse.redirect(src);
     }),
   );
@@ -217,6 +231,7 @@ test.each([
   network.use(
     http.get("*", () => {
       requests++;
+
       return new HttpResponse(null, { status: 500 });
     }),
   );

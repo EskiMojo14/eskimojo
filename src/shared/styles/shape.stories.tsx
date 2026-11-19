@@ -34,6 +34,7 @@ export const CornerScale = meta.story({
     <main {...shapePageBem()}>
       {corners.map(({ name, dp }) => {
         const token = `--md-sys-shape-corner-${name}`;
+
         return (
           <figure key={name} {...shapeFigureBem()}>
             <div {...shapeTileBem()} style={{ "--tile-radius": `var(${token})` }} />

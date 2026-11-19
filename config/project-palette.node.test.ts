@@ -9,7 +9,9 @@ import { generateProjectPalette } from "./project-palette";
 
 function schemes(value: string | undefined) {
   const match = /^light-dark\((#[\da-f]{6}), (#[\da-f]{6})\)$/.exec(value ?? "");
+
   if (!match?.[1] || !match[2]) throw new Error(`Invalid card palette value: ${value}`);
+
   return [match[1], match[2]].map((hex) => Hct.fromInt(argbFromHex(hex)));
 }
 
@@ -19,6 +21,7 @@ test.each([
   { light: "/Goat-avatar.webp" },
 ])("generates readable card and detail colors for $light", async (logo) => {
   const palette = await generateProjectPalette(logo);
+
   for (const [level, target] of [
     ["standard", 4.5],
     ["medium", 6],
@@ -31,6 +34,7 @@ test.each([
       "surface-container-highest",
     ]) {
       const backgrounds = schemes(palette[`--project-${level}-${surface}`]);
+
       for (const role of [
         "primary",
         "secondary",
@@ -42,6 +46,7 @@ test.each([
         const foregrounds = schemes(palette[`--project-${level}-${role}`]);
         foregrounds.forEach((foreground, index) => {
           const background = backgrounds[index];
+
           if (!background) throw new Error("Missing project background");
           expect(Contrast.ratioOfTones(foreground.tone, background.tone)).toBeGreaterThanOrEqual(
             target,
@@ -55,11 +60,13 @@ test.each([
 test("uses the corresponding logo for each scheme", async () => {
   const red = { light: "/projects/valibot.png" };
   const purple = { light: "/projects/redux.png" };
+
   const [redPalette, purplePalette, paired] = await Promise.all([
     generateProjectPalette(red),
     generateProjectPalette(purple),
     generateProjectPalette({ ...red, dark: purple.light }),
   ]);
+
   const redColors = schemes(redPalette["--project-standard-primary"]);
   const purpleColors = schemes(purplePalette["--project-standard-primary"]);
   const pairedColors = schemes(paired["--project-standard-primary"]);
@@ -77,9 +84,11 @@ test("keeps grayscale logos neutral and rejects fully transparent logos", async 
     .png()
     .toFile(file);
   const palette = await generateProjectPalette(logo);
+
   for (const color of schemes(palette["--project-standard-primary"])) {
     expect(color.chroma).toBeLessThan(5);
   }
+
   await sharp({ create: { width: 8, height: 8, channels: 4, background: "#00000000" } })
     .png()
     .toFile(file);

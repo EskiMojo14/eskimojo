@@ -52,6 +52,7 @@ export const Expressive = meta.story({
 
 function InteractiveList() {
   const [saved, setSaved] = useState(false);
+
   return (
     <List variant="expressive" aria-label="Music actions">
       <ListItem>
@@ -98,6 +99,7 @@ function SwitchList() {
   const [notifications, setNotifications] = useState(false);
   const notificationsId = useId();
   const unavailableId = useId();
+
   return (
     <List aria-label="Notification preferences" style={{ width: "min(100%, 28rem)" }}>
       <ListItem>
@@ -133,6 +135,7 @@ export const SwitchRows = meta.story({
     const toggle = canvas.getByRole("switch", { name: "Notifications" });
     await expect(toggle).not.toBeChecked();
     const row = canvas.getByText("Notifications").closest("label");
+
     if (!row) throw new Error("Expected a native label row.");
     await userEvent.click(row);
     await expect(toggle).toBeChecked();
@@ -245,6 +248,7 @@ function RadioList() {
   const highId = useId();
   const losslessId = useId();
   const [quality, setQuality] = useState("normal");
+
   return (
     <fieldset style={{ width: "min(100%, 28rem)", minWidth: 0, border: 0, margin: 0, padding: 0 }}>
       <legend>Playback quality</legend>

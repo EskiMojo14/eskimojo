@@ -27,6 +27,7 @@ test("deduplicates tracks and caches both successful covers and completed misses
   network.use(
     http.get(api, ({ request }) => {
       requests++;
+
       return HttpResponse.json(
         new URL(request.url).searchParams.get("track") === "Missing"
           ? { track: {} }
@@ -74,6 +75,7 @@ test("does not cache transient lookup failures", async () => {
   network.use(
     http.get(api, () => {
       requests++;
+
       return requests === 1
         ? HttpResponse.json({ error: 16, message: "Temporary failure" })
         : HttpResponse.json(trackResponse);
@@ -96,6 +98,7 @@ test("pauses queued lookups after API rate limiting without repeating failure lo
   network.use(
     http.get(api, () => {
       requests++;
+
       return requests === 1
         ? HttpResponse.json({ error: 29, message: "Rate limit exceeded" })
         : HttpResponse.json(trackResponse);
@@ -122,6 +125,7 @@ test("honors longer HTTP Retry-After cooldowns", async () => {
   network.use(
     http.get(api, () => {
       requests++;
+
       return HttpResponse.json(
         { error: 29, message: "Rate limit exceeded" },
         {
@@ -152,6 +156,7 @@ test("returns incomplete artwork on the lookup deadline instead of hiding tracks
     http.get(api, async () => {
       started.resolve();
       await pending.promise;
+
       return HttpResponse.json(trackResponse);
     }),
   );
@@ -171,6 +176,7 @@ test("propagates caller cancellation without logging an artwork failure", async 
     http.get(api, async () => {
       started.resolve();
       await pending.promise;
+
       return HttpResponse.json(trackResponse);
     }),
   );
@@ -194,17 +200,21 @@ test("returns incomplete queued artwork when its deadline expires before an earl
     http.get(api, async ({ request }) => {
       const name = new URL(request.url).searchParams.get("track");
       requests.push(name);
+
       if (name === "Blocking Track") {
         started.resolve();
         await pending.promise;
       }
+
       return HttpResponse.json(trackResponse);
     }),
   );
+
   const blocking = artwork.addLastfmTrackArtwork(
     [{ ...track, name: "Blocking Track" }],
     new AbortController().signal,
   );
+
   onTestFinished(async () => {
     pending.resolve();
     await blocking;
@@ -214,6 +224,7 @@ test("returns incomplete queued artwork when its deadline expires before an earl
   const timeout = vi.spyOn(AbortSignal, "timeout").mockReturnValueOnce(deadline.signal);
   onTestFinished(() => timeout.mockRestore());
   let outcome: unknown;
+
   const queued = artwork.addLastfmTrackArtwork([track], new AbortController().signal).then(
     (result) => {
       outcome = result;
@@ -222,6 +233,7 @@ test("returns incomplete queued artwork when its deadline expires before an earl
       outcome = error;
     },
   );
+
   deadline.abort(new DOMException("Artwork timed out", "TimeoutError"));
   await vi.waitFor(() => expect(outcome).toEqual({ items: [track], incomplete: true }));
   await queued;
@@ -245,17 +257,21 @@ test("cancels a queued caller without waiting for or disrupting an earlier looku
     http.get(api, async ({ request }) => {
       const name = new URL(request.url).searchParams.get("track");
       requests.push(name);
+
       if (name === "Blocking Track") {
         started.resolve();
         await pending.promise;
       }
+
       return HttpResponse.json(trackResponse);
     }),
   );
+
   const blocking = artwork.addLastfmTrackArtwork(
     [{ ...track, name: "Blocking Track" }],
     new AbortController().signal,
   );
+
   onTestFinished(async () => {
     pending.resolve();
     await blocking;
@@ -264,6 +280,7 @@ test("cancels a queued caller without waiting for or disrupting an earlier looku
   const controller = new AbortController();
   onTestFinished(() => controller.abort());
   let outcome: unknown;
+
   const queued = artwork.addLastfmTrackArtwork([track], controller.signal).then(
     (result) => {
       outcome = result;
@@ -272,6 +289,7 @@ test("cancels a queued caller without waiting for or disrupting an earlier looku
       outcome = error;
     },
   );
+
   const reason = new DOMException("Cancelled", "AbortError");
   controller.abort(reason);
   await vi.waitFor(() => expect(outcome).toBe(reason));

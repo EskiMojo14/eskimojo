@@ -51,6 +51,7 @@ const meta = preview.meta({
 
 function WeightTransitionDemo() {
   const [heavy, setHeavy] = useState(false);
+
   return (
     <main {...typographyPageBem()}>
       <section
@@ -89,6 +90,7 @@ export const TypeScale = meta.story({
         sizes.map((size) => {
           const token = `--md-sys-typography-${role}-${size}`;
           const featuresToken = `--md-sys-typography-features-${features}`;
+
           return (
             <section key={token} {...typographyRowBem()}>
               <code {...typographyLabelBem()}>
@@ -118,6 +120,7 @@ export const Weights = meta.story({
     <main {...typographyPageBem()}>
       {weights.map((weight) => {
         const token = `--md-sys-typography-weight-${weight}`;
+
         return (
           <section key={token} {...typographyRowBem()}>
             <code {...typographyLabelBem()}>{token}</code>

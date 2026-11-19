@@ -14,15 +14,18 @@ import { SnackbarHost } from "./index";
 
 const undo = fn();
 const defaultMessage = "Changes saved.";
+
 const longMessage = {
   message:
     "Your changes have been saved. They will be available on your other devices when you reconnect.",
   action: { label: "View saved changes", onClick: fn() },
 };
+
 const persistentMessage = { message: "Changes saved.", duration: null };
 
 function SnackbarStoreProvider({ children }: { children: ReactNode }) {
   const [store] = useState(makeStore);
+
   return <Provider store={store}>{children}</Provider>;
 }
 
@@ -38,6 +41,7 @@ function SnackbarDemo({
   useEffect(() => {
     if (initialMessage === undefined) return undefined;
     const id = dispatch(showSnackbar(initialMessage));
+
     return () => {
       dispatch(snackbarDismissed(id));
     };
@@ -53,6 +57,7 @@ function SnackbarDemo({
 
 function TimedSnackbarButton() {
   const dispatch = useAppDispatch();
+
   return (
     <Button
       onClick={() => dispatch(showSnackbar({ message: defaultMessage, showCloseButton: true }))}
@@ -64,6 +69,7 @@ function TimedSnackbarButton() {
 
 function RemoveItemButton() {
   const dispatch = useAppDispatch();
+
   return (
     <Button
       onClick={() =>
@@ -79,6 +85,7 @@ function RemoveItemButton() {
 
 function QueueUpdatesButton() {
   const dispatch = useAppDispatch();
+
   return (
     <Button
       onClick={() => {

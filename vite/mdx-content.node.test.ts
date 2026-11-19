@@ -13,12 +13,14 @@ function fixture(source: string): Array<Plugin> {
     ["/docs.doc.mdx", code.js`export default "storybook docs";`],
     ["/data.json", JSON.stringify({ message: "json data" })],
   ]);
+
   return [
     mdxContentAttributes(),
     {
       name: "mdx-content-fixture",
       resolveId(id) {
         const resolved = id.startsWith("./") ? `/${id.slice(2)}` : id;
+
         return modules.has(resolved) ? resolved : undefined;
       },
       load: (id) => modules.get(id),
@@ -41,8 +43,10 @@ async function compile(source: string): Promise<string> {
       },
     },
   });
+
   if (Array.isArray(result) || !("output" in result))
     throw new Error("Expected a single build output.");
+
   return result.output
     .filter((item) => item.type === "chunk")
     .map((item) => item.code)
@@ -71,6 +75,7 @@ test("selects the same application MDX compiler in the dev server", async () => 
     optimizeDeps: { noDiscovery: true },
     server: { middlewareMode: true },
   });
+
   onTestFinished(() => server.close());
   const result = await server.transformRequest("/mdx-fixture.tsx");
   expect(result?.code).toContain("example.mdx?content");
@@ -85,9 +90,11 @@ test("leaves docs, ordinary MDX, JSON attributes, and lookalike strings alone", 
     const example = 'import Preview from "./example.mdx" with { type: "mdx" };';
     export const values = [Docs, Plain, Data.message, example];
   `);
+
   const module: unknown = await import(
     /* @vite-ignore */ `data:text/javascript,${encodeURIComponent(result)}`
   );
+
   expect(module).toMatchObject({
     values: [
       "storybook docs",

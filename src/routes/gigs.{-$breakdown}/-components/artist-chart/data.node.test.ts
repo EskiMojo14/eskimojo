@@ -30,6 +30,7 @@ test("sorts by Main before Support counts and retains source events and roles", 
     { artists: ["B"], support: ["A", "C", "D"] },
     { artists: ["D"], support: ["C"] },
   ];
+
   const result = getArtistChartData(events);
   expect(result.map(({ artist }) => artist)).toEqual(["B", "D", "A", "C"]);
   expect(result.find(({ artist }) => artist === "A")?.appearances).toEqual([

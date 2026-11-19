@@ -16,6 +16,7 @@ const tracks = [
     artwork: { imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/currents" },
   },
 ];
+
 const artists = [
   {
     name: "Radiohead",
@@ -24,6 +25,7 @@ const artists = [
     artwork: { imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/radiohead-album" },
   },
 ];
+
 const albums = [
   {
     name: "Currents",
@@ -79,6 +81,7 @@ test("shows Last.fm track and artist album artwork with search links", async () 
     atob("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"),
     (char) => char.charCodeAt(0),
   );
+
   network.use(
     http.get(
       "https://lastfm.freetls.fastly.net/i/u/300x300/*",
@@ -119,15 +122,18 @@ test("falls back to each item's icon when Last.fm artwork fails to load", async 
   const brokenArtwork = {
     imageUrl: "https://lastfm.freetls.fastly.net/i/u/300x300/missing-cover",
   };
+
   network.use(
     http.get(
       "https://lastfm.freetls.fastly.net/i/u/300x300/*",
       () => new HttpResponse(null, { status: 404 }),
     ),
   );
+
   const result = await page.renderWithProviders(
     <MusicTopMusic tracks={tracks.map((track) => ({ ...track, artwork: brokenArtwork }))} />,
   );
+
   await expect.element(result.getByText("music_note")).toBeVisible();
   await result.rerender(
     <MusicTopMusic albums={albums.map((album) => ({ ...album, artwork: brokenArtwork }))} />,

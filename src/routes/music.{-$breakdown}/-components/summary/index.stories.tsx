@@ -45,27 +45,33 @@ export const AnimatedCounts = meta.story({
   ),
   play: async ({ canvas, args }) => {
     const counts = canvas.getAllByRole("definition");
+
     const targets = [
       args.user.playcount,
       args.user.artist_count,
       args.user.album_count,
       args.user.track_count,
     ] as const;
+
     assert(
       counts.length === targets.length,
       `Expected ${targets.length} listening statistics, received ${counts.length}.`,
     );
     let previous = targets.map((target) => Math.ceil(target * 0.95));
+
     const readCounts = () =>
       counts.map((count) => Number(count.lastElementChild?.textContent?.replaceAll(",", "")));
+
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const initialPlayCount = readCounts()[0];
       assert(initialPlayCount !== undefined, "Expected an initial play count.");
       await expect(initialPlayCount).toBeLessThan(targets[0]);
     }
+
     await waitFor(
       async () => {
         const current = readCounts();
+
         for (const [index, target] of targets.entries()) {
           const value = current[index];
           const previousValue = previous[index];
@@ -79,6 +85,7 @@ export const AnimatedCounts = meta.story({
           await expect(count.firstElementChild).toHaveTextContent(target.toLocaleString("en-GB"));
           await expect(count.lastElementChild).toHaveAttribute("aria-hidden", "true");
         }
+
         previous = current;
         await expect(current).toEqual(targets);
       },

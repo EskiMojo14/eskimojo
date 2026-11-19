@@ -37,6 +37,7 @@ export function CircularProgress({
   ...props
 }: CircularProgressProps) {
   const progress = getProgressValue(value, max);
+
   return (
     <span
       {...props}

@@ -55,5 +55,6 @@ test("leaves declarations without relative alpha() untouched", async () => {
       --alpha-thing: 1;
     }
   `;
+
   expect(await process(input)).toBe(normalize(input));
 });

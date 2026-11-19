@@ -80,9 +80,11 @@ function PreferenceProviders({
   const [contrast, setContrast] = useState(initialPreferences.contrast ?? contrastSchema.fallback);
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
   const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
+
   const [darkSyntax, setDarkSyntax] = useState(
     initialPreferences.darkSyntax ?? darkSyntaxSchema.fallback,
   );
+
   const [lightSyntax, setLightSyntax] = useState(
     initialPreferences.lightSyntax ?? lightSyntaxSchema.fallback,
   );
@@ -91,6 +93,7 @@ function PreferenceProviders({
     if (!syncToDocument) return undefined;
 
     const { dataset } = document.documentElement;
+
     const previous = {
       theme: dataset.theme,
       contrast: dataset.contrast,
@@ -98,7 +101,9 @@ function PreferenceProviders({
       darkSyntax: dataset.darkSyntax,
       lightSyntax: dataset.lightSyntax,
     };
+
     Object.assign(dataset, { theme, contrast, palette, darkSyntax, lightSyntax });
+
     return () => {
       for (const [key, value] of Object.entries(previous)) {
         if (value === undefined) delete dataset[key];
@@ -141,6 +146,7 @@ export async function renderWithProviders(
 ): Promise<RenderWithProvidersResult> {
   const queryClient =
     providedQueryClient ?? providedRouter?.options.context.queryClient ?? createQueryClient();
+
   const store = providedStore ?? providedRouter?.options.context.store ?? makeStore(preloadedState);
   const history = providedHistory ?? providedRouter?.history ?? createMemoryHistory(historyOpts);
   const router = providedRouter ?? getRouter({ history, queryClient, store });

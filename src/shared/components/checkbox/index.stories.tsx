@@ -23,6 +23,7 @@ const meta = preview.meta({
 
 function ControlledCheckbox({ initialState = false }: { initialState?: boolean | "mixed" }) {
   const [checked, setChecked] = useState(initialState);
+
   return (
     <Checkbox
       label="Email updates"
@@ -75,6 +76,7 @@ export const Disabled = meta.story({
 function ErrorCheckbox() {
   const [checked, setChecked] = useState(false);
   const errorId = useId();
+
   return (
     <div>
       <Checkbox

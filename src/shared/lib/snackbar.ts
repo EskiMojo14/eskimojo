@@ -69,6 +69,7 @@ export const showSnackbar =
     if (!input.message.trim() || (input.action && !input.action.label.trim())) {
       throw new TypeError("Snackbar messages and action labels must not be empty.");
     }
+
     if (duration !== null && (!Number.isFinite(duration) || duration < 4000 || duration > 10_000)) {
       throw new RangeError("Snackbar duration must be between 4000 and 10000 ms, or null.");
     }
@@ -82,6 +83,7 @@ export const showSnackbar =
             snackbarsCleared.match(action),
           effect: (action, api) => {
             api.unsubscribe();
+
             if (snackbarActioned.match(action)) input.action?.onClick();
           },
         }),
@@ -96,6 +98,8 @@ export const showSnackbar =
       // get rid of onClick, not serializable
       action: input.action ? { label: input.action.label } : undefined,
     };
+
     dispatch(snackbarAdded(message));
+
     return id;
   };

@@ -48,6 +48,7 @@ describe("getGigHeatmapData", () => {
     const later = gigs.events[4];
     const earlier = gigs.events[0];
     assert(later && earlier, "Expected archive events for the ordering test.");
+
     const events: Array<
       Pick<GigEvent, "date" | "venue" | "city"> & {
         artists: ReadonlyArray<string>;
@@ -57,6 +58,7 @@ describe("getGigHeatmapData", () => {
       { ...later, date: "2024-02-29" },
       { ...earlier, date: "2024-02-01" },
     ];
+
     const result = getGigHeatmapData(events);
     const february = result.cells.find(({ month }) => month === "Feb");
     assert(february, "Expected February in the heatmap data.");

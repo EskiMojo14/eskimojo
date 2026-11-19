@@ -3,8 +3,10 @@ import { getProject } from "#/routes/projects/-data";
 
 export function fixturePalette(slug: string): ArtworkPalette {
   const project = getProject(slug);
+
   if (!project.palette) throw new Error(`Missing palette fixture for ${slug}`);
   const palette: ArtworkPalette = {};
+
   for (const level of ["standard", "medium", "high"]) {
     for (const role of [
       "surface",
@@ -18,9 +20,11 @@ export function fixturePalette(slug: string): ArtworkPalette {
         project.palette[
           `--project-${level}-${role === "surface" ? "surface-container-highest" : role}`
         ];
+
       if (!color) throw new Error(`Missing fixture color ${level}/${role}`);
       palette[`--artwork-${level}-${role}`] = color;
     }
   }
+
   return palette;
 }

@@ -23,6 +23,7 @@ const meta = preview.meta({
 });
 
 export const Archive = meta.story({});
+
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
@@ -32,6 +33,7 @@ export const Empty = meta.story({
     ).toBeVisible();
   },
 });
+
 export const MixedAppearances = meta.story({
   args: {
     events: [
@@ -62,6 +64,7 @@ export const MixedAppearances = meta.story({
     await expect(canvas.queryByText("29 Dec 2024", { exact: true })).not.toBeInTheDocument();
 
     const supportBar = chart.querySelectorAll("rect")[1];
+
     if (!supportBar) throw new Error("Expected the first artist to have a support bar.");
     const bounds = supportBar.getBoundingClientRect();
     await userEvent.pointer({

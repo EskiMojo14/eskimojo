@@ -16,6 +16,7 @@ const extendedTest = baseTest.extend<E2EFixtures>({
         context,
         onUnhandledFrame: bypassLocalRequests(baseURL ?? ""),
       });
+
       await network.enable();
       await use(network);
       await network.disable();

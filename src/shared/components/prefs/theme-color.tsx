@@ -20,6 +20,7 @@ export function ThemeColor() {
             : code.css`(not (prefers-contrast: more))`
           : undefined,
       ].filter((condition) => condition !== undefined);
+
       return (
         <meta
           key={`${scheme}-${level}`}

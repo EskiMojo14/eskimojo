@@ -34,6 +34,7 @@ test("opt-in tooltip labels name the trigger while hidden, open, and dismissed",
       <span aria-hidden="true">Palette icon</span>
     </TooltipLink>,
   );
+
   const link = result.getByRole("link", { name: "Switch palette", exact: true });
   const linkElement = link.element();
   const hint = result.getByText("Switch palette", { exact: true });
@@ -59,6 +60,7 @@ test("labeling is opt-in and does not leave references for missing or rich toolt
       Save
     </Button>,
   );
+
   const button = result.getByRole("button", { name: "Save changes", exact: true }).element();
   await result.rerender(<Button tooltip="Save changes">Save</Button>);
   await expect.element(button).not.toHaveAttribute("aria-labelledby");
@@ -81,11 +83,13 @@ test("labeling is opt-in and does not leave references for missing or rich toolt
 
 test("keyboard focus opens a hint, Escape dismisses it without activating the button", async () => {
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Button tooltip="Save your changes" onClick={onClick}>
       Save
     </Button>,
   );
+
   const button = result.getByRole("button", { name: "Save", exact: true });
   const hint = result.getByText("Save your changes");
   await expect.element(hint).not.toBeVisible();
@@ -108,6 +112,7 @@ test("hover shows a hint that remains hoverable and closes after leaving", async
       <button>Elsewhere</button>
     </>,
   );
+
   const button = result.getByRole("button", { name: "Hover me" });
   const hint = result.getByText("Supplemental text");
   await button.hover();
@@ -120,6 +125,7 @@ test("hover shows a hint that remains hoverable and closes after leaving", async
 
 test("rich hint actions are reachable by keyboard and retain focus inside the hint", async () => {
   const onClick = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <Button
       tooltip={{
@@ -131,6 +137,7 @@ test("rich hint actions are reachable by keyboard and retain focus inside the hi
       Details
     </Button>,
   );
+
   await userEvent.tab();
   const hint = result.getByRole("dialog", { name: "Storage" });
   await expect.element(hint).toBeVisible();
@@ -149,6 +156,7 @@ test("preserves trigger identity, handlers, styles and refs without replacing it
   const ref = createRef<HTMLButtonElement>();
   const popoverRef = createRef<HTMLDivElement>();
   const onFocus = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <IconButton
       ref={ref}
@@ -161,6 +169,7 @@ test("preserves trigger identity, handlers, styles and refs without replacing it
       onFocus={onFocus}
     />,
   );
+
   const button = result.getByRole("button", { name: "Favorite" });
   expect(ref.current).toBe(button.element());
   expect(ref.current?.id).toBe("favorite");
@@ -194,6 +203,7 @@ test("Escape dismisses a nested hint without closing its enclosing auto popover"
       </div>
     </>,
   );
+
   await result.getByRole("button", { name: "Open parent" }).click();
   await result.getByRole("button", { name: "Inside" }).hover();
   await expect.element(result.getByText("Nested hint")).toBeVisible();
@@ -213,6 +223,7 @@ test("withTooltip works with links and generates distinct tooltip IDs", async ()
       </TooltipLink>
     </>,
   );
+
   const first = result.getByRole("link", { name: "First" });
   const second = result.getByRole("link", { name: "Second" });
   expect(first.element().getAttribute("interestfor")).not.toBe(
@@ -232,6 +243,7 @@ test("outside clicks dismiss a hint", async () => {
       <button>Outside</button>
     </>,
   );
+
   await result.getByRole("button", { name: "Trigger" }).hover();
   await expect.element(result.getByText("Description")).toBeVisible();
   await result.getByRole("button", { name: "Outside" }).click();
@@ -244,6 +256,7 @@ test("respects a configured hover delay", async () => {
       Delayed
     </Button>,
   );
+
   const start = performance.now();
   await result.getByRole("button", { name: "Delayed" }).hover();
   await expect.element(result.getByText("Delayed description")).not.toBeVisible();

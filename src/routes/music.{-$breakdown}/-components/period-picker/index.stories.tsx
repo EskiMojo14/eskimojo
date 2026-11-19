@@ -19,6 +19,7 @@ import "#/routes/music.{-$breakdown}/-components/recent-tracks/index.css";
 
 function createDemoRouter() {
   const root = createRootRoute();
+
   return createRouter({
     routeTree: root.addChildren([
       createRoute({
@@ -43,6 +44,7 @@ function createDemoRouter() {
 
 function Demo() {
   const [router] = useState(createDemoRouter);
+
   return <RouterProvider router={router} />;
 }
 

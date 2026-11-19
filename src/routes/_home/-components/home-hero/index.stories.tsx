@@ -27,14 +27,17 @@ export const Default = meta.story({
     await expect(canvas.getByRole("heading", { name: "Hi, I'm eskimojo." })).toBeVisible();
     await expect(canvas.queryByRole("navigation")).not.toBeInTheDocument();
     await expect(canvas.queryByRole("link")).not.toBeInTheDocument();
+
     const introduction = canvas.getByText(
       "I'm a web developer, an open source contributor, a Redux maintainer, a musician, an Overwatch casual, and a cat dad.",
     );
+
     await expect(introduction).toBeInTheDocument();
 
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       await expect(introduction).toBeVisible();
       await expect(canvas.queryByRole("button")).not.toBeInTheDocument();
+
       return;
     }
 
@@ -51,16 +54,20 @@ export const Default = meta.story({
     await userEvent.tab();
     const next = canvas.getByRole("button", { name: "Next role" });
     await expect(next).toHaveFocus();
+
     const visibleRole = () =>
       roles.find((role) => canvas.getByText(`${role}.`).checkVisibility({ opacityProperty: true }));
+
     await userEvent.keyboard("{Enter}");
     const first = visibleRole();
     await expect(first).toBeDefined();
     const firstIndex = roles.findIndex((role) => role === first);
+
     for (let step = 1; step <= roles.length; step++) {
       await userEvent.keyboard(" ");
       await waitFor(() => expect(visibleRole()).toBe(roles[(firstIndex + step) % roles.length]));
     }
+
     await expect(canvas.getByRole("button", { name: "Resume role animation" })).toBeVisible();
     await expect(next).toHaveFocus();
   },

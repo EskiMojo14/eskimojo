@@ -23,8 +23,10 @@ export function serverFnRef<TFunction extends ServerFunction>(
 
 async function requestData(request: Request): Promise<unknown> {
   let payload: unknown;
+
   if (request.method === "GET") {
     const param = new URL(request.url).searchParams.get("payload");
+
     if (param) payload = fromJSON(JSON.parse(param));
   } else if (request.method === "POST") {
     if (!request.headers.get("content-type")?.startsWith("application/json"))
@@ -35,9 +37,12 @@ async function requestData(request: Request): Promise<unknown> {
   } else {
     throw new Error(`Unsupported mockServerFn request method: ${request.method}`);
   }
+
   if (payload === undefined) return undefined;
+
   if (typeof payload !== "object" || payload === null)
     throw new Error("Expected an object in the TanStack server-function payload.");
+
   return "data" in payload ? payload.data : undefined;
 }
 
@@ -54,6 +59,7 @@ export function mockServerFn<const TData, const TResponse>(
   return http.all(serverFn.url, async ({ request }) => {
     const data = await requestData(request);
     let result: TResponse | Response;
+
     try {
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       result = await mock(data as TData);
@@ -62,7 +68,9 @@ export function mockServerFn<const TData, const TResponse>(
         headers: { "x-tss-serialized": "true" },
       });
     }
+
     if (result instanceof Response) return result;
+
     return HttpResponse.json(await toCrossJSONAsync({ result }), {
       headers: { "x-tss-serialized": "true" },
     });

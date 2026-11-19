@@ -32,6 +32,7 @@ function TabExample({
 test("tab relationships, selection, activation, and arrow navigation", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onValueChange = vi.fn<(value: string) => void>();
+
   const result = await page.renderWithProviders(
     <Tabs defaultValue="first" onValueChange={onValueChange}>
       <TabList aria-label="Sections">
@@ -42,6 +43,7 @@ test("tab relationships, selection, activation, and arrow navigation", async () 
       <TabPanel value="second">Second panel</TabPanel>
     </Tabs>,
   );
+
   const first = result.getByRole("tab", { name: "First" });
   const second = result.getByRole("tab", { name: "Second" });
   await expect.element(first).toHaveAttribute("aria-selected", "true");
@@ -98,6 +100,7 @@ test("uses the first enabled tab as the tab stop when the selected tab is disabl
       <TabPanel value="available">Available panel</TabPanel>
     </Tabs>,
   );
+
   await expect
     .element(result.getByRole("tab", { name: "Available" }))
     .toHaveAttribute("tabindex", "0");
@@ -107,6 +110,7 @@ test("uses the first enabled tab as the tab stop when the selected tab is disabl
 
 test("controlled tabs notify changes without changing until their value updates", async () => {
   const onValueChange = vi.fn<(value: string) => void>();
+
   const result = await page.renderWithProviders(
     <Tabs value="first" onValueChange={onValueChange}>
       <TabList aria-label="Sections">
@@ -117,6 +121,7 @@ test("controlled tabs notify changes without changing until their value updates"
       <TabPanel value="second">Second panel</TabPanel>
     </Tabs>,
   );
+
   await result.getByRole("tab", { name: "Second" }).click();
   expect(onValueChange).toHaveBeenCalledExactlyOnceWith("second");
   await expect
@@ -139,6 +144,7 @@ test("decorative icons do not affect tab names or panel selection", async () => 
       <TabPanel value="settings">Settings panel</TabPanel>
     </Tabs>,
   );
+
   await expect.element(result.getByRole("tab", { name: "Overview", exact: true })).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
   await result.getByRole("tab", { name: "Settings", exact: true }).click();

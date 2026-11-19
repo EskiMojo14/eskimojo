@@ -19,10 +19,12 @@ test.each(["GET", "POST"])(
     network.use(
       mockServerFn(post, (data) => {
         expect(data.updatedAt).toEqual(updatedAt);
+
         return { title: `Post ${data.id}`, updatedAt: data.updatedAt };
       }),
     );
     const payload = JSON.stringify(await toJSONAsync({ data: { id: "1", updatedAt } }));
+
     const response = await fetch(
       method === "GET" ? `${post.url}?payload=${encodeURIComponent(payload)}` : post.url,
       {
@@ -32,6 +34,7 @@ test.each(["GET", "POST"])(
           : {}),
       },
     );
+
     expect(response.headers.get("x-tss-serialized")).toBe("true");
     expect(fromCrossJSON(await response.json(), {})).toEqual({
       result: { title: "Post 1", updatedAt },
@@ -41,6 +44,7 @@ test.each(["GET", "POST"])(
 
 test("mocks a no-input function and serializes thrown errors", async () => {
   type NoInputFn = { (): Promise<string>; url: string };
+
   const fn = serverFnRef<NoInputFn>("http://localhost/_serverFn/no-input");
   network.use(
     mockServerFn(fn, (data) => {

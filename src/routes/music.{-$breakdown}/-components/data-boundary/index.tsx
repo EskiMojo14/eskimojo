@@ -43,6 +43,7 @@ export function MusicDataBoundary({
     ),
     [errorTitle],
   );
+
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (

@@ -13,6 +13,7 @@ test("tab groups preserve the route's parsed parameter values", () => {
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
   });
+
   expectTypeOf(group.order).toEqualTypeOf<Array<"top" | "recent">>();
 });
 
@@ -24,6 +25,7 @@ test("tab groups reject parameters absent from their route", () => {
     order: musicBreakdownSchema.options,
     defaultTab: musicBreakdownSchema.fallback,
   });
+
   expectTypeOf(group.route).toEqualTypeOf<"/music/{-$breakdown}/{-$type}">();
 });
 
@@ -36,6 +38,7 @@ test("tab groups reject schema options and defaults from another route", () => {
     // @ts-expect-error The Gigs fallback is not a valid Music tab.
     defaultTab: gigBreakdownSchema.fallback,
   });
+
   expectTypeOf(group.parameter).toEqualTypeOf<"breakdown">();
 });
 
@@ -45,6 +48,7 @@ test("detail groups accept a registered descendant route", () => {
     detailRoute: "/projects/$slug",
     type: "project",
   });
+
   expectTypeOf(group.detailRoute).toEqualTypeOf<"/projects/$slug">();
 });
 
@@ -55,6 +59,7 @@ test("detail groups reject unrelated registered routes", () => {
     detailRoute: "/music/{-$breakdown}/{-$type}",
     type: "project",
   });
+
   expectTypeOf(group.listRoute).toEqualTypeOf<"/projects">();
 });
 
@@ -65,6 +70,7 @@ test("detail groups reject unregistered descendant routes", () => {
     detailRoute: "/projects/$slug/missing",
     type: "project",
   });
+
   expectTypeOf(group.listRoute).toEqualTypeOf<"/projects">();
 });
 
@@ -75,6 +81,7 @@ test("filter callbacks infer the route's optional search output", () => {
     types: (from, to) => {
       expectTypeOf(from).toEqualTypeOf<ProjectKind | undefined>();
       expectTypeOf(to).toEqualTypeOf<ProjectKind | undefined>();
+
       return [];
     },
   });
@@ -87,6 +94,7 @@ test("filter callbacks preserve the route's optional period search type", () => 
     types: (from, to) => {
       expectTypeOf(from).toEqualTypeOf<Period | undefined>();
       expectTypeOf(to).toEqualTypeOf<Period | undefined>();
+
       return [];
     },
   });
@@ -100,6 +108,7 @@ test("filter callbacks receive defined values when a default is provided", () =>
     types: (from, to) => {
       expectTypeOf(from).toEqualTypeOf<Period>();
       expectTypeOf(to).toEqualTypeOf<Period>();
+
       return [];
     },
   });
@@ -113,6 +122,7 @@ test("an explicitly undefined default preserves optional callback values", () =>
     types: (from, to) => {
       expectTypeOf(from).toEqualTypeOf<ProjectKind | undefined>();
       expectTypeOf(to).toEqualTypeOf<ProjectKind | undefined>();
+
       return [];
     },
   });
@@ -157,6 +167,7 @@ test("filter parameters must belong to the selected route", () => {
     parameter: "period",
     types: () => [],
   });
+
   expectTypeOf(group.getTypes).returns.toEqualTypeOf<Array<string> | undefined>();
 });
 
@@ -168,5 +179,6 @@ test("filter routes must exist in the application's route tree", () => {
     parameter: "period",
     types: () => [],
   });
+
   expectTypeOf(group.getTypes).returns.toEqualTypeOf<Array<string> | undefined>();
 });

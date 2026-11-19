@@ -6,6 +6,7 @@ import { ExternalLinkButton } from "./index";
 
 test("forwards native anchor props and refs and keeps the icon decorative", async () => {
   const ref = createRef<HTMLAnchorElement>();
+
   const result = await page.renderWithProviders(
     <ExternalLinkButton
       ref={ref}
@@ -19,6 +20,7 @@ test("forwards native anchor props and refs and keeps the icon decorative", asyn
       Visit site
     </ExternalLinkButton>,
   );
+
   const link = result.getByRole("link", { name: "Visit site", exact: true });
   await expect.element(link).toHaveAttribute("href", "https://example.com");
   await expect.element(link).toHaveAttribute("target", "_blank");

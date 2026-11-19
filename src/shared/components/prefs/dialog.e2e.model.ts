@@ -27,6 +27,7 @@ export class PreferencesDialogModel extends ComponentObjectModel {
       metas
         .filter((meta) => {
           const media = meta.getAttribute("media");
+
           return !media || matchMedia(media).matches;
         })
         .map((meta) => meta.getAttribute("content")),

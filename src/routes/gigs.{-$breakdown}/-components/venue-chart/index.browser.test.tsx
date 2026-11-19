@@ -23,6 +23,7 @@ test("shows venue counts and chronological event details with keyboard pinning a
       ]}
     />,
   );
+
   const table = result.getByRole("table", { name: "Recorded gigs per venue" });
   await expect
     .element(table.getByRole("row", { name: "Brixton, London 2", exact: true }))

@@ -24,6 +24,7 @@ async function skipRetryBackoff(page: Page, locator: Locator) {
   await expect
     .poll(async () => {
       await page.clock.fastForward("00:05");
+
       return locator.isVisible();
     })
     .toBe(true);
@@ -60,7 +61,9 @@ const recentTracksWithNowPlaying: Array<RecentTrack> = [
 const topTracks: Array<TopTrack> = [
   { name: "Lost Chapter", artist: "Pentakill", rank: 1, playcount: 290 },
 ];
+
 const topArtists: Array<TopArtist> = [{ name: "Radiohead", rank: 1, playcount: 100 }];
+
 const topAlbums: Array<TopAlbum> = [
   { name: "Currents", artist: "Tame Impala", rank: 1, playcount: 1200 },
 ];
@@ -80,25 +83,31 @@ function lastfm(
   topAlbumsByRank: Array<TopAlbum> = [],
 ) {
   const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+
   return [
     mockServerFn(music.getUserDataFn, async () => {
       await before("user.getInfo");
+
       return { user };
     }),
     mockServerFn(music.getTopTracksFn, async () => {
       await before("user.getTopTracks");
+
       return { toptracks: { track: topTracksByRank } };
     }),
     mockServerFn(music.getTopArtistsFn, async () => {
       await before("user.getTopArtists");
+
       return { topartists: { artist: topArtistsByRank } };
     }),
     mockServerFn(music.getTopAlbumsFn, async () => {
       await before("user.getTopAlbums");
+
       return { topalbums: { album: topAlbumsByRank } };
     }),
     mockServerFn(music.getRecentTracksFn, async () => {
       await before("user.getRecentTracks");
+
       return { recenttracks: { track: tracks } };
     }),
   ];
@@ -112,12 +121,14 @@ function mockedArtwork<T extends { lastfmArtworkUrl?: string }>(
   if (item.lastfmArtworkUrl) {
     return { ...item, artwork: { imageUrl: lastfmImageUrl ?? item.lastfmArtworkUrl } };
   }
+
   if (imageUrl) {
     return {
       ...item,
       artwork: { imageUrl },
     };
   }
+
   return item;
 }
 
@@ -127,8 +138,10 @@ function musicArtwork(
   lastfmImageUrl?: string,
 ) {
   const music = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
+
   return mockServerFn(music.getMusicArtworkFn, async (data) => {
     await before(data);
+
     return {
       tracks: data.tracks.map((track) => mockedArtwork(track, imageUrl, lastfmImageUrl)),
       albums: data.albums.map((album) => mockedArtwork(album, imageUrl, lastfmImageUrl)),
@@ -185,14 +198,17 @@ test("waits for artwork and palettes before revealing music lists", async ({ net
   const imageData = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
   const fallbackImageUrl = `${imageData}#lastfm`;
   const imageUrl = `${imageData}#spotify`;
+
   const recentTracksWithFallback = recentTracksWithNowPlaying.map((track, index) =>
     index === 0 ? { ...track, lastfmArtworkUrl: fallbackImageUrl } : track,
   );
+
   let artworkRequests = 0;
   network.use(
     ...lastfm(undefined, recentTracksWithFallback, topTracks, topArtists),
     musicArtwork(async ({ tracks }) => {
       artworkRequests++;
+
       if (tracks.some(({ name }) => name === "Lost Chapter")) {
         topArtworkStarted.resolve();
         await topArtworkPending.promise;
@@ -282,8 +298,10 @@ test("prefetches only the selected ranking and artwork and reuses visited tabs",
   const imageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
   const musicFns = serverFns["src/routes/music.{-$breakdown}/-query.ts"];
   const methods: Array<LastfmMethod> = [];
+
   const requests: Array<{ tracks: Array<string>; albums: Array<string>; artists: Array<string> }> =
     [];
+
   network.use(
     ...lastfm(
       (method) => {
@@ -300,6 +318,7 @@ test("prefetches only the selected ranking and artwork and reuses visited tabs",
         albums: data.albums.map(({ name }) => name),
         artists: data.artists.map(({ name }) => name),
       });
+
       return {
         tracks: data.tracks.map((track) => ({ ...track, artwork: { imageUrl } })),
         albums: data.albums.map((album) => ({ ...album, artwork: { imageUrl } })),
@@ -426,6 +445,7 @@ test("retries incomplete artwork after its cooldown without refetching early on 
     mockServerFn(musicFns.getMusicArtworkFn, async (data) => {
       artworkRequests++;
       const artworkUrl = artworkRequests === 1 ? undefined : imageUrl;
+
       return {
         tracks: data.tracks.map((track) => mockedArtwork(track, artworkUrl)),
         albums: data.albums.map((album) => mockedArtwork(album, artworkUrl)),
@@ -483,7 +503,9 @@ test("artwork POST failures preserve music data and retry enrichment after the c
     ),
     mockServerFn(musicFns.getMusicArtworkFn, (data) => {
       artworkRequests++;
+
       if (artworkRequests === 1) return HttpResponse.text("Service unavailable", { status: 503 });
+
       return {
         tracks: data.tracks.map((track) =>
           mockedArtwork(track, recoveredImageUrl, recoveredImageUrl),

@@ -23,6 +23,7 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params: { slug } }) => {
     const project = getProject(slug);
     await getProjectContent(project.filePath).preload?.();
+
     return project;
   },
   head: ({ loaderData }) => {
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/projects/$slug")({
           }
         : undefined,
     });
+
     return {
       ...metadata,
       links: [...metadata.links, { rel: "stylesheet", href: styles }],
@@ -48,6 +50,7 @@ export const Route = createFileRoute("/projects/$slug")({
 function RouteComponent() {
   const project = Route.useLoaderData();
   const Content = getProjectContent(project.filePath);
+
   return (
     <main
       className="projects-page"

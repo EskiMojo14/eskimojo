@@ -9,6 +9,7 @@ test("renders a decorative icon without changing the button name", async () => {
   const result = await page.renderWithProviders(
     <Button icon={<MdSymbol aria-label="Pencil">edit</MdSymbol>}>Edit</Button>,
   );
+
   const button = result.getByRole("button", { name: "Edit", exact: true });
   await expect.element(button).toHaveAccessibleName("Edit");
   expect(result.getByRole("img", { name: "Pencil" }).query()).toBeNull();
@@ -27,10 +28,12 @@ test("supports SVG icons and replacing or removing the icon", async () => {
       Edit
     </Button>,
   );
+
   const button = result.getByRole("button", { name: "Edit", exact: true });
   await expect.element(button).toHaveAccessibleName("Edit");
   await result.rerender(<Button icon={<MdSymbol>edit</MdSymbol>}>Edit</Button>);
   await expect.element(button).toHaveAccessibleName("Edit");
+
   for (const icon of [null, undefined, false]) {
     await result.rerender(<Button icon={icon}>Edit</Button>);
     await expect.element(button).toHaveTextContent("Edit");
@@ -56,14 +59,17 @@ test("defaults type to button and allows an explicit override", async () => {
 
 test("loading preserves the action label, blocks duplicates, and allows recovery", async () => {
   let clicks = 0;
+
   const onClick = () => {
     clicks += 1;
   };
+
   const result = await page.renderWithProviders(
     <Button onClick={onClick} icon={<MdSymbol>refresh</MdSymbol>}>
       Retry
     </Button>,
   );
+
   const button = result.getByRole("button", { name: "Retry", exact: true });
   await button.click();
   expect(clicks).toBe(1);

@@ -15,8 +15,10 @@ function useHomeHeroRoleWidths() {
 
   useEffect(() => {
     const container = rolesRef.current;
+
     if (!container) throw new Error("Cannot measure roles without the home hero role container.");
     const elements = container.querySelectorAll<HTMLElement>(".home-hero__role");
+
     const observer = new ResizeObserver(() => {
       elements.forEach((element, index) => {
         container.style.setProperty(
@@ -25,7 +27,9 @@ function useHomeHeroRoleWidths() {
         );
       });
     });
+
     elements.forEach((element) => observer.observe(element));
+
     return () => observer.disconnect();
   }, []);
 
@@ -46,10 +50,13 @@ function useHomeHeroRoleAnimation() {
           (animation.animationName.startsWith("home-hero-role-") ||
             animation.animationName === "home-hero-progress"),
       );
+
     const progress = animations?.find(
       (animation) => animation.animationName === "home-hero-progress",
     );
+
     const interval = progress?.effect?.getComputedTiming().duration;
+
     if (
       !animations ||
       typeof progress?.currentTime !== "number" ||
@@ -60,22 +67,28 @@ function useHomeHeroRoleAnimation() {
     }
 
     let target = (Math.floor(progress.currentTime / interval) + 1) * interval;
+
     if (paused) {
       const fade = animations.find(
         (animation) => animation.animationName === "home-hero-role-fade",
       );
+
       const effect = fade?.effect;
       const duration = effect?.getComputedTiming().duration;
+
       const visibleFrame =
         effect instanceof KeyframeEffect
           ? effect.getKeyframes().find((frame) => frame.opacity === "1")
           : undefined;
+
       if (typeof duration !== "number" || !visibleFrame) {
         throw new Error("Cannot find the home hero role's visible animation frame.");
       }
+
       // Seek inside the hold, avoiding rounding at the outgoing fade's boundary.
       target += visibleFrame.computedOffset * duration + 1;
     }
+
     for (const animation of animations) animation.currentTime = target;
     triggerHapticFeedback("light");
   }

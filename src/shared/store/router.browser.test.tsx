@@ -21,6 +21,7 @@ function ExistingWrap({ children }: { children: ReactNode }) {
 
 function SnackbarCount() {
   const count = useAppSelector((state) => state.snackbar.length);
+
   return <p>Snackbar count: {count}</p>;
 }
 
@@ -36,11 +37,13 @@ test("router rendering preserves its wrapper and provides the integrated store",
   );
   const outerStore = makeStore();
   const rootRoute = createRootRoute({ component: SnackbarCount });
+
   const router = createRouter({
     history: createMemoryHistory({ initialEntries: ["/"] }),
     routeTree: rootRoute,
     Wrap: ExistingWrap,
   });
+
   if (router.isServer) throw new Error("Expected a browser router.");
 
   setupReduxIntegration({ router, store });
@@ -68,20 +71,24 @@ test("client hydration waits for router hydration before dispatching Redux hydra
     },
   });
   const store = makeStore(undefined, listenerMiddleware);
+
   const originalHydrate = vi.fn<() => Promise<void>>(async () => {
     events.push("router:start");
     await Promise.resolve();
     events.push("router:complete");
   });
+
   const router = createRouter({
     routeTree: createRootRoute(),
     hydrate: originalHydrate,
   });
+
   if (router.isServer) throw new Error("Expected a browser router.");
 
   setupReduxIntegration({ router, store });
 
   const hydrate = router.options.hydrate;
+
   if (!hydrate) throw new Error("Expected Redux integration to add a hydrate callback.");
   const reduxOpts = { state: {} };
 
@@ -95,6 +102,7 @@ test("client hydration waits for router hydration before dispatching Redux hydra
 
 test("client hydration skips Redux dispatch when there is no Redux payload", async () => {
   const router = createRouter({ routeTree: createRootRoute() });
+
   if (router.isServer) throw new Error("Expected a browser router.");
   const store = makeStore();
   const dispatch = vi.spyOn(store, "dispatch");
@@ -102,6 +110,7 @@ test("client hydration skips Redux dispatch when there is no Redux payload", asy
   setupReduxIntegration({ router, store });
 
   const hydrate = router.options.hydrate;
+
   if (!hydrate) throw new Error("Expected Redux integration to add a hydrate callback.");
 
   await hydrate({});

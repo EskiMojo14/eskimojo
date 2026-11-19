@@ -33,20 +33,25 @@ export function setupReduxIntegration<TRouter extends AnyRouter>({
     const originalDehydrate = router.options.dehydrate;
     router.options.dehydrate = async (): Promise<{ redux: DehydratedReduxOpts }> => {
       const originalDehydrated = originalDehydrate ? await originalDehydrate() : {};
+
       return {
         ...originalDehydrated,
         redux: { state: {} } satisfies DehydratedReduxOpts,
       };
     };
+
     return;
   }
+
   const originalHydrate = router.options.hydrate;
   router.options.hydrate = async (dehydrated) => {
     if (originalHydrate) {
       await originalHydrate(dehydrated);
     }
+
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const opts = dehydrated.redux as DehydratedReduxOpts;
+
     if (opts) {
       store.dispatch(hydrated(opts));
     }

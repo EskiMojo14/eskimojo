@@ -12,6 +12,7 @@ test("groups events by venue, sorts counts and ties, and retains events in date 
     { venue: "B", city: "London", date: "2024-02-01", artists: ["D"], support: ["E"] },
     { venue: "C", city: "London", date: "2024-03-01", artists: ["F"] },
   ];
+
   expect(getVenueChartData(events)).toEqual([
     { venue: "B, London", count: 2, events: [events[2], events[0]] },
     { venue: "A, London", count: 1, events: [events[1]] },

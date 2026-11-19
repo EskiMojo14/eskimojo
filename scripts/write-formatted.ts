@@ -12,9 +12,11 @@ const { ignorePatterns: _, overrides: __, associations: ___, ...options } = fmtC
 export async function writeFormatted(url: URL, contents: string): Promise<void> {
   const path = fileURLToPath(url);
   const { code, errors } = await format(path, contents, options);
+
   if (errors.length > 0) {
     throw new Error(`Couldn't format ${path}:\n${errors.map((error) => error.message).join("\n")}`);
   }
+
   await writeFile(path, code);
   console.log(`Wrote ${path}`);
 }

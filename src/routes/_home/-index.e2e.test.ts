@@ -19,9 +19,11 @@ test("Christmas override serves the seasonal hero and Goat artwork", async ({ ho
   const goat = page.waitForResponse((response) =>
     response.url().endsWith("/Goat-sidebar-christmas.webp"),
   );
+
   const mitzi = page.waitForResponse((response) =>
     response.url().endsWith("/Mitzi-hero-christmas.webp"),
   );
+
   home.url = "/?christmas=true";
   const response = await home.goto();
 

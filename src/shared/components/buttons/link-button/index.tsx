@@ -24,6 +24,7 @@ function LinkButtonBase({
   ...props
 }: Omit<ExternalLinkButtonProps, keyof TooltipProps>) {
   const { handlers, ripple } = useRipple<HTMLAnchorElement>(props);
+
   return (
     <a {...props} {...handlers} {...buttonBem({ modifier: [variant, size], extra: className })}>
       {ripple}
@@ -42,4 +43,5 @@ export const ExternalLinkButton = withTooltip(
     <LinkButtonBase target="_blank" rel="noopener noreferrer" {...props} />
   ),
 );
+
 export const InternalLinkButton = createLink(withTooltip(LinkButtonBase));

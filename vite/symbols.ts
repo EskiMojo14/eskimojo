@@ -24,26 +24,34 @@ function isNode(value: unknown): value is Record<string, unknown> {
 
 function nameOf(node: unknown): unknown {
   if (!isNode(node)) return undefined;
+
   return node.type === "Identifier" ? node.name : node.value;
 }
 
 function collectSymbols(node: unknown, symbols: Set<string>): boolean {
   if (!isNode(node)) return false;
+
   if (typeof node.value === "string") {
     symbols.add(node.value.trim());
+
     return true;
   }
+
   if (node.type === "ConditionalExpression") {
     const consequentKnown = collectSymbols(node.consequent, symbols);
     const alternateKnown = collectSymbols(node.alternate, symbols);
+
     return consequentKnown && alternateKnown;
   }
+
   return false;
 }
 
 function visit(node: unknown, onCall: (node: Record<string, unknown>) => void): void {
   if (!isNode(node)) return;
+
   if (node.type === "CallExpression") onCall(node);
+
   for (const value of Object.values(node)) {
     if (Array.isArray(value)) {
       for (const child of value) visit(child, onCall);
@@ -59,6 +67,7 @@ export default function materialSymbols({
   knownSymbolsModule,
 }: Options = {}): Array<Plugin> {
   const usedSymbols = new Set<string>();
+
   return [
     {
       name: "used-symbols:collect",
@@ -67,14 +76,18 @@ export default function materialSymbols({
       async buildStart() {
         usedSymbols.clear();
         const registeredSymbols = [...knownSymbols];
+
         if (knownSymbolsModule) {
           const { module } = await runnerImport<{ default: Array<string> }>(knownSymbolsModule, {
             resolve: { alias: { "#": fileURLToPath(new URL("../src", import.meta.url)) } },
           });
+
           registeredSymbols.push(...module.default);
         }
+
         for (const symbol of registeredSymbols) {
           const name = symbol.trim();
+
           if (!name)
             this.error("Registered Material Symbol names must not be empty or whitespace.");
           usedSymbols.add(name);
@@ -84,10 +97,12 @@ export default function materialSymbols({
         if (!code?.includes("MdSymbol")) return;
         visit(this.parse(code), (node) => {
           const { callee, arguments: args } = node;
+
           const name =
             isNode(callee) && callee.type === "MemberExpression"
               ? nameOf(callee.property)
               : nameOf(callee);
+
           if (
             typeof name !== "string" ||
             !jsxCallNamePattern.test(name) ||
@@ -97,6 +112,7 @@ export default function materialSymbols({
             return;
 
           const props = args[1];
+
           const children =
             name === "createElement"
               ? args[2]
@@ -105,16 +121,21 @@ export default function materialSymbols({
                     (property: unknown) => isNode(property) && nameOf(property.key) === "children",
                   )?.value
                 : undefined;
+
           if (!collectSymbols(children, usedSymbols)) {
             const position = isNode(children) ? children.start : node.start;
+
             const precedingLines =
               typeof position === "number" ? code.slice(0, position).split("\n") : undefined;
+
             const generatedLine = (precedingLines?.length ?? 1) - 1;
             const generatedColumn = precedingLines?.at(-1)?.length ?? 0;
+
             const original = new SourceMap({
               sourceRoot: "",
               ...this.getCombinedSourcemap(),
             }).findEntry(generatedLine, generatedColumn);
+
             const loc =
               "originalLine" in original
                 ? {
@@ -125,6 +146,7 @@ export default function materialSymbols({
                     column: original.originalColumn,
                   }
                 : { file: id, line: generatedLine + 1, column: generatedColumn };
+
             this.warn({
               id,
               loc,
@@ -146,6 +168,7 @@ export default function materialSymbols({
         // oxlint-disable-next-line unicorn/no-array-sort
         const names = [...usedSymbols].sort().join(",");
         const finalUrl = `${symbolsUrl}&icon_names=${names}`;
+
         for (const output of Object.values(bundle)) {
           if (output.type === "chunk") {
             output.code = output.code.replaceAll(symbolsUrl, finalUrl);

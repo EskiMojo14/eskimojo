@@ -9,6 +9,7 @@ import { Checkbox } from "./index";
 
 function ControlledCheckbox({ initialState = false }: { initialState?: boolean | "mixed" }) {
   const [checked, setChecked] = useState(initialState);
+
   return (
     <Checkbox
       label="Email updates"
@@ -48,6 +49,7 @@ test("mixed selection is exposed natively and clears when the user makes a choic
 
 test("uncontrolled checkboxes retain native form submission, reset, validation and refs", async () => {
   const ref = createRef<HTMLInputElement>();
+
   const result = await page.renderWithProviders(
     <form>
       <Checkbox label="Receive updates" name="updates" value="yes" defaultChecked ref={ref} />
@@ -63,9 +65,11 @@ test("uncontrolled checkboxes retain native form submission, reset, validation a
       <button type="reset">Reset choices</button>
     </form>,
   );
+
   const checkbox = result.getByRole("checkbox", { name: "Receive updates" });
   const terms = result.getByRole("checkbox", { name: "Accept the terms (required)" });
   const form = result.container.querySelector("form");
+
   if (!form) throw new Error("Checkbox form was not rendered.");
   expect(ref.current).toBe(checkbox.element());
   expect(new FormData(form).get("updates")).toBe("yes");
@@ -83,6 +87,7 @@ test("uncontrolled checkboxes retain native form submission, reset, validation a
 test("disabled controls and feedback opt-outs do not request haptics", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onChange = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <>
       <Checkbox label="Unavailable" disabled onChange={onChange} />
@@ -90,6 +95,7 @@ test("disabled controls and feedback opt-outs do not request haptics", async () 
       <Checkbox label="Canceled feedback" onChange={(event) => event.preventDefault()} />
     </>,
   );
+
   await expect.element(result.getByRole("checkbox", { name: "Unavailable" })).toBeDisabled();
   await result.getByRole("checkbox", { name: "Unavailable" }).click({ force: true });
   await expect.element(result.getByRole("checkbox", { name: "Unavailable" })).not.toBeChecked();
@@ -102,9 +108,11 @@ test("disabled controls and feedback opt-outs do not request haptics", async () 
 
 test("saved haptics opt-out keeps checkboxes usable", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+
   const result = await page.renderWithProviders(<ControlledCheckbox />, {
     preferences: { haptics: "off" },
   });
+
   const checkbox = result.getByRole("checkbox", { name: "Email updates" });
   await checkbox.click();
   await expect.element(checkbox).toBeChecked();
@@ -114,6 +122,7 @@ test("saved haptics opt-out keeps checkboxes usable", async () => {
 test("leading and trailing list checkboxes keep the whole row clickable without duplicate changes", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
   const onChange = vi.fn<() => void>();
+
   const result = await page.renderWithProviders(
     <List style={{ width: 320 }}>
       <ListItem>
@@ -136,6 +145,7 @@ test("leading and trailing list checkboxes keep the whole row clickable without 
       </ListItem>
     </List>,
   );
+
   const row = result.getByRole("listitem").nth(0);
   const checkbox = result.getByRole("checkbox", { name: "Album releases" });
   await row.click({ position: { x: 160, y: 36 } });

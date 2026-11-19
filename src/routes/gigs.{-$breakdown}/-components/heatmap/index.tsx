@@ -25,8 +25,10 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
   const chartContext = useRef<ChartRenderContext<GigMonth<HeatmapEvent>, string, string> | null>(
     null,
   );
+
   const focusedPoint = useRef<ChartPoint<GigMonth<HeatmapEvent>, string, string> | null>(null);
   const { years, cells, maxCount, total } = useMemo(() => getGigHeatmapData(events), [events]);
+
   const cellColors = useMemo(
     () =>
       Array.from(
@@ -38,6 +40,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
       ),
     [maxCount],
   );
+
   const definition = useMemo(
     () =>
       defineChart({
@@ -87,6 +90,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
           sticky: true,
           content: (points) => {
             const month = points[0]?.datum;
+
             return {
               title: month ? `${month.month} ${month.year}` : "",
               rows: month?.events.length
@@ -123,6 +127,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
         onKeyDownCapture={(event) => {
           const context = chartContext.current;
           const current = focusedPoint.current;
+
           if (
             !context ||
             !current ||
@@ -136,12 +141,15 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
             return;
           const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
           const vertical = event.key === "ArrowUp" || event.key === "ArrowDown";
+
           if (!horizontal && !vertical) return;
           const direction = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
           const origin = context.scene.points.find((point) => point.key === current.key);
+
           if (!origin) return;
           const axis = horizontal ? "x" : "y";
           const crossAxis = horizontal ? "y" : "x";
+
           const next = context.scene.points
             .filter(
               (point) =>
@@ -152,7 +160,9 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
               (left, right) =>
                 Math.abs(left[axis] - origin[axis]) - Math.abs(right[axis] - origin[axis]),
             )[0];
+
           event.stopPropagation();
+
           if (!next) return;
           event.preventDefault();
           context.interaction.setControlledFocus(next);

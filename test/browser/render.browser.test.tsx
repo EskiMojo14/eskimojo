@@ -12,6 +12,7 @@ import { createQueryClient } from "#/shared/lib/query";
 function ContextProbe() {
   const queryClient = useQueryClient();
   const router = useRouter();
+
   return (
     <p>
       {queryClient === router.options.context.queryClient ? "Shared client" : "Different clients"}
@@ -23,6 +24,7 @@ function PreferenceProbe() {
   const { theme, setTheme } = useTheme();
   const { contrast, setContrast } = useContrast();
   const { palette, setPalette } = usePalette();
+
   return (
     <>
       <p>{`${theme}/${contrast}/${palette}`}</p>
@@ -52,6 +54,7 @@ test("supports initial preferences and isolates separate renders", async () => {
   const first = await page.renderWithProviders(<PreferenceProbe />, {
     preferences: { theme: "light", contrast: "medium", palette: "arctic" },
   });
+
   await expect.element(first.getByText("light/medium/arctic")).toBeVisible();
   await first.getByRole("button", { name: "Set dark theme" }).click();
   await expect.element(first.getByText("dark/medium/arctic")).toBeVisible();
@@ -89,6 +92,7 @@ test("optionally syncs document preferences and restores attributes on unmount",
   const result = await page.renderWithProviders(<PreferenceProbe />, {
     syncPreferencesToDocument: true,
   });
+
   expect(root.dataset.theme).toBe("system");
   expect(root.dataset.contrast).toBe("system");
   expect(root.dataset.palette).toBe("goat");
@@ -113,6 +117,7 @@ test("allows explicit preference providers without in-memory providers", async (
     </ThemeContext>,
     { preferences: false },
   );
+
   await expect.element(result.getByText("light/system/goat")).toBeVisible();
 });
 

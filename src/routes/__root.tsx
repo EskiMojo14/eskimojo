@@ -71,6 +71,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme, contrast, palette, haptics, darkSyntax, lightSyntax } = Route.useLoaderData();
   const { christmas } = Route.useRouteContext();
+
   return (
     <Providers
       providers={[
@@ -100,12 +101,15 @@ function PreferenceDocument({
   const { palette } = usePalette();
   const { darkSyntax } = useDarkSyntax();
   const { lightSyntax } = useLightSyntax();
+
   const projectPalette = useMatch({
     from: "/projects/$slug",
     shouldThrow: false,
     select: (match) => match.loaderData?.palette,
   });
+
   const [navigationOpen, setNavigationOpen] = useState(false);
+
   return (
     <html
       lang="en"

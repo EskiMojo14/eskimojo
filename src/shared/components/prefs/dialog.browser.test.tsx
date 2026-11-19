@@ -24,9 +24,11 @@ beforeEach(async () => {
 
 test("mobile dropdowns save preferences", async () => {
   await page.viewport(390, 568);
+
   const result = await page.renderWithProviders(<NavigationLayout />, {
     preferences: { theme: "dark", contrast: "high", palette: "arctic" },
   });
+
   const trigger = result.getByRole("button", { name: "Preferences" });
   await trigger.click();
   const dialog = result.getByRole("dialog", { name: "Preferences" });
@@ -42,7 +44,9 @@ test("mobile dropdowns save preferences", async () => {
   for (const name of ["Theme", "Contrast", "Palette"]) {
     await expect.element(dialog.getByRole("combobox", { name })).toBeVisible();
   }
+
   await expect.element(dialog.getByRole("toolbar")).not.toBeInTheDocument();
+
   for (const value of themeSchema.options) {
     await theme.click();
     await dialog
@@ -52,6 +56,7 @@ test("mobile dropdowns save preferences", async () => {
     await expect.element(theme).toHaveAccessibleDescription(themeLabels[value].label);
     await expect.element(contrast).toHaveAccessibleDescription("High");
   }
+
   for (const value of contrastSchema.options) {
     await contrast.click();
     await dialog
@@ -61,6 +66,7 @@ test("mobile dropdowns save preferences", async () => {
     await expect.element(contrast).toHaveAccessibleDescription(contrastLabels[value].label);
     await expect.element(theme).toHaveAccessibleDescription("Dark");
   }
+
   for (const value of paletteSchema.options) {
     await palette.click();
     await dialog
@@ -69,10 +75,13 @@ test("mobile dropdowns save preferences", async () => {
       .click();
     await expect.element(palette).toHaveAccessibleDescription(paletteLabels[value].label);
   }
+
   await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.element(syntax).toHaveAccessibleDescription("Dracula Pro");
+
   for (const value of darkSyntaxOptions.options) {
     await syntax.click();
+
     const option = dialog.getByRole("listbox", { name: "Dark theme" }).getByRole("option", {
       name:
         value === "nosferatu"
@@ -80,9 +89,11 @@ test("mobile dropdowns save preferences", async () => {
           : syntaxLabels[value].label,
       exact: true,
     });
+
     await option.click();
     await expect.element(syntax).toHaveAccessibleDescription(syntaxLabels[value].label);
   }
+
   await userEvent.keyboard("{Escape}");
   await expect.element(trigger).toHaveFocus();
   await trigger.click();
@@ -95,17 +106,21 @@ test("mobile dropdowns save preferences", async () => {
   await theme.click();
   await page.viewport(600, 800);
   await expect.element(dialog.getByRole("listbox")).not.toBeInTheDocument();
+
   for (const name of ["Theme", "Contrast", "Palette"]) {
     await expect.element(dialog.getByRole("combobox", { name })).not.toBeInTheDocument();
   }
+
   await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.element(syntax).toBeVisible();
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
+
   for (const name of ["Dark", "High", "Peach"]) {
     await expect
       .element(dialog.getByRole("button", { name }))
       .toHaveAttribute("aria-pressed", "true");
   }
+
   await page.viewport(390, 568);
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await dialog.getByRole("tab", { name: "Code", exact: true }).click();
@@ -161,27 +176,35 @@ test.runIf("startViewTransition" in HTMLElement.prototype).each([
     await page.viewport(width, height);
     const result = await page.renderWithProviders(<PreferencesDialog open />);
     const dialog = result.getByRole("dialog", { name: "Preferences" });
+
     const container = dialog.getByRole("tabpanel", { name: "Theme" }).element()
       .parentElement?.parentElement;
+
     if (!container) throw new Error("Expected a container for the preferences panels.");
     const startViewTransition = container.startViewTransition?.bind(container);
+
     if (!startViewTransition) throw new Error("Expected element-scoped transition support.");
+
     using scopedTransition = vi
       .spyOn(container, "startViewTransition")
       .mockImplementation((options) => {
         if (!options || typeof options === "function" || !options.update) {
           throw new Error("Expected transition options with an update callback.");
         }
+
         const update = options.update;
+
         return startViewTransition({
           ...options,
           update: () => {
             const updateResult = update();
             container.getBoundingClientRect();
+
             return updateResult;
           },
         });
       });
+
     using documentTransition = vi.spyOn(document, "startViewTransition");
 
     await dialog.getByRole("tab", { name: "Code", exact: true }).click();
@@ -211,8 +234,10 @@ test.runIf("startViewTransition" in HTMLElement.prototype).each([
 test("tab changes still work without element-scoped transition support", async () => {
   const result = await page.renderWithProviders(<PreferencesDialog open />);
   const dialog = result.getByRole("dialog", { name: "Preferences" });
+
   const panels = dialog.getByRole("tabpanel", { name: "Theme" }).element()
     .parentElement?.parentElement;
+
   if (!panels) throw new Error("Expected a container for the preferences panels.");
   Object.defineProperty(panels, "startViewTransition", { value: undefined, configurable: true });
   using documentTransition = vi.spyOn(document, "startViewTransition");
@@ -228,17 +253,23 @@ test.runIf("startViewTransition" in HTMLElement.prototype)(
   "reduced motion switches tabs without starting an element transition",
   async () => {
     const matchMedia = window.matchMedia.bind(window);
+
     using media = vi.spyOn(window, "matchMedia").mockImplementation((query) => {
       const result = matchMedia(query);
+
       if (query === "(prefers-reduced-motion: reduce)") {
         Object.defineProperty(result, "matches", { value: true });
       }
+
       return result;
     });
+
     const result = await page.renderWithProviders(<PreferencesDialog open />);
     const dialog = result.getByRole("dialog", { name: "Preferences" });
+
     const container = dialog.getByRole("tabpanel", { name: "Theme" }).element()
       .parentElement?.parentElement;
+
     if (!container) throw new Error("Expected a container for the preferences panels.");
     using transition = vi.spyOn(container, "startViewTransition");
 
@@ -253,6 +284,7 @@ test("light and dark syntax palettes can be changed independently at desktop wid
   const result = await page.renderWithProviders(<PreferencesDialog open />, {
     syncPreferencesToDocument: true,
   });
+
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   await dialog.getByRole("tab", { name: "Code", exact: true }).click();
   const light = dialog.getByRole("combobox", { name: "Light theme" });
@@ -350,6 +382,7 @@ test("Escape dismisses the select menu before the preferences dialog", async () 
 
 function NavigationLayout() {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="app-shell">
       <Sidebar open={open} onClose={() => setOpen(false)} />
@@ -364,6 +397,7 @@ test("reflects existing theme, contrast, and palette preferences", async () => {
   const result = await page.renderWithProviders(<PreferencesDialog open />, {
     preferences: { theme: "dark", contrast: "high", palette: "arctic" },
   });
+
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   await expect
     .element(dialog.getByRole("button", { name: "Arctic" }))
@@ -377,6 +411,7 @@ test("reflects existing theme, contrast, and palette preferences", async () => {
   await expect
     .element(dialog.getByRole("button", { name: "High" }))
     .toHaveAttribute("aria-pressed", "true");
+
   for (const group of ["Theme", "Contrast"]) {
     await expect
       .element(dialog.getByRole("toolbar", { name: group }).getByRole("button", { name: "System" }))
@@ -389,24 +424,30 @@ test("selects every theme and contrast independently through existing contexts",
   const dialog = result.getByRole("dialog", { name: "Preferences" });
   const theme = dialog.getByRole("toolbar", { name: "Theme" });
   const contrast = dialog.getByRole("toolbar", { name: "Contrast" });
+
   for (const value of themeSchema.options) {
     await theme.getByRole("button", { name: themeLabels[value].label }).click();
+
     for (const option of themeSchema.options) {
       await expect
         .element(theme.getByRole("button", { name: themeLabels[option].label }))
         .toHaveAttribute("aria-pressed", String(value === option));
     }
+
     await expect
       .element(contrast.getByRole("button", { name: "System" }))
       .toHaveAttribute("aria-pressed", "true");
   }
+
   for (const value of contrastSchema.options) {
     await contrast.getByRole("button", { name: contrastLabels[value].label }).click();
+
     for (const option of contrastSchema.options) {
       await expect
         .element(contrast.getByRole("button", { name: contrastLabels[option].label }))
         .toHaveAttribute("aria-pressed", String(value === option));
     }
+
     await expect
       .element(theme.getByRole("button", { name: "Dark" }))
       .toHaveAttribute("aria-pressed", "true");
@@ -470,10 +511,12 @@ test.each([1280, 390])(
   async (width) => {
     await page.viewport(width, 844);
     using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+
     const result = await page.renderWithProviders(<PreferencesDialog open />, {
       preferences: { haptics: "off" },
       syncPreferencesToDocument: true,
     });
+
     const dialog = result.getByRole("dialog", { name: "Preferences" });
     await dialog.getByRole("tab", { name: "Other", exact: true }).click();
     const toggle = dialog.getByRole("switch", { name: "Haptic feedback" });
@@ -481,6 +524,7 @@ test.each([1280, 390])(
 
     async function selectTheme(name: string) {
       await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
+
       if (width <= 600) {
         await dialog.getByRole("combobox", { name: "Theme" }).click();
         await dialog
@@ -491,6 +535,7 @@ test.each([1280, 390])(
         const button = dialog
           .getByRole("toolbar", { name: "Theme" })
           .getByRole("button", { name, exact: true });
+
         await button.click();
       }
     }
@@ -521,6 +566,7 @@ test("unsupported browsers omit the haptics preference and keep interactions qui
   onTestFinished,
 }) => {
   const support = Object.getOwnPropertyDescriptor(WebHaptics, "isSupported");
+
   if (!support) throw new Error("Expected the haptics support capability.");
   Object.defineProperty(WebHaptics, "isSupported", { value: false });
   onTestFinished(() => {

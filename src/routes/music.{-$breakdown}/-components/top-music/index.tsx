@@ -73,6 +73,7 @@ export function MusicTopMusic({
   | { tracks?: never; albums?: never; artists: ReadonlyArray<TopArtist> }) {
   const type = tracks !== undefined ? "tracks" : albums !== undefined ? "albums" : "artists";
   const rankings = { tracks, albums, artists };
+
   return (
     <>
       {musicTypeSchema.options.map((value) => (

@@ -17,6 +17,7 @@ function StoryHaptics({
   children: ReactNode;
 }) {
   const [haptics, setHaptics] = useState(initialHaptics);
+
   return <HapticsContext value={{ haptics, setHaptics }}>{children}</HapticsContext>;
 }
 
@@ -88,6 +89,7 @@ export const BottomSheet = meta.story({
 
 function InteractivePreferences() {
   const [open, setOpen] = useState(false);
+
   return (
     <StoryHaptics initialHaptics={hapticsSchema.fallback}>
       <Button icon={<MdSymbol>settings</MdSymbol>} onClick={() => setOpen(true)}>
@@ -136,15 +138,18 @@ export const Interactive = meta.story({
     await userEvent.keyboard("{ArrowRight}");
     await expect(dialog.getByRole("tab", { name: "Other" })).toHaveFocus();
     const haptics = dialog.queryByRole("switch", { name: "Haptic feedback" });
+
     if (haptics) {
       await expect(haptics).toBeChecked();
       const row = dialog.getByText("Haptic feedback").closest("label");
+
       if (!row) throw new Error("Expected a native label row.");
       await userEvent.click(row);
       await waitFor(() => expect(haptics).not.toBeChecked());
       await userEvent.keyboard(" ");
       await waitFor(() => expect(haptics).toBeChecked());
     }
+
     await userEvent.click(dialog.getByRole("button", { name: "Done" }));
     await waitFor(() => expect(dialogElement).not.toBeVisible());
     await expect(trigger).toHaveFocus();

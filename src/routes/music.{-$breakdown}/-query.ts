@@ -102,16 +102,19 @@ export const resolveMusicArtwork = createServerOnlyFn(
     const tracksWithArtwork = addLastfmArtworkFallback(data.tracks);
     const albumsWithArtwork = addLastfmArtworkFallback(data.albums);
     const artistsWithArtwork = addLastfmArtworkFallback(data.artists);
+
     const [trackArtwork, albumArtwork, artistArtwork] = await Promise.all([
       addLastfmTrackArtwork(tracksWithArtwork, signal),
       addLastfmAlbumArtwork(albumsWithArtwork, signal),
       addLastfmArtistArtwork(artistsWithArtwork, signal),
     ]);
+
     const [tracks, albums, artists] = await Promise.all([
       addArtworkPalettes(trackArtwork.items, signal),
       addArtworkPalettes(albumArtwork.items, signal),
       addArtworkPalettes(artistArtwork.items, signal),
     ]);
+
     return {
       tracks,
       albums,
@@ -133,18 +136,22 @@ export const getMusicArtwork = (
   signalOpt?: AbortSignal,
 ) => {
   const params = { tracks, albums, artists };
+
   return queryOptions({
     queryKey: ["music-artwork", params],
     queryFn: async ({ signal }): Promise<Awaited<ReturnType<typeof getMusicArtworkFn>>> => {
       if (params.tracks.length === 0 && params.albums.length === 0 && params.artists.length === 0) {
         return { tracks: [], albums: [], artists: [], retryAfterMs: undefined };
       }
+
       const requestSignal = anyAbortSignal(signal, signalOpt);
+
       try {
         return await getMusicArtworkFn({ data: params, signal: requestSignal });
       } catch (error) {
         requestSignal.throwIfAborted();
         console.error("Failed to load music artwork; using Last.fm artwork or icons.", error);
+
         return {
           tracks: addLastfmArtworkFallback(params.tracks),
           albums: addLastfmArtworkFallback(params.albums),
@@ -156,7 +163,9 @@ export const getMusicArtwork = (
     staleTime: (query) => query.state.data?.retryAfterMs ?? musicArtworkCacheDuration,
     refetchInterval: (query) => {
       const retryAfterMs = query.state.data?.retryAfterMs;
+
       if (retryAfterMs === undefined) return false;
+
       return Math.max(1000, retryAfterMs - (Date.now() - query.state.dataUpdatedAt));
     },
     refetchIntervalInBackground: false,
@@ -172,6 +181,7 @@ export const getRecentTracksFn = createServerFn({ method: "GET" })
   .validator(getRecentTracksParams)
   .handler(async ({ data }) => {
     const signal = getRequest().signal;
+
     const response = await fetchLastfm({
       method: "user.getRecentTracks",
       params: data,
@@ -182,6 +192,7 @@ export const getRecentTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
+
     return response;
   });
 
@@ -239,6 +250,7 @@ export const getTopTracksFn = createServerFn({ method: "GET" })
   .validator(getTopTracksParams)
   .handler(async ({ data }) => {
     const signal = getRequest().signal;
+
     const response = await fetchLastfm({
       method: "user.getTopTracks",
       params: data,
@@ -249,6 +261,7 @@ export const getTopTracksFn = createServerFn({ method: "GET" })
         }),
       }),
     });
+
     return response;
   });
 
@@ -264,6 +277,7 @@ export const getTopTracks = (
   });
 
 export const topAlbumSchema = topTrackSchema;
+
 export type TopAlbum = TopTrack;
 
 const getTopAlbumsParams = v.object({
@@ -280,6 +294,7 @@ export const getTopAlbumsFn = createServerFn({ method: "GET" })
       signal: getRequest().signal,
       schema: v.object({ topalbums: v.object({ album: v.array(topAlbumSchema) }) }),
     });
+
     return response;
   });
 
@@ -330,12 +345,14 @@ export const getTopArtistsFn = createServerFn({ method: "GET" })
   .validator(getTopArtistsParams)
   .handler(async ({ data }) => {
     const signal = getRequest().signal;
+
     const response = await fetchLastfm({
       method: "user.getTopArtists",
       params: data,
       signal,
       schema: topArtistsResponseSchema,
     });
+
     return response;
   });
 

@@ -15,6 +15,7 @@ const meta = preview.meta({
 });
 
 export const Archive = meta.story({});
+
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
@@ -24,6 +25,7 @@ export const Empty = meta.story({
     ).toBeVisible();
   },
 });
+
 export const NearbyCities = meta.story({
   args: {
     events: [

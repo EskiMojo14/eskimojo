@@ -22,6 +22,7 @@ export const preloadImage = createIsomorphicFn()
       error: (err) => reject(err),
     });
     img.src = src;
+
     return promise;
   })
   .server(() => Promise.resolve());

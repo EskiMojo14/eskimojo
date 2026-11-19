@@ -23,6 +23,7 @@ function Demo() {
 
 test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab alias", async () => {
   const root = createRootRoute();
+
   const router = createRouter({
     routeTree: root.addChildren([
       createRoute({
@@ -33,11 +34,13 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
     ]),
     history: createMemoryHistory({ initialEntries: ["/gigs"] }),
   });
+
   addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   await expect.element(result.getByRole("navigation", { name: "Gigs breakdown" })).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");
   using startTransition = vi.spyOn(document, "startViewTransition");
+
   try {
     for (const [index, label, destination, type] of [
       [0, "Artist", "/gigs/by-artist", "tab-forward"],
@@ -51,6 +54,7 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
       await expect.poll(() => startTransition.mock.results.length).toBe(index + 1);
       expect(startTransition.mock.calls[index]?.[0]).toMatchObject({ types: [type] });
       const transition = startTransition.mock.results[index];
+
       if (transition?.type !== "return") throw new Error("Expected a native tab transition");
       await transition.value.ready;
       await expect.element(link).toHaveAttribute("aria-current", "page");

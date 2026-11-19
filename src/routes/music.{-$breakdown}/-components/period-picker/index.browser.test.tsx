@@ -37,6 +37,7 @@ function Demo() {
   const { period = periodSchema.fallback } = musicRoute.useSearch();
   const { type = musicTypeSchema.fallback } = musicRoute.useParams();
   const { breakdown = musicBreakdownSchema.fallback } = musicRoute.useParams();
+
   return (
     <>
       <MusicBreakdownTabs />
@@ -81,6 +82,7 @@ function transitionKeyframes(pseudoElement: string) {
 
 test("both tab levels slide while period and other navigation crossfade", async () => {
   const root = createRootRoute();
+
   const router = createRouter({
     routeTree: root.addChildren([
       createRoute({
@@ -101,19 +103,23 @@ test("both tab levels slide while period and other navigation crossfade", async 
     ]),
     history: createMemoryHistory({ initialEntries: ["/music/top/tracks?period=1month"] }),
   });
+
   addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
   const allTime = result.getByRole("link", { name: "All time" });
   await expect.element(allTime).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");
+
   for (const animation of document.getAnimations()) animation.finish();
   using startTransition = vi.spyOn(document, "startViewTransition");
+
   try {
     await allTime.click();
     await expect.element(allTime).toHaveAttribute("aria-current", "page");
     await expect.poll(() => startTransition.mock.results.length).toBe(1);
 
     const transitionResult = startTransition.mock.results[0];
+
     if (transitionResult?.type !== "return") throw new Error("Expected a native view transition");
     const transition = transitionResult.value;
     await transition.ready;
@@ -136,6 +142,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
     await expect.poll(() => startTransition.mock.results.length).toBe(2);
     expect(startTransition.mock.calls[1]?.[0]).toMatchObject({ types: ["tab-forward"] });
     const tabTransition = startTransition.mock.results[1];
+
     if (tabTransition?.type !== "return") throw new Error("Expected a tab view transition");
     await tabTransition.value.ready;
     expect(
@@ -152,6 +159,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
     await expect.poll(() => startTransition.mock.results.length).toBe(3);
     expect(startTransition.mock.calls[2]?.[0]).toMatchObject({ types: ["tab-backward"] });
     const backwards = startTransition.mock.results[2];
+
     if (backwards?.type !== "return") throw new Error("Expected a backwards tab transition");
     await backwards.value.ready;
     await expect
@@ -165,6 +173,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
       types: ["tab-forward", "music-type"],
     });
     const albums = startTransition.mock.results[3];
+
     if (albums?.type !== "return") throw new Error("Expected an album tab transition");
     await albums.value.ready;
     expect(
@@ -183,6 +192,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
       types: ["tab-backward", "music-type"],
     });
     const tracks = startTransition.mock.results[4];
+
     if (tracks?.type !== "return") throw new Error("Expected a track tab transition");
     await tracks.value.ready;
     expect(
@@ -195,6 +205,7 @@ test("both tab levels slide while period and other navigation crossfade", async 
     await result.getByRole("link", { name: "Home", exact: true }).click();
     await expect.poll(() => startTransition.mock.results.length).toBe(6);
     const home = startTransition.mock.results[5];
+
     if (home?.type !== "return") throw new Error("Expected a page transition");
     await home.value.ready;
     expect(

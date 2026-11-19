@@ -18,6 +18,7 @@ function DestinationLinkBase({
   ...props
 }: ComponentPropsWithRef<"a"> & { icon: string }) {
   const { handlers, ripple } = useRipple<HTMLAnchorElement>(props, true);
+
   return (
     <a {...props} {...handlers} {...appBarBem({ element: "destination" })}>
       <span {...appBarBem({ element: "destination-icon" })} aria-hidden="true">
@@ -39,12 +40,14 @@ function useSettleTitleCollapse() {
   const toolbarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const toolbar = toolbarRef.current;
+
     if (
       !toolbar ||
       !CSS.supports("(animation-timeline: scroll()) and (animation-range: 0% 100%)")
     ) {
       return undefined;
     }
+
     const settle = () => {
       // Scroll offsets can round to whole pixels, so round up to be sure the collapse finishes.
       const distance = Math.ceil(
@@ -52,16 +55,21 @@ function useSettleTitleCollapse() {
           getComputedStyle(toolbar).getPropertyValue("--app-bar-collapse-distance"),
         ),
       );
+
       const { scrollY } = window;
+
       if (scrollY <= 0 || scrollY >= distance) return;
       window.scrollTo({
         top: scrollY < distance / 2 ? 0 : distance,
         behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
       });
     };
+
     window.addEventListener("scrollend", settle);
+
     return () => window.removeEventListener("scrollend", settle);
   }, []);
+
   return toolbarRef;
 }
 
@@ -73,10 +81,12 @@ export interface AppBarProps {
 export function AppBar({ navigationOpen, onOpenNavigation }: AppBarProps) {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const toolbarRef = useSettleTitleCollapse();
+
   const pageData = useMatches({
     select: (matches) =>
       matches.findLast((match) => match.staticData.title !== undefined)?.staticData,
   });
+
   const { label: backLabel, ...backLink } = pageData?.backLink ?? {};
 
   return (
