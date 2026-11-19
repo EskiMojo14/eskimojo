@@ -3,9 +3,9 @@ allowBuilds:
   lightningcss: false
   sharp: false
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@1.6.0
+  vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
   vitest: 5.1.0
-  vite-plus: 1.6.0
+  vite-plus: 1.7.0
   "@vitest/browser-playwright": 5.1.0
   "@vitest/coverage-v8": 5.1.0
 minimumReleaseAgeExclude:
@@ -21,10 +21,8 @@ patchedDependencies:
   mdx-content-mapper@0.0.2: patches/mdx-content-mapper@0.0.2.patch
 peerDependencyRules:
   allowAny:
-    - vite
     - vitest
   allowedVersions:
-    vite: "*"
     vitest: "*"
 permissions:
   "@reduxjs/toolkit":
