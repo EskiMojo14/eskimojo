@@ -26,6 +26,7 @@ const exportSelector = code.esquery`Program > :matches(ExportDefaultDeclaration,
 
 function queryAst(ast: ESTree.Program, selector: string): Array<Node> {
   // Vite's JavaScript AST is ESTree-compatible, but its Oxc types also describe non-ESTree syntax.
+  // SAFETY: esquery only traverses the ESTree-compatible syntax used by these selectors.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return query(ast as Node, selector);
 }

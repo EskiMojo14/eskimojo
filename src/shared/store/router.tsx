@@ -49,6 +49,7 @@ export function setupReduxIntegration<TRouter extends AnyRouter>({
       await originalHydrate(dehydrated);
     }
 
+    // SAFETY: This integration's dehydrate hook writes `redux` with this payload type.
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const opts = dehydrated.redux as DehydratedReduxOpts;
 

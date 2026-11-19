@@ -18,7 +18,9 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
     fromLocation,
     toLocation,
   }: {
+    // oxlint-disable-next-line anti-slop/no-unsafe-dictionary-type -- AnyRouter spans route-specific search schemas.
     fromLocation?: ParsedLocation<Record<string, unknown>>;
+    // oxlint-disable-next-line anti-slop/no-unsafe-dictionary-type -- AnyRouter spans route-specific search schemas.
     toLocation: ParsedLocation<Record<string, unknown>>;
   }): Array<string> | false {
     if (!fromLocation) return [];
@@ -57,7 +59,9 @@ export function createNavigationTransitionTypes(matchRoutes: AnyRouter["matchRou
 
     for (const tabGroup of routeTabGroups) {
       const { order, parameter, defaultTab } = tabGroup;
+      // oxlint-disable-next-line anti-slop/no-unsafe-dictionary-type -- AnyRouter spans route-specific param schemas.
       const fromParams: Record<string, unknown> = fromMatch.params;
+      // oxlint-disable-next-line anti-slop/no-unsafe-dictionary-type -- AnyRouter spans route-specific param schemas.
       const toParams: Record<string, unknown> = toMatch.params;
       const fromTab = fromParams[parameter] ?? defaultTab;
       const toTab = toParams[parameter] ?? defaultTab;

@@ -15,7 +15,7 @@ export const fetchLastfm = createServerOnlyFn(
     onResponse,
   }: {
     method: string;
-    params?: Record<string, unknown>;
+    params?: Record<string, string | number | undefined>;
     schema: T;
     signal?: AbortSignal;
     onResponse?: (response: Response) => void;

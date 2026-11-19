@@ -41,13 +41,18 @@ const extendedTest = baseTest.extend<E2EFixtures>({
  *   await home.goto();
  * });
  */
-export function createTest<T extends Record<string, new (page: Page) => unknown>>(models: T) {
+export function createTest<T extends Record<string, new (page: Page) => object>>(models: T) {
   return extendedTest.extend<{ [K in keyof T]: InstanceType<T[K]> }>(
+    // SAFETY: Each fixture value is constructed from the matching model constructor in `models`.
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     Object.fromEntries(
       Object.entries(models).map(([name, Model]) => [
         name,
-        async ({ page }: PlaywrightTestArgs, use: (model: unknown) => Promise<void>) => {
+        async (
+          { page }: PlaywrightTestArgs,
+          // oxlint-disable-next-line anti-slop/no-object-parameters -- Playwright's dynamic fixture value is constructed from a typed model class.
+          use: (model: object) => Promise<void>,
+        ) => {
           await use(new Model(page));
         },
       ]),

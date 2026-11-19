@@ -1,6 +1,7 @@
 import { hexFromArgb } from "@material/material-color-utilities";
 
 import { imageSourceColor, imageColorScheme, readableImageColor } from "#/shared/lib/image-palette";
+import { unsafeEntries } from "#/utils/index.ts";
 
 import type { Artwork, ArtworkPalette } from "./-query";
 
@@ -93,7 +94,7 @@ async function artworkPalette(src: string, signal: AbortSignal) {
     ["medium", 0.5, 6],
     ["high", 1, 7],
   ] as const) {
-    const colors = [false, true].map((isDark): Record<string, string> => {
+    const colors = [false, true].map((isDark) => {
       const scheme = imageColorScheme(source, isDark, contrast);
       const background = scheme.surfaceContainer;
 
@@ -116,7 +117,7 @@ async function artworkPalette(src: string, signal: AbortSignal) {
 
     if (!light || !dark) throw new Error("Missing artwork color scheme");
 
-    for (const [role, value] of Object.entries(light)) {
+    for (const [role, value] of unsafeEntries(light)) {
       const darkValue = dark[role];
 
       if (!darkValue) throw new Error(`Missing dark artwork color for ${role}`);

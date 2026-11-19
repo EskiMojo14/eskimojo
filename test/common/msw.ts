@@ -5,10 +5,7 @@ import {
   type DefineNetworkOptions,
 } from "msw/experimental";
 
-type UnhandledFrameCallback = Extract<
-  NonNullable<DefineNetworkOptions<[]>["onUnhandledFrame"]>,
-  (...args: never) => unknown
->;
+type UnhandledFrameCallback = NonNullable<DefineNetworkOptions<[]>["onUnhandledFrame"]>;
 
 /**
  * Pass unmocked requests and WebSocket connections to the app's own host (e.g. server functions, Vite HMR)

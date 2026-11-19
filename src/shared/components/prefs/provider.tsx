@@ -38,7 +38,7 @@ type PrefProviderProps<Name extends string, Value> = Compute<
 function createPrefProvider<Name extends string, Value extends string>(
   name: Name,
   Ctx: Context<PrefContextValue<Name, Value>>,
-  serverFn: (opts: { data: Value }) => Promise<unknown>,
+  serverFn: (opts: { data: Value }) => Promise<void>,
 ) {
   const PrefProvider: FC<PrefProviderProps<Name, Value>> = ({ children, [name]: value }) => {
     const router = useRouter();
@@ -75,6 +75,7 @@ function createPrefProvider<Name extends string, Value extends string>(
     return (
       <Ctx
         value={
+          // SAFETY: These computed keys match PrefContextValue<Name, Value> for this provider.
           // oxlint-disable-next-line typescript/no-unsafe-type-assertion
           {
             [name]: optimisticValue,

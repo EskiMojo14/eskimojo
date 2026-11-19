@@ -20,6 +20,7 @@ function createPrefContext<Name extends string, Value>(
   name: Name,
   schema: v.SchemaWithFallback<v.GenericSchema<Value>, Value>,
 ) {
+  // SAFETY: The dynamic keys match PrefContextValue<Name, Value>'s value and setter keys.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return createOptionalContext<PrefContextValue<Name, Value>>({
     [name]: schema.fallback,
