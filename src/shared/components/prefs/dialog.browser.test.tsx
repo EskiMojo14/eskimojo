@@ -270,7 +270,7 @@ test("light and dark syntax palettes can be changed independently at desktop wid
   await light.click();
   await dialog
     .getByRole("listbox", { name: "Light theme" })
-    .getByRole("option", { name: "Utarefson High contrast", exact: true })
+    .getByRole("option", { name: "Utarefson High contrast (unofficial)", exact: true })
     .click();
   await expect.element(light).toHaveAccessibleDescription("Utarefson");
 
