@@ -19,6 +19,9 @@ const clientImportSpecifiers = [/^sharp(?:\/|$)/, /^@material\/material-color-ut
 const mdxContentInclude = /\.mdx\?content$/;
 const viteReactInclude = [/\.(js|jsx|ts|tsx|mdx)$/, mdxContentInclude];
 
+// Allow type-aware linting to execute the content mapper configured in tsconfig.json.
+process.env.TSRS_LINT_RUN_EXTERNAL_CODE ??= "1";
+
 // Set HEADLESS=false to watch browser and Storybook tests run.
 const headless = process.env.HEADLESS !== "false";
 
