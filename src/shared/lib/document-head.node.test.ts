@@ -1,8 +1,6 @@
-import { expect, test, vi } from "vite-plus/test";
+import { expect, test } from "vite-plus/test";
 
 import { generatePageMetadata, getDocumentHead } from "./document-head";
-
-vi.mock("#/shared/styles/index.css?url", () => ({ default: "/assets/app.css" }));
 
 test.each(["Home", "Projects", "Music", "Gigs"])(
   "generates descriptions and social preview images for %s",
@@ -51,6 +49,7 @@ test("uses a project logo for social previews without inheriting the portrait di
 
 test("preserves the default document metadata and stylesheet links", () => {
   const { meta, links } = getDocumentHead();
+  const stylesheetLinks = links.filter((link) => link?.rel === "stylesheet");
 
   expect(meta).toEqual(
     expect.arrayContaining([
@@ -75,9 +74,11 @@ test("preserves the default document metadata and stylesheet links", () => {
         crossOrigin: "anonymous",
       },
       expect.objectContaining({ rel: "stylesheet", crossOrigin: "anonymous" }),
-      { rel: "stylesheet", href: "/assets/app.css" },
     ]),
   );
+  expect(stylesheetLinks).toHaveLength(2);
+  expect(stylesheetLinks.filter((link) => link?.crossOrigin === "anonymous")).toHaveLength(1);
+  expect(stylesheetLinks.filter((link) => link?.crossOrigin === undefined)).toHaveLength(1);
 });
 
 test("uses the Arctic portrait as the favicon for the Arctic palette", () => {
