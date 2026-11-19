@@ -93,7 +93,6 @@ test("client hydration waits for router hydration before dispatching Redux hydra
   const reduxOpts = { state: {} };
 
   await hydrate({ redux: reduxOpts });
-  await expect.poll(() => events.length).toBe(3);
 
   expect(events).toEqual(["router:start", "router:complete", "redux"]);
   expect(receivedReduxPayloads).toEqual([reduxOpts]);
