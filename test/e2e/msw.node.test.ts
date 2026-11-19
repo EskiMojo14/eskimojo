@@ -25,15 +25,16 @@ test.each(["GET", "POST"])(
     );
     const payload = JSON.stringify(await toJSONAsync({ data: { id: "1", updatedAt } }));
 
-    const response = await fetch(
-      method === "GET" ? `${post.url}?payload=${encodeURIComponent(payload)}` : post.url,
-      {
-        method,
-        ...(method === "POST"
-          ? { body: payload, headers: { "content-type": "application/json" } }
-          : {}),
-      },
-    );
+    const url = method === "GET" ? `${post.url}?payload=${encodeURIComponent(payload)}` : post.url;
+
+    const requestInit: RequestInit = { method };
+
+    if (method === "POST") {
+      requestInit.body = payload;
+      requestInit.headers = { "content-type": "application/json" };
+    }
+
+    const response = await fetch(url, requestInit);
 
     expect(response.headers.get("x-tss-serialized")).toBe("true");
     expect(fromCrossJSON(await response.json(), {})).toEqual({

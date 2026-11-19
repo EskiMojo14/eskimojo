@@ -7,11 +7,13 @@ import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { addArtworkPalettes } from "./-artwork-palette.server";
 import type { Artwork, ArtworkPalette } from "./-query";
 
-function track(src?: string): {
+type ArtworkTrack = {
   name: string;
   artwork?: Artwork;
   palette?: ArtworkPalette;
-} {
+};
+
+function track(src?: string): ArtworkTrack {
   return {
     name: "Example song",
     artwork: src ? { imageUrl: src } : undefined,

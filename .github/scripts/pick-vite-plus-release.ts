@@ -21,6 +21,7 @@ const compareVersions = (left: VersionParts, right: VersionParts): number => {
   return 0;
 };
 
+// oxlint-disable-next-line anti-slop/no-unknown-returns -- Keep parsed JSON untrusted until its fields are checked below.
 const readJson = (command: string, args: Array<string>): unknown =>
   JSON.parse(execFileSync(command, args, { encoding: "utf8" }));
 

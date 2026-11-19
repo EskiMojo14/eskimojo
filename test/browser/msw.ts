@@ -36,8 +36,10 @@ export function mockServerFn<const TData, const TResponse>(
         }
       }
 
+      // SAFETY: This test handler only serves requests from typed server-function clients.
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const data = (payload as { data: TData } | undefined)?.data;
+      // SAFETY: The handler's typed mock contract mirrors the client call that produced this request.
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const result = await mock(data as TData);
 

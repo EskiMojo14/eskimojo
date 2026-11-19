@@ -99,7 +99,12 @@ function simplify(points: Array<Point>): Array<Point> {
 
 const round = (n: number, digits: number) => Number(n.toFixed(digits));
 
-function toCss(spring: Spring): { easing: string; duration: string } {
+interface CssMotion {
+  easing: string;
+  duration: string;
+}
+
+function toCss(spring: Spring): CssMotion {
   const duration = settleTime(spring);
 
   const points: Array<Point> = Array.from({ length: samples + 1 }, (_, i) => {

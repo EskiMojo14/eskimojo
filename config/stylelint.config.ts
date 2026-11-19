@@ -36,13 +36,21 @@ const colorValues = [
 // The plugin can't expand these shorthands, so it checks each word: allow the non-colour ones.
 const lineWords = String.raw`/^(?:[\d.]+[a-z]*|thin|medium|thick|auto|solid|dashed|dotted|double|groove|ridge|inset|outset|wavy)$/`;
 
-const shorthandWords: Record<string, Array<string>> = {
+const shorthandWords = {
   outline: [lineWords],
   "text-decoration": [
     lineWords,
     "/^(?:underline|overline|line-through|blink|from-font|spelling-error|grammar-error)$/",
   ],
-};
+} satisfies Record<string, Array<string>>;
+
+function getShorthandWords(property: string): Array<string> {
+  if (property === "outline") return shorthandWords.outline;
+
+  if (property === "text-decoration") return shorthandWords["text-decoration"];
+
+  return [];
+}
 
 const radiusProperty = "/^border(-[a-z]+)*-radius$/";
 const radiusProperties = [radiusProperty];
@@ -83,7 +91,7 @@ const config = {
           ...Object.fromEntries(
             colorProperties.map((property) => [
               property,
-              [...colorValues, ...(shorthandWords[property] ?? [])],
+              [...colorValues, ...getShorthandWords(property)],
             ]),
           ),
         },

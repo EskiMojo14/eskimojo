@@ -95,10 +95,23 @@ export function withTooltip<P extends TriggerProps>(
       return () => document.removeEventListener("keydown", dismiss, true);
     }, [hasTooltip, tooltipId]);
 
-    const triggerStyle: TriggerStyle = {
-      ...style,
-      ...(hasTooltip ? { "--tooltip-delay": `${delay}ms`, anchorName } : {}),
-    };
+    const triggerStyle: TriggerStyle = { ...style };
+
+    if (hasTooltip) {
+      triggerStyle["--tooltip-delay"] = `${delay}ms`;
+      triggerStyle.anchorName = anchorName;
+    }
+
+    const triggerAttributes: Record<string, string> = {};
+
+    if (hasTooltip && !rich && allProps.tooltipAsLabel) {
+      triggerAttributes["aria-labelledby"] = tooltipId;
+    }
+
+    if (hasTooltip) {
+      triggerAttributes.interestfor = tooltipId;
+      triggerAttributes["data-tooltip-trigger"] = "";
+    }
 
     return (
       <>
@@ -107,10 +120,7 @@ export function withTooltip<P extends TriggerProps>(
           id={id}
           ref={ref}
           style={triggerStyle}
-          {...(hasTooltip && !rich && allProps.tooltipAsLabel
-            ? { "aria-labelledby": tooltipId }
-            : {})}
-          {...(hasTooltip ? { interestfor: tooltipId, "data-tooltip-trigger": "" } : {})}
+          {...triggerAttributes}
         />
         {hasTooltip && (
           <div

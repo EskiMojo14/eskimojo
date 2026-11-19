@@ -10,8 +10,13 @@ Installed plugin entry points:
 - `effect/index.ts` — optional Effect rules (not registered; `effect` is not a
   direct project dependency)
 
-The generic plugin is registered from `vite.config.ts`. The vendored source and
-its nested ESLint Stylistic license/provenance were copied from the skill bundle
-without behavioral rule changes. `shared/dictionary-types.ts` has a local
-type-safety adjustment for this repository's `noUncheckedIndexedAccess` setting;
-it explicitly narrows the indexed intersection member before returning it.
+The generic plugin is registered from `vite.config.ts`. The vendored source and its nested ESLint Stylistic license/provenance were
+copied from the skill bundle. Local deviations are:
+
+- `shared/dictionary-types.ts` narrows the indexed intersection member for the
+  repository's `noUncheckedIndexedAccess` setting.
+- `rules/no-unknown-parameters.ts` allows explicitly named error values, which
+  remain `unknown` at rejection boundaries.
+- `vite.config.ts` disables the shape-name and runtime-`typeof` heuristics by
+  project choice, and exempts compiler-AST parsers from rules that conflict
+  with their version-tolerant input contracts.

@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { fromJSON, toCrossJSONAsync } from "seroval";
 
 type ServerFunction = {
+  // oxlint-disable-next-line anti-slop/no-unknown-returns -- The generic helper preserves each function's response type.
   (...args: Array<never>): Promise<unknown>;
   url: string;
 };
@@ -21,6 +22,7 @@ export function serverFnRef<TFunction extends ServerFunction>(
   return { url };
 }
 
+// oxlint-disable-next-line anti-slop/no-unknown-returns -- The wire payload is generic and is checked against its typed client contract.
 async function requestData(request: Request): Promise<unknown> {
   let payload: unknown;
 
@@ -61,6 +63,7 @@ export function mockServerFn<const TData, const TResponse>(
     let result: TResponse | Response;
 
     try {
+      // SAFETY: This test handler only serves requests from typed server-function clients.
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       result = await mock(data as TData);
     } catch (error) {

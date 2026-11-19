@@ -7,6 +7,7 @@ import {
   imageColorScheme,
   readableImageColor as readable,
 } from "#/shared/lib/image-palette";
+import { unsafeEntries } from "#/utils/index.ts";
 
 export async function generateProjectPalette(logo: { light: string; dark?: string }) {
   const light = await imageSourceColor(resolve("public", logo.light.slice(1)));
@@ -27,10 +28,10 @@ export async function generateProjectPalette(logo: { light: string; dark?: strin
       imageColorScheme(source, index === 1, contrast),
     );
 
-    const values = schemes.map((scheme): Record<string, string> => {
+    const values = schemes.map((scheme) => {
       const background = scheme.surfaceContainerHighest;
 
-      const colors: Record<string, string> = {
+      const colors = {
         surface: hexFromArgb(scheme.surface),
         "surface-container-low": hexFromArgb(scheme.surfaceContainerLow),
         "surface-container-high": hexFromArgb(scheme.surfaceContainerHigh),
@@ -45,14 +46,14 @@ export async function generateProjectPalette(logo: { light: string; dark?: strin
         error: readable(scheme.error, background, target, scheme.isDark),
       };
 
-      return colors;
+      return colors satisfies Record<string, string>;
     });
 
     const [l, d] = values;
 
     if (!l || !d) throw new Error(`Missing ${level} project card scheme`);
 
-    for (const [role, lightColor] of Object.entries(l)) {
+    for (const [role, lightColor] of unsafeEntries(l)) {
       const darkColor = d[role];
 
       if (!darkColor) throw new Error(`Missing ${level}/${role} dark card color`);

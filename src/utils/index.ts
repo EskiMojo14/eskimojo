@@ -2,6 +2,7 @@ import type { Ref } from "react";
 import { up } from "up-fetch";
 
 export function capitalize<T extends string>(str: T): Capitalize<T> {
+  // SAFETY: JavaScript Capitalize uppercases the first character, matching this transform.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
 }
@@ -19,6 +20,7 @@ export const unsafeFromEntries: <
   -readonly [TEntry in TEntries[number] as TEntry[0]]: TEntry[1];
 } = Object.fromEntries;
 
+// oxlint-disable-next-line anti-slop/no-object-parameters -- This reflection helper intentionally accepts any object.
 const enumerableKeys = (obj: object) =>
   Reflect.ownKeys(obj).filter((key) => Object.getOwnPropertyDescriptor(obj, key)?.enumerable);
 
@@ -33,11 +35,15 @@ export const promiseAllKeyed = async <T extends Record<PropertyKey, unknown>>(
   keyed: T,
 ): Promise<{
   [K in keyof T]: Awaited<T[K]>;
-}> =>
+}> => {
+  const entries = await Promise.all(
+    enumerableKeys(keyed).map(async (key) => [key, await keyed[key]] as const),
+  );
+
+  // SAFETY: Every output pair retains its source key and the awaited value read from that key.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  unsafeFromEntries(
-    await Promise.all(enumerableKeys(keyed).map(async (key) => [key, await keyed[key]])),
-  ) as never;
+  return unsafeFromEntries(entries) as never;
+};
 
 export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unknown>>(
   keyed: T,
@@ -54,6 +60,7 @@ export const promiseAllSettledKeyed = async <T extends Record<PropertyKey, unkno
     return [key, result] as const;
   });
 
+  // SAFETY: Each settled result is paired with the same key used to read its promise.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return unsafeFromEntries(entries) as never;
 };
@@ -65,8 +72,8 @@ export const upfetch = up(fetch);
 
 type CodeLanguage = "css" | "esquery" | "js" | "regex" | "ts" | "tsx";
 
-// The proxy getter supplies every supported key while keeping the target empty.
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- The get trap below guarantees every language key.
+// SAFETY: The proxy getter supplies String.raw for every supported language key.
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- The get trap guarantees every language key.
 const codeTarget = {} as Record<CodeLanguage, typeof String.raw>;
 
 /**

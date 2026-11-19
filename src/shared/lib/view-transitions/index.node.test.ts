@@ -75,7 +75,7 @@ test("filter callbacks receive effective defaults in both navigation directions"
 
 test("filters reuse inherited function validators and their defaults", () => {
   const parent = createRootRoute({
-    validateSearch: (search: Record<string, unknown>) => ({
+    validateSearch: (search: { type?: string }) => ({
       type: search.type === "project" ? "project" : "package",
     }),
   });
