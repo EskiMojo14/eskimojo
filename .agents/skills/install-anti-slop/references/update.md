@@ -71,7 +71,7 @@ Preserve existing plugin paths, options, severities, disabled rules, overrides, 
 
 List new rules and their proposed severities for approval unless the user already requested enabling all new rules. Existing disabled rules stay disabled. Merely adding a new rule implementation need not enable it.
 
-Check incoming API requirements against the installed `oxlint` and `@oxlint/plugins` versions. Keep a compatible pair and follow repository version policy; change dependencies only when required by the adopted source or requested by the user. Preserve unrelated dependency ranges and the package manager.
+Check incoming API requirements against the installed `oxlint` and `vite-plus/lint/plugins` versions. Keep a compatible pair and follow repository version policy; change dependencies only when required by the adopted source or requested by the user. Preserve unrelated dependency ranges and the package manager.
 
 Complete when every adopted rule is reachable through the intended entry point, configuration reflects approved policy, and the dependency pair supports the merged implementation.
 

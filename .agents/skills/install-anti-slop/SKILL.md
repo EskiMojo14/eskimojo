@@ -31,9 +31,9 @@ Complete when the operation and target path are established and pre-existing wor
    Complete when the files, including vendored license and provenance, exist at the agreed destination without replacing an existing copy.
 
 2. Install current compatible dependencies rather than trusting versions remembered by the agent:
-   - If the repository already depends on `oxlint`, read its installed version from the package manager or lockfile and install `@oxlint/plugins` at exactly that version. Pin it exactly rather than by range so future upgrades move both packages together.
-   - Only when the repository has no `oxlint` dependency, query `npm view oxlint version` and `npm view @oxlint/plugins version`, then install the same current version of both packages.
-   - `oxlint` is a development dependency. The copied source imports `@oxlint/plugins`, so install it as a development dependency for a local-only plugin.
+   - If the repository already depends on `oxlint`, read its installed version from the package manager or lockfile and install `vite-plus/lint/plugins` at exactly that version. Pin it exactly rather than by range so future upgrades move both packages together.
+   - Only when the repository has no `oxlint` dependency, query `npm view oxlint version` and `npm view vite-plus/lint/plugins version`, then install the same current version of both packages.
+   - `oxlint` is a development dependency. The copied source imports `vite-plus/lint/plugins`, so install it as a development dependency for a local-only plugin.
    - Do not replace the package manager or rewrite unrelated dependency ranges.
 
    Complete when matching compatible versions are installed and unrelated dependency ranges are preserved.
