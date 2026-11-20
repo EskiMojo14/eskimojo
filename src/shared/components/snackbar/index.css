@@ -49,6 +49,57 @@
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }
+  &__message {
+    flex: 1 1 12rem;
+    min-inline-size: 0;
+    padding-block: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    max-inline-size: 100%;
+    margin-inline-start: auto;
+    gap: 0.25rem;
+  }
+
+  &__action {
+    max-inline-size: 100%;
+    color: var(--md-sys-color-inverse-primary);
+    overflow-wrap: anywhere;
+
+    &:focus-visible {
+      outline-color: var(--md-sys-color-inverse-primary);
+    }
+  }
+
+  &__close {
+    color: var(--md-sys-color-inverse-on-surface);
+
+    &:focus-visible {
+      outline-color: var(--md-sys-color-inverse-primary);
+    }
+  }
+
+  &__announcement {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
 }
 
 @starting-style {
@@ -61,56 +112,4 @@
       translate: none;
     }
   }
-}
-
-.snackbar__message {
-  flex: 1 1 12rem;
-  min-inline-size: 0;
-  padding-block: 0.875rem;
-  overflow-wrap: anywhere;
-}
-
-.snackbar__text {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-.snackbar__controls {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  flex-wrap: wrap;
-  max-inline-size: 100%;
-  margin-inline-start: auto;
-  gap: 0.25rem;
-}
-
-.snackbar__action {
-  max-inline-size: 100%;
-  color: var(--md-sys-color-inverse-primary);
-  overflow-wrap: anywhere;
-
-  &:focus-visible {
-    outline-color: var(--md-sys-color-inverse-primary);
-  }
-}
-
-.snackbar__close {
-  color: var(--md-sys-color-inverse-on-surface);
-
-  &:focus-visible {
-    outline-color: var(--md-sys-color-inverse-primary);
-  }
-}
-
-.snackbar__announcement {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
 }

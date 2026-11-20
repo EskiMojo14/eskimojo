@@ -26,10 +26,10 @@
 
 .projects-section {
   margin-block-start: 2rem;
-}
 
-.projects-section__title {
-  margin: 0;
-  font: var(--md-sys-typography-headline-medium);
-  font-feature-settings: var(--md-sys-typography-features-heading);
+  &__title {
+    margin: 0;
+    font: var(--md-sys-typography-headline-medium);
+    font-feature-settings: var(--md-sys-typography-features-heading);
+  }
 }

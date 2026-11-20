@@ -47,6 +47,15 @@
   container-type: inline-size;
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-surface-container);
+
+  /* Effects tracks fade and change color instead of moving. */
+  &--effects .motion-dot {
+    width: 100%;
+    opacity: var(--md-sys-motion-effects-track-opacity);
+    transition:
+      opacity var(--track-duration) var(--track-easing),
+      background-color var(--track-duration) var(--track-easing);
+  }
 }
 
 .motion-dot {
@@ -55,13 +64,4 @@
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-primary);
   transition: translate var(--track-duration) var(--track-easing);
-}
-
-/* Effects tracks fade and change color instead of moving. */
-.motion-track--effects .motion-dot {
-  width: 100%;
-  opacity: var(--md-sys-motion-effects-track-opacity);
-  transition:
-    opacity var(--track-duration) var(--track-easing),
-    background-color var(--track-duration) var(--track-easing);
 }

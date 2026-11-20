@@ -86,74 +86,74 @@
     );
     cursor: default;
   }
-}
 
-.chip__icon {
-  --icon-size: 18;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 18px;
-  block-size: 18px;
-
-  > svg {
-    inline-size: 100%;
-    block-size: 100%;
-  }
-}
-
-.chip__selection {
-  position: relative;
-  flex-shrink: 0;
-  inline-size: var(--chip-selection-size);
-  margin-inline-end: var(--chip-selection-margin);
-  transition:
-    inline-size var(--md-sys-motion-spring-fast-spatial-duration)
-      var(--md-sys-motion-spring-fast-spatial),
-    margin-inline-end var(--md-sys-motion-spring-fast-spatial-duration)
-      var(--md-sys-motion-spring-fast-spatial);
-
-  &.chip__selection--with-icon {
+  &__icon {
+    --icon-size: 18;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     inline-size: 18px;
-    margin-inline-end: 0;
+    block-size: 18px;
+
+    > svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
   }
-}
 
-.chip__check,
-.chip__leading-icon {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 18px;
-  block-size: 18px;
-}
+  &__selection {
+    position: relative;
+    flex-shrink: 0;
+    inline-size: var(--chip-selection-size);
+    margin-inline-end: var(--chip-selection-margin);
+    transition:
+      inline-size var(--md-sys-motion-spring-fast-spatial-duration)
+        var(--md-sys-motion-spring-fast-spatial),
+      margin-inline-end var(--md-sys-motion-spring-fast-spatial-duration)
+        var(--md-sys-motion-spring-fast-spatial);
 
-.chip__leading-icon {
-  opacity: var(--chip-leading-opacity);
-  transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
-    var(--md-sys-motion-spring-fast-effects);
-
-  > svg {
-    inline-size: 100%;
-    block-size: 100%;
+    &.chip__selection--with-icon {
+      inline-size: 18px;
+      margin-inline-end: 0;
+    }
   }
-}
 
-.chip__icon > .chip__check-mask {
-  position: absolute;
-  inline-size: 0;
-  block-size: 0;
-  forced-color-adjust: none;
-}
+  &__check,
+  &__leading-icon {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 18px;
+    block-size: 18px;
+  }
 
-.chip__check-reveal {
-  stroke-dasharray: 1;
-  stroke-dashoffset: var(--chip-check-offset);
-  transition: stroke-dashoffset var(--md-sys-motion-spring-fast-effects-duration)
-    var(--md-sys-motion-spring-fast-effects);
+  &__leading-icon {
+    opacity: var(--chip-leading-opacity);
+    transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects);
+
+    > svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+  }
+
+  &__icon > .chip__check-mask {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    forced-color-adjust: none;
+  }
+
+  &__check-reveal {
+    stroke-dasharray: 1;
+    stroke-dashoffset: var(--chip-check-offset);
+    transition: stroke-dashoffset var(--md-sys-motion-spring-fast-effects-duration)
+      var(--md-sys-motion-spring-fast-effects);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

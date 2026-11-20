@@ -18,15 +18,15 @@
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--tile-radius, var(--md-sys-shape-corner-extra-large));
   background: var(--md-sys-color-primary-container);
-}
 
-.shape-tile--pill {
-  height: 3rem;
-  border-radius: var(--md-sys-shape-corner-full);
-}
+  &--pill {
+    height: 3rem;
+    border-radius: var(--md-sys-shape-corner-full);
+  }
 
-.shape-tile--round {
-  corner-shape: round;
+  &--round {
+    corner-shape: round;
+  }
 }
 
 .shape-caption {

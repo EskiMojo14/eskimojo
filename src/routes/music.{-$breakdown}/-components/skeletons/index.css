@@ -1,45 +1,46 @@
-.music-skeleton__line--short {
-  inline-size: min(100%, 10ch);
-}
-
-.music-skeleton__line--count {
-  inline-size: min(100%, 6ch);
-  block-size: 1lh;
-}
-
-.music-skeleton__line--rank {
-  inline-size: 1ch;
-}
-
-.music-skeleton__line--date {
-  inline-size: 12ch;
-}
-
-.music-skeleton__line--average {
-  inline-size: 2ch;
-}
-
-.music-skeleton__line--link {
-  inline-size: 7ch;
-}
-
-.music-skeleton__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-inline-size: 40px;
-  min-block-size: 40px;
-  padding: 9px 12px;
-  border: 1px solid transparent;
-  font: var(--md-sys-typography-label-medium);
-
-  @media (pointer: coarse) {
-    min-inline-size: 48px;
-    min-block-size: 48px;
-  }
-}
-
 .music-skeleton {
+  &__line {
+    &--short {
+      inline-size: min(100%, 10ch);
+    }
+
+    &--count {
+      inline-size: min(100%, 6ch);
+      block-size: 1lh;
+    }
+
+    &--rank {
+      inline-size: 1ch;
+    }
+
+    &--date {
+      inline-size: 12ch;
+    }
+
+    &--average {
+      inline-size: 2ch;
+    }
+
+    &--link {
+      inline-size: 7ch;
+    }
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 40px;
+    min-block-size: 40px;
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    font: var(--md-sys-typography-label-medium);
+
+    @media (pointer: coarse) {
+      min-inline-size: 48px;
+      min-block-size: 48px;
+    }
+  }
   .list__trailing {
     inline-size: 10ch;
   }
