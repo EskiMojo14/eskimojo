@@ -246,8 +246,9 @@ new conventions.
   `.music-list--compact`.
 - Use `postcss-nested` to group BEM elements and modifiers with their block,
   using suffixes such as `&__item` and `&--compact`. Place block modifiers
-  before elements, and nest element modifiers (such as `&--selected`) inside
-  their element. Nest related states,
+  before elements in each scope, and nest element modifiers (such as `&--selected`) inside
+  their element. Stylelint checks sibling `&--` and `&__` order within each scope
+  without autofixing because moving rules can change the cascade. Nest related states,
   descendants, pseudo-elements, and conditional rules where it improves
   readability. Preserve selector specificity and cascade order; Sass-style
   expansion can differ from native CSS nesting for grouped selectors.
