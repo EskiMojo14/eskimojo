@@ -252,8 +252,8 @@ new conventions.
   descendants, pseudo-elements, and conditional rules where it improves
   readability. Preserve selector specificity and cascade order; Sass-style
   expansion can differ from native CSS nesting for grouped selectors.
-  Leave token rules containing `@extend` flat and keep their media blocks separate;
-  `postcss-extend-rule` cannot resolve multiple extends inside a shared wrapper.
+  The local `postcss-extend-rule` patch allows multiple `@extend` directives
+  inside a shared rule or conditional block; see [the patch ledger](./patches/README.md).
 - Use the design tokens defined in `src/shared/styles` for typography, color,
   shape, and motion. Avoid hard-coded font, color, and corner-radius values in
   component styles; Stylelint checks these declarations.

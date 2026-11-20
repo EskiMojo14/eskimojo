@@ -1,5 +1,14 @@
 # Dependency patches
 
+- [PostCSS Extend Rule 4.0.0](postcss-extend-rule@4.0.0.patch):
+  Resolve multiple `@extend` directives under one rule or conditional block
+  before replacing the shared ancestor. The upstream implementation replaces
+  the ancestor while traversing it, leaving subsequent directives detached and
+  unable to find their placeholders. This also addresses the multiple-extends
+  case in [the upstream issue](https://github.com/csstools/postcss-extend-rule/issues/10).
+  Remove after upgrading to an upstream release that handles these cases and
+  verifying the CSS pipeline regression tests without the patch.
+
 - [Material Color Utilities 0.4.0](@material__material-color-utilities@0.4.0.patch):
   Add missing `.js` extensions to relative imports in the 2025 color
   specification and color-scheme modules. Node.js ESM cannot resolve these

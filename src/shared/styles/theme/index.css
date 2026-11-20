@@ -73,20 +73,15 @@
   @extend %peach-high;
 }
 
-/* Keep separate media blocks: postcss-extend-rule clones the enclosing at-rule. */
 @media (prefers-contrast: more) {
   :root:is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %goat-high;
   }
-}
 
-@media (prefers-contrast: more) {
   :root:where([data-palette="arctic"]):is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %arctic-high;
   }
-}
 
-@media (prefers-contrast: more) {
   :root:where([data-palette="peach"]):is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %peach-high;
   }

@@ -1,0 +1,98 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index c3c9a08349f016eaa1f857fc77ad940c61e2c197..01d9b8e7bb4ac82f52610b1ae44a6e6a7e57e9f4 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -17,8 +17,10 @@ const postcssExtendRule = rawopts => {
+       postcss,
+       result
+     }) {
+-      const extendedAtRules = new WeakMap(); // for each extend at-rule
++      const extendedAtRules = new WeakMap();
++      const parentsToTransform = new Set();
+ 
++      // for each extend at-rule
+       root.walkAtRules(extendMatch, extendAtRule => {
+         let parent = extendAtRule.parent;
+ 
+@@ -36,14 +38,8 @@ const postcssExtendRule = rawopts => {
+ 
+           if (extendingRules.length) {
+             // replace the extend at-rule with the extending rules
+-            extendAtRule.replaceWith(extendingRules); // transform any nesting at-rules
+-
+-            const cloneRoot = postcss.root().append(parent.clone()); // apply nesting (sync)
+-
+-            postcss([nesting__default["default"]({
+-              noIsPseudoSelector: true
+-            })]).process(cloneRoot).sync();
+-            parent.replaceWith(cloneRoot);
++            extendAtRule.replaceWith(extendingRules);
++            parentsToTransform.add(parent);
+           } else {
+             // manage unused extend at-rules
+             const unusedExtendMessage = `Unused extend at-rule "${extendAtRule.params}"`;
+@@ -73,6 +69,15 @@ const postcssExtendRule = rawopts => {
+           }
+         }
+       });
++      for (const parent of parentsToTransform) {
++        const cloneRoot = postcss.root().append(parent.clone());
++
++        postcss([nesting__default["default"]({
++          noIsPseudoSelector: true
++        })]).process(cloneRoot).sync();
++        parent.replaceWith(cloneRoot);
++      }
++
+       root.walkRules(functionalSelectorMatch, functionalRule => {
+         // manage encountered functional selectors
+         const functionalSelectorMessage = `Encountered functional selector "${functionalRule.selector}"`;
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 59029b1cf49f0a60168955f492452141f1e9abb4..41681548ff84eeca3e3d33f7e554469e8917be8b 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -13,8 +13,10 @@ const postcssExtendRule = rawopts => {
+       postcss,
+       result
+     }) {
+-      const extendedAtRules = new WeakMap(); // for each extend at-rule
++      const extendedAtRules = new WeakMap();
++      const parentsToTransform = new Set();
+ 
++      // for each extend at-rule
+       root.walkAtRules(extendMatch, extendAtRule => {
+         let parent = extendAtRule.parent;
+ 
+@@ -32,14 +34,8 @@ const postcssExtendRule = rawopts => {
+ 
+           if (extendingRules.length) {
+             // replace the extend at-rule with the extending rules
+-            extendAtRule.replaceWith(extendingRules); // transform any nesting at-rules
+-
+-            const cloneRoot = postcss.root().append(parent.clone()); // apply nesting (sync)
+-
+-            postcss([nesting({
+-              noIsPseudoSelector: true
+-            })]).process(cloneRoot).sync();
+-            parent.replaceWith(cloneRoot);
++            extendAtRule.replaceWith(extendingRules);
++            parentsToTransform.add(parent);
+           } else {
+             // manage unused extend at-rules
+             const unusedExtendMessage = `Unused extend at-rule "${extendAtRule.params}"`;
+@@ -69,6 +65,15 @@ const postcssExtendRule = rawopts => {
+           }
+         }
+       });
++      for (const parent of parentsToTransform) {
++        const cloneRoot = postcss.root().append(parent.clone());
++
++        postcss([nesting({
++          noIsPseudoSelector: true
++        })]).process(cloneRoot).sync();
++        parent.replaceWith(cloneRoot);
++      }
++
+       root.walkRules(functionalSelectorMatch, functionalRule => {
+         // manage encountered functional selectors
+         const functionalSelectorMessage = `Encountered functional selector "${functionalRule.selector}"`;

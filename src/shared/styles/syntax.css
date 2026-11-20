@@ -9,12 +9,6 @@
   @extend %alucard, %fixed-light;
 }
 
-@media (prefers-color-scheme: light) {
-  :root[data-theme="system"] {
-    @extend %alucard, %fixed-light;
-  }
-}
-
 :root[data-theme="light"][data-light-syntax="alucard-classic"] {
   @extend %alucard-classic;
 }
@@ -24,12 +18,14 @@
 }
 
 @media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    @extend %alucard, %fixed-light;
+  }
+
   :root[data-theme="system"][data-light-syntax="alucard-classic"] {
     @extend %alucard-classic;
   }
-}
 
-@media (prefers-color-scheme: light) {
   :root[data-theme="system"][data-light-syntax="utarefson"] {
     @extend %utarefson;
   }
