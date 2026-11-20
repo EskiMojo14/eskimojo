@@ -4,6 +4,10 @@ import type { Config } from "stylelint";
 import { code } from "#/utils/index.ts";
 
 import {
+  rule as bemModifiersBeforeElements,
+  ruleName as bemModifiersBeforeElementsName,
+} from "./stylelint-rules/bem-modifiers-before-elements.ts";
+import {
   rule as noParentRelativePaths,
   ruleName as noParentRelativePathsName,
 } from "./stylelint-rules/no-parent-relative-paths.ts";
@@ -71,11 +75,13 @@ const config = {
   ignoreFiles: ["../**/*.gen.*"],
   plugins: [
     "stylelint-declaration-strict-value",
+    stylelint.createPlugin(bemModifiersBeforeElementsName, bemModifiersBeforeElements),
     stylelint.createPlugin(noParentRelativePathsName, noParentRelativePaths),
     stylelint.createPlugin(useCustomMediaForWidthName, useCustomMediaForWidth),
     stylelint.createPlugin(useMotionTokenForEasingName, useMotionTokenForEasing),
   ],
   rules: {
+    [bemModifiersBeforeElementsName]: true,
     [noParentRelativePathsName]: true,
     [useCustomMediaForWidthName]: true,
     [useMotionTokenForEasingName]: true,
