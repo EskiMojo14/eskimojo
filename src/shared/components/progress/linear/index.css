@@ -17,81 +17,82 @@
   min-inline-size: 0;
   block-size: var(--linear-progress-thickness, 4px);
   color: var(--md-sys-color-primary);
-}
-
-.linear-progress__semantics {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.linear-progress__visual {
-  --linear-progress-start: 0%;
-  --linear-progress-end: var(--linear-progress-value, 65%);
-
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: var(--md-sys-shape-corner-full);
-}
-
-.linear-progress__track,
-.linear-progress__indicator,
-.linear-progress__stop {
-  position: absolute;
-  inset-block: 0;
-  border-radius: var(--md-sys-shape-corner-full);
-}
-
-.linear-progress__track {
-  background-color: var(--md-sys-color-secondary-container);
-}
-
-.linear-progress__track--leading {
-  inset-inline-start: 0;
-  inline-size: max(0px, calc(var(--linear-progress-start) - 4px));
-}
-
-.linear-progress__track--trailing {
-  inset-inline-start: min(100%, calc(var(--linear-progress-end) + 4px));
-  inset-inline-end: 0;
-}
-
-.linear-progress__indicator {
-  inset-inline-start: var(--linear-progress-start);
-  inline-size: max(0%, calc(var(--linear-progress-end) - var(--linear-progress-start)));
-  background-color: currentColor;
-
-  &[hidden] {
-    display: none;
+  &--indeterminate .linear-progress__visual {
+    --linear-progress-start: 25%;
   }
-}
 
-.linear-progress__stop {
-  inset-inline-end: 0;
-  inline-size: var(--linear-progress-thickness, 4px);
-  background-color: currentColor;
+  &__semantics {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  &__visual {
+    --linear-progress-start: 0%;
+    --linear-progress-end: var(--linear-progress-value, 65%);
+
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--md-sys-shape-corner-full);
+  }
+
+  &__track,
+  &__indicator,
+  &__stop {
+    position: absolute;
+    inset-block: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+  }
+
+  &__track {
+    background-color: var(--md-sys-color-secondary-container);
+
+    &--leading {
+      inset-inline-start: 0;
+      inline-size: max(0px, calc(var(--linear-progress-start) - 4px));
+    }
+
+    &--trailing {
+      inset-inline-start: min(100%, calc(var(--linear-progress-end) + 4px));
+      inset-inline-end: 0;
+    }
+  }
+
+  &__indicator {
+    inset-inline-start: var(--linear-progress-start);
+    inline-size: max(0%, calc(var(--linear-progress-end) - var(--linear-progress-start)));
+    background-color: currentColor;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__stop {
+    inset-inline-end: 0;
+    inline-size: var(--linear-progress-thickness, 4px);
+    background-color: currentColor;
+  }
 }
 
 .linear-progress:has(progress[value="0"]) .linear-progress__track--trailing {
   inset-inline-start: 0;
 }
 
-.linear-progress--indeterminate .linear-progress__visual {
-  --linear-progress-start: 25%;
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .linear-progress--determinate .linear-progress__visual {
-    transition: --linear-progress-end var(--md-sys-motion-spring-default-effects-duration)
-      var(--md-sys-motion-spring-default-effects);
-  }
+  .linear-progress {
+    &--determinate .linear-progress__visual {
+      transition: --linear-progress-end var(--md-sys-motion-spring-default-effects-duration)
+        var(--md-sys-motion-spring-default-effects);
+    }
 
-  .linear-progress--indeterminate .linear-progress__visual {
-    animation: linear-progress-travel 1800ms var(--md-sys-motion-easing-legacy) infinite;
+    &--indeterminate .linear-progress__visual {
+      animation: linear-progress-travel 1800ms var(--md-sys-motion-easing-legacy) infinite;
+    }
   }
 }
 
@@ -117,10 +118,10 @@
     /* stylelint-disable-next-line scale-unlimited/declaration-strict-value -- Respect the user's forced-colors palette. */
     color: Highlight;
     forced-color-adjust: none;
-  }
 
-  .linear-progress__track {
-    /* stylelint-disable-next-line scale-unlimited/declaration-strict-value -- Keep the track distinct in forced colors. */
-    background-color: GrayText;
+    &__track {
+      /* stylelint-disable-next-line scale-unlimited/declaration-strict-value -- Keep the track distinct in forced colors. */
+      background-color: GrayText;
+    }
   }
 }

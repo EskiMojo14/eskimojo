@@ -13,85 +13,87 @@
 .gigs-heatmap {
   padding: 1rem;
   color: var(--md-sys-color-on-surface);
-}
 
-.gigs-heatmap__chart {
-  min-width: 0;
+  &__chart {
+    min-width: 0;
 
-  & text[fill^="contrast-color("] {
-    @supports not (fill: contrast-color(red)) {
-      fill: var(--md-sys-color-on-surface);
+    & text[fill^="contrast-color("] {
+      @supports not (fill: contrast-color(red)) {
+        fill: var(--md-sys-color-on-surface);
+      }
+
+      @supports (fill: if(style(--gigs-count-contrast: white): white; else: black)) and
+        (fill: attr(fill type(<color>))) {
+        --gigs-count-contrast: attr(fill type(<color>));
+        --gigs-surface-contrast: contrast-color(var(--md-sys-color-surface));
+
+        --gigs-count-color: if(
+          style(--gigs-count-contrast: var(--gigs-surface-contrast)): var(
+              --md-sys-color-on-surface
+            );
+            else: var(--md-sys-color-inverse-on-surface)
+        );
+        fill: var(--gigs-count-color);
+      }
     }
 
-    @supports (fill: if(style(--gigs-count-contrast: white): white; else: black)) and
-      (fill: attr(fill type(<color>))) {
-      --gigs-count-contrast: attr(fill type(<color>));
-      --gigs-surface-contrast: contrast-color(var(--md-sys-color-surface));
+    & svg[role="img"] {
+      &:focus:not(:focus-visible) {
+        outline: none;
+      }
 
-      --gigs-count-color: if(
-        style(--gigs-count-contrast: var(--gigs-surface-contrast)): var(--md-sys-color-on-surface);
-          else: var(--md-sys-color-inverse-on-surface)
-      );
-      fill: var(--gigs-count-color);
+      &:focus-visible {
+        outline: 2px solid var(--md-sys-color-secondary);
+        outline-offset: 4px;
+        border-radius: var(--md-sys-shape-corner-extra-small);
+      }
     }
   }
 
-  & svg[role="img"] {
-    &:focus:not(:focus-visible) {
-      outline: none;
+  &__tooltip {
+    max-width: min(20rem, calc(100dvw - 1rem));
+    max-height: 60dvh;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    font-feature-settings: var(--md-sys-typography-features-body);
+
+    @media (forced-colors: active) {
+      border: 1px solid currentColor;
+    }
+  }
+
+  &__events {
+    padding-inline-start: 1rem;
+    margin-block: 0.75rem;
+
+    & strong {
+      color: var(--md-sys-color-on-surface);
     }
 
-    &:focus-visible {
-      outline: 2px solid var(--md-sys-color-secondary);
-      outline-offset: 4px;
-      border-radius: var(--md-sys-shape-corner-extra-small);
+    & li + li {
+      margin-block-start: 0.75rem;
+    }
+
+    .gigs-heatmap__support {
+      font: var(--md-sys-typography-body-small);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    & p {
+      white-space: pre-line;
+      margin: 0.25rem 0 0;
     }
   }
-}
 
-.gigs-heatmap__tooltip {
-  max-width: min(20rem, calc(100dvw - 1rem));
-  max-height: 60dvh;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
-  font-feature-settings: var(--md-sys-typography-features-body);
-
-  @media (forced-colors: active) {
-    border: 1px solid currentColor;
+  &__table {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
   }
-}
-
-.gigs-heatmap__events {
-  padding-inline-start: 1rem;
-  margin-block: 0.75rem;
-
-  & strong {
-    color: var(--md-sys-color-on-surface);
-  }
-
-  & li + li {
-    margin-block-start: 0.75rem;
-  }
-
-  .gigs-heatmap__support {
-    font: var(--md-sys-typography-body-small);
-    color: var(--md-sys-color-on-surface-variant);
-  }
-
-  & p {
-    white-space: pre-line;
-    margin: 0.25rem 0 0;
-  }
-}
-
-.gigs-heatmap__table {
-  position: absolute;
-  clip-path: inset(50%);
-  overflow: hidden;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  white-space: nowrap;
 }

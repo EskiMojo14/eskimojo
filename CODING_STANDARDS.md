@@ -244,10 +244,13 @@ new conventions.
 - Use BEM-like class names: a component block such as `.music-list`, an element
   such as `.music-list__item`, and a modifier such as
   `.music-list--compact`.
-- Use native CSS nesting for related states, descendants, pseudo-elements, and
-  conditional rules where it improves readability. Preserve selector specificity
-  and cascade order. Keep independent BEM classes standalone; native nesting does
-  not support Sass-style class-name concatenation such as `&__item`.
+- Use `postcss-nested` to group BEM elements and modifiers with their block,
+  using suffixes such as `&__item` and `&--compact`. Place block modifiers
+  before elements, and nest element modifiers (such as `&--selected`) inside
+  their element. Nest related states,
+  descendants, pseudo-elements, and conditional rules where it improves
+  readability. Preserve selector specificity and cascade order; Sass-style
+  expansion can differ from native CSS nesting for grouped selectors.
   Leave token rules containing `@extend` flat and keep their media blocks separate;
   `postcss-extend-rule` cannot resolve multiple extends inside a shared wrapper.
 - Use the design tokens defined in `src/shared/styles` for typography, color,

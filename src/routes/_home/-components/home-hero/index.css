@@ -1,8 +1,10 @@
 @import "./animation.pcss";
 
-.app-shell__content:has(> .home-page) {
-  max-inline-size: none;
-  padding-inline: 0;
+.app-shell {
+  &__content:has(> .home-page) {
+    max-inline-size: none;
+    padding-inline: 0;
+  }
 }
 
 .home-hero {
@@ -54,110 +56,111 @@
       alpha(from var(--md-sys-color-scrim) / 28%) 100%
     );
   }
-}
 
-.home-hero__content {
-  inline-size: 100%;
-  max-inline-size: 64rem;
-  margin-inline: auto;
-  padding-inline: 1rem;
+  &__content {
+    inline-size: 100%;
+    max-inline-size: 64rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
 
-  @media not (--phone) {
-    padding-inline: 1.5rem;
+    @media not (--phone) {
+      padding-inline: 1.5rem;
+    }
   }
-}
 
-.home-hero__title {
-  max-inline-size: 38rem;
-  margin: 0;
-  font: var(--md-sys-typography-display-medium);
-  font-feature-settings: var(--md-sys-typography-features-heading);
-  text-wrap: balance;
-}
+  &__title {
+    max-inline-size: 38rem;
+    margin: 0;
+    font: var(--md-sys-typography-display-medium);
+    font-feature-settings: var(--md-sys-typography-features-heading);
+    text-wrap: balance;
+  }
 
-.home-hero__description-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-block-start: 1rem;
-}
+  &__description-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-block-start: 1rem;
+  }
 
-.home-hero__description {
-  max-inline-size: 48ch;
-  margin: 0;
-  font: var(--md-sys-typography-body-large);
-  font-feature-settings: var(--md-sys-typography-features-prose);
-  text-wrap: pretty;
-}
+  &__description {
+    max-inline-size: 48ch;
+    margin: 0;
+    font: var(--md-sys-typography-body-large);
+    font-feature-settings: var(--md-sys-typography-features-prose);
+    text-wrap: pretty;
+  }
 
-.home-hero__animated-description,
-.home-hero__controls {
-  display: none;
+  &__animated-description,
+  &__controls {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero__static-description {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+  .home-hero {
+    &__static-description {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
 
-  .home-hero__animated-description {
-    display: inline;
-  }
+    &__animated-description {
+      display: inline;
+    }
 
-  .home-hero__roles {
-    position: relative;
-    display: inline-grid;
-    vertical-align: top;
-    max-inline-size: 100%;
-    color-scheme: dark;
-    color: var(--md-sys-color-tertiary);
-    padding-block-end: 0.375rem;
-  }
+    &__roles {
+      position: relative;
+      display: inline-grid;
+      vertical-align: top;
+      max-inline-size: 100%;
+      color-scheme: dark;
+      color: var(--md-sys-color-tertiary);
+      padding-block-end: 0.375rem;
+    }
 
-  .home-hero__role {
-    grid-area: 1 / 1;
-    justify-self: start;
-    opacity: 0;
+    &__role {
+      grid-area: 1 / 1;
+      justify-self: start;
+      opacity: 0;
+    }
+    &__controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    &__progress {
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-end: 0;
+      inline-size: 100%;
+      block-size: 2px;
+      background-color: alpha(from currentColor / 25%);
+      pointer-events: none;
+    }
+
+    &__progress-fill {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      background-color: currentColor;
+      scale: 0 1;
+      transform-origin: left center;
+
+      &:dir(rtl) {
+        transform-origin: right center;
+      }
+    }
   }
 
   .home-hero[data-paused="true"] {
     --home-hero-play-state: paused;
-  }
-
-  .home-hero__controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .home-hero__progress {
-    position: absolute;
-    inset-inline-start: 0;
-    inset-block-end: 0;
-    inline-size: 100%;
-    block-size: 2px;
-    background-color: alpha(from currentColor / 25%);
-    pointer-events: none;
-  }
-
-  .home-hero__progress-fill {
-    display: block;
-    inline-size: 100%;
-    block-size: 100%;
-    background-color: currentColor;
-    scale: 0 1;
-    transform-origin: left center;
-
-    &:dir(rtl) {
-      transform-origin: right center;
-    }
   }
 
   @keyframes home-hero-progress {

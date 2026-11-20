@@ -13,10 +13,10 @@
   align-items: baseline;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
 
-.typography-row--features {
-  grid-template-columns: 14rem repeat(2, minmax(0, 1fr));
+  &--features {
+    grid-template-columns: 14rem repeat(2, minmax(0, 1fr));
+  }
 }
 
 .typography-label {
@@ -37,37 +37,40 @@
   margin: 0;
   font: var(--sample-font, var(--md-sys-typography-headline-small));
   font-feature-settings: var(--sample-features, var(--md-sys-typography-features-heading));
+
+  &--weight {
+    font-weight: var(--sample-weight);
+  }
 }
 
-.typography-sample--weight {
-  font-weight: var(--sample-weight);
-}
-
-.typography-weight-demo__content {
-  display: grid;
-  justify-items: start;
-  gap: 1rem;
-}
-
-.typography-weight-demo__toggle {
-  padding: 0.625rem 1.5rem;
-  border: none;
-  border-radius: var(--md-sys-shape-corner-full);
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  font: var(--md-sys-typography-label-large);
-  font-feature-settings: var(--md-sys-typography-features-body);
-}
-
-.typography-weight-demo__sample {
-  font-weight: var(--md-sys-typography-weight-regular);
-  transition: font-weight var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
-
-  .typography-weight-demo[data-heavy] & {
-    font-weight: var(--md-sys-typography-weight-bold);
+.typography-weight-demo {
+  &__content {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
+  &__toggle {
+    padding: 0.625rem 1.5rem;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font: var(--md-sys-typography-label-large);
+    font-feature-settings: var(--md-sys-typography-features-body);
+  }
+
+  &__sample {
+    font-weight: var(--md-sys-typography-weight-regular);
+    transition: font-weight var(--md-sys-motion-duration-medium2)
+      var(--md-sys-motion-easing-standard);
+
+    .typography-weight-demo[data-heavy] & {
+      font-weight: var(--md-sys-typography-weight-bold);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 }

@@ -5,82 +5,120 @@
   gap: 1.5rem;
 }
 
-.preferences-dialog__panels {
-  margin-inline: 1.5rem;
-  view-transition-scope: all;
+.preferences-dialog {
+  &__panels {
+    margin-inline: 1.5rem;
+    view-transition-scope: all;
 
-  &:active-view-transition-type(tab-forward) {
-    --tabs-slide-distance: 24px;
-
-    &:dir(rtl) {
-      --tabs-slide-distance: -24px;
-    }
-  }
-
-  .preferences-dialog__panel-content {
-    display: grid;
-    view-transition-name: tab-content;
-
-    > .tabs__panel {
-      grid-area: 1 / 1;
-      min-inline-size: 0;
-    }
-
-    > .tabs__panel[hidden] {
-      display: block;
-      visibility: hidden;
-    }
-  }
-
-  &:active-view-transition-type(tab-backward) {
-    --tabs-slide-distance: -24px;
-
-    &:dir(rtl) {
+    &:active-view-transition-type(tab-forward) {
       --tabs-slide-distance: 24px;
+
+      &:dir(rtl) {
+        --tabs-slide-distance: -24px;
+      }
     }
-  }
 
-  &::view-transition-group(root) {
-    animation-duration: var(--md-sys-motion-spring-default-spatial-duration);
-    animation-timing-function: var(--md-sys-motion-spring-default-spatial);
-  }
+    .preferences-dialog__panel-content {
+      display: grid;
+      view-transition-name: tab-content;
 
-  &::view-transition-old(root),
-  &::view-transition-new(root) {
-    animation: none;
-  }
+      > .tabs__panel {
+        grid-area: 1 / 1;
+        min-inline-size: 0;
+      }
 
-  @media (prefers-reduced-motion: reduce) {
-    &::view-transition-group(*),
-    &::view-transition-old(*),
-    &::view-transition-new(*) {
+      > .tabs__panel[hidden] {
+        display: block;
+        visibility: hidden;
+      }
+    }
+
+    &:active-view-transition-type(tab-backward) {
+      --tabs-slide-distance: -24px;
+
+      &:dir(rtl) {
+        --tabs-slide-distance: 24px;
+      }
+    }
+
+    &::view-transition-group(root) {
+      animation-duration: var(--md-sys-motion-spring-default-spatial-duration);
+      animation-timing-function: var(--md-sys-motion-spring-default-spatial);
+    }
+
+    &::view-transition-old(root),
+    &::view-transition-new(root) {
       animation: none;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::view-transition-group(*),
+      &::view-transition-old(*),
+      &::view-transition-new(*) {
+        animation: none;
+      }
+    }
   }
-}
 
-.preferences-dialog__toggle {
-  display: block;
-  cursor: pointer;
+  &__toggle {
+    display: block;
+    cursor: pointer;
 
-  > .list__content {
-    min-block-size: 48px;
-    padding: 0;
+    > .list__content {
+      min-block-size: 48px;
+      padding: 0;
+    }
   }
-}
 
-.preferences-dialog__code-preview {
-  min-inline-size: 0;
+  &__code-preview {
+    min-inline-size: 0;
 
-  > pre {
-    max-block-size: 12rem;
-    margin: 0;
-    padding: 8px 12px;
-    overflow: auto;
+    > pre {
+      max-block-size: 12rem;
+      margin: 0;
+      padding: 8px 12px;
+      overflow: auto;
 
-    &:focus-visible {
-      outline: 3px solid var(--md-sys-color-secondary);
-      outline-offset: 2px;
+      &:focus-visible {
+        outline: 3px solid var(--md-sys-color-secondary);
+        outline-offset: 2px;
+      }
+    }
+  }
+  &__section {
+    min-inline-size: 0;
+
+    > .button-group {
+      inline-size: 100%;
+
+      @media (--phone) {
+        display: none;
+      }
+    }
+  }
+
+  &__label {
+    margin: 0 0 0.5rem;
+    font: var(--md-sys-typography-title-medium);
+    font-feature-settings: var(--md-sys-typography-features-heading);
+
+    @media (--phone) {
+      display: none;
+    }
+  }
+
+  &__select {
+    --select-menu-label-background: var(--md-sys-color-surface-container-high);
+
+    display: none;
+
+    @media (--phone) {
+      display: block;
+      --select-menu-label-background: var(--md-sys-color-surface-container-high);
+    }
+
+    &--always {
+      display: block;
     }
   }
 }
@@ -147,43 +185,6 @@
     translate: 0 100%;
     scale: none;
   }
-}
-
-.preferences-dialog__section {
-  min-inline-size: 0;
-
-  > .button-group {
-    inline-size: 100%;
-
-    @media (--phone) {
-      display: none;
-    }
-  }
-}
-
-.preferences-dialog__label {
-  margin: 0 0 0.5rem;
-  font: var(--md-sys-typography-title-medium);
-  font-feature-settings: var(--md-sys-typography-features-heading);
-
-  @media (--phone) {
-    display: none;
-  }
-}
-
-.preferences-dialog__select {
-  --select-menu-label-background: var(--md-sys-color-surface-container-high);
-
-  display: none;
-
-  @media (--phone) {
-    display: block;
-    --select-menu-label-background: var(--md-sys-color-surface-container-high);
-  }
-}
-
-.preferences-dialog__select--always {
-  display: block;
 }
 
 .preferences-dialog .button[data-palette="goat"] {

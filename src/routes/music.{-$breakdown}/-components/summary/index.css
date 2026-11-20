@@ -8,50 +8,50 @@
     margin: 0 0 16px;
     text-wrap: balance;
   }
-}
 
-.music-summary__stats {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
-  margin: 0 0 16px;
-
-  > div {
-    padding: 16px;
-    border-radius: var(--md-sys-shape-corner-large);
-    background-color: var(--md-sys-color-surface-container);
-  }
-
-  @container music-summary (inline-size >= 25rem) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @container music-summary (inline-size >= 50rem) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  dt {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--md-sys-color-on-surface-variant);
-    font: var(--md-sys-typography-label-large);
-  }
-
-  dd {
+  &__stats {
     display: grid;
-    margin: 8px 0 0;
-    color: var(--md-sys-color-tertiary);
-    font: var(--md-sys-typography-headline-small);
-    font-variant-numeric: tabular-nums;
-  }
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin: 0 0 16px;
 
-  .music-summary__count-final,
-  .music-summary__count-animated {
-    grid-area: 1 / 1;
-  }
+    > div {
+      padding: 16px;
+      border-radius: var(--md-sys-shape-corner-large);
+      background-color: var(--md-sys-color-surface-container);
+    }
 
-  .music-summary__count-final {
-    opacity: 0;
+    @container music-summary (inline-size >= 25rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @container music-summary (inline-size >= 50rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    dt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--md-sys-color-on-surface-variant);
+      font: var(--md-sys-typography-label-large);
+    }
+
+    dd {
+      display: grid;
+      margin: 8px 0 0;
+      color: var(--md-sys-color-tertiary);
+      font: var(--md-sys-typography-headline-small);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .music-summary__count-final,
+    .music-summary__count-animated {
+      grid-area: 1 / 1;
+    }
+
+    .music-summary__count-final {
+      opacity: 0;
+    }
   }
 }

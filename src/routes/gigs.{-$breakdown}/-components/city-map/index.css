@@ -1,57 +1,57 @@
 .gigs-city-map {
   padding: 1rem;
   color: var(--md-sys-color-on-surface);
-}
 
-.gigs-city-map__map {
-  max-width: 50rem;
-  margin-inline: auto;
-  overflow: clip;
-  overflow-clip-margin: 6px;
+  &__map {
+    max-width: 50rem;
+    margin-inline: auto;
+    overflow: clip;
+    overflow-clip-margin: 6px;
 
-  & svg[role="img"]:focus-visible {
-    outline: 2px solid var(--md-sys-color-secondary);
-    outline-offset: 4px;
-    border-radius: var(--md-sys-shape-corner-extra-small);
+    & svg[role="img"]:focus-visible {
+      outline: 2px solid var(--md-sys-color-secondary);
+      outline-offset: 4px;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+    }
+
+    & svg[role="img"]:focus:not(:focus-visible) {
+      outline: none;
+    }
   }
 
-  & svg[role="img"]:focus:not(:focus-visible) {
-    outline: none;
-  }
-}
-
-.gigs-city-map__tooltip {
-  width: min(20rem, calc(100dvw - 1rem));
-  max-height: 60dvh;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
-}
-
-.gigs-city-map__events {
-  padding-inline-start: 1rem;
-
-  & li + li {
-    margin-block-start: 1rem;
+  &__tooltip {
+    width: min(20rem, calc(100dvw - 1rem));
+    max-height: 60dvh;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
   }
 
-  & p {
-    margin-block: 0.25rem;
+  &__events {
+    padding-inline-start: 1rem;
+
+    & li + li {
+      margin-block-start: 1rem;
+    }
+
+    & p {
+      margin-block: 0.25rem;
+    }
   }
-}
 
-.gigs-city-map__support {
-  font: var(--md-sys-typography-body-small);
-  color: var(--md-sys-color-on-surface-variant);
-}
+  &__support {
+    font: var(--md-sys-typography-body-small);
+    color: var(--md-sys-color-on-surface-variant);
+  }
 
-.gigs-city-map__table {
-  position: absolute;
-  clip-path: inset(50%);
-  overflow: hidden;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  white-space: nowrap;
+  &__table {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+  }
 }

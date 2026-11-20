@@ -64,6 +64,67 @@
   @media (--phone) {
     inline-size: calc(100% - 2rem);
   }
+  &__surface {
+    display: flex;
+    max-block-size: inherit;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    background-color: var(--md-sys-color-surface-container-high);
+    box-shadow: 0 1rem 2rem
+      alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-floating-shadow-opacity));
+  }
+
+  &__header {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  &__title {
+    margin: 0;
+    font: var(--md-sys-typography-headline-small);
+  }
+
+  &__description {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  &__body {
+    min-block-size: 0;
+    overflow: auto;
+    padding: 0 1.5rem 1.5rem;
+    overscroll-behavior: contain;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem 1.5rem;
+
+    button {
+      min-block-size: 2.5rem;
+      padding: 0.5rem 0.75rem;
+      border: 0;
+      border-radius: var(--md-sys-shape-corner-full);
+      background: transparent;
+      color: var(--md-sys-color-primary);
+      font: var(--md-sys-typography-label-large);
+
+      &:hover {
+        background-color: alpha(
+          from var(--md-sys-color-primary) / var(--md-sys-state-hover-state-layer-opacity)
+        );
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--md-sys-color-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
 }
 
 @starting-style {
@@ -77,68 +138,6 @@
 
     &::backdrop {
       opacity: 0;
-    }
-  }
-}
-
-.dialog__surface {
-  display: flex;
-  max-block-size: inherit;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--md-sys-shape-corner-extra-large);
-  background-color: var(--md-sys-color-surface-container-high);
-  box-shadow: 0 1rem 2rem
-    alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-floating-shadow-opacity));
-}
-
-.dialog__header {
-  display: grid;
-  gap: 0.5rem;
-  padding: 1.5rem 1.5rem 1rem;
-}
-
-.dialog__title {
-  margin: 0;
-  font: var(--md-sys-typography-headline-small);
-}
-
-.dialog__description {
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.dialog__body {
-  min-block-size: 0;
-  overflow: auto;
-  padding: 0 1.5rem 1.5rem;
-  overscroll-behavior: contain;
-}
-
-.dialog__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.5rem 1.5rem 1.5rem;
-
-  button {
-    min-block-size: 2.5rem;
-    padding: 0.5rem 0.75rem;
-    border: 0;
-    border-radius: var(--md-sys-shape-corner-full);
-    background: transparent;
-    color: var(--md-sys-color-primary);
-    font: var(--md-sys-typography-label-large);
-
-    &:hover {
-      background-color: alpha(
-        from var(--md-sys-color-primary) / var(--md-sys-state-hover-state-layer-opacity)
-      );
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--md-sys-color-primary);
-      outline-offset: 2px;
     }
   }
 }

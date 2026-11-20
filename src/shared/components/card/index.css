@@ -8,21 +8,21 @@
   border-radius: var(--md-sys-shape-corner-medium);
   color: var(--md-sys-color-on-surface);
   overflow-wrap: anywhere;
-}
 
-.card--elevated {
-  background-color: var(--md-sys-color-surface-container-low);
-  box-shadow:
-    0 1px 2px alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-key-opacity)),
-    0 1px 3px 1px
-      alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity));
-}
+  &--elevated {
+    background-color: var(--md-sys-color-surface-container-low);
+    box-shadow:
+      0 1px 2px alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-key-opacity)),
+      0 1px 3px 1px
+        alpha(from var(--md-sys-color-shadow) / var(--md-sys-elevation-shadow-ambient-opacity));
+  }
 
-.card--filled {
-  background-color: var(--md-sys-color-surface-container-highest);
-}
+  &--filled {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
 
-.card--outlined {
-  border-color: var(--md-sys-color-outline-variant);
-  background-color: transparent;
+  &--outlined {
+    border-color: var(--md-sys-color-outline-variant);
+    background-color: transparent;
+  }
 }

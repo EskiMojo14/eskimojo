@@ -2,28 +2,30 @@ $role-count: 6;
 $role-duration: 4s;
 
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero__role {
-    animation:
-      home-hero-role-fade calc($role-count * $role-duration) var(--md-sys-motion-spring-default-effects) infinite,
-      home-hero-role-slide calc($role-count * $role-duration) var(--md-sys-motion-spring-default-spatial) infinite;
-    animation-play-state: var(--home-hero-play-state, running);
-  }
-
-  @for $i from 1 through $role-count {
-    .home-hero__role:nth-child($i) {
-      animation-delay: calc(($i - 1 - $role-count) * $role-duration);
+  .home-hero {
+    &__role {
+      animation:
+        home-hero-role-fade calc($role-count * $role-duration) var(--md-sys-motion-spring-default-effects) infinite,
+        home-hero-role-slide calc($role-count * $role-duration) var(--md-sys-motion-spring-default-spatial) infinite;
+      animation-play-state: var(--home-hero-play-state, running);
     }
-  }
 
-  .home-hero__progress-fill {
-    animation: home-hero-progress $role-duration var(--md-sys-motion-easing-linear) infinite;
-    animation-play-state: var(--home-hero-play-state, running);
-  }
+    &__progress-fill {
+      animation: home-hero-progress $role-duration var(--md-sys-motion-easing-linear) infinite;
+      animation-play-state: var(--home-hero-play-state, running);
+    }
 
-  .home-hero__progress {
-    animation: home-hero-role-width calc($role-count * $role-duration)
-      var(--md-sys-motion-spring-default-spatial) infinite;
-    animation-play-state: var(--home-hero-play-state, running);
+    &__progress {
+      animation: home-hero-role-width calc($role-count * $role-duration)
+        var(--md-sys-motion-spring-default-spatial) infinite;
+      animation-play-state: var(--home-hero-play-state, running);
+    }
+
+    @for $i from 1 through $role-count {
+      &__role:nth-child($i) {
+        animation-delay: calc(($i - 1 - $role-count) * $role-duration);
+      }
+    }
   }
 
   @keyframes home-hero-role-width {

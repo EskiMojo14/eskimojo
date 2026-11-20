@@ -6,11 +6,13 @@
   min-block-size: 100svh;
 }
 
-.app-shell__content:has(> .page-state) {
-  display: flex;
-  flex-direction: column;
-}
+.app-shell {
+  &__content:has(> .page-state) {
+    display: flex;
+    flex-direction: column;
+  }
 
-.app-shell__content > .page-state {
-  min-block-size: 0;
+  &__content > .page-state {
+    min-block-size: 0;
+  }
 }

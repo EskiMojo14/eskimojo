@@ -14,72 +14,72 @@
   & svg[role="img"]:focus:not(:focus-visible) {
     outline: none;
   }
-}
 
-.gigs-artists__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
-
-  & li {
+  &__legend {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+
+    & li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
   }
-}
 
-.gigs-artists__key {
-  inline-size: 1rem;
-  block-size: 1rem;
-  border: 1px solid currentColor;
-}
-
-.gigs-artists__key--main {
-  background: var(--gigs-bar-main);
-}
-
-.gigs-artists__key--support {
-  background: var(--gigs-bar-support);
-}
-
-.gigs-artists__table {
-  position: absolute;
-  clip-path: inset(50%);
-  overflow: hidden;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  white-space: nowrap;
-}
-
-.gigs-artists__tooltip {
-  max-width: min(20rem, calc(100dvw - 1rem));
-  max-height: 60dvh;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
-
-  @media (forced-colors: active) {
+  &__key {
+    inline-size: 1rem;
+    block-size: 1rem;
     border: 1px solid currentColor;
+
+    &--main {
+      background: var(--gigs-bar-main);
+    }
+
+    &--support {
+      background: var(--gigs-bar-support);
+    }
   }
-}
 
-.gigs-artists__events {
-  padding-inline-start: 1rem;
-
-  & li + li {
-    margin-block-start: 0.75rem;
+  &__table {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
   }
 
-  & p {
-    margin-block: 0.25rem 0;
-  }
-}
+  &__tooltip {
+    max-width: min(20rem, calc(100dvw - 1rem));
+    max-height: 60dvh;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
 
-.gigs-artists__supported {
-  font: var(--md-sys-typography-body-small);
-  color: var(--md-sys-color-on-surface-variant);
+    @media (forced-colors: active) {
+      border: 1px solid currentColor;
+    }
+  }
+
+  &__events {
+    padding-inline-start: 1rem;
+
+    & li + li {
+      margin-block-start: 0.75rem;
+    }
+
+    & p {
+      margin-block: 0.25rem 0;
+    }
+  }
+
+  &__supported {
+    font: var(--md-sys-typography-body-small);
+    color: var(--md-sys-color-on-surface-variant);
+  }
 }

@@ -6,18 +6,18 @@
   border-radius: inherit;
   opacity: var(--md-sys-state-pressed-state-layer-opacity);
   pointer-events: none;
-}
 
-.ripple__wave {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--md-sys-shape-corner-full);
-  corner-shape: round;
-  background-image: radial-gradient(
-    closest-side,
-    currentColor max(calc(100% - 70px), 65%),
-    transparent 100%
-  );
+  &__wave {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+    corner-shape: round;
+    background-image: radial-gradient(
+      closest-side,
+      currentColor max(calc(100% - 70px), 65%),
+      transparent 100%
+    );
+  }
 }
 
 :is(.button, .icon-button, .chip, .list__item > a, .list__item > button, .list__item > label):has(
@@ -29,8 +29,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ripple__wave {
-    border-radius: inherit;
-    corner-shape: inherit;
+  .ripple {
+    &__wave {
+      border-radius: inherit;
+      corner-shape: inherit;
+    }
   }
 }
