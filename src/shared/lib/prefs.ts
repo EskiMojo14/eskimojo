@@ -11,6 +11,7 @@ import {
   lightSyntaxOptions,
   lightSyntaxSchema,
   darkSyntaxSchema,
+  densitySchema,
 } from "#/shared/constants/prefs";
 
 const themeKey = "eskimojo::theme";
@@ -50,6 +51,16 @@ export const getHapticsFn = createServerFn().handler(() =>
 export const setHapticsFn = createServerFn()
   .validator(hapticsSchema)
   .handler(({ data: haptics }) => setCookie(hapticsKey, haptics));
+
+const densityKey = "eskimojo::density";
+
+export const getDensityFn = createServerFn().handler(() =>
+  v.parse(densitySchema, getCookie(densityKey)),
+);
+
+export const setDensityFn = createServerFn()
+  .validator(densitySchema)
+  .handler(({ data: density }) => setCookie(densityKey, density));
 
 const darkSyntaxKey = "eskimojo::dark-syntax";
 const lightSyntaxKey = "eskimojo::light-syntax";

@@ -10,6 +10,8 @@
 }
 
 .chip {
+  --chip-min-size: calc(32px + var(--md-density-px));
+  --chip-padding-block: calc(6px + (var(--md-density-px) * 0.5));
   --chip-selection-size: 0px;
   --chip-selection-margin: -8px;
   --chip-check-offset: 1;
@@ -20,8 +22,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-block-size: 32px;
-  padding: 6px 16px;
+  min-block-size: var(--chip-min-size);
+  padding: var(--chip-padding-block) 16px;
   border: 1px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-small);
   background-color: transparent;
@@ -48,6 +50,17 @@
     content: "";
     opacity: 0;
     pointer-events: none;
+  }
+
+  &::after {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    block-size: max(48px, 100%);
+    inline-size: max(48px, 100%);
+    content: "";
+    translate: -50% -50%;
   }
 
   &:not(:disabled):hover::before {

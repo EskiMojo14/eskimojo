@@ -1,5 +1,5 @@
 .button {
-  --button-min-size: 48px;
+  --button-min-size: calc(48px + var(--md-density-px));
   --button-icon-size: 18;
   --button-gap: 8px;
   --button-padding-block: 10px;
@@ -59,6 +59,17 @@
       var(--md-sys-motion-spring-fast-effects);
   }
 
+  &::after {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    block-size: max(48px, 100%);
+    inline-size: max(48px, 100%);
+    content: "";
+    translate: -50% -50%;
+  }
+
   &:not(:disabled, [aria-disabled="true"]) {
     &:hover::before {
       opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -88,35 +99,35 @@
   }
 
   &--extra-small {
-    --button-min-size: 32px;
+    --button-min-size: calc(32px + var(--md-density-px));
     --button-icon-size: 20;
-    --button-padding-block: 5px;
+    --button-padding-block: calc(5px + (var(--md-density-px) * 0.5));
     --button-padding-inline: 16px;
     --button-icon-padding-start: 16px;
   }
 
   &--small {
-    --button-min-size: 40px;
+    --button-min-size: calc(40px + var(--md-density-px));
     --button-icon-size: 20;
-    --button-padding-block: 9px;
+    --button-padding-block: calc(9px + (var(--md-density-px) * 0.5));
     --button-padding-inline: 16px;
     --button-icon-padding-start: 16px;
   }
 
   &--medium {
-    --button-min-size: 56px;
+    --button-min-size: calc(56px + var(--md-density-px));
     --button-icon-size: 24;
-    --button-padding-block: 15px;
+    --button-padding-block: calc(15px + (var(--md-density-px) * 0.5));
     --button-icon-padding-start: 24px;
     --button-text-padding-inline: 16px;
     --button-font: var(--md-sys-typography-title-medium);
   }
 
   &--large {
-    --button-min-size: 96px;
+    --button-min-size: calc(96px + var(--md-density-px));
     --button-icon-size: 32;
     --button-gap: 12px;
-    --button-padding-block: 30px;
+    --button-padding-block: calc(30px + (var(--md-density-px) * 0.5));
     --button-padding-inline: 48px;
     --button-icon-padding-start: 48px;
     --button-text-padding-inline: 32px;
@@ -125,10 +136,10 @@
   }
 
   &--extra-large {
-    --button-min-size: 136px;
+    --button-min-size: calc(136px + var(--md-density-px));
     --button-icon-size: 40;
     --button-gap: 16px;
-    --button-padding-block: 45px;
+    --button-padding-block: calc(45px + (var(--md-density-px) * 0.5));
     --button-padding-inline: 64px;
     --button-icon-padding-start: 64px;
     --button-text-padding-inline: 48px;
@@ -226,13 +237,6 @@
 
       color: inherit;
     }
-  }
-}
-
-@media (pointer: coarse) {
-  .button {
-    min-inline-size: max(48px, var(--button-min-size));
-    min-block-size: max(48px, var(--button-min-size));
   }
 }
 

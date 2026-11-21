@@ -28,6 +28,9 @@ export const serverFns = {
     getDarkSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getDarkSyntaxFn"]>(
       "*/_serverFn/f8d46c3ada938edae6daf35ca452c791e874e4a85d21d6e3f6487a995f0bb7f1",
     ),
+    getDensityFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getDensityFn"]>(
+      "*/_serverFn/3f6237ab9e1245ce9b799ab9d710a18503867accd70fa9804b6f1554693e97be",
+    ),
     getHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["getHapticsFn"]>(
       "*/_serverFn/0c3ff8d95e9a617d67c8be57a892ecd98773fb220cba30ce6c793430c9aa24b4",
     ),
@@ -45,6 +48,9 @@ export const serverFns = {
     ),
     setDarkSyntaxFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setDarkSyntaxFn"]>(
       "*/_serverFn/b67926f550c27fb4d67ff8dce6bc4244aae49cf146ba5d944e5149b76f7e139e",
+    ),
+    setDensityFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setDensityFn"]>(
+      "*/_serverFn/79d9e7be051fadc639cbac84a304d0ef4bb46524e803aeb158b038ac58f72aeb",
     ),
     setHapticsFn: serverFnRef<(typeof import("#/shared/lib/prefs.ts"))["setHapticsFn"]>(
       "*/_serverFn/d2e9a9568090983d9139048d3978ad28c524808c45f86c7d327d49c3389f151b",

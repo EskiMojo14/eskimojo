@@ -73,3 +73,13 @@ export const syntaxLabels: Record<
   alucard: { label: "Alucard" },
   utarefson: { label: "Utarefson", supporting: "High contrast (unofficial)" },
 };
+
+export const densitySchema = v.fallback(v.picklist(["small", "medium", "large"]), "medium");
+
+export type Density = v.InferOutput<typeof densitySchema>;
+
+export const densityLabels: Record<Density, { label: string; icon: string }> = {
+  small: { label: "Small", icon: "density_small" },
+  medium: { label: "Medium", icon: "density_medium" },
+  large: { label: "Large", icon: "density_large" },
+};

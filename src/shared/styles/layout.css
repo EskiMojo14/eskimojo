@@ -1,0 +1,21 @@
+@property --md-density {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  --md-density-px: calc(var(--md-density) * 4px);
+}
+
+[data-density="small"] {
+  --md-density: -2;
+}
+
+[data-density="medium"] {
+  --md-density: 0;
+}
+
+[data-density="large"] {
+  --md-density: 2;
+}

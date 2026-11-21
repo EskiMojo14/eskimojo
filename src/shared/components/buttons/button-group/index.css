@@ -3,7 +3,10 @@
   align-items: stretch;
   gap: 12px;
   max-inline-size: 100%;
-  padding: 6px;
+  /* Keep 48px button hit areas in the horizontal scrollport without growing layout. */
+  margin-block: -6px;
+  padding-block: 12px;
+  padding-inline: 6px;
   overflow-x: auto;
 
   > .button {

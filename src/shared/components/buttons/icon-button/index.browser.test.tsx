@@ -1,4 +1,4 @@
-import { expect, test, vi } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -12,6 +12,31 @@ test("requires and exposes an accessible name while hiding decorative icon conte
 
   await expect.element(result.getByRole("button", { name: "Edit" })).toHaveAccessibleName("Edit");
   expect(result.getByRole("img", { name: "Pencil" }).query()).toBeNull();
+});
+
+test("compact icon buttons keep 48px hit areas without enlarging their layout boxes", async () => {
+  const root = document.documentElement;
+  const previousDensity = root.style.getPropertyValue("--md-density");
+
+  onTestFinished(() => {
+    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
+    else root.style.removeProperty("--md-density");
+  });
+
+  root.style.setProperty("--md-density", "-2");
+
+  const result = await page.renderWithProviders(
+    <IconButton size="extra-small" aria-label="Settings" icon={<MdSymbol>settings</MdSymbol>} />,
+  );
+
+  const button = result.getByRole("button", { name: "Settings" }).element();
+  const bounds = button.getBoundingClientRect();
+  const hitArea = getComputedStyle(button, "::after");
+
+  expect(bounds.width).toBeLessThan(48);
+  expect(bounds.height).toBeLessThan(48);
+  expect(Number.parseFloat(hitArea.inlineSize)).toBeGreaterThanOrEqual(48);
+  expect(Number.parseFloat(hitArea.blockSize)).toBeGreaterThanOrEqual(48);
 });
 
 test("defaults to button type and forwards native button props", async () => {

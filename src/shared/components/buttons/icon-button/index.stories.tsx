@@ -22,7 +22,7 @@ const meta = preview.meta({
       control: "select",
       options: ["extra-small", "small", "medium", "large", "extra-large"],
       description:
-        "MD3 heights: 32, 40, 56, 96, and 136px. Defaults to small (40px). Compact sizes grow to 48px on coarse pointers.",
+        "MD3 nominal heights: 32, 40, 56, 96, and 136px. Defaults to small (40px); all sizes retain a 48px minimum interaction target.",
     },
     icon: {
       control: false,
@@ -36,7 +36,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 icon-only button with standard (default), filled, tonal, and outlined variants. Defaults to small (40px) with a 24px icon slot; choose extra-small through extra-large to scale the container, icon, and outline width. Compact sizes expand to 48px on coarse pointers. Give every button an accessible name with aria-label or aria-labelledby; the icon is decorative. Use aria-pressed for a controlled toggle and update it in onClick. The component does not manage pressed state. Native button props and refs are forwarded, and type defaults to "button". Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves.',
+          'MD3 icon-only button with standard (default), filled, tonal, and outlined variants. Defaults to small (40px) with a 24px icon slot; choose extra-small through extra-large to scale the nominal container and icon while retaining a 48px minimum interaction target at every density. Give every button an accessible name with aria-label or aria-labelledby; the icon is decorative. Use aria-pressed for a controlled toggle and update it in onClick. The component does not manage pressed state. Native button props and refs are forwarded, and type defaults to "button". Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves.',
       },
     },
   },

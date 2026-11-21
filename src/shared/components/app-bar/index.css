@@ -1,5 +1,7 @@
 .app-bar {
   &__toolbar {
+    --app-bar-inline-padding: 0.25rem;
+
     position: sticky;
     inset-block-start: 0;
     z-index: 2;
@@ -10,7 +12,7 @@
     flex: none;
     min-inline-size: 0;
     margin: 0;
-    padding-inline: 0.25rem;
+    padding-inline: var(--app-bar-inline-padding);
     color: var(--md-sys-color-on-surface);
     min-block-size: 4rem;
   }
@@ -156,6 +158,20 @@
         rotate: 60deg;
       }
     }
+  }
+}
+
+/* Keep edge hit targets within the app bar's gutters at small density. */
+:root[data-density="small"] {
+  :is(.app-bar__navigation, .app-bar__back)::after {
+    inset-inline-start: calc(0px - var(--app-bar-inline-padding));
+    translate: 0 -50%;
+  }
+
+  .app-bar__preferences::after {
+    inset-inline-start: auto;
+    inset-inline-end: calc(0px - var(--app-bar-inline-padding));
+    translate: 0 -50%;
   }
 }
 

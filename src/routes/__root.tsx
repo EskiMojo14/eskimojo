@@ -13,6 +13,7 @@ import {
   useTheme,
   useContrast,
   usePalette,
+  useDensity,
   useDarkSyntax,
   useLightSyntax,
 } from "#/shared/components/prefs/context";
@@ -21,6 +22,7 @@ import {
   ContrastProvider,
   PaletteProvider,
   HapticsProvider,
+  DensityProvider,
   DarkSyntaxProvider,
   LightSyntaxProvider,
 } from "#/shared/components/prefs/provider";
@@ -35,6 +37,7 @@ import {
   getContrastFn,
   getPaletteFn,
   getHapticsFn,
+  getDensityFn,
   getDarkSyntaxFn,
   getLightSyntaxFn,
 } from "#/shared/lib/prefs.ts";
@@ -60,6 +63,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       contrast: getContrastFn(),
       palette: getPaletteFn(),
       haptics: getHapticsFn(),
+      density: getDensityFn(),
       darkSyntax: getDarkSyntaxFn(),
       lightSyntax: getLightSyntaxFn(),
     }),
@@ -69,7 +73,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 // oxlint-disable-next-line react/only-export-components -- TanStack route modules export route objects.
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { theme, contrast, palette, haptics, darkSyntax, lightSyntax } = Route.useLoaderData();
+  const { theme, contrast, palette, haptics, density, darkSyntax, lightSyntax } =
+    Route.useLoaderData();
+
   const { christmas } = Route.useRouteContext();
 
   return (
@@ -79,6 +85,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         [ContrastProvider, { contrast }],
         [PaletteProvider, { palette }],
         [HapticsProvider, { haptics }],
+        [DensityProvider, { density }],
         [DarkSyntaxProvider, { darkSyntax }],
         [LightSyntaxProvider, { lightSyntax }],
       ]}
@@ -99,6 +106,7 @@ function PreferenceDocument({
   const { theme } = useTheme();
   const { contrast } = useContrast();
   const { palette } = usePalette();
+  const { density } = useDensity();
   const { darkSyntax } = useDarkSyntax();
   const { lightSyntax } = useLightSyntax();
 
@@ -116,6 +124,7 @@ function PreferenceDocument({
       data-theme={theme}
       data-contrast={contrast}
       data-palette={palette}
+      data-density={density}
       data-dark-syntax={darkSyntax}
       data-light-syntax={lightSyntax}
       data-christmas={christmas ? "true" : undefined}
