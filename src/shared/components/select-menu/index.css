@@ -69,6 +69,7 @@
     flex: 0 0 24px;
     align-items: center;
     justify-content: center;
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   &__label {
@@ -162,6 +163,7 @@
     &[aria-selected="true"] {
       background-color: var(--md-sys-color-secondary-container);
       color: var(--md-sys-color-on-secondary-container);
+      --icon-fill: 1;
 
       .select-menu__option-supporting {
         color: inherit;
