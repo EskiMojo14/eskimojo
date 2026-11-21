@@ -8,6 +8,7 @@ import "#/shared/styles/index.css";
 import "./syntax.css";
 
 import * as v from "valibot";
+import { network } from "virtual:msw";
 
 import {
   ThemeContext,
@@ -26,6 +27,7 @@ import {
   darkSyntaxSchema,
   lightSyntaxSchema,
 } from "#/shared/constants/prefs";
+import { bypassLocalRequests } from "#test/common/msw.ts";
 
 import { theme as storybookTheme } from "./theme";
 
@@ -37,7 +39,17 @@ const globalsSchema = v.object({
 });
 
 export default definePreview({
-  addons: [addonDocs(), addonA11y(), addonMsw()],
+  addons: [
+    addonDocs(),
+    addonA11y(),
+    addonMsw(() => {
+      network.configure({
+        onUnhandledFrame: bypassLocalRequests(location.href),
+      });
+
+      return network;
+    }),
+  ],
 
   beforeEach: async () => {
     await document.fonts.load('24px "Material Symbols Sharp"');
