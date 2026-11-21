@@ -2,6 +2,7 @@
 @import "./theme/index.css";
 @import "./typography";
 @import "./shape.css";
+@import "./layout.css";
 @import "./state.css";
 @import "./opacity.css";
 @import "./motion/index.css";

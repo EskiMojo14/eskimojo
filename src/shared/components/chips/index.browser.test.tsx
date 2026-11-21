@@ -57,6 +57,28 @@ test("updates selected state without changing the chip's accessible name", async
   await expect.element(chip).toHaveAccessibleName("Period");
 });
 
+test("compact chips keep 48px hit areas without enlarging their layout boxes", async () => {
+  const root = document.documentElement;
+  const previousDensity = root.style.getPropertyValue("--md-density");
+
+  onTestFinished(() => {
+    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
+    else root.style.removeProperty("--md-density");
+  });
+
+  root.style.setProperty("--md-density", "-2");
+
+  const result = await page.renderWithProviders(<FilterChip selected={false}>X</FilterChip>);
+  const chip = result.getByRole("button", { name: "X" }).element();
+  const bounds = chip.getBoundingClientRect();
+  const hitArea = getComputedStyle(chip, "::after");
+
+  expect(bounds.width).toBeLessThan(48);
+  expect(bounds.height).toBeLessThan(48);
+  expect(Number.parseFloat(hitArea.inlineSize)).toBeGreaterThanOrEqual(48);
+  expect(Number.parseFloat(hitArea.blockSize)).toBeGreaterThanOrEqual(48);
+});
+
 test("disabling haptics preserves filter changes and link navigation without feedback", async () => {
   using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
 

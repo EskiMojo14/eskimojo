@@ -26,12 +26,14 @@ function preferenceRequests(
     mockServerFn(prefs.setContrastFn, resolver),
     mockServerFn(prefs.setPaletteFn, resolver),
     mockServerFn(prefs.setHapticsFn, resolver),
+    mockServerFn(prefs.setDensityFn, resolver),
     mockServerFn(prefs.setDarkSyntaxFn, resolver),
     mockServerFn(prefs.setLightSyntaxFn, resolver),
     mockServerFn(prefs.getThemeFn, refresh),
     mockServerFn(prefs.getContrastFn, refresh),
     mockServerFn(prefs.getPaletteFn, refresh),
     mockServerFn(prefs.getHapticsFn, refresh),
+    mockServerFn(prefs.getDensityFn, refresh),
     mockServerFn(prefs.getDarkSyntaxFn, refresh),
     mockServerFn(prefs.getLightSyntaxFn, refresh),
   ];
@@ -191,6 +193,42 @@ test("haptic feedback saves optimistically and stays off after navigation and re
   await preferences.open();
   await preferences.other.select();
   await expect(preferences.other.hapticsSwitch).not.toBeChecked();
+});
+
+test("density saves optimistically and persists across reload", async ({
+  preferences,
+  page,
+  context,
+  network,
+}) => {
+  using save = disposablePromise();
+  network.use(
+    mockServerFn(prefs.setDensityFn, async () => {
+      await save.promise;
+
+      return passthrough();
+    }),
+  );
+
+  await preferences.other.select();
+  await preferences.other.setDensity("Small");
+  await expect(preferences.documentElement).toHaveAttribute("data-density", "small");
+  expect(
+    (await context.cookies()).find(({ name }) => name === "eskimojo::density"),
+  ).toBeUndefined();
+
+  save.resolve();
+  await expect
+    .poll(
+      async () => (await context.cookies()).find(({ name }) => name === "eskimojo::density")?.value,
+    )
+    .toBe("small");
+  await page.waitForLoadState("networkidle");
+  await page.reload();
+  await expect(preferences.documentElement).toHaveAttribute("data-density", "small");
+  await preferences.open();
+  await preferences.other.select();
+  await preferences.other.expectDensity("Small");
 });
 
 test("failed haptics saves roll back, notify, and allow retrying", async ({

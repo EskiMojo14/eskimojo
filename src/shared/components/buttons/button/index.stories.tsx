@@ -18,7 +18,7 @@ const meta = preview.meta({
       control: "select",
       options: ["extra-small", "small", "medium", "large", "extra-large"],
       description:
-        "MD3 heights: 32, 40, 56, 96, and 136px. Defaults to small (40px). Compact sizes grow to a 48px minimum on coarse pointers.",
+        "MD3 nominal heights: 32, 40, 56, 96, and 136px. Defaults to small (40px); all sizes retain a 48px minimum interaction target.",
     },
     icon: {
       control: false,
@@ -37,7 +37,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          'MD3 button with filled (default), tonal, elevated, outlined, and text variants. Uses the site’s bevelled shape tokens and defaults to small (40px). Sizes range from extra-small to extra-large and scale typography, icons, padding, and outline width. Compact sizes expand to 48px on coarse pointers. All native button props and refs are forwarded; type defaults to "button" to avoid accidental form submission. Omit aria-pressed for a normal action; supply it for a controlled toggle and update it in onClick. The component never changes pressed state itself. Keep the toggle label stable so aria-pressed communicates its state. Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves. Import the shared stylesheet through the document head, as for other shared components.',
+          'MD3 button with filled (default), tonal, elevated, outlined, and text variants. Uses the site’s bevelled shape tokens and defaults to small (40px). Sizes range from extra-small to extra-large and scale typography, icons, padding, and outline width while keeping a 48px minimum interaction target at every density. All native button props and refs are forwarded; type defaults to "button" to avoid accidental form submission. Omit aria-pressed for a normal action; supply it for a controlled toggle and update it in onClick. The component never changes pressed state itself. Keep the toggle label stable so aria-pressed communicates its state. Use disabled for native disabling; aria-disabled only communicates state, so callers must suppress actions themselves. Import the shared stylesheet through the document head, as for other shared components.',
       },
     },
   },
@@ -93,7 +93,7 @@ export const Sizes = meta.story({
     docs: {
       description: {
         story:
-          "MD3 sizes scale height, padding, icon size, outline width, and typography. Heights are minimums so larger text can grow the control. Omitted size defaults to small. Compact controls expand to at least 48px on coarse pointers.",
+          "MD3 sizes scale height, padding, icon size, outline width, and typography. Heights are minimums so larger text can grow the control. Omitted size defaults to small. Every control retains a 48px minimum interaction target.",
       },
     },
   },

@@ -97,9 +97,17 @@ export function useRipple<T extends HTMLElement>(props: RippleHandlers<T> = {}, 
     }
 
     clear();
+
     const rect = layer.getBoundingClientRect();
-    const x = unbounded || !point ? rect.width / 2 : point.x - rect.left;
-    const y = unbounded || !point ? rect.height / 2 : point.y - rect.top;
+
+    const x =
+      unbounded || !point ? rect.width / 2 : Math.max(0, Math.min(rect.width, point.x - rect.left));
+
+    const y =
+      unbounded || !point
+        ? rect.height / 2
+        : Math.max(0, Math.min(rect.height, point.y - rect.top));
+
     const maxDimension = Math.max(rect.width, rect.height);
     const initialSize = Math.max(1, Math.floor(maxDimension * 0.2));
     const softEdgeSize = Math.max(maxDimension * 0.35, 75);

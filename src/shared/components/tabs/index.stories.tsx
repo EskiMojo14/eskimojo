@@ -31,7 +31,7 @@ const meta = preview.meta({
     docs: {
       description: {
         component:
-          "Material 3 primary and secondary tabs. Button tabs activate automatically on arrow-key focus; router-link tabs activate with Enter or Space and retain real hrefs. Both use pointer-origin ripples. Disabled tabs do not ripple; reduced motion uses static pressed feedback. Horizontal primary tabs stack 24px icons above their labels with a 2px gap and a 64px minimum height (48px without icons). They use the title-small type token. Horizontal lists share a spring-animated indicator. Primary indicators are 3px thick and match the icon-and-label content width, excluding button padding. Secondary indicators are 2px thick, square-ended, and span the entire tab button. Reduced motion disables the slide. Use a labelled TabList inside Tabs, and pair every Tab value with a TabPanel value. For router links, use TabNav with TabLink and connect each tab to a TabLinkPanel. Left/Right arrows move through horizontal tabs and follow reading direction; Up/Down move through vertical tabs; Home/End jump to the ends. Disabled tabs are skipped and narrow tab lists scroll horizontally. Tabs supports controlled value/onValueChange and defaultValue.",
+          "Material 3 primary and secondary tabs. Button tabs activate automatically on arrow-key focus; router-link tabs activate with Enter or Space and retain real hrefs. Both use pointer-origin ripples. Disabled tabs do not ripple; reduced motion uses static pressed feedback. Horizontal primary tabs stack 24px icons above their labels with a 2px gap; icon-and-label tabs are nominally 64px high and text-only tabs 48px high. Density reduces visible height while transparent 48px hit areas stay out of layout. Tabs use the title-small type token. Horizontal lists share a spring-animated indicator. Primary indicators are 3px thick and match the icon-and-label content width, excluding button padding. Secondary indicators are 2px thick, square-ended, and span the entire tab button. Reduced motion disables the slide. Use a labelled TabList inside Tabs, and pair every Tab value with a TabPanel value. For router links, use TabNav with TabLink and connect each tab to a TabLinkPanel. Left/Right arrows move through horizontal tabs and follow reading direction; Up/Down move through vertical tabs; Home/End jump to the ends. Disabled tabs are skipped and narrow tab lists scroll horizontally. Tabs supports controlled value/onValueChange and defaultValue.",
       },
     },
   },
@@ -66,7 +66,7 @@ export const Primary = meta.story({
     docs: {
       description: {
         story:
-          "MD3 primary icon-and-label tabs: 64px height, 24px icons stacked above title-small labels, and a 2px icon-to-label gap. The 3px indicator follows the content width. Selected Material Symbols are filled for both tabs and router links.",
+          "MD3 primary icon-and-label tabs: 64px nominal height, 24px icons stacked above title-small labels, and a 2px icon-to-label gap. Small density compacts the visible height while preserving a 48px interaction target. The 3px indicator follows the content width. Selected Material Symbols are filled for both tabs and router links.",
       },
     },
   },
@@ -104,7 +104,7 @@ export const PrimaryWithoutIcons = meta.story({
     docs: {
       description: {
         story:
-          "MD3 text-only primary tabs: 48px height, title-small labels (14px with a 20px line height), 16px horizontal padding, and a 3px rounded-top indicator matching the label width. Uses the project's Paper Mono font and theme-aware medium weight.",
+          "MD3 text-only primary tabs: 48px nominal height, title-small labels (14px with a 20px line height), 16px horizontal padding, and a 3px rounded-top indicator matching the label width. At small density, the visible height compacts to 40px while the interaction target remains 48px. Uses the project's Paper Mono font and theme-aware medium weight.",
       },
     },
   },

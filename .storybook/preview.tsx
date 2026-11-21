@@ -15,6 +15,7 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
+  DensityContext,
   DarkSyntaxContext,
   LightSyntaxContext,
 } from "#/shared/components/prefs/context.ts";
@@ -26,6 +27,7 @@ import {
   hapticsSchema,
   darkSyntaxSchema,
   lightSyntaxSchema,
+  densitySchema,
 } from "#/shared/constants/prefs";
 import { bypassLocalRequests } from "#test/common/msw.ts";
 
@@ -36,6 +38,7 @@ const globalsSchema = v.object({
   palette: paletteSchema,
   theme: themeSchema,
   contrast: contrastSchema,
+  density: densitySchema,
 });
 
 export default definePreview({
@@ -108,18 +111,32 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    density: {
+      description: "Density level",
+      toolbar: {
+        title: "Density",
+        icon: "box",
+        items: [
+          { value: "small", title: "Small" },
+          { value: "medium", title: "Medium" },
+          { value: "large", title: "Large" },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     direction: "ltr",
     palette: "goat",
     theme: "system",
     contrast: "system",
+    density: "medium",
   },
 
   decorators: [
     (Story) => {
       const [globals, updateGlobals] = useGlobals();
-      const { direction, palette, theme, contrast } = v.parse(globalsSchema, globals);
+      const { direction, palette, theme, contrast, density } = v.parse(globalsSchema, globals);
 
       const [haptics, setHaptics] = useState<v.InferOutput<typeof hapticsSchema>>(
         hapticsSchema.fallback,
@@ -142,6 +159,7 @@ export default definePreview({
         palette,
         darkSyntax,
         lightSyntax,
+        density,
       });
 
       return (
@@ -180,6 +198,15 @@ export default definePreview({
                 value: {
                   haptics,
                   setHaptics,
+                },
+              },
+            ],
+            [
+              DensityContext,
+              {
+                value: {
+                  density,
+                  setDensity: (nextDensity) => updateGlobals({ density: nextDensity }),
                 },
               },
             ],

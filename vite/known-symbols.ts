@@ -2,7 +2,12 @@ import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
 import { musicBreakdownLabels, musicTypeLabels } from "#/routes/music.{-$breakdown}/-constants.ts";
 import { projectKindLabels } from "#/routes/projects/-constants.ts";
 import { links } from "#/shared/components/sidebar/groups";
-import { contrastLabels, paletteLabels, themeLabels } from "#/shared/constants/prefs";
+import {
+  contrastLabels,
+  densityLabels,
+  paletteLabels,
+  themeLabels,
+} from "#/shared/constants/prefs";
 
 import { allProjects } from "../config/.content-collections/generated/index.js";
 
@@ -11,6 +16,7 @@ export default [
   ...[
     themeLabels,
     contrastLabels,
+    densityLabels,
     paletteLabels,
     gigBreakdownLabels,
     musicBreakdownLabels,

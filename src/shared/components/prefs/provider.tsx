@@ -15,6 +15,7 @@ import {
   setHapticsFn,
   setDarkSyntaxFn,
   setLightSyntaxFn,
+  setDensityFn,
 } from "#/shared/lib/prefs";
 import { showSnackbar } from "#/shared/lib/snackbar";
 import { useAppDispatch } from "#/shared/store/hooks";
@@ -27,6 +28,7 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
+  DensityContext,
   DarkSyntaxContext,
   LightSyntaxContext,
 } from "./context";
@@ -97,6 +99,7 @@ export const ThemeProvider = createPrefProvider("theme", ThemeContext, setThemeF
 export const ContrastProvider = createPrefProvider("contrast", ContrastContext, setContrastFn);
 export const PaletteProvider = createPrefProvider("palette", PaletteContext, setPaletteFn);
 export const HapticsProvider = createPrefProvider("haptics", HapticsContext, setHapticsFn);
+export const DensityProvider = createPrefProvider("density", DensityContext, setDensityFn);
 
 export const DarkSyntaxProvider = createPrefProvider(
   "darkSyntax",

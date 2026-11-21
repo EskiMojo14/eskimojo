@@ -15,6 +15,7 @@ import {
   ContrastContext,
   PaletteContext,
   HapticsContext,
+  DensityContext,
   DarkSyntaxContext,
   LightSyntaxContext,
 } from "#/shared/components/prefs/context";
@@ -29,8 +30,10 @@ import {
   type Haptics,
   darkSyntaxSchema,
   lightSyntaxSchema,
+  densitySchema,
   type DarkSyntax,
   type LightSyntax,
+  type Density,
 } from "#/shared/constants/prefs";
 import { createQueryClient } from "#/shared/lib/query";
 import { type PreloadedState, type AppStore, makeStore } from "#/shared/store";
@@ -40,6 +43,7 @@ interface TestPreferences {
   contrast: Contrast;
   palette: Palette;
   haptics: Haptics;
+  density: Density;
   darkSyntax: DarkSyntax;
   lightSyntax: LightSyntax;
 }
@@ -80,6 +84,7 @@ function PreferenceProviders({
   const [contrast, setContrast] = useState(initialPreferences.contrast ?? contrastSchema.fallback);
   const [palette, setPalette] = useState(initialPreferences.palette ?? paletteSchema.fallback);
   const [haptics, setHaptics] = useState(initialPreferences.haptics ?? hapticsSchema.fallback);
+  const [density, setDensity] = useState(initialPreferences.density ?? densitySchema.fallback);
 
   const [darkSyntax, setDarkSyntax] = useState(
     initialPreferences.darkSyntax ?? darkSyntaxSchema.fallback,
@@ -98,11 +103,12 @@ function PreferenceProviders({
       theme: dataset.theme,
       contrast: dataset.contrast,
       palette: dataset.palette,
+      density: dataset.density,
       darkSyntax: dataset.darkSyntax,
       lightSyntax: dataset.lightSyntax,
     };
 
-    Object.assign(dataset, { theme, contrast, palette, darkSyntax, lightSyntax });
+    Object.assign(dataset, { theme, contrast, palette, density, darkSyntax, lightSyntax });
 
     return () => {
       for (const [key, value] of Object.entries(previous)) {
@@ -110,18 +116,20 @@ function PreferenceProviders({
         else dataset[key] = value;
       }
     };
-  }, [syncToDocument, theme, contrast, palette, darkSyntax, lightSyntax]);
+  }, [syncToDocument, theme, contrast, palette, density, darkSyntax, lightSyntax]);
 
   return (
     <ThemeContext value={{ theme, setTheme }}>
       <ContrastContext value={{ contrast, setContrast }}>
         <PaletteContext value={{ palette, setPalette }}>
           <HapticsContext value={{ haptics, setHaptics }}>
-            <DarkSyntaxContext value={{ darkSyntax, setDarkSyntax }}>
-              <LightSyntaxContext value={{ lightSyntax, setLightSyntax }}>
-                {children}
-              </LightSyntaxContext>
-            </DarkSyntaxContext>
+            <DensityContext value={{ density, setDensity }}>
+              <DarkSyntaxContext value={{ darkSyntax, setDarkSyntax }}>
+                <LightSyntaxContext value={{ lightSyntax, setLightSyntax }}>
+                  {children}
+                </LightSyntaxContext>
+              </DarkSyntaxContext>
+            </DensityContext>
           </HapticsContext>
         </PaletteContext>
       </ContrastContext>

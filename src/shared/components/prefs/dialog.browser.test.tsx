@@ -14,6 +14,8 @@ import {
   paletteLabels,
   darkSyntaxOptions,
   syntaxLabels,
+  densityLabels,
+  densitySchema,
 } from "#/shared/constants/prefs";
 
 import { PreferencesDialog } from "./dialog";
@@ -561,6 +563,53 @@ test.each([1280, 390])(
     expect(triggerHaptic).toHaveBeenCalledTimes(4);
   },
 );
+
+async function renderDensityPreference() {
+  const result = await page.renderWithProviders(<PreferencesDialog open />, {
+    preferences: { density: "small" },
+    syncPreferencesToDocument: true,
+  });
+
+  const dialog = result.getByRole("dialog", { name: "Preferences" });
+
+  await dialog.getByRole("tab", { name: "Other", exact: true }).click();
+
+  return dialog;
+}
+
+test("density selection updates through the button group", async () => {
+  await page.viewport(1280, 844);
+  const dialog = await renderDensityPreference();
+
+  const density = dialog.getByRole("toolbar", { name: "Density" });
+  await expect
+    .element(density.getByRole("button", { name: densityLabels.small.label }))
+    .toHaveAttribute("aria-pressed", "true");
+  await density.getByRole("button", { name: densityLabels.large.label }).click();
+
+  for (const value of densitySchema.options) {
+    await expect
+      .element(density.getByRole("button", { name: densityLabels[value].label }))
+      .toHaveAttribute("aria-pressed", String(value === "large"));
+  }
+
+  await expect.element(document.documentElement).toHaveAttribute("data-density", "large");
+});
+
+test("density selection updates through the phone select menu", async () => {
+  await page.viewport(390, 844);
+  const dialog = await renderDensityPreference();
+  const density = dialog.getByRole("combobox", { name: "Density" });
+
+  await expect.element(density).toHaveAccessibleDescription(densityLabels.small.label);
+  await density.click();
+  await dialog
+    .getByRole("listbox", { name: "Density" })
+    .getByRole("option", { name: densityLabels.large.label, exact: true })
+    .click();
+  await expect.element(density).toHaveAccessibleDescription(densityLabels.large.label);
+  await expect.element(document.documentElement).toHaveAttribute("data-density", "large");
+});
 
 test("unsupported browsers omit the haptics preference and keep interactions quiet", async ({
   onTestFinished,

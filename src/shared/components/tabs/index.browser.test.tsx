@@ -1,4 +1,4 @@
-import { expect, test, vi } from "vite-plus/test";
+import { expect, onTestFinished, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import { WebHaptics } from "web-haptics";
 
@@ -59,6 +59,64 @@ test("tab relationships, selection, activation, and arrow navigation", async () 
   expect(triggerHaptic).toHaveBeenCalledExactlyOnceWith("selection", undefined);
   await userEvent.keyboard("{ArrowRight}");
   await expect.element(first).toHaveFocus();
+});
+
+test("compact tabs keep 48px pseudo targets out of layout", async () => {
+  const root = document.documentElement;
+  const previousDensity = root.style.getPropertyValue("--md-density");
+
+  onTestFinished(() => {
+    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
+    else root.style.removeProperty("--md-density");
+  });
+
+  root.style.setProperty("--md-density", "-2");
+
+  const result = await page.renderWithProviders(
+    <>
+      <Tabs defaultValue="horizontal">
+        <TabList aria-label="Horizontal sections">
+          <Tab value="horizontal">Horizontal</Tab>
+          <Tab value="horizontal-next">Next</Tab>
+        </TabList>
+        <TabPanel value="horizontal">Horizontal panel</TabPanel>
+        <TabPanel value="horizontal-next">Next panel</TabPanel>
+      </Tabs>
+      <Tabs defaultValue="vertical">
+        <TabList aria-label="Vertical sections" orientation="vertical">
+          <Tab value="vertical">Vertical</Tab>
+          <Tab value="vertical-next">Next</Tab>
+        </TabList>
+        <TabPanel value="vertical">Vertical panel</TabPanel>
+        <TabPanel value="vertical-next">Next panel</TabPanel>
+      </Tabs>
+    </>,
+  );
+
+  const horizontalList = result.getByRole("tablist", { name: "Horizontal sections" }).element();
+  const horizontal = result.getByRole("tab", { name: "Horizontal" }).element();
+  const horizontalBounds = horizontal.getBoundingClientRect();
+  const horizontalHitArea = getComputedStyle(horizontal, "::before");
+
+  expect(horizontalBounds.height).toBeLessThan(48);
+  expect(Number.parseFloat(horizontalHitArea.blockSize)).toBeGreaterThanOrEqual(48);
+  expect(horizontalBounds.top).toBe(horizontalList.getBoundingClientRect().top);
+
+  const verticalList = result.getByRole("tablist", { name: "Vertical sections" }).element();
+  const vertical = result.getByRole("tab", { name: "Vertical" }).element();
+
+  const verticalNext = result
+    .getByRole("tablist", { name: "Vertical sections" })
+    .getByRole("tab", { name: "Next" })
+    .element();
+
+  const verticalBounds = vertical.getBoundingClientRect();
+  const verticalHitArea = getComputedStyle(vertical, "::before");
+
+  expect(verticalBounds.height).toBeLessThan(48);
+  expect(Number.parseFloat(verticalHitArea.blockSize)).toBeGreaterThanOrEqual(48);
+  expect(verticalBounds.top).toBe(verticalList.getBoundingClientRect().top);
+  expect(verticalNext.getBoundingClientRect().top).toBe(verticalBounds.bottom);
 });
 
 test("wraps in RTL and skips disabled tabs", async () => {

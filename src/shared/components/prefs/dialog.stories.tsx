@@ -32,7 +32,7 @@ const meta = preview.meta({
         story:
           "The tab bar spans the full dialog or bottom-sheet surface while panel contents stay padded. Panels share the height of the tallest panel without a fixed height; inactive panels remain invisible and unavailable to keyboard and assistive technology. A persistent content wrapper keeps native transition captures valid while the active panel changes. Panel changes use element-scoped transitions with the same directional slide, fade, and spring timing as route tabs, reversing direction in RTL. Reduced motion and browsers without element-scoped transitions switch immediately. Desktop dialogs and mobile bottom sheets use opaque surfaces so floating select labels blend into their backgrounds. Syntax controls and the code preview sit directly on the dialog surface, using the same spacing as Theme settings. The preview is capped at 12rem and scrolls independently; keyboard users can focus its named region to scroll through the full snippet. Haptic feedback uses a plain full-row label rather than a list surface. Theme icons retain their original, unrotated font glyphs in both layouts. Select chevrons spring between open and closed states, changing direction immediately for reduced motion.",
         component:
-          "Primary tabs group preferences into Theme (theme, contrast, and palette), Code (light and dark syntax palettes and a code preview), and Other (haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End select and focus tabs. At viewport widths up to 37.5rem (600px), appearance preferences use outlined SelectMenus; larger viewports use connected button groups. Code uses two SelectMenus with high-contrast notes for Utarefson and Nosferatu. The preview follows the active page theme, defaulting to Alucard in light mode and Dracula Pro in dark mode. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, Theme tab changes update globals; Code and Other changes stay with the story. The app saves preferences through cookie-backed providers.",
+          "Primary tabs group preferences into Theme (theme, contrast, and palette), Code (light and dark syntax palettes and a code preview), and Other (density and haptic feedback). The active tab uses local state, starts on Theme, and stays selected while the mounted dialog is closed and reopened; it does not navigate or change the URL. Arrow keys and Home/End move focus; Space selects the focused tab. At viewport widths up to 37.5rem (600px), appearance and density preferences use outlined SelectMenus; larger viewports use connected button groups. Code uses two SelectMenus with high-contrast notes for Utarefson and Nosferatu. The preview follows the active page theme, defaulting to Alucard in light mode and Dracula Pro in dark mode. Other shows a haptic feedback switch when supported, otherwise an explanatory message. Preferences save immediately and persist across tab changes. Done, Escape, and backdrop dismissal close without reverting saved changes. Keep the component mounted and synchronize open through onClose. In Storybook, Theme and density changes update globals; Code and haptics changes stay with the story. The app saves preferences through cookie-backed providers.",
       },
     },
   },
@@ -137,6 +137,21 @@ export const Interactive = meta.story({
     );
     await userEvent.keyboard("{ArrowRight}");
     await expect(dialog.getByRole("tab", { name: "Other" })).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await waitFor(() => expect(dialog.getByRole("tabpanel", { name: "Other" })).toBeVisible());
+    const density = within(dialog.getByRole("toolbar", { name: "Density" }));
+    await expect(density.getByRole("button", { name: "Small" })).toHaveAttribute(
+      "aria-pressed",
+      String(globals.density === "small"),
+    );
+    await expect(density.getByRole("button", { name: "Medium" })).toHaveAttribute(
+      "aria-pressed",
+      String(globals.density === "medium"),
+    );
+    await expect(density.getByRole("button", { name: "Large" })).toHaveAttribute(
+      "aria-pressed",
+      String(globals.density === "large"),
+    );
     const haptics = dialog.queryByRole("switch", { name: "Haptic feedback" });
 
     if (haptics) {

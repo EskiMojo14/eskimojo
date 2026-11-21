@@ -1,5 +1,5 @@
 .icon-button {
-  --icon-button-size: 48px;
+  --icon-button-size: calc(48px + var(--md-density-px));
   --icon-button-icon-size: 24;
   --icon-button-border-width: 1px;
 
@@ -40,6 +40,17 @@
       var(--md-sys-motion-spring-fast-effects);
   }
 
+  &::after {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    block-size: max(48px, 100%);
+    inline-size: max(48px, 100%);
+    content: "";
+    translate: -50% -50%;
+  }
+
   &:not(:disabled, [aria-disabled="true"]) {
     &:hover::before {
       opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -64,26 +75,26 @@
   }
 
   &--extra-small {
-    --icon-button-size: 32px;
+    --icon-button-size: calc(32px + var(--md-density-px));
     --icon-button-icon-size: 20;
   }
 
   &--small {
-    --icon-button-size: 40px;
+    --icon-button-size: calc(40px + var(--md-density-px));
   }
 
   &--medium {
-    --icon-button-size: 56px;
+    --icon-button-size: calc(56px + var(--md-density-px));
   }
 
   &--large {
-    --icon-button-size: 96px;
+    --icon-button-size: calc(96px + var(--md-density-px));
     --icon-button-icon-size: 32;
     --icon-button-border-width: 2px;
   }
 
   &--extra-large {
-    --icon-button-size: 136px;
+    --icon-button-size: calc(136px + var(--md-density-px));
     --icon-button-icon-size: 40;
     --icon-button-border-width: 3px;
   }
@@ -136,13 +147,6 @@
       inline-size: 100%;
       block-size: 100%;
     }
-  }
-}
-
-@media (pointer: coarse) {
-  .icon-button {
-    min-inline-size: max(48px, var(--icon-button-size));
-    min-block-size: max(48px, var(--icon-button-size));
   }
 }
 
