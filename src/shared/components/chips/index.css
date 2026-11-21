@@ -2,7 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-wrap: balance;
-  gap: 8px;
+  gap: max(8px, calc(16px - var(--md-density-px))) 8px;
   min-inline-size: 0;
   margin: 0;
   padding: 0;
@@ -53,6 +53,8 @@
   }
 
   &::after {
+    --hit-target-inline-translate: -50%;
+
     position: absolute;
     z-index: 1;
     inset-block-start: 50%;
@@ -60,7 +62,11 @@
     block-size: max(48px, 100%);
     inline-size: max(48px, 100%);
     content: "";
-    translate: -50% -50%;
+    translate: var(--hit-target-inline-translate) -50%;
+  }
+
+  &:dir(rtl)::after {
+    --hit-target-inline-translate: 50%;
   }
 
   &:not(:disabled):hover::before {
