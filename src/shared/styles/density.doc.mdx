@@ -1,0 +1,68 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Density" />
+
+# Density
+
+Density describes how much space components use. Use it to make an interface
+more compact or more spacious when that improves the experience — not to shrink
+everything uniformly.
+
+Material Design 3 recommends adjusting component padding or overall height in
+small increments, and applying density selectively. Density is independent of
+responsive layout: it does not replace viewport breakpoints, container
+queries, or text scaling.
+
+## The site's scale
+
+The density preference is available in the Preferences dialog's **Other** tab.
+Small, Medium, and Large are site presets rather than Material Design 3 scale
+names.
+
+| Preference | `--md-density` | Size offset from Medium |
+| ---------- | -------------: | ----------------------: |
+| Small      |             -2 |                    -8px |
+| Medium     |              0 |                     0px |
+| Large      |              2 |                    +8px |
+
+`--md-density-px` is defined as `--md-density * 4px`. Component styles use
+this token to adjust dimensions and padding. Typography remains unchanged by
+the density preference.
+
+## Preserve interaction targets
+
+Keep interactive targets at least 48 × 48 CSS pixels, even when a compact
+control's visible surface is smaller. A control can retain that target with an
+absolutely positioned, transparent hit area; it should not grow the control's
+layout box just to meet the minimum.
+
+Some rows can use a density-adjusted size with a 48px floor:
+
+```css
+min-block-size: max(48px, calc(56px + var(--md-density-px)));
+```
+
+For smaller controls, keep the target separate from the visible surface. Make
+sure the expanded area remains centered in both LTR and RTL layouts.
+
+## Account for surrounding layout
+
+Expanded targets need room around them. In wrapped groups, add enough spacing
+to prevent one row's hit area from covering another row's visible control. In
+scrollports, reserve transparent internal space so target edges are not
+clipped; compensate outside the scrollport when necessary to preserve the
+visible layout. Keep dividers and active indicators aligned, and check that
+density does not introduce scrollbars or page overflow.
+
+The site's density preference currently affects buttons, icon buttons, chips,
+tabs, list rows, and select-menu controls. The app bar has a small-density
+adjustment to keep its edge targets inside the existing gutters. These are
+component-specific applications of the shared density token, not a global
+resize of every element.
+
+For the implementation details and current source locations, see
+`docs/density.md`.
+
+## Reference
+
+[Material Design 3: Density](https://m3.material.io/foundations/layout/grids-spacing/density)
