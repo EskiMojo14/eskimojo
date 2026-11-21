@@ -1,4 +1,4 @@
-import { expect, onTestFinished, test, vi } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import { WebHaptics } from "web-haptics";
 
@@ -61,62 +61,120 @@ test("tab relationships, selection, activation, and arrow navigation", async () 
   await expect.element(first).toHaveFocus();
 });
 
-test("compact tabs keep 48px pseudo targets out of layout", async () => {
-  const root = document.documentElement;
-  const previousDensity = root.style.getPropertyValue("--md-density");
+test.each(["ltr", "rtl"] as const)(
+  "%s compact horizontal tabs activate beyond their visible block edge",
+  async (direction) => {
+    using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+    const onValueChange = vi.fn<(value: string) => void>();
 
-  onTestFinished(() => {
-    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
-    else root.style.removeProperty("--md-density");
-  });
+    const result = await page.renderWithProviders(
+      <div data-testid="hit-area" dir={direction} style={{ paddingBlock: "8px" }}>
+        <Tabs defaultValue="first" onValueChange={onValueChange}>
+          <TabList aria-label="Horizontal sections">
+            <Tab value="first">First</Tab>
+            <Tab value="last">Last</Tab>
+          </TabList>
+          <TabPanel value="first">First panel</TabPanel>
+          <TabPanel value="last">Last panel</TabPanel>
+        </Tabs>
+      </div>,
+      {
+        preferences: { density: "small" },
+        syncPreferencesToDocument: true,
+      },
+    );
 
-  root.style.setProperty("--md-density", "-2");
+    const last = result.getByRole("tab", { name: "Last" });
+    const hitArea = result.getByTestId("hit-area").element();
+    const bounds = last.element().getBoundingClientRect();
+    const hitAreaBounds = hitArea.getBoundingClientRect();
+
+    await userEvent.pointer({
+      target: hitArea,
+      coords: {
+        x: bounds.left + bounds.width / 2 - hitAreaBounds.left,
+        y: bounds.bottom + 1 - hitAreaBounds.top,
+      },
+      keys: "[MouseLeft]",
+    });
+
+    await expect.element(last).toHaveAttribute("aria-selected", "true");
+    await expect.element(result.getByRole("tabpanel", { name: "Last" })).toBeVisible();
+    expect(onValueChange).toHaveBeenCalledExactlyOnceWith("last");
+    expect(triggerHaptic).toHaveBeenCalledOnce();
+  },
+);
+
+test("compact vertical tabs keep edge and neighboring targets independently clickable", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const onValueChange = vi.fn<(value: string) => void>();
 
   const result = await page.renderWithProviders(
-    <>
-      <Tabs defaultValue="horizontal">
-        <TabList aria-label="Horizontal sections">
-          <Tab value="horizontal">Horizontal</Tab>
-          <Tab value="horizontal-next">Next</Tab>
-        </TabList>
-        <TabPanel value="horizontal">Horizontal panel</TabPanel>
-        <TabPanel value="horizontal-next">Next panel</TabPanel>
-      </Tabs>
-      <Tabs defaultValue="vertical">
+    <div data-testid="hit-area" style={{ paddingBlock: "8px" }}>
+      <Tabs defaultValue="last" onValueChange={onValueChange}>
         <TabList aria-label="Vertical sections" orientation="vertical">
-          <Tab value="vertical">Vertical</Tab>
-          <Tab value="vertical-next">Next</Tab>
+          <Tab value="first">First</Tab>
+          <Tab value="middle">Middle</Tab>
+          <Tab value="last">Last</Tab>
         </TabList>
-        <TabPanel value="vertical">Vertical panel</TabPanel>
-        <TabPanel value="vertical-next">Next panel</TabPanel>
+        <TabPanel value="first">First panel</TabPanel>
+        <TabPanel value="middle">Middle panel</TabPanel>
+        <TabPanel value="last">Last panel</TabPanel>
       </Tabs>
-    </>,
+    </div>,
+    {
+      preferences: { density: "small" },
+      syncPreferencesToDocument: true,
+    },
   );
 
-  const horizontalList = result.getByRole("tablist", { name: "Horizontal sections" }).element();
-  const horizontal = result.getByRole("tab", { name: "Horizontal" }).element();
-  const horizontalBounds = horizontal.getBoundingClientRect();
-  const horizontalHitArea = getComputedStyle(horizontal, "::before");
+  const first = result.getByRole("tab", { name: "First" });
+  const hitArea = result.getByTestId("hit-area").element();
+  const hitAreaBounds = hitArea.getBoundingClientRect();
+  const firstBounds = first.element().getBoundingClientRect();
 
-  expect(horizontalBounds.height).toBeLessThan(48);
-  expect(Number.parseFloat(horizontalHitArea.blockSize)).toBeGreaterThanOrEqual(48);
-  expect(horizontalBounds.top).toBe(horizontalList.getBoundingClientRect().top);
+  await userEvent.pointer({
+    target: hitArea,
+    coords: {
+      x: firstBounds.left + firstBounds.width / 2 - hitAreaBounds.left,
+      y: firstBounds.top - 1 - hitAreaBounds.top,
+    },
+    keys: "[MouseLeft]",
+  });
 
-  const verticalList = result.getByRole("tablist", { name: "Vertical sections" }).element();
-  const vertical = result.getByRole("tab", { name: "Vertical" }).element();
+  await expect.element(first).toHaveAttribute("aria-selected", "true");
+  expect(onValueChange).toHaveBeenLastCalledWith("first");
 
-  const verticalNext = result
-    .getByRole("tablist", { name: "Vertical sections" })
-    .getByRole("tab", { name: "Next" })
-    .element();
+  const middle = result.getByRole("tab", { name: "Middle" });
+  const middleBounds = middle.element().getBoundingClientRect();
 
-  const verticalBounds = vertical.getBoundingClientRect();
-  const verticalHitArea = getComputedStyle(vertical, "::before");
+  await userEvent.pointer({
+    target: hitArea,
+    coords: {
+      x: middleBounds.left + middleBounds.width / 2 - hitAreaBounds.left,
+      y: middleBounds.bottom + 3 - hitAreaBounds.top,
+    },
+    keys: "[MouseLeft]",
+  });
 
-  expect(verticalBounds.height).toBeLessThan(48);
-  expect(Number.parseFloat(verticalHitArea.blockSize)).toBeGreaterThanOrEqual(48);
-  expect(verticalBounds.top).toBe(verticalList.getBoundingClientRect().top);
-  expect(verticalNext.getBoundingClientRect().top).toBe(verticalBounds.bottom);
+  await expect.element(middle).toHaveAttribute("aria-selected", "true");
+  expect(onValueChange).toHaveBeenLastCalledWith("middle");
+
+  const last = result.getByRole("tab", { name: "Last" });
+  const lastBounds = last.element().getBoundingClientRect();
+
+  await userEvent.pointer({
+    target: hitArea,
+    coords: {
+      x: lastBounds.left + lastBounds.width / 2 - hitAreaBounds.left,
+      y: lastBounds.bottom + 1 - hitAreaBounds.top,
+    },
+    keys: "[MouseLeft]",
+  });
+
+  await expect.element(last).toHaveAttribute("aria-selected", "true");
+  expect(onValueChange).toHaveBeenLastCalledWith("last");
+  expect(triggerHaptic).toHaveBeenCalledTimes(3);
 });
 
 test("wraps in RTL and skips disabled tabs", async () => {

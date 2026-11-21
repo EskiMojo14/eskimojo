@@ -1,5 +1,5 @@
-import { expect, test } from "vite-plus/test";
-import { page } from "vite-plus/test/browser";
+import { expect, test, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
 
@@ -56,6 +56,43 @@ test("defaults type to button and allows an explicit override", async () => {
     .element(result.getByRole("button", { name: "Save" }))
     .toHaveAttribute("type", "submit");
 });
+
+test.each(["ltr", "rtl"] as const)(
+  "compact buttons activate from the %s inline hit area",
+  async (direction) => {
+    await page.viewport(1280, 800);
+
+    const onClick = vi.fn<() => void>();
+
+    const result = await page.renderWithProviders(
+      <div data-testid="hit-area" dir={direction} style={{ paddingInline: "16px" }}>
+        <Button size="extra-small" onClick={onClick}>
+          X
+        </Button>
+      </div>,
+      {
+        preferences: { density: "small" },
+        syncPreferencesToDocument: true,
+      },
+    );
+
+    const button = result.getByRole("button", { name: "X" }).element();
+    const hitArea = result.getByTestId("hit-area").element();
+    const bounds = button.getBoundingClientRect();
+    const hitAreaBounds = hitArea.getBoundingClientRect();
+
+    await userEvent.pointer({
+      target: hitArea,
+      coords: {
+        x: (direction === "ltr" ? bounds.left - 1 : bounds.right + 1) - hitAreaBounds.left,
+        y: bounds.top + bounds.height / 2 - hitAreaBounds.top,
+      },
+      keys: "[MouseLeft]",
+    });
+
+    expect(onClick).toHaveBeenCalledOnce();
+  },
+);
 
 test("loading preserves the action label, blocks duplicates, and allows recovery", async () => {
   let clicks = 0;

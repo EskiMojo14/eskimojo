@@ -46,12 +46,29 @@
     overscroll-behavior-inline: contain;
     scrollbar-width: none;
 
+    &[data-orientation="horizontal"] {
+      padding-block: 4px;
+      margin-block: -4px;
+      border-block-end-color: transparent;
+
+      &::before {
+        position: absolute;
+        inset-block-end: 4px;
+        inset-inline: 0;
+        border-block-end-width: var(--tabs-divider-width);
+        border-block-end-style: solid;
+        border-block-end-color: var(--md-sys-color-outline-variant);
+        content: "";
+        pointer-events: none;
+      }
+    }
+
     &[data-orientation="horizontal"]:has(
         > .tabs__tab:is([aria-selected="true"], [aria-current="page"])
       )::after {
       position: absolute;
       position-anchor: var(--tabs-active-label);
-      inset-block-end: 0;
+      inset-block-end: 4px;
       left: anchor(left);
       right: anchor(right);
       block-size: var(--tabs-indicator-size, 3px);
@@ -71,12 +88,26 @@
     &[data-orientation="vertical"] {
       inline-size: max-content;
       max-block-size: 100%;
+      gap: max(0px, calc(0px - var(--md-density-px)));
       flex-direction: column;
       overflow: hidden auto;
+      padding-block: 4px;
+      margin-block: -4px;
       border-block-end-color: transparent;
       border-inline-end-width: var(--tabs-divider-width);
       border-inline-end-style: solid;
-      border-inline-end-color: var(--md-sys-color-outline-variant);
+      border-inline-end-color: transparent;
+
+      &::before {
+        position: absolute;
+        inset-block: 4px;
+        inset-inline-end: 0;
+        border-inline-end-width: var(--tabs-divider-width);
+        border-inline-end-style: solid;
+        border-inline-end-color: var(--md-sys-color-outline-variant);
+        content: "";
+        pointer-events: none;
+      }
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -116,6 +147,8 @@
         var(--md-sys-motion-spring-fast-effects);
 
     &::before {
+      --hit-target-inline-translate: -50%;
+
       position: absolute;
       z-index: 1;
       inset-block-start: 50%;
@@ -123,7 +156,11 @@
       block-size: max(48px, 100%);
       inline-size: max(48px, 100%);
       content: "";
-      translate: -50% -50%;
+      translate: var(--hit-target-inline-translate) -50%;
+    }
+
+    &:dir(rtl)::before {
+      --hit-target-inline-translate: 50%;
     }
 
     &:is([aria-selected="true"], [aria-current="page"]) {

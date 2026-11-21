@@ -12,7 +12,7 @@ import { WebHaptics } from "web-haptics";
 
 import { MdSymbol } from "#/shared/components/symbol";
 
-import { ExternalLinkChip, FilterChip, InternalLinkChip } from "./index";
+import { ChipGroup, ExternalLinkChip, FilterChip, InternalLinkChip } from "./index";
 
 function ToggleDemo() {
   const [selected, setSelected] = useState(false);
@@ -57,26 +57,80 @@ test("updates selected state without changing the chip's accessible name", async
   await expect.element(chip).toHaveAccessibleName("Period");
 });
 
-test("compact chips keep 48px hit areas without enlarging their layout boxes", async () => {
-  const root = document.documentElement;
-  const previousDensity = root.style.getPropertyValue("--md-density");
+test.each(["ltr", "rtl"] as const)(
+  "compact chips activate from the %s inline hit area",
+  async (direction) => {
+    using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+    const onClick = vi.fn<() => void>();
 
-  onTestFinished(() => {
-    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
-    else root.style.removeProperty("--md-density");
+    const result = await page.renderWithProviders(
+      <div data-testid="hit-area" dir={direction} style={{ paddingInline: "16px" }}>
+        <FilterChip selected={false} onClick={onClick}>
+          X
+        </FilterChip>
+      </div>,
+      {
+        preferences: { density: "small" },
+        syncPreferencesToDocument: true,
+      },
+    );
+
+    const chip = result.getByRole("button", { name: "X" }).element();
+    const hitArea = result.getByTestId("hit-area").element();
+    const bounds = chip.getBoundingClientRect();
+    const hitAreaBounds = hitArea.getBoundingClientRect();
+
+    await userEvent.pointer({
+      target: hitArea,
+      coords: {
+        x: (direction === "ltr" ? bounds.left - 1 : bounds.right + 1) - hitAreaBounds.left,
+        y: bounds.top + bounds.height / 2 - hitAreaBounds.top,
+      },
+      keys: "[MouseLeft]",
+    });
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(triggerHaptic).toHaveBeenCalledOnce();
+  },
+);
+
+test("compact chips keep adjacent rows' expanded hit areas separate", async () => {
+  using triggerHaptic = vi.spyOn(WebHaptics.prototype, "trigger").mockResolvedValue();
+  const firstClick = vi.fn<() => void>();
+  const secondClick = vi.fn<() => void>();
+
+  const result = await page.renderWithProviders(
+    <ChipGroup aria-label="Filters" style={{ inlineSize: "100px" }}>
+      <FilterChip selected={false} onClick={firstClick}>
+        First
+      </FilterChip>
+      <FilterChip selected={false} onClick={secondClick}>
+        Second
+      </FilterChip>
+    </ChipGroup>,
+    {
+      preferences: { density: "small" },
+      syncPreferencesToDocument: true,
+    },
+  );
+
+  const first = result.getByRole("button", { name: "First" }).element();
+  const group = result.getByRole("group", { name: "Filters" }).element();
+  const bounds = first.getBoundingClientRect();
+  const groupBounds = group.getBoundingClientRect();
+
+  await userEvent.pointer({
+    target: group,
+    coords: {
+      x: bounds.left + bounds.width / 2 - groupBounds.left,
+      y: bounds.bottom + 10 - groupBounds.top,
+    },
+    keys: "[MouseLeft]",
   });
 
-  root.style.setProperty("--md-density", "-2");
-
-  const result = await page.renderWithProviders(<FilterChip selected={false}>X</FilterChip>);
-  const chip = result.getByRole("button", { name: "X" }).element();
-  const bounds = chip.getBoundingClientRect();
-  const hitArea = getComputedStyle(chip, "::after");
-
-  expect(bounds.width).toBeLessThan(48);
-  expect(bounds.height).toBeLessThan(48);
-  expect(Number.parseFloat(hitArea.inlineSize)).toBeGreaterThanOrEqual(48);
-  expect(Number.parseFloat(hitArea.blockSize)).toBeGreaterThanOrEqual(48);
+  expect(firstClick).toHaveBeenCalledOnce();
+  expect(secondClick).not.toHaveBeenCalled();
+  expect(triggerHaptic).toHaveBeenCalledOnce();
 });
 
 test("disabling haptics preserves filter changes and link navigation without feedback", async () => {

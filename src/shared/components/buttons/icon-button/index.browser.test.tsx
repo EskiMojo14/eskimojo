@@ -1,4 +1,4 @@
-import { expect, onTestFinished, test, vi } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { MdSymbol } from "#/shared/components/symbol";
@@ -14,30 +14,45 @@ test("requires and exposes an accessible name while hiding decorative icon conte
   expect(result.getByRole("img", { name: "Pencil" }).query()).toBeNull();
 });
 
-test("compact icon buttons keep 48px hit areas without enlarging their layout boxes", async () => {
-  const root = document.documentElement;
-  const previousDensity = root.style.getPropertyValue("--md-density");
+test.each(["ltr", "rtl"] as const)(
+  "compact icon buttons activate from the %s inline hit area",
+  async (direction) => {
+    await page.viewport(1280, 800);
 
-  onTestFinished(() => {
-    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
-    else root.style.removeProperty("--md-density");
-  });
+    const onClick = vi.fn<() => void>();
 
-  root.style.setProperty("--md-density", "-2");
+    const result = await page.renderWithProviders(
+      <div data-testid="hit-area" dir={direction} style={{ paddingInline: "16px" }}>
+        <IconButton
+          size="extra-small"
+          aria-label="Settings"
+          icon={<MdSymbol>settings</MdSymbol>}
+          onClick={onClick}
+        />
+      </div>,
+      {
+        preferences: { density: "small" },
+        syncPreferencesToDocument: true,
+      },
+    );
 
-  const result = await page.renderWithProviders(
-    <IconButton size="extra-small" aria-label="Settings" icon={<MdSymbol>settings</MdSymbol>} />,
-  );
+    const button = result.getByRole("button", { name: "Settings" }).element();
+    const hitArea = result.getByTestId("hit-area").element();
+    const bounds = button.getBoundingClientRect();
+    const hitAreaBounds = hitArea.getBoundingClientRect();
 
-  const button = result.getByRole("button", { name: "Settings" }).element();
-  const bounds = button.getBoundingClientRect();
-  const hitArea = getComputedStyle(button, "::after");
+    await userEvent.pointer({
+      target: hitArea,
+      coords: {
+        x: (direction === "ltr" ? bounds.left - 1 : bounds.right + 1) - hitAreaBounds.left,
+        y: bounds.top + bounds.height / 2 - hitAreaBounds.top,
+      },
+      keys: "[MouseLeft]",
+    });
 
-  expect(bounds.width).toBeLessThan(48);
-  expect(bounds.height).toBeLessThan(48);
-  expect(Number.parseFloat(hitArea.inlineSize)).toBeGreaterThanOrEqual(48);
-  expect(Number.parseFloat(hitArea.blockSize)).toBeGreaterThanOrEqual(48);
-});
+    expect(onClick).toHaveBeenCalledOnce();
+  },
+);
 
 test("defaults to button type and forwards native button props", async () => {
   const result = await page.renderWithProviders(

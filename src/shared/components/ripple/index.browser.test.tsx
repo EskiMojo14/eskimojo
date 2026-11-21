@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { createRef } from "react";
-import { expect, onTestFinished, test, vi } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { SocialLink } from "#/routes/_home/-components/social-link";
@@ -295,21 +295,19 @@ test("labelled buttons, links, and icon controls ripple on press", async () => {
   }
 });
 
-test("clamps pointer ripples to the visible button when pressing its expanded target", async () => {
-  const root = document.documentElement;
-  const previousDensity = root.style.getPropertyValue("--md-density");
+test("clamps pointer ripples when clicking beyond the compact button's visible edge", async () => {
+  await page.viewport(1280, 800);
 
-  onTestFinished(() => {
-    if (previousDensity) root.style.setProperty("--md-density", previousDensity);
-    else root.style.removeProperty("--md-density");
-  });
-
-  root.style.setProperty("--md-density", "-2");
+  const onClick = vi.fn<() => void>();
 
   const result = await page.renderWithProviders(
-    <Button size="extra-small" variant="text">
+    <Button size="extra-small" variant="text" onClick={onClick}>
       Go
     </Button>,
+    {
+      preferences: { density: "small" },
+      syncPreferencesToDocument: true,
+    },
   );
 
   const button = result.getByRole("button", { name: "Go" }).element();
@@ -321,25 +319,26 @@ test("clamps pointer ripples to the visible button when pressing its expanded ta
   }
 
   const rippleBounds = rippleLayer.getBoundingClientRect();
-  const hitArea = getComputedStyle(button, "::after");
 
-  expect(bounds.width).toBeLessThan(48);
-  expect(bounds.height).toBeLessThan(48);
-  expect(Number.parseFloat(hitArea.inlineSize)).toBeGreaterThanOrEqual(48);
-  expect(Number.parseFloat(hitArea.blockSize)).toBeGreaterThanOrEqual(48);
-  press(button, 8, bounds.height + 4);
-  onTestFinished(() => {
-    document.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1 }));
+  await userEvent.pointer({
+    coords: { x: bounds.left + 8, y: bounds.bottom + 4 },
+    keys: "[MouseLeft>]",
   });
 
-  const activeRipple = wave(button);
+  try {
+    const activeRipple = wave(button);
 
-  const initialSize = Math.max(
-    1,
-    Math.floor(Math.max(rippleBounds.width, rippleBounds.height) * 0.2),
-  );
+    const initialSize = Math.max(
+      1,
+      Math.floor(Math.max(rippleBounds.width, rippleBounds.height) * 0.2),
+    );
 
-  expect(activeRipple.style.top).toBe(`${rippleBounds.height - initialSize / 2}px`);
+    expect(activeRipple.style.top).toBe(`${rippleBounds.height - initialSize / 2}px`);
+  } finally {
+    await userEvent.pointer("[/MouseLeft]");
+  }
+
+  expect(onClick).toHaveBeenCalledOnce();
 });
 
 test("middle presses ripple on links without preventing navigation or affecting buttons", async () => {
