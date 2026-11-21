@@ -69,6 +69,11 @@ server instead of the managed preview on port 4173. Install the test browser fir
 `vp exec playwright install --with-deps chromium` on a fresh machine.
 When changing workflows, validate them with Actionlint and Zizmor.
 
+[Dependabot automerge](.github/workflows/dependabot-automerge.yml) enables
+rebase auto-merge for minor and patch updates, and for every `typescript`
+update because it tracks nightly builds. The "Require CI" ruleset holds those
+merges until `Basic checks` passes; repository admins can bypass it.
+
 Vitest excludes the Netlify plugin so its Vite servers do not start platform
 emulation or race to install Deno. Keep Netlify enabled for normal dev and
 production builds.
