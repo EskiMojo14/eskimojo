@@ -18,13 +18,11 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
-      # TypeScript tracks nightly builds, so accept every TypeScript bump.
       # The "Require CI" ruleset holds the merge until "Basic checks" passes.
-      - name: Enable automerge for minor, patch, and TypeScript updates
+      - name: Enable automerge for minor and patch updates
         if: >-
           steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-          steps.metadata.outputs.dependency-names == 'typescript'
+          steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: gh pr merge --auto --rebase "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
