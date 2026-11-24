@@ -37,6 +37,7 @@ test("shows venue counts and chronological event details with keyboard pinning a
   await expect
     .element(result.getByRole("heading", { name: "Brixton, London", exact: true }))
     .toBeVisible();
+  await expect.element(result.getByText("2 gigs", { exact: true })).toBeVisible();
   await expect.element(result.getByText("Vulfpeck, Cory Wong")).toBeVisible();
   await expect.element(result.getByText("Support: Joey Dosik")).toBeVisible();
   const entries = result.getByRole("listitem").all();
@@ -56,6 +57,7 @@ test("shows venue counts and chronological event details with keyboard pinning a
   await expect
     .element(result.getByRole("heading", { name: "Barbican, London", exact: true }))
     .toBeVisible();
+  await expect.element(result.getByText("1 gig", { exact: true })).toBeVisible();
   await expect.element(result.getByText("Couch", { exact: true })).toBeVisible();
   await expect.element(result.getByText("Jacob Collier", { exact: true })).not.toBeInTheDocument();
   await userEvent.keyboard("{Escape}");

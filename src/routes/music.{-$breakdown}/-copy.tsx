@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { MusicBreakdown, MusicType, Period } from "#/routes/music.{-$breakdown}/-constants.ts";
+import { pluralize } from "#/utils/intl";
 
 export const meta = {
   title: "Music",
@@ -51,10 +52,10 @@ export const summary = {
     albums: { label: "Albums", icon: "album" },
     tracks: { label: "Tracks", icon: "music_note" },
   },
-  detail: (registered: ReactNode, average: ReactNode) => (
+  detail: (registered: ReactNode, average: ReactNode, averageCount: number) => (
     <>
-      since {registered} (an average of {average} scrobbles per day), and that's just the ones
-      Last.fm knows about.
+      since {registered} (an average of {average} {pluralize`${[averageCount, "scrobble"]}`} per
+      day), and that's just the ones Last.fm knows about.
     </>
   ),
 } as const;
@@ -81,8 +82,7 @@ export const topMusic = {
   emptyTitle: "No listening data for this period.",
   emptyDescription: "Try choosing a different time period.",
   rank: (rank: number) => `Rank ${rank}`,
-  playCount: (count: number) =>
-    `${count.toLocaleString("en-GB")} ${count === 1 ? "play" : "plays"}`,
+  playCount: (count: number) => pluralize`${count.toLocaleString("en-GB")} ${[count, "play"]}`,
 } as const;
 
 export const recentTracks = {

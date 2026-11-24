@@ -36,6 +36,22 @@ const albums = [
   },
 ];
 
+test("shows singular and plural play counts with formatted numbers", async () => {
+  const result = await page.renderWithProviders(
+    <MusicTopMusic
+      tracks={[
+        { name: "One", artist: "Example", rank: 1, playcount: 1 },
+        { name: "Many", artist: "Example", rank: 2, playcount: 1234 },
+        { name: "None", artist: "Example", rank: 3, playcount: 0 },
+      ]}
+    />,
+  );
+
+  await expect.element(result.getByText("1 play", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("1,234 plays", { exact: true })).toBeVisible();
+  await expect.element(result.getByText("0 plays", { exact: true })).toBeVisible();
+});
+
 test("infers the selected ranking from the supplied prop, including empty rankings", async () => {
   const result = await page.renderWithProviders(<MusicTopMusic tracks={[]} />);
   await expect.element(result.getByRole("region", { name: "Top tracks" })).toBeVisible();

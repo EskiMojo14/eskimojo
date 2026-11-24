@@ -14,6 +14,7 @@ import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 import { assert } from "#/utils";
+import { pluralize } from "#/utils/intl";
 
 import { getVenueChartData } from "./data";
 
@@ -141,7 +142,9 @@ export function GigsVenueChart({
             <div className="tooltip--rich tooltip--chart gigs-venues__tooltip">
               <h3 className="tooltip__subhead">{content.title}</h3>
               <p>
-                {primaryPoint?.datum.count} {primaryPoint?.datum.count === 1 ? "gig" : "gigs"}
+                {primaryPoint
+                  ? pluralize`${primaryPoint.datum.count} ${[primaryPoint.datum.count, "gig"]}`
+                  : " gigs"}
               </p>
               <ol className="gigs-venues__events">
                 {primaryPoint?.datum.events.map((event, index) => (

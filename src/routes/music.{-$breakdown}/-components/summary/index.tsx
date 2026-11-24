@@ -27,12 +27,14 @@ function MusicSummaryLayout({
   counts,
   registered,
   average,
+  averageCount,
   className,
   ...props
 }: Omit<ComponentPropsWithRef<"section">, "children"> & {
   counts: { scrobbles: ReactNode; artists: ReactNode; albums: ReactNode; tracks: ReactNode };
   registered: ReactNode;
   average: ReactNode;
+  averageCount: number;
 }) {
   return (
     <section {...props} {...summaryBem({ extra: className })} aria-label={copy.summary.title}>
@@ -67,7 +69,7 @@ function MusicSummaryLayout({
           <dd>{counts.tracks}</dd>
         </div>
       </dl>
-      <p>{copy.summary.detail(registered, average)}</p>
+      <p>{copy.summary.detail(registered, average, averageCount)}</p>
     </section>
   );
 }
@@ -87,6 +89,7 @@ export function MusicSummarySkeleton() {
         }}
         registered={<Skeleton {...skeletonBem({ element: "line", modifier: "date" })} />}
         average={<Skeleton {...skeletonBem({ element: "line", modifier: "average" })} />}
+        averageCount={0}
       />
     </>
   );
@@ -165,6 +168,7 @@ export function MusicSummary({ user, asOf }: { user: UserData; asOf: number }) {
       }}
       registered={<time dateTime={registered.toISOString()}>{dateFormat.format(registered)}</time>}
       average={numberFormat.format(average)}
+      averageCount={average}
     />
   );
 }
