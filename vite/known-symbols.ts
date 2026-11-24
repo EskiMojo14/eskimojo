@@ -1,13 +1,13 @@
-import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants";
+import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants.ts";
 import { musicBreakdownLabels, musicTypeLabels } from "#/routes/music.{-$breakdown}/-constants.ts";
-import { projectKindLabels } from "#/routes/projects/-constants.ts";
+import * as projectsCopy from "#/routes/projects/-copy.tsx";
 import { links } from "#/shared/components/sidebar/groups";
 import {
   contrastLabels,
   densityLabels,
   paletteLabels,
   themeLabels,
-} from "#/shared/constants/prefs";
+} from "#/shared/constants/prefs.ts";
 
 import { allProjects } from "../config/.content-collections/generated/index.js";
 
@@ -21,7 +21,7 @@ export default [
     gigBreakdownLabels,
     musicBreakdownLabels,
     musicTypeLabels,
-    projectKindLabels,
+    projectsCopy.filters.kind,
   ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
   ...links.flatMap((group) => group.children.map(({ icon }) => icon)),
   ...allProjects.flatMap(({ logo }) => (logo?.symbol ? [logo.symbol] : [])),

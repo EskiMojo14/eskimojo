@@ -10,14 +10,14 @@ test.beforeEach(async ({ projects, fontsLoaded }) => {
 });
 
 test("filters the project list and updates the URL", async ({ projects }) => {
-  await projects.filterBy("Packages");
+  await projects.filterBy("package");
 
   await expect(projects.projectLink("History Adapter")).toBeVisible();
   await expect(projects.projectLink("eskimojo")).not.toBeVisible();
 });
 
 test("opens a project detail and returns to the listing", async ({ projects, historyAdapter }) => {
-  await projects.filterBy("Packages");
+  await projects.filterBy("package");
   await projects.openProject("History Adapter");
   await expect(historyAdapter.heading).toBeVisible();
 

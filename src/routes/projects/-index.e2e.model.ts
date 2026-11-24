@@ -1,38 +1,31 @@
+import type { ProjectKind } from "#/routes/projects/-schema";
 import { expect, PageObjectModel } from "#test/e2e";
 
-const projectFilters = {
-  Projects: "project",
-  Packages: "package",
-  "Open-source contributions": "contribution",
-} as const;
-
-export type ProjectFilterLabel = keyof typeof projectFilters;
+import * as copy from "./-copy";
 
 export class ProjectsPage extends PageObjectModel {
   url = "/projects";
-  title = /^Projects/;
+  title = PageObjectModel.regexp.startsWith(copy.meta.title);
 
   get filterGroup() {
-    return this.page.getByRole("group", { name: "Filter projects by type" });
+    return this.page.getByRole("group", { name: copy.filters.title });
   }
 
-  filterLink(label: ProjectFilterLabel) {
-    return this.filterGroup.getByRole("link", { name: label, exact: true });
+  filterLink(kind: ProjectKind) {
+    return this.filterGroup.getByRole("link", { name: copy.filters.kind[kind].label, exact: true });
   }
 
   projectLink(title: string) {
-    return this.page.getByRole("main", { name: "Projects" }).getByRole("link", {
+    return this.page.getByRole("main", { name: copy.meta.title }).getByRole("link", {
       name: title,
       exact: true,
     });
   }
 
-  async filterBy(label: ProjectFilterLabel) {
-    const link = this.filterLink(label);
+  async filterBy(kind: ProjectKind) {
+    const link = this.filterLink(kind);
     await link.click();
-    await expect(this.page).toHaveURL(
-      (url) => url.searchParams.get("type") === projectFilters[label],
-    );
+    await expect(this.page).toHaveURL((url) => url.searchParams.get("type") === kind);
     await expect(link).toHaveAttribute("aria-current", "page");
   }
 
@@ -43,14 +36,14 @@ export class ProjectsPage extends PageObjectModel {
 
 export class HistoryAdapterPage extends PageObjectModel {
   url = "/projects/history-adapter";
-  title = /^History Adapter/;
+  title = PageObjectModel.regexp.startsWith("History Adapter");
 
   get heading() {
     return this.page.getByRole("heading", { name: this.title, level: 1 });
   }
 
   get backLink() {
-    return this.page.getByRole("link", { name: "Back to projects" });
+    return this.page.getByRole("link", { name: copy.detailsMeta.backLinkLabel });
   }
 
   async goBackToProjects() {

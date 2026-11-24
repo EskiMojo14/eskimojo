@@ -3,6 +3,7 @@ import { createFileRoute, linkOptions } from "@tanstack/react-router";
 import { ProjectDetail } from "#/routes/projects/-components/project-detail";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
+import * as copy from "./-copy";
 import { getProject } from "./-data";
 import { getProjectContent } from "./-mdx";
 
@@ -14,10 +15,10 @@ const backLink = linkOptions({
 
 export const Route = createFileRoute("/projects/$slug")({
   staticData: {
-    title: "Projects",
+    title: copy.meta.title,
     backLink: {
       ...backLink,
-      label: "Back to projects",
+      label: copy.detailsMeta.backLinkLabel,
     },
   },
   loader: async ({ params: { slug } }) => {
@@ -28,12 +29,12 @@ export const Route = createFileRoute("/projects/$slug")({
   },
   head: ({ loaderData }) => {
     const metadata = generatePageMetadata({
-      title: loaderData?.title ?? "Project",
-      description: loaderData?.summary ?? "Explore eskimojo's projects and contributions.",
+      title: loaderData?.title ?? copy.meta.title,
+      description: loaderData?.summary ?? copy.meta.description,
       image: loaderData?.logo?.light
         ? {
             url: loaderData.logo.social ?? loaderData.logo.light,
-            alt: `${loaderData.title} logo`,
+            alt: copy.detailsMeta.logoAlt(loaderData.title),
           }
         : undefined,
     });
