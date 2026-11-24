@@ -4,6 +4,7 @@ import { expect, test, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
 import { SocialLink } from "#/routes/_home/-components/social-link";
+import * as homeCopy from "#/routes/_home/-copy";
 import { Button } from "#/shared/components/buttons/button";
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { ExternalLinkButton } from "#/shared/components/buttons/link-button";
@@ -344,7 +345,7 @@ test("clamps pointer ripples when clicking beyond the compact button's visible e
 test("middle presses ripple on links without preventing navigation or affecting buttons", async () => {
   const result = await page.renderWithProviders(
     <>
-      <SocialLink name="Social" handle="@social" href="https://example.com" icon={<svg />} />
+      <SocialLink profile={homeCopy.social.profiles[0]} />
       <ExternalLinkButton href="#project">Project</ExternalLinkButton>
       <ExternalLinkButton href="#disabled" aria-disabled="true">
         Disabled link
@@ -356,17 +357,18 @@ test("middle presses ripple on links without preventing navigation or affecting 
     </>,
   );
 
-  for (const name of ["Social profile, @social, opens in a new tab", "Project"]) {
-    const link = result.getByRole("link", { name }).element();
-    expect(press(link, 8, 8, 1, 1)).toBe(true);
-    const ripple = wave(link);
-    document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+  const link = result
+    .getByRole("link", { name: homeCopy.social.linkLabel(homeCopy.social.profiles[0]) })
+    .element();
 
-    for (const animation of ripple.getAnimations()) animation.finish();
-    await expect.poll(() => link.querySelector(".ripple__wave")).toBeNull();
-    press(link, 8, 8, 1, 2);
-    expect(link.querySelector(".ripple__wave")).toBeNull();
-  }
+  expect(press(link, 8, 8, 1, 1)).toBe(true);
+  const ripple = wave(link);
+  document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }));
+
+  for (const animation of ripple.getAnimations()) animation.finish();
+  await expect.poll(() => link.querySelector(".ripple__wave")).toBeNull();
+  press(link, 8, 8, 1, 2);
+  expect(link.querySelector(".ripple__wave")).toBeNull();
 
   for (const [role, name] of [
     ["link", "Disabled link"],

@@ -1,8 +1,8 @@
 import { expect, waitFor } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import * as copy from "#/routes/_home/-copy";
 
-import { roles } from "./constants";
 import { HomeHero } from "./index";
 
 import "./index.css";
@@ -24,13 +24,13 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByRole("heading", { name: "Hi, I'm eskimojo." })).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: copy.hero.title })).toBeVisible();
     await expect(canvas.queryByRole("navigation")).not.toBeInTheDocument();
     await expect(canvas.queryByRole("link")).not.toBeInTheDocument();
 
-    const introduction = canvas.getByText(
-      "I'm a web developer, an open source contributor, a Redux maintainer, a musician, an Overwatch casual, and a cat dad.",
-    );
+    const introduction = canvas.getByText(copy.hero.roleFormatter.format(copy.hero.roles), {
+      exact: false,
+    });
 
     await expect(introduction).toBeInTheDocument();
 
@@ -41,34 +41,38 @@ export const Default = meta.story({
       return;
     }
 
-    const pause = canvas.getByRole("button", { name: "Pause role animation" });
+    const pause = canvas.getByRole("button", { name: copy.hero.controls.pause });
     await userEvent.tab();
     await expect(pause).toHaveFocus();
     await userEvent.keyboard("{Enter}");
-    const resume = canvas.getByRole("button", { name: "Resume role animation" });
+    const resume = canvas.getByRole("button", { name: copy.hero.controls.play });
     await expect(resume).toBeVisible();
     await expect(resume).toHaveFocus();
     await userEvent.keyboard(" ");
-    await expect(canvas.getByRole("button", { name: "Pause role animation" })).toHaveFocus();
+    await expect(canvas.getByRole("button", { name: copy.hero.controls.pause })).toHaveFocus();
     await userEvent.keyboard("{Enter}");
     await userEvent.tab();
-    const next = canvas.getByRole("button", { name: "Next role" });
+    const next = canvas.getByRole("button", { name: copy.hero.controls.next });
     await expect(next).toHaveFocus();
 
     const visibleRole = () =>
-      roles.find((role) => canvas.getByText(`${role}.`).checkVisibility({ opacityProperty: true }));
+      copy.hero.roles.find((role) =>
+        canvas.getByText(`${role}.`).checkVisibility({ opacityProperty: true }),
+      );
 
     await userEvent.keyboard("{Enter}");
     const first = visibleRole();
     await expect(first).toBeDefined();
-    const firstIndex = roles.findIndex((role) => role === first);
+    const firstIndex = copy.hero.roles.findIndex((role) => role === first);
 
-    for (let step = 1; step <= roles.length; step++) {
+    for (let step = 1; step <= copy.hero.roles.length; step++) {
       await userEvent.keyboard(" ");
-      await waitFor(() => expect(visibleRole()).toBe(roles[(firstIndex + step) % roles.length]));
+      await waitFor(() =>
+        expect(visibleRole()).toBe(copy.hero.roles[(firstIndex + step) % copy.hero.roles.length]),
+      );
     }
 
-    await expect(canvas.getByRole("button", { name: "Resume role animation" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: copy.hero.controls.play })).toBeVisible();
     await expect(next).toHaveFocus();
   },
 });

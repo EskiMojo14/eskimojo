@@ -1,5 +1,6 @@
 import { createTest, expect } from "#test/e2e";
 
+import * as copy from "./-copy";
 import { HomePage } from "./-index.e2e.model";
 
 const test = createTest({ home: HomePage });
@@ -10,9 +11,9 @@ test.beforeEach(async ({ home, fontsLoaded }) => {
 });
 
 test("Social links display correctly", async ({ home }) => {
-  await expect(home.socialLink("GitHub")).toBeVisible();
-  await expect(home.socialLink("Twitter")).toBeVisible();
-  await expect(home.socialLink("Bluesky")).toBeVisible();
+  for (const profile of copy.social.profiles) {
+    await expect(home.socialLink(profile.name)).toBeVisible();
+  }
 });
 
 test("Christmas override serves the seasonal hero and Goat artwork", async ({ home, page }) => {

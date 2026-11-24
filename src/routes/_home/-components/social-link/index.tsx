@@ -1,32 +1,33 @@
-import type { ReactNode } from "react";
-
+import type { SocialProfile } from "#/routes/_home/-copy";
+import * as copy from "#/routes/_home/-copy";
 import { Card } from "#/shared/components/card";
 import { useRipple } from "#/shared/components/ripple";
 import { MdSymbol } from "#/shared/components/symbol";
 
+import { icons } from "./icons";
+
 export interface SocialLinkProps {
-  name: string;
-  handle: string;
-  href: string;
-  icon: ReactNode;
+  profile: SocialProfile;
 }
 
-export function SocialLink({ name, handle, href, icon }: SocialLinkProps) {
+export function SocialLink({ profile, profile: { name, handle, href } }: SocialLinkProps) {
   const { handlers, ripple } = useRipple<HTMLAnchorElement>();
+
+  const Icon = icons[name];
 
   return (
     <a
       {...handlers}
       className="home-social-link"
       href={href}
-      aria-label={`${name} profile, ${handle}, opens in a new tab`}
+      aria-label={copy.social.linkLabel(profile)}
       target="_blank"
       rel="noopener noreferrer"
     >
       {ripple}
       <Card className="home-social-link__card" variant="elevated">
         <span className="home-social-link__brand-icon" aria-hidden="true">
-          {icon}
+          <Icon aria-hidden="true" />
         </span>
         <span className="home-social-link__name">{name}</span>
         <span className="home-social-link__handle">{handle}</span>

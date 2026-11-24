@@ -1,14 +1,12 @@
 import { useEffect, useId, useRef, useReducer } from "react";
 import BEMHelper from "react-bem-helper";
 
+import * as copy from "#/routes/_home/-copy";
 import { IconButton } from "#/shared/components/buttons/icon-button";
 import { MdSymbol } from "#/shared/components/symbol";
 import { useHapticFeedback } from "#/shared/lib/haptics";
 
-import { roles } from "./constants";
-
 const homeHeroBem = BEMHelper("home-hero");
-const roleList = new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(roles);
 
 function useHomeHeroRoleWidths() {
   const rolesRef = useRef<HTMLSpanElement>(null);
@@ -101,29 +99,32 @@ export function HomeHero() {
   const titleId = useId();
   const rolesRef = useHomeHeroRoleWidths();
   const { heroRef, paused, skipRole, togglePaused } = useHomeHeroRoleAnimation();
-  const animationAction = paused ? "Resume role animation" : "Pause role animation";
+  const animationAction = paused ? copy.hero.controls.play : copy.hero.controls.pause;
 
   return (
     <section {...homeHeroBem()} ref={heroRef} aria-labelledby={titleId} data-paused={paused}>
       <div {...homeHeroBem({ element: "content" })}>
         <h1 id={titleId} {...homeHeroBem({ element: "title" })}>
-          Hi, I&apos;m eskimojo.
+          {copy.hero.title}
         </h1>
         <div {...homeHeroBem({ element: "description-row" })}>
           <p {...homeHeroBem({ element: "description" })}>
-            <span {...homeHeroBem({ element: "static-description" })}>I'm {roleList}.</span>
+            <span {...homeHeroBem({ element: "static-description" })}>
+              {copy.hero.roleDisplay(copy.hero.roleFormatter.format(copy.hero.roles))}.
+            </span>
             <span {...homeHeroBem({ element: "animated-description" })} aria-hidden="true">
-              I'm{" "}
-              <span {...homeHeroBem({ element: "roles" })} ref={rolesRef}>
-                {roles.map((role) => (
-                  <span key={role} {...homeHeroBem({ element: "role" })}>
-                    {role}.
+              {copy.hero.roleDisplay(
+                <span {...homeHeroBem({ element: "roles" })} ref={rolesRef}>
+                  {copy.hero.roles.map((role) => (
+                    <span key={role} {...homeHeroBem({ element: "role" })}>
+                      {role}.
+                    </span>
+                  ))}
+                  <span {...homeHeroBem({ element: "progress" })}>
+                    <span {...homeHeroBem({ element: "progress-fill" })} />
                   </span>
-                ))}
-                <span {...homeHeroBem({ element: "progress" })}>
-                  <span {...homeHeroBem({ element: "progress-fill" })} />
-                </span>
-              </span>
+                </span>,
+              )}
             </span>
           </p>
           <div {...homeHeroBem({ element: "controls" })}>
@@ -141,8 +142,8 @@ export function HomeHero() {
             />
             <IconButton
               {...homeHeroBem({ element: "button" })}
-              aria-label="Next role"
-              tooltip="Next role"
+              aria-label={copy.hero.controls.next}
+              tooltip={copy.hero.controls.next}
               tooltipAsLabel
               icon={<MdSymbol>skip_next</MdSymbol>}
               onClick={skipRole}

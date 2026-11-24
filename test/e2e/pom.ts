@@ -9,6 +9,12 @@ export abstract class ObjectModel {
   constructor(page: Page) {
     this.page = page;
   }
+
+  static regexp = {
+    substring: (str: string) => new RegExp(RegExp.escape(str)),
+    startsWith: (str: string) => new RegExp(`^${RegExp.escape(str)}`),
+    endsWith: (str: string) => new RegExp(`${RegExp.escape(str)}$`),
+  };
 }
 
 export class ComponentObjectModel extends ObjectModel {
