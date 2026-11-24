@@ -15,6 +15,11 @@ const copyAttributes = new Set([
 
 const copyPattern = /[\p{L}\p{N}]/u;
 
+const staticDataFields = new Set(["title", "subtitle"]);
+const metadataFields = new Set(["title", "description"]);
+const backLinkFields = new Set(["label"]);
+const imageFields = new Set(["alt"]);
+
 function hasCopy(value: string) {
   return copyPattern.test(value);
 }
@@ -60,7 +65,88 @@ export const noInlineCopy = defineRule({
     messages: { inlineCopy: "Move this UI copy to a copy module." },
   },
   create(context) {
+    function checkObject(
+      expression: ESTree.Expression,
+      fields: ReadonlySet<string>,
+      nestedKey?: string,
+      nestedFields?: ReadonlySet<string>,
+    ) {
+      if (expression.type === "ConditionalExpression") {
+        checkObject(expression.consequent, fields, nestedKey, nestedFields);
+        checkObject(expression.alternate, fields, nestedKey, nestedFields);
+
+        return;
+      }
+
+      if (
+        expression.type === "TSAsExpression" ||
+        expression.type === "TSSatisfiesExpression" ||
+        expression.type === "TSNonNullExpression"
+      ) {
+        checkObject(expression.expression, fields, nestedKey, nestedFields);
+
+        return;
+      }
+
+      if (expression.type !== "ObjectExpression") return;
+
+      for (const property of expression.properties) {
+        if (property.type !== "Property" || property.computed) continue;
+
+        const key = property.key;
+
+        const name =
+          key.type === "Identifier" ? key.name : key.type === "Literal" ? key.value : null;
+
+        if (typeof name !== "string") continue;
+
+        if (fields.has(name) && containsInlineCopy(property.value)) {
+          context.report({ node: property.value, messageId: "inlineCopy" });
+        } else if (name === nestedKey && nestedFields) {
+          checkObject(property.value, nestedFields);
+        }
+      }
+    }
+
     return {
+      CallExpression(node) {
+        const callee = node.callee;
+        const argument = node.arguments[0];
+
+        if (!argument || argument.type === "SpreadElement") return;
+
+        if (callee.type === "Identifier" && callee.name === "generatePageMetadata") {
+          checkObject(argument, metadataFields, "image", imageFields);
+
+          return;
+        }
+
+        const factory = callee.type === "CallExpression" ? callee.callee : callee;
+
+        if (
+          factory.type !== "Identifier" ||
+          ![
+            "createFileRoute",
+            "createRootRoute",
+            "createRootRouteWithContext",
+            "createRoute",
+          ].includes(factory.name) ||
+          argument.type !== "ObjectExpression"
+        ) {
+          return;
+        }
+
+        for (const property of argument.properties) {
+          if (
+            property.type === "Property" &&
+            !property.computed &&
+            property.key.type === "Identifier" &&
+            property.key.name === "staticData"
+          ) {
+            checkObject(property.value, staticDataFields, "backLink", backLinkFields);
+          }
+        }
+      },
       JSXText(node) {
         if (!isSymbolContent(node) && hasCopy(node.value)) {
           context.report({ node, messageId: "inlineCopy" });

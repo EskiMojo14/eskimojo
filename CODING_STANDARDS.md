@@ -71,10 +71,10 @@ new conventions.
   `src/shared/styles`.
 - Keep changes in the route or module that owns the behavior. Follow nearby
   implementations before introducing a new abstraction.
-- The home route keeps UI copy in its `-copy.tsx` module or application MDX.
-  An experimental lint warning catches inline JSX text and common
-  copy-bearing attributes there; it does not find every dynamic or non-JSX
-  string. Icons, tests, and stories are excluded.
+- The home and projects routes keep UI copy in their `-copy.tsx` modules or
+  application MDX. An experimental lint warning catches inline JSX text,
+  common copy-bearing attributes, route `staticData`, and page metadata there;
+  it does not find every dynamic string. Icons, tests, and stories are excluded.
 - Do not edit generated files such as `*.gen.*` or `src/routeTree.gen.ts`
   directly. Update their source or generator instead.
 
