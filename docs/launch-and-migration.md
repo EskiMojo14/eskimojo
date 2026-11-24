@@ -44,7 +44,7 @@ The site owner confirmed its deployed content and HTTPS were verified on
 ## Relationship to the Neocities site
 
 The new site is intended to be the primary personal site. Keep
-`https://eskimojo.neocities.org/` online as a frozen legacy/archive site rather
+`https://neocities.eskimojo.dev/` online as a frozen legacy/archive site rather
 than redirecting it or maintaining it as a second independently updated site.
 The archived site should link visitors to the new primary site.
 
@@ -59,7 +59,7 @@ blocker.
 The current Neocities site and its public source are references for content and
 behavior:
 
-- Existing site: `https://eskimojo.neocities.org/`
+- Existing site: `https://neocities.eskimojo.dev/`
 - Existing source: `https://github.com/EskiMojo14/neocities`
 
 Migration priorities:
