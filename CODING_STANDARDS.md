@@ -60,6 +60,8 @@ new conventions.
   `tsr.config.json`, and `netlify.toml` at the root for tool and editor discovery.
   The CSS lint script selects `config/stylelint.config.ts` with `--config`;
   VS Code uses the same file through `stylelint.configFile`.
+- Keep project-specific Oxlint rules and their tests in `config/oxlint/`;
+  register rules in its plugin entry point and configure them in `vite.config.ts`.
 - Keep route definitions in `src/routes`, following TanStack Router's
   file-based routing conventions.
 - Put route-specific components, hooks, data, styles, tests, and stories in
@@ -69,6 +71,10 @@ new conventions.
   `src/shared/styles`.
 - Keep changes in the route or module that owns the behavior. Follow nearby
   implementations before introducing a new abstraction.
+- The home route keeps UI copy in its `-copy.tsx` module or application MDX.
+  An experimental lint warning catches inline JSX text and common
+  copy-bearing attributes there; it does not find every dynamic or non-JSX
+  string. Icons, tests, and stories are excluded.
 - Do not edit generated files such as `*.gen.*` or `src/routeTree.gen.ts`
   directly. Update their source or generator instead.
 

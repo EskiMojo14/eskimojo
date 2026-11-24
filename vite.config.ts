@@ -37,6 +37,7 @@ const config = defineConfig({
   lint: {
     plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
     jsPlugins: [
+      { name: "eskimojo", specifier: "./config/oxlint/index.ts" },
       { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
       { name: "landmines", specifier: "@interfere/landmines" },
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
@@ -112,6 +113,14 @@ const config = defineConfig({
       vitest: { typecheck: true },
     },
     overrides: [
+      {
+        files: ["src/routes/_home/**/*.{ts,tsx}"],
+        rules: { "eskimojo/no-inline-copy": "warn" },
+      },
+      {
+        files: ["**/-copy.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.stories.{ts,tsx}"],
+        rules: { "eskimojo/no-inline-copy": "off" },
+      },
       {
         files: ["vite/symbols.ts", "vite/server-fn-registry.ts"],
         // These modules validate compiler-generated ASTs before reading version-sensitive fields.
