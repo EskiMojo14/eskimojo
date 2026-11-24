@@ -7,7 +7,8 @@ import {
   MusicListSkeleton,
 } from "#/routes/music.{-$breakdown}/-components/music-list";
 import { MusicSearchLinks } from "#/routes/music.{-$breakdown}/-components/search-links";
-import { musicTypeLabels, type MusicType } from "#/routes/music.{-$breakdown}/-constants";
+import { type MusicType } from "#/routes/music.{-$breakdown}/-constants";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import type { TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
@@ -35,9 +36,9 @@ export function MusicTopList({
       emptyState={
         items.length === 0 ? (
           <EmptyState
-            icon={<MdSymbol>{musicTypeLabels[kind].icon}</MdSymbol>}
-            title="No listening data for this period."
-            description="Try choosing a different time period."
+            icon={<MdSymbol>{copy.topTabs.type[kind].icon}</MdSymbol>}
+            title={copy.topMusic.emptyTitle}
+            description={copy.topMusic.emptyDescription}
           />
         ) : undefined
       }
@@ -48,11 +49,11 @@ export function MusicTopList({
           data-artwork-palette={item.palette ? "" : undefined}
           style={item.palette}
           rank={item.rank}
-          rankLabel={`Rank ${item.rank}`}
+          rankLabel={copy.topMusic.rank(item.rank)}
           artwork={
             <MusicArtwork
               imageUrl={item.artwork?.imageUrl}
-              fallbackIcon={musicTypeLabels[kind].icon}
+              fallbackIcon={copy.topTabs.type[kind].icon}
             />
           }
           headline={item.name}
@@ -63,7 +64,7 @@ export function MusicTopList({
               artist={"artist" in item ? item.artist : undefined}
             />
           }
-          trailing={`${item.playcount.toLocaleString("en-GB")} ${item.playcount === 1 ? "play" : "plays"}`}
+          trailing={copy.topMusic.playCount(item.playcount)}
         />
       ))}
     </MusicListLayout>

@@ -7,6 +7,7 @@ import {
 } from "react";
 import BEMHelper from "react-bem-helper";
 
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import type { UserData } from "#/routes/music.{-$breakdown}/-query.ts";
 import { Skeleton, SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
@@ -34,38 +35,39 @@ function MusicSummaryLayout({
   average: ReactNode;
 }) {
   return (
-    <section {...props} {...summaryBem({ extra: className })} aria-label="Listening statistics">
-      <p>I love music! So far I've listened to:</p>
+    <section {...props} {...summaryBem({ extra: className })} aria-label={copy.summary.title}>
+      <p>{copy.summary.introduction}</p>
       <dl {...summaryBem({ element: "stats" })}>
         <div>
           <dt>
-            <MdSymbol>music_history</MdSymbol>Scrobbles
+            <MdSymbol>{copy.summary.counts.scrobbles.icon}</MdSymbol>
+            {copy.summary.counts.scrobbles.label}
           </dt>
           <dd>{counts.scrobbles}</dd>
         </div>
         <div>
           <dt>
-            <MdSymbol>artist</MdSymbol>Artists
+            <MdSymbol>{copy.summary.counts.artists.icon}</MdSymbol>
+            {copy.summary.counts.artists.label}
           </dt>
           <dd>{counts.artists}</dd>
         </div>
         <div>
           <dt>
-            <MdSymbol>album</MdSymbol>Albums
+            <MdSymbol>{copy.summary.counts.albums.icon}</MdSymbol>
+            {copy.summary.counts.albums.label}
           </dt>
           <dd>{counts.albums}</dd>
         </div>
         <div>
           <dt>
-            <MdSymbol>music_note</MdSymbol>Tracks
+            <MdSymbol>{copy.summary.counts.tracks.icon}</MdSymbol>
+            {copy.summary.counts.tracks.label}
           </dt>
           <dd>{counts.tracks}</dd>
         </div>
       </dl>
-      <p>
-        since {registered} (an average of {average} scrobbles per day), and that's just the ones
-        Last.fm knows about.
-      </p>
+      <p>{copy.summary.detail(registered, average)}</p>
     </section>
   );
 }
@@ -73,7 +75,7 @@ function MusicSummaryLayout({
 export function MusicSummarySkeleton() {
   return (
     <>
-      <SkeletonProgress label="Loading listening summary..." />
+      <SkeletonProgress label={copy.summary.loading} />
       <MusicSummaryLayout
         {...skeletonBem()}
         aria-hidden="true"

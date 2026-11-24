@@ -7,6 +7,7 @@ import {
   MusicListSkeleton,
 } from "#/routes/music.{-$breakdown}/-components/music-list";
 import { MusicSearchLinks } from "#/routes/music.{-$breakdown}/-components/search-links";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import type { RecentTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { EmptyState } from "#/shared/components/empty-state";
 import { SkeletonProgress } from "#/shared/components/skeleton";
@@ -23,8 +24,8 @@ const playedAt = new Intl.DateTimeFormat("en-GB", {
 export function RecentTracksSkeleton() {
   return (
     <>
-      <SkeletonProgress label="Loading recent tracks..." />
-      <MusicListSkeleton title="Recently played" kind="recent" />
+      <SkeletonProgress label={copy.recentTracks.loading} />
+      <MusicListSkeleton title={copy.tabs.breakdown.recent.label} kind="recent" />
     </>
   );
 }
@@ -32,13 +33,13 @@ export function RecentTracksSkeleton() {
 export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> }) {
   return (
     <MusicListLayout
-      title="Recently played"
+      title={copy.tabs.breakdown.recent.label}
       emptyState={
         tracks.length === 0 ? (
           <EmptyState
             icon={<MdSymbol>music_note</MdSymbol>}
-            title="No recently played tracks yet."
-            description="Your recently played tracks will appear here once you start listening."
+            title={copy.recentTracks.emptyTitle}
+            description={copy.recentTracks.emptyDescription}
           />
         ) : undefined
       }
@@ -68,10 +69,12 @@ export function RecentTracks({ tracks }: { tracks: ReadonlyArray<RecentTrack> })
                     <rect x="15" y="6" width="2" height="12" />
                     <rect x="19" y="10" width="2" height="4" />
                   </svg>
-                  <span>Now playing</span>
+                  <span>{copy.recentTracks.nowPlaying}</span>
                 </span>
               ) : (
-                <time dateTime={track.date}>{playedAt.format(new Date(track.date))} UTC</time>
+                <time dateTime={track.date}>
+                  {copy.recentTracks.playedAt(playedAt.format(new Date(track.date)))}
+                </time>
               )
             }
           />

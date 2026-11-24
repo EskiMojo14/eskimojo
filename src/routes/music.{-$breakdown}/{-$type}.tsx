@@ -29,7 +29,9 @@ import { preloadMusic } from "#/routes/music.{-$breakdown}/-loader";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { generatePageMetadata } from "#/shared/lib/document-head";
 
-import styles from "./music.{-$breakdown}/index.css?url";
+import * as copy from "./-copy";
+
+import styles from "./index.css?url";
 
 export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
   params: {
@@ -48,15 +50,8 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
     },
   },
   staticData: {
-    title: "Music",
-    subtitle: (
-      <>
-        Powered by{" "}
-        <a href="https://www.last.fm/user/eskimojo14" target="_blank" rel="noopener noreferrer">
-          Last.fm
-        </a>
-      </>
-    ),
+    title: copy.meta.title,
+    subtitle: copy.meta.subtitle,
   },
   validateSearch: v.object({
     period: v.optional(periodSchema),
@@ -92,11 +87,7 @@ export const Route = createFileRoute("/music/{-$breakdown}/{-$type}")({
     });
   },
   head: () => {
-    const metadata = generatePageMetadata({
-      title: "Music",
-      description:
-        "See what eskimojo is listening to, with recent tracks and top music from Last.fm.",
-    });
+    const metadata = generatePageMetadata(copy.meta);
 
     return {
       ...metadata,
@@ -121,10 +112,7 @@ function RouteComponent() {
 
   return (
     <main>
-      <MusicDataBoundary
-        loading={<MusicSummarySkeleton />}
-        errorTitle="Couldn't load listening statistics"
-      >
+      <MusicDataBoundary loading={<MusicSummarySkeleton />} errorTitle={copy.errors.summary}>
         <SummaryPanel />
       </MusicDataBoundary>
       <MusicBreakdownTabs />
@@ -142,7 +130,7 @@ function RouteComponent() {
                 <MusicDataBoundary
                   resetKey={breakdown}
                   loading={<RecentTracksSkeleton />}
-                  errorTitle="Couldn't load recent tracks"
+                  errorTitle={copy.errors.recent}
                 >
                   <RecentTracksPanel />
                 </MusicDataBoundary>
@@ -153,7 +141,7 @@ function RouteComponent() {
                   <MusicDataBoundary
                     resetKey={`${breakdown}:${period}:${type}`}
                     loading={<MusicTopMusicSkeleton type={type} />}
-                    errorTitle="Couldn't load top music"
+                    errorTitle={copy.errors.top}
                   >
                     <TopMusicPanel />
                   </MusicDataBoundary>

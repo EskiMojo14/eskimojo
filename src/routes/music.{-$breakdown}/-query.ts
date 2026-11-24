@@ -7,7 +7,7 @@ import { anyAbortSignal } from "#/utils/index.ts";
 import * as vUtils from "#/utils/valibot";
 
 import { addArtworkPalettes } from "./-artwork-palette.server";
-import { periodSchema, type Period } from "./-constants";
+import { periodSchema } from "./-constants";
 import { addLastfmArtworkFallback, fetchLastfm, imageSchema, withLastfmArtwork } from "./-lastfm";
 import {
   addLastfmArtistArtwork,
@@ -206,15 +206,6 @@ export const getRecentTracks = (
       getRecentTracksFn({ data: params, signal: anyAbortSignal(signal, signalOpt) }),
     select: (res) => res.recenttracks.track,
   });
-
-export const fullPeriodLabels: Record<Period, string> = {
-  "7day": "7 days",
-  "1month": "30 days",
-  "3month": "3 months",
-  "6month": "6 months",
-  "12month": "12 months",
-  overall: "All time",
-};
 
 export const topTrackSchema = v.pipe(
   v.object({

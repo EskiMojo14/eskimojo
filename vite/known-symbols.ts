@@ -1,5 +1,5 @@
 import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants.ts";
-import { musicBreakdownLabels, musicTypeLabels } from "#/routes/music.{-$breakdown}/-constants.ts";
+import * as musicCopy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import * as projectsCopy from "#/routes/projects/-copy.tsx";
 import { links } from "#/shared/components/sidebar/groups";
 import {
@@ -19,8 +19,9 @@ export default [
     densityLabels,
     paletteLabels,
     gigBreakdownLabels,
-    musicBreakdownLabels,
-    musicTypeLabels,
+    musicCopy.tabs.breakdown,
+    musicCopy.topTabs.type,
+    musicCopy.summary.counts,
     projectsCopy.filters.kind,
   ].flatMap((labels) => Object.values(labels).map(({ icon }) => icon)),
   ...links.flatMap((group) => group.children.map(({ icon }) => icon)),

@@ -114,7 +114,11 @@ const config = defineConfig({
     },
     overrides: [
       {
-        files: ["src/routes/_home/**/*.{ts,tsx}", "src/routes/projects/**/*.{ts,tsx}"],
+        files: [
+          "src/routes/_home/**/*.{ts,tsx}",
+          "src/routes/projects/**/*.{ts,tsx}",
+          "src/routes/music.\\{-$breakdown\\}/**/*.{ts,tsx}",
+        ],
         rules: { "eskimojo/no-inline-copy": "warn" },
       },
       {

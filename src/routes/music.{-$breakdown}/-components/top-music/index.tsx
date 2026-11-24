@@ -4,11 +4,8 @@ import {
   MusicTopList,
   MusicTopListSkeleton,
 } from "#/routes/music.{-$breakdown}/-components/top-list";
-import {
-  musicTypeLabels,
-  musicTypeSchema,
-  type MusicType,
-} from "#/routes/music.{-$breakdown}/-constants";
+import { musicTypeSchema, type MusicType } from "#/routes/music.{-$breakdown}/-constants";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import type { TopAlbum, TopArtist, TopTrack } from "#/routes/music.{-$breakdown}/-query.ts";
 import { SkeletonProgress } from "#/shared/components/skeleton";
 import { MdSymbol } from "#/shared/components/symbol";
@@ -19,7 +16,7 @@ const musicRoute = getRouteApi("/music/{-$breakdown}/{-$type}");
 export function MusicTopMusicTabs() {
   return (
     <TabNav
-      aria-label="Top music rankings"
+      aria-label={copy.topTabs.title}
       variant="secondary"
       className="music-top-music"
       responsive
@@ -34,10 +31,10 @@ export function MusicTopMusicTabs() {
           params={(previous) => ({ ...previous, type })}
           search={(previous) => ({ period: previous.period })}
           activeOptions={{ exact: true }}
-          icon={<MdSymbol>{musicTypeLabels[type].icon}</MdSymbol>}
+          icon={<MdSymbol>{copy.topTabs.type[type].icon}</MdSymbol>}
           replace
         >
-          {musicTypeLabels[type].label}
+          {copy.topTabs.type[type].label}
         </TabLink>
       ))}
     </TabNav>
@@ -47,7 +44,7 @@ export function MusicTopMusicTabs() {
 export function MusicTopMusicSkeleton({ type = "tracks" }: { type?: MusicType }) {
   return (
     <>
-      <SkeletonProgress label="Loading top music..." />
+      <SkeletonProgress label={copy.topMusic.loading} />
       {musicTypeSchema.options.map((value) => (
         <TabLinkPanel
           key={value}
@@ -56,7 +53,7 @@ export function MusicTopMusicSkeleton({ type = "tracks" }: { type?: MusicType })
           hidden={type !== value}
           className="music-top-music music-skeleton"
         >
-          <MusicTopListSkeleton title={`Top ${value}`} kind={value} />
+          <MusicTopListSkeleton title={copy.topMusic.titles[value]} kind={value} />
         </TabLinkPanel>
       ))}
     </>
@@ -84,7 +81,11 @@ export function MusicTopMusic({
           hidden={type !== value}
           className="music-top-music"
         >
-          <MusicTopList title={`Top ${value}`} items={rankings[value] ?? []} kind={value} />
+          <MusicTopList
+            title={copy.topMusic.titles[value]}
+            items={rankings[value] ?? []}
+            kind={value}
+          />
         </TabLinkPanel>
       ))}
     </>

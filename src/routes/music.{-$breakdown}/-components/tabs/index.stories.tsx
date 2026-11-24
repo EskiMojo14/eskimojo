@@ -11,10 +11,8 @@ import { expect, waitFor } from "storybook/test";
 import * as v from "valibot";
 
 import preview from "#.storybook/preview";
-import {
-  musicBreakdownLabels,
-  musicBreakdownSchema,
-} from "#/routes/music.{-$breakdown}/-constants.ts";
+import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import { TabLinkPanel } from "#/shared/components/tabs";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 
@@ -39,7 +37,7 @@ function MusicTabsContent() {
         >
           {value === breakdown && (
             <>
-              <h2>{musicBreakdownLabels[breakdown].label}</h2>
+              <h2>{copy.tabs.breakdown[breakdown].label}</h2>
               <p>
                 {breakdown === "recent"
                   ? "Your latest listening activity."

@@ -1,13 +1,14 @@
 import BEMHelper from "react-bem-helper";
 
-import { fullPeriodLabels, periodSchema } from "#/routes/music.{-$breakdown}/-query.ts";
+import { periodSchema } from "#/routes/music.{-$breakdown}/-constants";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import { ChipGroup, InternalLinkChip } from "#/shared/components/chips";
 
 const periodPickerBem = BEMHelper("music-period-picker");
 
 export function MusicPeriodPicker() {
   return (
-    <ChipGroup {...periodPickerBem()} aria-label="Listening period">
+    <ChipGroup {...periodPickerBem()} aria-label={copy.periods.title}>
       {periodSchema.options.map((value) => (
         <InternalLinkChip
           key={value}
@@ -20,7 +21,7 @@ export function MusicPeriodPicker() {
           activeOptions={{ exact: true }}
           replace
         >
-          {fullPeriodLabels[value]}
+          {copy.periods.labels[value]}
         </InternalLinkChip>
       ))}
     </ChipGroup>

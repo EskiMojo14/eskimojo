@@ -3,6 +3,7 @@ import { Suspense, useCallback, type ReactNode } from "react";
 import BEMHelper from "react-bem-helper";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import { Button } from "#/shared/components/buttons/button";
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
@@ -17,10 +18,10 @@ export function MusicDataError({ title, onRetry }: { title: string; onRetry: () 
         role="alert"
         icon={<MdSymbol>cloud_off</MdSymbol>}
         title={title}
-        description="Last.fm data is unavailable right now. Please try again."
+        description={copy.errors.description}
       />
       <Button variant="tonal" onClick={onRetry} icon={<MdSymbol>refresh</MdSymbol>}>
-        Retry
+        {copy.errors.retry}
       </Button>
     </div>
   );
@@ -71,9 +72,9 @@ export function MusicRefreshNotice({
 }) {
   return (
     <div {...refreshBem()}>
-      <output>Couldn't refresh recent tracks. Showing the last loaded results.</output>
+      <output>{copy.errors.refresh}</output>
       <Button variant="text" onClick={onRetry} loading={isFetching}>
-        Retry
+        {copy.errors.retry}
       </Button>
     </div>
   );

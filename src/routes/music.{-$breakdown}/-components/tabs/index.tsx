@@ -1,9 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 
-import {
-  musicBreakdownLabels,
-  musicBreakdownSchema,
-} from "#/routes/music.{-$breakdown}/-constants.ts";
+import { musicBreakdownSchema } from "#/routes/music.{-$breakdown}/-constants.ts";
+import * as copy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabNav } from "#/shared/components/tabs";
 
@@ -13,7 +11,7 @@ export function MusicBreakdownTabs() {
   const { period } = musicRoute.useSearch();
 
   return (
-    <TabNav aria-label="Music breakdown" variant="primary" responsive>
+    <TabNav aria-label={copy.tabs.title} variant="primary" responsive>
       {musicBreakdownSchema.options.map((value) =>
         value === "top" ? (
           <TabLink
@@ -24,10 +22,10 @@ export function MusicBreakdownTabs() {
             to="/music/top"
             search={() => ({ period })}
             activeOptions={{ exact: false, includeSearch: false }}
-            icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
+            icon={<MdSymbol>{copy.tabs.breakdown[value].icon}</MdSymbol>}
             replace
           >
-            {musicBreakdownLabels[value].label}
+            {copy.tabs.breakdown[value].label}
           </TabLink>
         ) : (
           <TabLink
@@ -39,10 +37,10 @@ export function MusicBreakdownTabs() {
             params={{ breakdown: value, type: undefined }}
             search={() => ({ period })}
             activeOptions={{ exact: false }}
-            icon={<MdSymbol>{musicBreakdownLabels[value].icon}</MdSymbol>}
+            icon={<MdSymbol>{copy.tabs.breakdown[value].icon}</MdSymbol>}
             replace
           >
-            {musicBreakdownLabels[value].label}
+            {copy.tabs.breakdown[value].label}
           </TabLink>
         ),
       )}

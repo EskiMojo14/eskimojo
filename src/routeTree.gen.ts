@@ -15,7 +15,7 @@ import { Route as MusicTopRouteImport } from './routes/music.top'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as GigsChar123BreakdownChar125IndexRouteImport } from './routes/gigs.{-$breakdown}/index'
-import { Route as MusicChar123BreakdownChar125Char123TypeChar125RouteImport } from './routes/music.{-$breakdown}.{-$type}'
+import { Route as MusicChar123BreakdownChar125Char123TypeChar125RouteImport } from './routes/music.{-$breakdown}/{-$type}'
 
 const DiscordRoute = DiscordRouteImport.update({
   id: '/discord',

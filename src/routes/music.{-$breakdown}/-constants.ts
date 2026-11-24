@@ -14,18 +14,7 @@ export const musicTypeSchema = v.fallback(strictMusicTypeSchema, "tracks");
 
 export type MusicType = v.InferOutput<typeof musicTypeSchema>;
 
-export const musicTypeLabels = {
-  tracks: { label: "Tracks", icon: "music_note" },
-  albums: { label: "Albums", icon: "album" },
-  artists: { label: "Artists", icon: "artist" },
-} as const satisfies Record<MusicType, { label: string; icon: string }>;
-
 export const strictMusicBreakdownSchema = v.picklist(["top", "recent"]);
 export const musicBreakdownSchema = v.fallback(strictMusicBreakdownSchema, "top");
 
 export type MusicBreakdown = v.InferOutput<typeof musicBreakdownSchema>;
-
-export const musicBreakdownLabels: Record<MusicBreakdown, { label: string; icon: string }> = {
-  top: { label: "Top music", icon: "leaderboard" },
-  recent: { label: "Recently played", icon: "history" },
-};
