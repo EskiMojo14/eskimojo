@@ -95,7 +95,7 @@
     "esquery": "^1.7.0",
     "json-schema-to-typescript": "^16.0.0",
     "lightningcss": "^1.33.0",
-    "mdx-content-mapper": "^0.0.2",
+    "mdx-content-mapper": "^0.0.4",
     "mix-n-matchers": "^3.0.0",
     "modern-web-guidance": "^1.0.2",
     "msw": "^3.0.7",
