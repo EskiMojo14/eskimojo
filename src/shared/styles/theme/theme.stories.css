@@ -4,7 +4,6 @@
   @extend %base;
 
   padding: 1rem;
-  border-radius: var(--md-sys-shape-corner-medium);
   background: var(--background);
   color: var(--foreground);
 }
@@ -76,12 +75,6 @@ $syntax-swatches:
     font-feature-settings: var(--md-sys-typography-features-heading);
   }
 
-  &__swatches {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-    gap: 1rem;
-  }
-
   &__surface-tones {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -130,8 +123,9 @@ $syntax-swatches:
 
   &__syntax-swatches {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 6rem), 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+    grid-auto-rows: minmax(5.5rem, auto);
+    gap: 0.25rem;
   }
 }
 
@@ -167,49 +161,35 @@ $syntax-swatches:
   background: var(--swatch-bg);
   color: var(--swatch-fg);
   font: var(--md-sys-typography-label-small);
+
+  &--syntax {
+    padding: 0;
+  }
+
+  &__syntax-label {
+    padding: 0.4rem 0.6rem;
+    background: var(--background);
+    color: var(--foreground);
+
+    @supports (color: contrast-color(var(--swatch-bg))) {
+      padding: 0.6rem;
+      background: transparent;
+      color: contrast-color(var(--swatch-bg));
+    }
+  }
 }
 
 .theme-group--additional .theme-group__title {
   margin-block-end: 0.25rem;
 }
 
-.theme-swatch {
-  display: grid;
-  gap: 0.5rem;
-  margin: 0;
-
-  /* --swatch-bg, --swatch-fg and --swatch-border are set per swatch. */
-  &__tile {
-    display: flex;
-    align-items: center;
-    height: 4.5rem;
-    padding: 0 1rem;
-    border: 1px solid var(--swatch-border, var(--md-sys-color-outline-variant));
-    border-radius: var(--md-sys-shape-corner-medium);
-    background: var(--swatch-bg);
-    color: var(--swatch-fg);
-    font: var(--md-sys-typography-title-medium);
-    font-feature-settings: var(--md-sys-typography-features-heading);
-
-    &--border {
-      border-width: 3px;
-    }
-  }
-
-  &__caption {
-    font: var(--md-sys-typography-label-medium);
-    font-feature-settings: var(--md-sys-typography-features-code);
-    color: var(--md-sys-color-on-surface-variant);
-  }
-
-  &__name {
-    color: var(--md-sys-color-on-surface);
-  }
+.theme-group[data-syntax-swatch] .theme-group__title {
+  color: inherit;
 }
 
-.theme-group[data-syntax-swatch]
-  :is(.theme-group__title, .theme-swatch__caption, .theme-swatch__name) {
-  color: inherit;
+.theme-page > .theme-group__syntax-swatches {
+  --background: var(--md-sys-color-surface);
+  --foreground: var(--md-sys-color-on-surface);
 }
 
 @media (--tablet-small) {

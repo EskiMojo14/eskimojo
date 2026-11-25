@@ -7,18 +7,8 @@ import "./theme.stories.css";
 
 const themePageBem = BEMHelper("theme-page");
 const themeGroupBem = BEMHelper("theme-group");
-const themeSwatchBem = BEMHelper("theme-swatch");
 const themeSchemeBem = BEMHelper("theme-scheme");
 const themeRoleBem = BEMHelper("theme-role");
-
-type Swatch = {
-  /** Role used as the background. */
-  bg: string;
-  /** Role used for the sample text. Omitted for roles that aren't text backgrounds. */
-  fg?: string;
-  /** Role drawn as a border instead of a fill. */
-  border?: string;
-};
 
 const token = (role: string) => `var(--md-sys-color-${role})`;
 
@@ -165,43 +155,6 @@ function AccentGroup({ accent, swatches }: { accent: string; swatches: Array<Col
   );
 }
 
-function SwatchTile({
-  bg,
-  fg,
-  border,
-  resolveToken = token,
-}: Swatch & { resolveToken?: (role: string) => string }) {
-  return (
-    <figure {...themeSwatchBem()}>
-      <div
-        {...themeSwatchBem({ element: "tile", modifiers: { border: Boolean(border) } })}
-        style={{
-          "--swatch-bg": resolveToken(bg),
-          "--swatch-fg": fg && resolveToken(fg),
-          "--swatch-border": border && resolveToken(border),
-        }}
-      >
-        {fg && "Aa"}
-      </div>
-      <figcaption {...themeSwatchBem({ element: "caption" })}>
-        <strong {...themeSwatchBem({ element: "name" })}>{border ?? bg}</strong>
-        {fg && !border && (
-          <>
-            <br />
-            text: {fg}
-          </>
-        )}
-        {border && (
-          <>
-            <br />
-            border
-          </>
-        )}
-      </figcaption>
-    </figure>
-  );
-}
-
 const meta = preview.meta({
   title: "Foundations/Theme",
   parameters: {
@@ -274,37 +227,56 @@ const syntaxGroups = [
   { title: "Dark", palettes: darkSyntaxOptions.options },
 ];
 
-const syntaxRoles = [
-  "background",
-  "foreground",
-  "comment",
-  "current-line",
-  "selection",
-  "pink",
-  "green",
-  "cyan",
-  "yellow",
-  "orange",
-  "purple",
-  "red",
+const syntaxSwatchGroups = [
+  {
+    title: "Roles",
+    roles: ["background", "selection", "comment", "current-line", "foreground"],
+  },
+  {
+    title: "Colors",
+    roles: ["pink", "green", "cyan", "yellow", "orange", "purple", "red"],
+  },
 ];
 
-const syntaxToken = (role: string) => `var(--${role})`;
+const fixedSyntaxColors = [
+  "fixed-pink",
+  "fixed-green",
+  "fixed-cyan",
+  "fixed-yellow",
+  "fixed-orange",
+  "fixed-purple",
+  "fixed-red",
+];
+
+function SyntaxSwatchGroup({ roles }: { roles: Array<string> }) {
+  return (
+    <div {...themeGroupBem({ element: "syntax-swatches" })}>
+      {roles.map((role) => (
+        <div
+          key={role}
+          {...themeRoleBem({ modifiers: { syntax: true } })}
+          style={{ "--swatch-bg": `var(--${role})` }}
+        >
+          <span {...themeRoleBem({ element: "syntax-label" })}>{role}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export const SyntaxSwatches = meta.story({
   render: () => (
     <div {...themePageBem()}>
+      <SyntaxSwatchGroup roles={fixedSyntaxColors} />
       {syntaxGroups.map(({ title, palettes }) => (
         <section key={title} {...themeGroupBem()}>
           <h2 {...themeGroupBem({ element: "title" })}>{title} syntax themes</h2>
           {palettes.map((palette) => (
             <section key={palette} {...themeGroupBem()} data-syntax-swatch={palette}>
               <h3 {...themeGroupBem({ element: "title" })}>{syntaxLabels[palette].label}</h3>
-              <div {...themeGroupBem({ element: "syntax-swatches" })}>
-                {syntaxRoles.map((role) => (
-                  <SwatchTile key={role} bg={role} resolveToken={syntaxToken} />
-                ))}
-              </div>
+              {syntaxSwatchGroups.map(({ title: groupTitle, roles }) => (
+                <SyntaxSwatchGroup key={groupTitle} roles={roles} />
+              ))}
             </section>
           ))}
         </section>
