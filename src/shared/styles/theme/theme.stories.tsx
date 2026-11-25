@@ -8,6 +8,8 @@ import "./theme.stories.css";
 const themePageBem = BEMHelper("theme-page");
 const themeGroupBem = BEMHelper("theme-group");
 const themeSwatchBem = BEMHelper("theme-swatch");
+const themeSchemeBem = BEMHelper("theme-scheme");
+const themeRoleBem = BEMHelper("theme-role");
 
 type Swatch = {
   /** Role used as the background. */
@@ -18,97 +20,150 @@ type Swatch = {
   border?: string;
 };
 
-const groups: Array<{ title: string; swatches: Array<Swatch> }> = [
+const token = (role: string) => `var(--md-sys-color-${role})`;
+
+type ColorRole = {
+  role: string;
+  foreground: string;
+  label: string;
+};
+
+const labelForRole = (role: string) =>
+  role
+    .split("-")
+    .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
+    .join(" ");
+
+const colorRole = (role: string, foreground = "on-surface", label = labelForRole(role)) => ({
+  role,
+  foreground,
+  label,
+});
+
+const accentSwatches = (accent: string) => [
+  colorRole(accent, `on-${accent}`),
+  colorRole(`on-${accent}`, accent),
+  colorRole(`${accent}-container`, `on-${accent}-container`),
+  colorRole(`on-${accent}-container`, `${accent}-container`),
+];
+
+const accentGroups = ["primary", "secondary", "tertiary"].map((accent) => ({
+  accent,
+  swatches: accentSwatches(accent),
+}));
+
+const errorGroup = { accent: "error", swatches: accentSwatches("error") };
+
+const surfaceTones = [colorRole("surface-dim"), colorRole("surface"), colorRole("surface-bright")];
+
+const surfaceContainers = [
+  colorRole("surface-container-lowest", "on-surface", "Surf. Container Lowest"),
+  colorRole("surface-container-low", "on-surface", "Surf. Container Low"),
+  colorRole("surface-container", "on-surface", "Surf. Container"),
+  colorRole("surface-container-high", "on-surface", "Surf. Container High"),
+  colorRole("surface-container-highest", "on-surface", "Surf. Container Highest"),
+];
+
+const surfaceRoles = [
+  colorRole("on-surface", "surface"),
+  colorRole("on-surface-variant", "surface", "On Surface Var."),
+  colorRole("outline"),
+  colorRole("outline-variant"),
+];
+
+const inverseRoles = [
+  colorRole("inverse-surface", "inverse-on-surface"),
+  colorRole("inverse-on-surface", "inverse-surface"),
+  colorRole("inverse-primary", "inverse-surface"),
+];
+
+const overlays = [colorRole("scrim", "white"), colorRole("shadow", "white")];
+
+const additionalGroups: Array<{ id: string; roles: Array<ColorRole> }> = [
   {
-    title: "Primary",
-    swatches: [
-      { bg: "primary", fg: "on-primary" },
-      { bg: "primary-container", fg: "on-primary-container" },
+    id: "background",
+    roles: [colorRole("background", "on-background"), colorRole("on-background", "background")],
+  },
+  {
+    id: "surface-variant",
+    roles: [
+      colorRole("surface-variant", "on-surface-variant"),
+      colorRole("on-surface-variant", "surface-variant"),
+    ],
+  },
+  { id: "surface-tint", roles: [colorRole("surface-tint")] },
+  {
+    id: "primary-fixed",
+    roles: [
+      colorRole("primary-fixed", "on-primary-fixed"),
+      colorRole("on-primary-fixed", "primary-fixed"),
     ],
   },
   {
-    title: "Secondary",
-    swatches: [
-      { bg: "secondary", fg: "on-secondary" },
-      { bg: "secondary-container", fg: "on-secondary-container" },
+    id: "primary-fixed-dim",
+    roles: [
+      colorRole("primary-fixed-dim", "on-primary-fixed-variant"),
+      colorRole("on-primary-fixed-variant", "primary-fixed-dim"),
     ],
   },
   {
-    title: "Tertiary",
-    swatches: [
-      { bg: "tertiary", fg: "on-tertiary" },
-      { bg: "tertiary-container", fg: "on-tertiary-container" },
+    id: "secondary-fixed",
+    roles: [
+      colorRole("secondary-fixed", "on-secondary-fixed"),
+      colorRole("on-secondary-fixed", "secondary-fixed"),
     ],
   },
   {
-    title: "Error",
-    swatches: [
-      { bg: "error", fg: "on-error" },
-      { bg: "error-container", fg: "on-error-container" },
+    id: "secondary-fixed-dim",
+    roles: [
+      colorRole("secondary-fixed-dim", "on-secondary-fixed-variant"),
+      colorRole("on-secondary-fixed-variant", "secondary-fixed-dim"),
     ],
   },
   {
-    title: "Surface",
-    swatches: [
-      { bg: "surface", fg: "on-surface" },
-      { bg: "surface", fg: "on-surface-variant" },
-      { bg: "surface-variant", fg: "on-surface-variant" },
-      { bg: "surface-dim", fg: "on-surface" },
-      { bg: "surface-bright", fg: "on-surface" },
-      { bg: "background", fg: "on-background" },
+    id: "tertiary-fixed",
+    roles: [
+      colorRole("tertiary-fixed", "on-tertiary-fixed"),
+      colorRole("on-tertiary-fixed", "tertiary-fixed"),
     ],
   },
   {
-    title: "Surface containers",
-    swatches: [
-      { bg: "surface-container-lowest", fg: "on-surface" },
-      { bg: "surface-container-low", fg: "on-surface" },
-      { bg: "surface-container", fg: "on-surface" },
-      { bg: "surface-container-high", fg: "on-surface" },
-      { bg: "surface-container-highest", fg: "on-surface" },
-    ],
-  },
-  {
-    title: "Inverse",
-    swatches: [
-      { bg: "inverse-surface", fg: "inverse-on-surface" },
-      { bg: "inverse-surface", fg: "inverse-primary" },
-    ],
-  },
-  {
-    title: "Primary fixed",
-    swatches: [
-      { bg: "primary-fixed", fg: "on-primary-fixed" },
-      { bg: "primary-fixed-dim", fg: "on-primary-fixed-variant" },
-    ],
-  },
-  {
-    title: "Secondary fixed",
-    swatches: [
-      { bg: "secondary-fixed", fg: "on-secondary-fixed" },
-      { bg: "secondary-fixed-dim", fg: "on-secondary-fixed-variant" },
-    ],
-  },
-  {
-    title: "Tertiary fixed",
-    swatches: [
-      { bg: "tertiary-fixed", fg: "on-tertiary-fixed" },
-      { bg: "tertiary-fixed-dim", fg: "on-tertiary-fixed-variant" },
-    ],
-  },
-  {
-    title: "Lines and overlays",
-    swatches: [
-      { bg: "surface", fg: "on-surface", border: "outline" },
-      { bg: "surface", fg: "on-surface", border: "outline-variant" },
-      { bg: "surface-tint" },
-      { bg: "shadow" },
-      { bg: "scrim" },
+    id: "tertiary-fixed-dim",
+    roles: [
+      colorRole("tertiary-fixed-dim", "on-tertiary-fixed-variant"),
+      colorRole("on-tertiary-fixed-variant", "tertiary-fixed-dim"),
     ],
   },
 ];
 
-const token = (role: string) => `var(--md-sys-color-${role})`;
+function ColorSwatch({ role, foreground, label }: ColorRole) {
+  return (
+    <div
+      {...themeRoleBem()}
+      data-color-role={role}
+      style={{
+        "--swatch-bg": token(role),
+        "--swatch-fg": token(foreground),
+      }}
+    >
+      {label}
+    </div>
+  );
+}
+
+function AccentGroup({ accent, swatches }: { accent: string; swatches: Array<ColorRole> }) {
+  return (
+    <section
+      {...themeGroupBem({ modifiers: { accent: true, [accent]: true } })}
+      data-accent={accent}
+      aria-label={labelForRole(accent)}
+    >
+      {swatches.map((swatch) => (
+        <ColorSwatch key={swatch.role} {...swatch} />
+      ))}
+    </section>
+  );
+}
 
 function SwatchTile({
   bg,
@@ -156,17 +211,60 @@ const meta = preview.meta({
 
 export const Swatches = meta.story({
   render: () => (
-    <div {...themePageBem()}>
-      {groups.map(({ title, swatches }) => (
-        <section key={title} {...themeGroupBem()}>
-          <h3 {...themeGroupBem({ element: "title" })}>{title}</h3>
-          <div {...themeGroupBem({ element: "swatches" })}>
-            {swatches.map((swatch) => (
-              <SwatchTile key={`${swatch.bg}-${swatch.fg}-${swatch.border}`} {...swatch} />
+    <div {...themePageBem({ modifiers: { swatches: true } })}>
+      <main {...themeSchemeBem()}>
+        <div {...themeSchemeBem({ element: "grid" })}>
+          <div {...themeSchemeBem({ element: "accents" })}>
+            {accentGroups.map(({ accent, swatches }) => (
+              <AccentGroup key={accent} accent={accent} swatches={swatches} />
+            ))}
+          </div>
+          <AccentGroup {...errorGroup} />
+          <section {...themeGroupBem({ modifiers: { surface: true } })} aria-label="Surface">
+            <div {...themeGroupBem({ element: "surface-tones" })}>
+              {surfaceTones.map((swatch) => (
+                <ColorSwatch key={swatch.role} {...swatch} />
+              ))}
+            </div>
+            <div {...themeGroupBem({ element: "surface-containers" })}>
+              {surfaceContainers.map((swatch) => (
+                <ColorSwatch key={swatch.role} {...swatch} />
+              ))}
+            </div>
+            <div {...themeGroupBem({ element: "surface-roles" })}>
+              {surfaceRoles.map((swatch) => (
+                <ColorSwatch key={swatch.role} {...swatch} />
+              ))}
+            </div>
+          </section>
+          <section {...themeGroupBem({ modifiers: { inverse: true } })} aria-label="Inverse">
+            {inverseRoles.map((swatch) => (
+              <ColorSwatch key={swatch.role} {...swatch} />
+            ))}
+            <div {...themeGroupBem({ element: "overlays" })}>
+              {overlays.map((swatch) => (
+                <ColorSwatch key={swatch.role} {...swatch} />
+              ))}
+            </div>
+          </section>
+        </div>
+        <section {...themeGroupBem({ modifiers: { additional: true } })}>
+          <h2 {...themeGroupBem({ element: "title" })}>Additional roles</h2>
+          <div {...themeGroupBem({ element: "additional-swatches" })}>
+            {additionalGroups.map(({ id, roles }) => (
+              <div
+                key={id}
+                {...themeGroupBem({ element: "additional-pair" })}
+                data-single={roles.length === 1 ? "true" : undefined}
+              >
+                {roles.map((swatch) => (
+                  <ColorSwatch key={swatch.role} {...swatch} />
+                ))}
+              </div>
             ))}
           </div>
         </section>
-      ))}
+      </main>
     </div>
   ),
 });

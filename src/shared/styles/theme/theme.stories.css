@@ -29,11 +29,46 @@ $syntax-swatches:
   padding: 1.5rem;
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
+
+  &--swatches {
+    min-block-size: 100dvh;
+    grid-template-columns: minmax(0, 1fr);
+    place-items: start center;
+    padding: 1rem;
+  }
 }
 
 .theme-group {
   display: grid;
   gap: 0.75rem;
+
+  &--accent {
+    display: grid;
+    grid-template-rows:
+      minmax(5.5rem, auto) minmax(2.5rem, auto) minmax(5.5rem, auto)
+      minmax(2.5rem, auto);
+    gap: 0.25rem;
+  }
+
+  &--error {
+    grid-area: error;
+  }
+
+  &--surface {
+    grid-area: surface;
+    grid-template-rows: auto auto auto;
+    gap: 0.25rem;
+  }
+
+  &--inverse {
+    grid-area: inverse;
+    grid-template-rows: minmax(7.5rem, auto) minmax(2.5rem, auto) minmax(2.5rem, auto) auto;
+    gap: 0.25rem;
+  }
+
+  &--additional {
+    margin-block-start: 1rem;
+  }
 
   &__title {
     margin: 0;
@@ -47,11 +82,95 @@ $syntax-swatches:
     gap: 1rem;
   }
 
+  &__surface-tones {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    min-block-size: 6.5rem;
+  }
+
+  &__surface-containers {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.25rem;
+    min-block-size: 6.5rem;
+  }
+
+  &__surface-roles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  &__overlays {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  &__additional-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+    grid-template-rows: repeat(2, minmax(2.5rem, auto));
+    grid-auto-rows: minmax(2.5rem, auto);
+    gap: 0.25rem;
+  }
+
+  &__additional-pair {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: repeat(2, minmax(2.5rem, auto));
+    grid-template-rows: subgrid;
+    gap: 0.25rem;
+
+    &[data-single="true"] > .theme-role {
+      grid-row: span 2;
+    }
+  }
+
   &__syntax-swatches {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 6rem), 1fr));
     gap: 1rem;
   }
+}
+
+.theme-page--swatches .theme-scheme {
+  inline-size: min(100%, 72rem);
+  min-inline-size: 0;
+  padding: 1rem;
+}
+
+.theme-scheme {
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+    grid-template-areas:
+      "accents error"
+      "surface inverse";
+    gap: 1.25rem 1.375rem;
+  }
+
+  &__accents {
+    display: grid;
+    grid-area: accents;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+}
+
+.theme-role {
+  display: flex;
+  align-items: flex-start;
+  min-inline-size: 0;
+  padding: 0.6rem;
+  background: var(--swatch-bg);
+  color: var(--swatch-fg);
+  font: var(--md-sys-typography-label-small);
+}
+
+.theme-group--additional .theme-group__title {
+  margin-block-end: 0.25rem;
 }
 
 .theme-swatch {
@@ -91,4 +210,35 @@ $syntax-swatches:
 .theme-group[data-syntax-swatch]
   :is(.theme-group__title, .theme-swatch__caption, .theme-swatch__name) {
   color: inherit;
+}
+
+@media (--tablet-small) {
+  .theme-scheme__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "accents accents"
+      "error error"
+      "surface surface"
+      "inverse inverse";
+  }
+}
+
+@media (--phone) {
+  .theme-scheme__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "accents"
+      "error"
+      "surface"
+      "inverse";
+  }
+
+  .theme-scheme__accents {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .theme-group__surface-containers,
+  .theme-group__surface-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
