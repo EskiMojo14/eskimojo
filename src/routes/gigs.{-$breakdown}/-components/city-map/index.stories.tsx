@@ -1,6 +1,7 @@
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 
 import { GigsCityMap } from "./index";
@@ -19,10 +20,8 @@ export const Archive = meta.story({});
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "No cities recorded yet." })).toBeVisible();
-    await expect(
-      canvas.getByText("Cities will appear here when gigs are added to the archive."),
-    ).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: copy.cityChart.empty.title })).toBeVisible();
+    await expect(canvas.getByText(copy.cityChart.empty.description)).toBeVisible();
   },
 });
 
@@ -40,10 +39,12 @@ export const NearbyCities = meta.story({
     ],
   },
   play: async ({ canvas, userEvent }) => {
-    const chart = canvas.getByRole("img", { name: "Map of England" });
+    const chart = canvas.getByRole("img", { name: copy.cityChart.label });
     chart.focus();
     await userEvent.keyboard("{End}{Enter}");
     await expect(canvas.getByRole("heading", { name: "Trowbridge" })).toBeVisible();
-    await expect(canvas.getByText("Town Hall, Trowbridge")).toBeVisible();
+    await expect(
+      canvas.getByText(copy.formatVenue({ venue: "Town Hall", city: "Trowbridge" })),
+    ).toBeVisible();
   },
 });

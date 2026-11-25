@@ -6,10 +6,3 @@ export const gigBreakdownSchema = v.fallback(
 );
 
 export type GigBreakdown = v.InferOutput<typeof gigBreakdownSchema>;
-
-export const gigBreakdownLabels: Record<GigBreakdown, { label: string; icon: string }> = {
-  "by-month": { label: "Month", icon: "calendar_month" },
-  "by-artist": { label: "Artist", icon: "artist" },
-  "by-venue": { label: "Venue", icon: "stadium" },
-  "by-city": { label: "City", icon: "location_city" },
-};

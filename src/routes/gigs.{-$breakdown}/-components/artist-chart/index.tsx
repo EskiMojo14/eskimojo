@@ -6,7 +6,7 @@ import { tooltip } from "@tanstack/charts/tooltip";
 import { portal } from "@tanstack/charts/tooltip/portal";
 import { useMemo } from "react";
 
-import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
 import { InternalLinkButton } from "#/shared/components/buttons/link-button/index.tsx";
@@ -51,8 +51,8 @@ export function GigsArtistChart({
           barX(
             artists.flatMap((artist) =>
               [
-                { ...artist, role: "Main", count: artist.main },
-                { ...artist, role: "Support", count: artist.support },
+                { ...artist, role: "Main" as const, count: artist.main },
+                { ...artist, role: "Support" as const, count: artist.support },
               ].filter(({ count }) => count > 0),
             ),
             {
@@ -100,7 +100,17 @@ export function GigsArtistChart({
 
             return {
               title: appearance?.artist ?? "",
-              rows: appearance ? [{ label: appearance.role, value: String(appearance.count) }] : [],
+              rows: appearance
+                ? [
+                    {
+                      label:
+                        appearance.role === "Main"
+                          ? copy.artistChart.types.main
+                          : copy.artistChart.types.support,
+                      value: String(appearance.count),
+                    },
+                  ]
+                : [],
             };
           },
         },
@@ -112,30 +122,30 @@ export function GigsArtistChart({
     return (
       <EmptyState
         icon={<MdSymbol>artist</MdSymbol>}
-        title="No artists recorded yet."
-        description="Artists will appear here when gigs are added to the archive."
+        title={copy.artistChart.empty.title}
+        description={copy.artistChart.empty.description}
       />
     );
   }
 
   return (
-    <section className="gigs-artists" aria-label="Gigs by artist">
-      <ul className="gigs-artists__legend" aria-label="Appearance types">
+    <section className="gigs-artists" aria-label={copy.artistChart.title}>
+      <ul className="gigs-artists__legend" aria-label={copy.artistChart.legend}>
         <li>
           <span className="gigs-artists__key gigs-artists__key--main" />
-          Main
+          {copy.artistChart.types.main}
         </li>
         <li>
           <span className="gigs-artists__key gigs-artists__key--support" />
-          Support
+          {copy.artistChart.types.support}
         </li>
       </ul>
       <Chart
         definition={definition}
         height={artists.length * 32 + 56}
         initialWidth={720}
-        ariaLabel="Gigs by artist"
-        ariaDescription="One horizontal bar per artist, stacked by Main and Support appearances. Artists are sorted by Main appearances, then Support appearances, highest first. A table of exact counts follows for screen readers."
+        ariaLabel={copy.artistChart.title}
+        ariaDescription={copy.artistChart.description}
         renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) => {
           if (typeof content === "string") return content;
 
@@ -149,18 +159,16 @@ export function GigsArtistChart({
             <div className="tooltip--rich tooltip--chart gigs-artists__tooltip">
               <h3 className="tooltip__subhead">{content.title}</h3>
               {content.rows.map((row) => (
-                <p key={row.label}>
-                  {row.label}: {row.value}
-                </p>
+                <p key={row.label}>{copy.artistChart.count(row.label, row.value)}</p>
               ))}
               <ol className="gigs-artists__events">
                 {appearances?.map(({ event, role: appearanceRole }, index) => (
                   <li key={index}>
                     <strong>{formatDate(event.date)}</strong>
-                    <p>{formatVenue(event)}</p>
+                    <p>{copy.formatVenue(event)}</p>
                     {appearanceRole === "Support" && (
                       <p className="gigs-artists__supported">
-                        Supported {event.artists.join(", ")}
+                        {copy.artistChart.supported(event.artists)}
                       </p>
                     )}
                   </li>
@@ -175,10 +183,10 @@ export function GigsArtistChart({
                     search={(search) => ({ ...search, artist: primaryPoint?.datum.artist })}
                     icon={<MdSymbol>filter_list</MdSymbol>}
                   >
-                    Filter
+                    {copy.artistChart.actions.filter}
                   </InternalLinkButton>
                   <Button variant="text" onClick={dismiss}>
-                    Close details
+                    {copy.artistChart.actions.close}
                   </Button>
                 </div>
               )}
@@ -188,13 +196,13 @@ export function GigsArtistChart({
       />
       <div className="gigs-artists__table">
         <table>
-          <caption>Recorded appearances per artist</caption>
+          <caption>{copy.artistChart.table.title}</caption>
           <thead>
             <tr>
-              <th scope="col">Artist</th>
-              <th scope="col">Main</th>
-              <th scope="col">Support</th>
-              <th scope="col">Total</th>
+              <th scope="col">{copy.artistChart.table.columns.artist}</th>
+              <th scope="col">{copy.artistChart.table.columns.main}</th>
+              <th scope="col">{copy.artistChart.table.columns.support}</th>
+              <th scope="col">{copy.artistChart.table.columns.total}</th>
             </tr>
           </thead>
           <tbody>

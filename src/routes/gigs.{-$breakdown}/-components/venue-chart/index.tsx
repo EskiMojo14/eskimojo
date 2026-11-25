@@ -8,13 +8,13 @@ import { portal } from "@tanstack/charts/tooltip/portal";
 import { useMemo } from "react";
 
 import type { ArtistEvent } from "#/routes/gigs.{-$breakdown}/-components/artist-chart/data";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { Button } from "#/shared/components/buttons/button";
 import { InternalLinkButton } from "#/shared/components/buttons/link-button/index.tsx";
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 import { assert } from "#/utils";
-import { pluralize } from "#/utils/intl";
 
 import { getVenueChartData } from "./data";
 
@@ -109,7 +109,9 @@ export function GigsVenueChart({
 
             return {
               title: venue?.venue ?? "",
-              rows: venue ? [{ label: "Gigs", value: String(venue.count) }] : [],
+              rows: venue
+                ? [{ label: copy.venueChart.table.columns.gigs, value: String(venue.count) }]
+                : [],
             };
           },
         },
@@ -121,20 +123,20 @@ export function GigsVenueChart({
     return (
       <EmptyState
         icon={<MdSymbol>location_on</MdSymbol>}
-        title="No venues recorded yet."
-        description="Venues will appear here when gigs are added to the archive."
+        title={copy.venueChart.empty.title}
+        description={copy.venueChart.empty.description}
       />
     );
   }
 
   return (
-    <section className="gigs-venues" aria-label="Gigs by venue">
+    <section className="gigs-venues" aria-label={copy.venueChart.title}>
       <Chart
         definition={definition}
         height={venues.length * 48 + 56}
         initialWidth={720}
-        ariaLabel="Gigs by venue"
-        ariaDescription="One horizontal bar per venue, sorted by gig count, highest first. A table of exact counts follows for screen readers."
+        ariaLabel={copy.venueChart.title}
+        ariaDescription={copy.venueChart.description}
         renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) =>
           typeof content === "string" ? (
             content
@@ -143,8 +145,8 @@ export function GigsVenueChart({
               <h3 className="tooltip__subhead">{content.title}</h3>
               <p>
                 {primaryPoint
-                  ? pluralize`${primaryPoint.datum.count} ${[primaryPoint.datum.count, "gig"]}`
-                  : " gigs"}
+                  ? copy.venueChart.count(primaryPoint.datum.count)
+                  : copy.venueChart.missingCount}
               </p>
               <ol className="gigs-venues__events">
                 {primaryPoint?.datum.events.map((event, index) => (
@@ -152,7 +154,9 @@ export function GigsVenueChart({
                     <strong>{event.artists.join(", ")}</strong>
                     <p>{formatDate(event.date)}</p>
                     {event.support?.length ? (
-                      <p className="gigs-venues__support">Support: {event.support.join(", ")}</p>
+                      <p className="gigs-venues__support">
+                        {copy.venueChart.support(event.support)}
+                      </p>
                     ) : null}
                   </li>
                 ))}
@@ -166,10 +170,10 @@ export function GigsVenueChart({
                     search={(search) => ({ ...search, venue: primaryPoint?.datum.venue })}
                     icon={<MdSymbol>filter_list</MdSymbol>}
                   >
-                    Filter
+                    {copy.venueChart.actions.filter}
                   </InternalLinkButton>
                   <Button variant="text" onClick={dismiss}>
-                    Close details
+                    {copy.venueChart.actions.close}
                   </Button>
                 </div>
               )}
@@ -179,11 +183,11 @@ export function GigsVenueChart({
       />
       <div className="gigs-venues__table">
         <table>
-          <caption>Recorded gigs per venue</caption>
+          <caption>{copy.venueChart.table.title}</caption>
           <thead>
             <tr>
-              <th scope="col">Venue</th>
-              <th scope="col">Gigs</th>
+              <th scope="col">{copy.venueChart.table.columns.venue}</th>
+              <th scope="col">{copy.venueChart.table.columns.gigs}</th>
             </tr>
           </thead>
           <tbody>

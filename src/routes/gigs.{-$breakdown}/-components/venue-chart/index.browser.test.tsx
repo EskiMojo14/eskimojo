@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { assert } from "#/utils";
 
 import { GigsVenueChart } from "./index";
@@ -24,50 +25,70 @@ test("shows venue counts and chronological event details with keyboard pinning a
     />,
   );
 
-  const table = result.getByRole("table", { name: "Recorded gigs per venue" });
+  const table = result.getByRole("table", { name: copy.venueChart.table.title });
   await expect
-    .element(table.getByRole("row", { name: "Brixton, London 2", exact: true }))
+    .element(
+      table.getByRole("row", {
+        name: `${copy.formatVenue({ venue: "Brixton", city: "London" })} 2`,
+        exact: true,
+      }),
+    )
     .toBeInTheDocument();
   await expect
-    .element(table.getByRole("row", { name: "Barbican, London 1", exact: true }))
+    .element(
+      table.getByRole("row", {
+        name: `${copy.formatVenue({ venue: "Barbican", city: "London" })} 1`,
+        exact: true,
+      }),
+    )
     .toBeInTheDocument();
-  const chart = result.getByRole("img", { name: "Gigs by venue" });
+  const chart = result.getByRole("img", { name: copy.venueChart.title });
   chart.element().focus();
   await userEvent.keyboard("{Home}{Enter}");
   await expect
-    .element(result.getByRole("heading", { name: "Brixton, London", exact: true }))
+    .element(
+      result.getByRole("heading", {
+        name: copy.formatVenue({ venue: "Brixton", city: "London" }),
+        exact: true,
+      }),
+    )
     .toBeVisible();
-  await expect.element(result.getByText("2 gigs", { exact: true })).toBeVisible();
+  await expect.element(result.getByText(copy.venueChart.count(2), { exact: true })).toBeVisible();
   await expect.element(result.getByText("Vulfpeck, Cory Wong")).toBeVisible();
-  await expect.element(result.getByText("Support: Joey Dosik")).toBeVisible();
+  await expect.element(result.getByText(copy.venueChart.support(["Joey Dosik"]))).toBeVisible();
   const entries = result.getByRole("listitem").all();
   expect(entries).toHaveLength(2);
   const [earlier, later] = entries;
   assert(earlier && later, "Expected both gigs at the selected venue.");
   expect(earlier.element().textContent).toContain("Jacob Collier");
   expect(earlier.element().textContent).toContain("1 Jan 2024");
-  expect(earlier.element().textContent).not.toContain("Support:");
+  expect(earlier.element().textContent).not.toContain(copy.venueChart.support(["Joey Dosik"]));
   expect(later.element().textContent).toContain("29 Dec 2024");
-  await result.getByRole("button", { name: "Close details" }).click();
+  await result.getByRole("button", { name: copy.venueChart.actions.close }).click();
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByRole("button", { name: copy.venueChart.actions.close }))
     .not.toBeInTheDocument();
   chart.element().focus();
   await userEvent.keyboard("{End}{Enter}");
   await expect
-    .element(result.getByRole("heading", { name: "Barbican, London", exact: true }))
+    .element(
+      result.getByRole("heading", {
+        name: copy.formatVenue({ venue: "Barbican", city: "London" }),
+        exact: true,
+      }),
+    )
     .toBeVisible();
-  await expect.element(result.getByText("1 gig", { exact: true })).toBeVisible();
+  await expect.element(result.getByText(copy.venueChart.count(1), { exact: true })).toBeVisible();
   await expect.element(result.getByText("Couch", { exact: true })).toBeVisible();
   await expect.element(result.getByText("Jacob Collier", { exact: true })).not.toBeInTheDocument();
   await userEvent.keyboard("{Escape}");
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByRole("button", { name: copy.venueChart.actions.close }))
     .not.toBeInTheDocument();
 });
 
 test("shows an explicit empty state without a chart", async () => {
   const result = await page.renderWithProviders(<GigsVenueChart events={[]} />);
-  await expect.element(result.getByText("No venues recorded yet.")).toBeVisible();
+  await expect.element(result.getByText(copy.venueChart.empty.title)).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
 });

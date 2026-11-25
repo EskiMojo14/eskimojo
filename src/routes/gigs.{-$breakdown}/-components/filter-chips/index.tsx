@@ -1,3 +1,4 @@
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { ChipGroup, InternalLinkChip } from "#/shared/components/chips";
 import { MdSymbol } from "#/shared/components/symbol/index.tsx";
 
@@ -9,7 +10,7 @@ export interface FilterChipsProps {
 
 export function FilterChips({ artist, venue, city }: FilterChipsProps) {
   return (
-    <ChipGroup aria-label="Active gig filters">
+    <ChipGroup aria-label={copy.filters.title}>
       {artist && (
         <InternalLinkChip
           to="/gigs/{-$breakdown}"

@@ -8,7 +8,7 @@ import { geoMercator } from "d3-geo";
 import { useMemo } from "react";
 
 import type { ArtistEvent } from "#/routes/gigs.{-$breakdown}/-components/artist-chart/data";
-import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { Button } from "#/shared/components/buttons/button";
 import { InternalLinkButton } from "#/shared/components/buttons/link-button/index.tsx";
 import { EmptyState } from "#/shared/components/empty-state";
@@ -87,7 +87,7 @@ export function GigsCityMap({
 
           return {
             title: city?.city ?? "",
-            rows: city ? [{ label: "Gigs", value: String(city.count) }] : [],
+            rows: city ? [{ label: copy.meta.title, value: String(city.count) }] : [],
           };
         },
       },
@@ -98,21 +98,21 @@ export function GigsCityMap({
     return (
       <EmptyState
         icon={<MdSymbol>map</MdSymbol>}
-        title="No cities recorded yet."
-        description="Cities will appear here when gigs are added to the archive."
+        title={copy.cityChart.empty.title}
+        description={copy.cityChart.empty.description}
       />
     );
   }
 
   return (
-    <section className="gigs-city-map" aria-label="Gigs by city">
+    <section className="gigs-city-map" aria-label={copy.cityChart.title}>
       <div className="gigs-city-map__map">
         <Chart
           definition={definition}
           height={520}
           initialWidth={720}
-          ariaLabel="Map of England"
-          ariaDescription="City dots show recorded gigs; their area is proportional to event count. Use arrow keys to explore cities and Enter to pin event details. A table of exact city counts follows for screen readers."
+          ariaLabel={copy.cityChart.label}
+          ariaDescription={copy.cityChart.description}
           renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) =>
             typeof content === "string" ? (
               content
@@ -124,10 +124,10 @@ export function GigsCityMap({
                     <li key={index}>
                       <strong>{event.artists.join(", ")}</strong>
                       <p>{formatDate(event.date)}</p>
-                      <p>{formatVenue(event)}</p>
+                      <p>{copy.formatVenue(event)}</p>
                       {event.support?.length ? (
                         <p className="gigs-city-map__support">
-                          Support: {event.support.join(", ")}
+                          {copy.cityChart.support(event.support)}
                         </p>
                       ) : null}
                     </li>
@@ -145,10 +145,10 @@ export function GigsCityMap({
                       })}
                       icon={<MdSymbol>filter_list</MdSymbol>}
                     >
-                      Filter
+                      {copy.cityChart.actions.filter}
                     </InternalLinkButton>
                     <Button variant="text" onClick={dismiss}>
-                      Close details
+                      {copy.cityChart.actions.close}
                     </Button>
                   </div>
                 )}
@@ -159,11 +159,11 @@ export function GigsCityMap({
       </div>
       <div className="gigs-city-map__table">
         <table>
-          <caption>Recorded gigs per city</caption>
+          <caption>{copy.cityChart.table.title}</caption>
           <thead>
             <tr>
-              <th scope="col">City</th>
-              <th scope="col">Gigs</th>
+              <th scope="col">{copy.cityChart.table.columns.city}</th>
+              <th scope="col">{copy.cityChart.table.columns.gigs}</th>
             </tr>
           </thead>
           <tbody>

@@ -1,4 +1,4 @@
-import { gigBreakdownLabels } from "#/routes/gigs.{-$breakdown}/-constants.ts";
+import * as gigsCopy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import * as musicCopy from "#/routes/music.{-$breakdown}/-copy.tsx";
 import * as projectsCopy from "#/routes/projects/-copy.tsx";
 import { links } from "#/shared/components/sidebar/groups";
@@ -18,7 +18,7 @@ export default [
     contrastLabels,
     densityLabels,
     paletteLabels,
-    gigBreakdownLabels,
+    gigsCopy.tabs.breakdown,
     musicCopy.tabs.breakdown,
     musicCopy.topTabs.type,
     musicCopy.summary.counts,

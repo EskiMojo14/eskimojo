@@ -1,6 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 
-import { gigBreakdownLabels, gigBreakdownSchema } from "#/routes/gigs.{-$breakdown}/-constants";
+import { gigBreakdownSchema } from "#/routes/gigs.{-$breakdown}/-constants";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { MdSymbol } from "#/shared/components/symbol";
 import { TabLink, TabNav } from "#/shared/components/tabs";
 
@@ -10,7 +11,7 @@ export function GigsBreakdownTabs() {
   const { breakdown } = gigsRoute.useParams();
 
   return (
-    <TabNav aria-label="Gigs breakdown" variant="primary" responsive>
+    <TabNav aria-label={copy.tabs.title} variant="primary" responsive>
       {gigBreakdownSchema.options.map((value) => (
         <TabLink
           key={value}
@@ -23,10 +24,10 @@ export function GigsBreakdownTabs() {
           }}
           search={(search) => search}
           activeOptions={{ exact: true, includeSearch: false }}
-          icon={<MdSymbol>{gigBreakdownLabels[value].icon}</MdSymbol>}
+          icon={<MdSymbol>{copy.tabs.breakdown[value].icon}</MdSymbol>}
           replace
         >
-          {gigBreakdownLabels[value].label}
+          {copy.tabs.breakdown[value].label}
         </TabLink>
       ))}
     </TabNav>

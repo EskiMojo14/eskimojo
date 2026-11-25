@@ -1,5 +1,6 @@
 import { expect, test } from "vite-plus/test";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 import { assert } from "#/utils";
 
@@ -14,9 +15,13 @@ test("groups events by venue, sorts counts and ties, and retains events in date 
   ];
 
   expect(getVenueChartData(events)).toEqual([
-    { venue: "B, London", count: 2, events: [events[2], events[0]] },
-    { venue: "A, London", count: 1, events: [events[1]] },
-    { venue: "C, London", count: 1, events: [events[3]] },
+    {
+      venue: copy.formatVenue({ venue: "B", city: "London" }),
+      count: 2,
+      events: [events[2], events[0]],
+    },
+    { venue: copy.formatVenue({ venue: "A", city: "London" }), count: 1, events: [events[1]] },
+    { venue: copy.formatVenue({ venue: "C", city: "London" }), count: 1, events: [events[3]] },
   ]);
   const [firstEvent] = events;
   assert(firstEvent, "Expected the first venue-chart fixture.");
@@ -30,8 +35,8 @@ test("keeps identically named venues in different cities separate", () => {
       { venue: "Academy", city: "Bristol", date: "2024-01-02" },
     ]).map(({ venue, count }) => ({ venue, count })),
   ).toEqual([
-    { venue: "Academy, Bristol", count: 1 },
-    { venue: "Academy, London", count: 1 },
+    { venue: copy.formatVenue({ venue: "Academy", city: "Bristol" }), count: 1 },
+    { venue: copy.formatVenue({ venue: "Academy", city: "London" }), count: 1 },
   ]);
 });
 

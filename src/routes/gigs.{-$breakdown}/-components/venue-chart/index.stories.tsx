@@ -1,6 +1,7 @@
 import { expect } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 
 import { GigsVenueChart } from "./index";
@@ -19,10 +20,8 @@ export const Archive = meta.story({});
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "No venues recorded yet." })).toBeVisible();
-    await expect(
-      canvas.getByText("Venues will appear here when gigs are added to the archive."),
-    ).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: copy.venueChart.empty.title })).toBeVisible();
+    await expect(canvas.getByText(copy.venueChart.empty.description)).toBeVisible();
   },
 });
 
@@ -46,13 +45,17 @@ export const VenueEvents = meta.story({
     ],
   },
   play: async ({ canvas, userEvent }) => {
-    const chart = canvas.getByRole("img", { name: "Gigs by venue" });
+    const chart = canvas.getByRole("img", { name: copy.venueChart.title });
     chart.focus();
     await userEvent.keyboard("{Home}{Enter}");
-    await expect(canvas.getByRole("heading", { name: "O2 Academy Brixton, London" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.formatVenue({ venue: "O2 Academy Brixton", city: "London" }),
+      }),
+    ).toBeVisible();
     await expect(canvas.getByText("Vulfpeck, Cory Wong")).toBeVisible();
-    await expect(canvas.getByText("Support: Joey Dosik")).toBeVisible();
+    await expect(canvas.getByText(copy.venueChart.support(["Joey Dosik"]))).toBeVisible();
     await expect(canvas.getByText("1 Jan 2024")).toBeVisible();
-    await expect(canvas.getByRole("button", { name: "Close details" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: copy.venueChart.actions.close })).toBeVisible();
   },
 });

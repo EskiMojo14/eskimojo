@@ -8,6 +8,7 @@ import {
 import { expect, test } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { addNavigationTransitions } from "#/shared/lib/view-transitions";
 import { observeViewTransitions } from "#test/browser/view-transition.test-utils";
 
@@ -38,17 +39,17 @@ test("gigs tabs infer direction for adjacent tabs, jumps, and the default tab al
 
   addNavigationTransitions(router);
   const result = await page.renderWithProviders(<RouterProvider router={router} />);
-  await expect.element(result.getByRole("navigation", { name: "Gigs breakdown" })).toBeVisible();
+  await expect.element(result.getByRole("navigation", { name: copy.tabs.title })).toBeVisible();
   await expect.poll(() => router.state.status).toBe("idle");
   const transitions = observeViewTransitions();
   using startTransition = transitions.spy;
 
   try {
     for (const [index, label, destination, type] of [
-      [0, "Artist", "/gigs/by-artist", "tab-forward"],
-      [1, "City", "/gigs/by-city", "tab-forward"],
-      [2, "Venue", "/gigs/by-venue", "tab-backward"],
-      [3, "Month", "/gigs", "tab-backward"],
+      [0, copy.tabs.breakdown["by-artist"].label, "/gigs/by-artist", "tab-forward"],
+      [1, copy.tabs.breakdown["by-city"].label, "/gigs/by-city", "tab-forward"],
+      [2, copy.tabs.breakdown["by-venue"].label, "/gigs/by-venue", "tab-backward"],
+      [3, copy.tabs.breakdown["by-month"].label, "/gigs", "tab-backward"],
     ] as const) {
       const link = result.getByRole("tab", { name: label, exact: true });
       await expect.element(link).toHaveAttribute("href", destination);

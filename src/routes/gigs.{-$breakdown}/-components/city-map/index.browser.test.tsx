@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import { assert } from "#/utils";
 
 import { GigsCityMap } from "./index";
@@ -24,9 +25,9 @@ test("shows city counts in a table and chronological events in marker tooltips",
     />,
   );
 
-  const table = result.getByRole("table", { name: "Recorded gigs per city" });
+  const table = result.getByRole("table", { name: copy.cityChart.table.title });
   await expect.element(table.getByRole("row", { name: "Bristol 2" })).toBeInTheDocument();
-  const chart = result.getByRole("img", { name: "Map of England" });
+  const chart = result.getByRole("img", { name: copy.cityChart.label });
   chart.element().focus();
   await userEvent.keyboard("{Home}{Enter}");
   await expect.element(result.getByRole("heading", { name: "Bristol", exact: true })).toBeVisible();
@@ -34,24 +35,28 @@ test("shows city counts in a table and chronological events in marker tooltips",
   const [earlier, later] = entries;
   assert(earlier && later, "Expected both Bristol gig entries.");
   expect(earlier.element().textContent).toContain("Earlier");
-  expect(later.element().textContent).toContain("Support: Support act");
-  await expect.element(result.getByText("Thekla, Bristol")).toBeVisible();
-  await result.getByRole("button", { name: "Close details" }).click();
+  expect(later.element().textContent).toContain(copy.cityChart.support(["Support act"]));
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByText(copy.formatVenue({ venue: "Thekla", city: "Bristol" })))
+    .toBeVisible();
+  await result.getByRole("button", { name: copy.cityChart.actions.close }).click();
+  await expect
+    .element(result.getByRole("button", { name: copy.cityChart.actions.close }))
     .not.toBeInTheDocument();
   chart.element().focus();
   await userEvent.keyboard("{End}{Enter}");
   await expect.element(result.getByRole("heading", { name: "Bath", exact: true })).toBeVisible();
-  await expect.element(result.getByText("Forum, Bath")).toBeVisible();
+  await expect
+    .element(result.getByText(copy.formatVenue({ venue: "Forum", city: "Bath" })))
+    .toBeVisible();
   await userEvent.keyboard("{Escape}");
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByRole("button", { name: copy.cityChart.actions.close }))
     .not.toBeInTheDocument();
 });
 
 test("shows an empty state without a map", async () => {
   const result = await page.renderWithProviders(<GigsCityMap events={[]} />);
-  await expect.element(result.getByText("No cities recorded yet.")).toBeVisible();
+  await expect.element(result.getByText(copy.cityChart.empty.title)).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
 });

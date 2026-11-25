@@ -7,14 +7,14 @@ import { tooltip } from "@tanstack/charts/tooltip";
 import { portal } from "@tanstack/charts/tooltip/portal";
 import { useMemo, useRef } from "react";
 
-import { formatVenue } from "#/routes/gigs.{-$breakdown}/-components/venue-label";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import { Button } from "#/shared/components/buttons/button";
 import { EmptyState } from "#/shared/components/empty-state";
 import { MdSymbol } from "#/shared/components/symbol";
 import { formatDate } from "#/shared/lib/date";
 
-import { getGigHeatmapData, gigMonths, type GigMonth } from "./data";
+import { getGigHeatmapData, type GigMonth } from "./data";
 
 interface HeatmapEvent extends Pick<GigEvent, "date" | "venue" | "city"> {
   artists: ReadonlyArray<string>;
@@ -73,7 +73,7 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
         ],
         scales: {
           x: {
-            scale: () => scaleBand().domain(gigMonths),
+            scale: () => scaleBand().domain(copy.heatmapChart.months),
             side: "top",
           },
           y: {
@@ -92,17 +92,17 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
             const month = points[0]?.datum;
 
             return {
-              title: month ? `${month.month} ${month.year}` : "",
+              title: month ? copy.heatmapChart.monthTitle(month.month, month.year) : "",
               rows: month?.events.length
                 ? month.events.map((event) => ({
                     label: event.artists.join(", "),
                     value: [
                       formatDate(event.date),
-                      formatVenue(event),
-                      ...(event.support?.length ? [`Support: ${event.support.join(", ")}`] : []),
+                      copy.formatVenue(event),
+                      ...(event.support?.length ? [copy.heatmapChart.support(event.support)] : []),
                     ].join("\n"),
                   }))
-                : [{ label: "No gigs recorded this month.", value: "" }],
+                : [{ label: copy.heatmapChart.empty.month, value: "" }],
             };
           },
         },
@@ -114,14 +114,14 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
     return (
       <EmptyState
         icon={<MdSymbol>event</MdSymbol>}
-        title="No gigs recorded yet."
-        description="Your gig history will appear here when gigs are added to the archive."
+        title={copy.heatmapChart.empty.title}
+        description={copy.heatmapChart.empty.description}
       />
     );
   }
 
   return (
-    <section className="gigs-heatmap" aria-label="Gigs by month and year">
+    <section className="gigs-heatmap" aria-label={copy.heatmapChart.title}>
       <div
         className="gigs-heatmap__chart"
         onKeyDownCapture={(event) => {
@@ -179,8 +179,8 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
           onFocusChange={(point) => {
             focusedPoint.current = point;
           }}
-          ariaLabel="Gigs by month and year"
-          ariaDescription="Columns are months from January to December. Rows are years in ascending order. Each cell shows the number of recorded gigs. A table of exact values follows for screen readers."
+          ariaLabel={copy.heatmapChart.title}
+          ariaDescription={copy.heatmapChart.description}
           renderTooltipBody={({ content, primaryPoint, pinned, dismiss }) =>
             typeof content === "string" ? (
               content
@@ -194,19 +194,21 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
                       <p>
                         {formatDate(event.date)}
                         {"\n"}
-                        {formatVenue(event)}
+                        {copy.formatVenue(event)}
                       </p>
                       {event.support?.length ? (
-                        <p className="gigs-heatmap__support">Support: {event.support.join(", ")}</p>
+                        <p className="gigs-heatmap__support">
+                          {copy.heatmapChart.support(event.support)}
+                        </p>
                       ) : null}
                     </li>
                   ))}
-                  {!primaryPoint?.datum.events.length && <li>No gigs recorded this month.</li>}
+                  {!primaryPoint?.datum.events.length && <li>{copy.heatmapChart.empty.month}</li>}
                 </ol>
                 {pinned && (
                   <div className="tooltip__actions">
                     <Button variant="text" onClick={dismiss}>
-                      Close details
+                      {copy.heatmapChart.actions.close}
                     </Button>
                   </div>
                 )}
@@ -217,11 +219,11 @@ export function GigsHeatmap({ events }: { events: ReadonlyArray<HeatmapEvent> })
       </div>
       <div className="gigs-heatmap__table">
         <table>
-          <caption>Recorded gigs per month and year</caption>
+          <caption>{copy.heatmapChart.table.title}</caption>
           <thead>
             <tr>
-              <th scope="col">Year</th>
-              {gigMonths.map((month) => (
+              <th scope="col">{copy.heatmapChart.table.year}</th>
+              {copy.heatmapChart.months.map((month) => (
                 <th scope="col" key={month}>
                   {month}
                 </th>

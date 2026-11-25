@@ -1,6 +1,7 @@
 import { expect, within } from "storybook/test";
 
 import preview from "#.storybook/preview";
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 import { assert } from "#/utils";
 
@@ -21,8 +22,8 @@ const meta = preview.meta({
 
 export const Archive = meta.story({
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("img", { name: "Gigs by month and year" })).toBeVisible();
-    const table = canvas.getByRole("table", { name: "Recorded gigs per month and year" });
+    await expect(canvas.getByRole("img", { name: copy.heatmapChart.title })).toBeVisible();
+    const table = canvas.getByRole("table", { name: copy.heatmapChart.table.title });
     await expect(table).toBeInTheDocument();
     await expect(within(table).getAllByRole("columnheader")).toHaveLength(13);
     await expect(within(table).getAllByRole("rowheader")).toHaveLength(12);
@@ -32,10 +33,10 @@ export const Archive = meta.story({
 export const Empty = meta.story({
   args: { events: [] },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("heading", { name: "No gigs recorded yet." })).toBeVisible();
     await expect(
-      canvas.getByText("Your gig history will appear here when gigs are added to the archive."),
+      canvas.getByRole("heading", { name: copy.heatmapChart.empty.title }),
     ).toBeVisible();
+    await expect(canvas.getByText(copy.heatmapChart.empty.description)).toBeVisible();
     await expect(canvas.queryByRole("img")).not.toBeInTheDocument();
   },
 });
@@ -43,20 +44,44 @@ export const Empty = meta.story({
 export const KeyboardFocus = meta.story({
   play: async ({ canvas, userEvent }) => {
     await userEvent.tab();
-    const chart = canvas.getByRole("img", { name: "Gigs by month and year" });
+    const chart = canvas.getByRole("img", { name: copy.heatmapChart.title });
     await expect(chart).toHaveFocus();
     await userEvent.keyboard("{Home}{ArrowDown}");
-    await expect(canvas.getByRole("heading", { name: "Jan 2016" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2016"),
+      }),
+    ).toBeVisible();
     await userEvent.keyboard("{ArrowRight}");
-    await expect(canvas.getByRole("heading", { name: "Feb 2016" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[1], "2016"),
+      }),
+    ).toBeVisible();
     await userEvent.keyboard("{ArrowLeft}");
-    await expect(canvas.getByRole("heading", { name: "Jan 2016" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2016"),
+      }),
+    ).toBeVisible();
     await userEvent.keyboard("{ArrowDown}");
-    await expect(canvas.getByRole("heading", { name: "Jan 2017" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2017"),
+      }),
+    ).toBeVisible();
     await userEvent.keyboard("{ArrowUp}");
-    await expect(canvas.getByRole("heading", { name: "Jan 2016" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2016"),
+      }),
+    ).toBeVisible();
     await userEvent.keyboard("{End}");
-    await expect(canvas.getByRole("heading", { name: "Dec 2026" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[11], "2026"),
+      }),
+    ).toBeVisible();
   },
 });
 
@@ -109,18 +134,30 @@ export const MonthlyEvents = meta.story({
     ],
   },
   play: async ({ canvas, userEvent }) => {
-    const chart = canvas.getByRole("img", { name: "Gigs by month and year" });
+    const chart = canvas.getByRole("img", { name: copy.heatmapChart.title });
     chart.focus();
     await userEvent.keyboard("{Home}");
-    await expect(canvas.getByText("No gigs recorded this month.")).toBeInTheDocument();
+    await expect(canvas.getByText(copy.heatmapChart.empty.month)).toBeInTheDocument();
     await userEvent.keyboard("{End}{Enter}");
-    await expect(canvas.getByRole("heading", { name: "Dec 2024" })).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[11], "2024"),
+      }),
+    ).toBeVisible();
     await expect(canvas.getByText("Vulfpeck, Cory Wong")).toBeVisible();
-    await expect(canvas.getByText(/Support: Joey Dosik, Phoebe Katis/)).toBeVisible();
+    await expect(
+      canvas.getByText(copy.heatmapChart.support(["Joey Dosik", "Phoebe Katis"])),
+    ).toBeVisible();
     await expect(canvas.getByText(/29 Dec 2024/)).toBeVisible();
-    await expect(canvas.getByText(/O2 Academy Brixton, London/)).toBeVisible();
+    await expect(
+      canvas.getByText(copy.formatVenue({ venue: "O2 Academy Brixton", city: "London" }), {
+        exact: false,
+      }),
+    ).toBeVisible();
     await expect(canvas.getByText("Jacob Collier")).toBeVisible();
-    await userEvent.click(canvas.getByRole("button", { name: "Close details" }));
-    await expect(canvas.queryByRole("button", { name: "Close details" })).not.toBeInTheDocument();
+    await userEvent.click(canvas.getByRole("button", { name: copy.heatmapChart.actions.close }));
+    await expect(
+      canvas.queryByRole("button", { name: copy.heatmapChart.actions.close }),
+    ).not.toBeInTheDocument();
   },
 });

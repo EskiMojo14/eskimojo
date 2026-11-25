@@ -11,8 +11,8 @@ import { GigsCityMap } from "./-components/city-map";
 import { GigsHeatmap } from "./-components/heatmap";
 import { GigsBreakdownTabs } from "./-components/tabs";
 import { GigsVenueChart } from "./-components/venue-chart";
-import { formatVenue } from "./-components/venue-label";
 import { gigBreakdownSchema } from "./-constants";
+import * as copy from "./-copy";
 import gigs from "./-data/gigs.json";
 import GigsIntro from "./-intro.mdx";
 
@@ -33,13 +33,10 @@ export const Route = createFileRoute("/gigs/{-$breakdown}/")({
     parse: (params) => v.parse(paramsSchema, params),
   },
   validateSearch: searchSchema,
-  staticData: { title: "Gigs" },
+  staticData: { title: copy.meta.title },
   component: RouteComponent,
   head: () => {
-    const metadata = generatePageMetadata({
-      title: "Gigs",
-      description: "Explore eskimojo's live gig history by month, artist, venue, and city.",
-    });
+    const metadata = generatePageMetadata(copy.meta);
 
     return {
       ...metadata,
@@ -61,7 +58,7 @@ function RouteComponent() {
 
         if (city && gig.city !== city) return false;
 
-        if (venue && formatVenue(gig) !== venue) return false;
+        if (venue && copy.formatVenue(gig) !== venue) return false;
 
         return true;
       }),

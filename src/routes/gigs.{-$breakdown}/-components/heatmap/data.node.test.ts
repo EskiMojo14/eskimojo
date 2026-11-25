@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 import { assert } from "#/utils";
@@ -20,12 +21,22 @@ describe("getGigHeatmapData", () => {
     expect(result.cells.filter(({ count }) => count > 0)).toEqual([
       {
         year: "2024",
-        month: "Jan",
+        month: copy.heatmapChart.months[0],
         count: 2,
         events: [{ date: "2024-01-01" }, { date: "2024-01-31" }],
       },
-      { year: "2024", month: "Feb", count: 1, events: [{ date: "2024-02-29" }] },
-      { year: "2025", month: "Dec", count: 1, events: [{ date: "2025-12-31" }] },
+      {
+        year: "2024",
+        month: copy.heatmapChart.months[1],
+        count: 1,
+        events: [{ date: "2024-02-29" }],
+      },
+      {
+        year: "2025",
+        month: copy.heatmapChart.months[11],
+        count: 1,
+        events: [{ date: "2025-12-31" }],
+      },
     ]);
     expect(result.maxCount).toBe(2);
     expect(result.total).toBe(4);
@@ -40,8 +51,18 @@ describe("getGigHeatmapData", () => {
     expect(
       result.cells.filter(({ year }) => year === "2023").every(({ count }) => count === 0),
     ).toBe(true);
-    expect(result.cells[0]).toEqual({ year: "2022", month: "Jan", count: 0, events: [] });
-    expect(result.cells.at(-1)).toEqual({ year: "2024", month: "Dec", count: 0, events: [] });
+    expect(result.cells[0]).toEqual({
+      year: "2022",
+      month: copy.heatmapChart.months[0],
+      count: 0,
+      events: [],
+    });
+    expect(result.cells.at(-1)).toEqual({
+      year: "2024",
+      month: copy.heatmapChart.months[11],
+      count: 0,
+      events: [],
+    });
   });
 
   it("keeps complete event details sorted by date without mutating the input", () => {
@@ -60,7 +81,7 @@ describe("getGigHeatmapData", () => {
     ];
 
     const result = getGigHeatmapData(events);
-    const february = result.cells.find(({ month }) => month === "Feb");
+    const february = result.cells.find(({ month }) => month === copy.heatmapChart.months[1]);
     assert(february, "Expected February in the heatmap data.");
     const lastFebruaryEvent = february.events[1];
     assert(lastFebruaryEvent, "Expected two February events.");

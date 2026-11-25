@@ -118,6 +118,7 @@ const config = defineConfig({
           "src/routes/_home/**/*.{ts,tsx}",
           "src/routes/projects/**/*.{ts,tsx}",
           "src/routes/music.\\{-$breakdown\\}/**/*.{ts,tsx}",
+          "src/routes/gigs.\\{-$breakdown\\}/**/*.{ts,tsx}",
         ],
         rules: { "eskimojo/no-inline-copy": "warn" },
       },

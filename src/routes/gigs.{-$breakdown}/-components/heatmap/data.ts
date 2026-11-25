@@ -1,21 +1,7 @@
 import * as v from "valibot";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import type { GigEvent } from "#/routes/gigs.{-$breakdown}/-data/gigs.gen";
-
-export const gigMonths = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
 export interface GigMonth<TEvent extends Pick<GigEvent, "date">> {
   year: string;
@@ -51,7 +37,7 @@ export function getGigHeatmapData<TEvent extends Pick<GigEvent, "date">>(
       : Array.from({ length: lastYear - firstYear + 1 }, (_, index) => String(firstYear + index));
 
   const cells: Array<GigMonth<TEvent>> = years.flatMap((year) =>
-    gigMonths.map((month, index) => {
+    copy.heatmapChart.months.map((month, index) => {
       const monthEvents = eventsByMonth.get(`${year}-${String(index + 1).padStart(2, "0")}`) ?? [];
 
       return { year, month, count: monthEvents.length, events: monthEvents };

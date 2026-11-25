@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
+import * as copy from "#/routes/gigs.{-$breakdown}/-copy.tsx";
 import gigs from "#/routes/gigs.{-$breakdown}/-data/gigs.json";
 import { assert } from "#/utils";
 
@@ -17,20 +18,30 @@ test("moves to a different month on every horizontal arrow press", async () => {
     <GigsHeatmap events={[{ ...firstArchiveEvent, date: "2024-01-01" }]} />,
   );
 
-  const chart = result.getByRole("img", { name: "Gigs by month and year" });
+  const chart = result.getByRole("img", { name: copy.heatmapChart.title });
   await expect.element(chart).toBeVisible();
   chart.element().focus();
   await userEvent.keyboard("{Home}");
-  await expect.element(result.getByRole("heading", { name: "Jan 2024" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2024"),
+      }),
+    )
+    .toBeVisible();
 
-  for (const month of ["Feb", "Mar", "Apr"]) {
+  for (const month of copy.heatmapChart.months.slice(1, 4)) {
     await userEvent.keyboard("{ArrowRight}");
-    await expect.element(result.getByRole("heading", { name: `${month} 2024` })).toBeVisible();
+    await expect
+      .element(result.getByRole("heading", { name: copy.heatmapChart.monthTitle(month, "2024") }))
+      .toBeVisible();
   }
 
-  for (const month of ["Mar", "Feb", "Jan"]) {
+  for (const month of copy.heatmapChart.months.slice(0, 3).toReversed()) {
     await userEvent.keyboard("{ArrowLeft}");
-    await expect.element(result.getByRole("heading", { name: `${month} 2024` })).toBeVisible();
+    await expect
+      .element(result.getByRole("heading", { name: copy.heatmapChart.monthTitle(month, "2024") }))
+      .toBeVisible();
   }
 
   await expect.element(chart).toHaveFocus();
@@ -38,34 +49,96 @@ test("moves to a different month on every horizontal arrow press", async () => {
 
 test("visits each archive cell once without stopping on its label", async () => {
   const result = await page.renderWithProviders(<GigsHeatmap events={gigs.events} />);
-  const chart = result.getByRole("img", { name: "Gigs by month and year" });
+  const chart = result.getByRole("img", { name: copy.heatmapChart.title });
   await expect.element(chart).toBeVisible();
   chart.element().focus();
   await userEvent.keyboard("{Home}");
-  await expect.element(result.getByRole("heading", { name: "Jan 2015" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2015"),
+      }),
+    )
+    .toBeVisible();
 
   for (const year of ["2016", "2017", "2018"]) {
     await userEvent.keyboard("{ArrowDown}");
-    await expect.element(result.getByRole("heading", { name: `Jan ${year}` })).toBeVisible();
+    await expect
+      .element(
+        result.getByRole("heading", {
+          name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], year),
+        }),
+      )
+      .toBeVisible();
   }
 
   await userEvent.keyboard("{ArrowUp}");
-  await expect.element(result.getByRole("heading", { name: "Jan 2017" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2017"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{ArrowRight}");
-  await expect.element(result.getByRole("heading", { name: "Feb 2017" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[1], "2017"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{ArrowRight}");
-  await expect.element(result.getByRole("heading", { name: "Mar 2017" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[2], "2017"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{ArrowUp}");
-  await expect.element(result.getByRole("heading", { name: "Mar 2016" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[2], "2016"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{ArrowLeft}");
-  await expect.element(result.getByRole("heading", { name: "Feb 2016" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[1], "2016"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{Home}{ArrowLeft}{ArrowUp}");
-  await expect.element(result.getByRole("heading", { name: "Jan 2015" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[0], "2015"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{End}{ArrowRight}{ArrowDown}");
-  await expect.element(result.getByRole("heading", { name: "Dec 2026" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[11], "2026"),
+      }),
+    )
+    .toBeVisible();
   await userEvent.keyboard("{ArrowLeft}{Enter}");
-  await expect.element(result.getByRole("heading", { name: "Nov 2026" })).toBeVisible();
-  await expect.element(result.getByRole("button", { name: "Close details" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[10], "2026"),
+      }),
+    )
+    .toBeVisible();
+  await expect
+    .element(result.getByRole("button", { name: copy.heatmapChart.actions.close }))
+    .toBeVisible();
   await userEvent.keyboard("{Escape}");
   await expect.element(chart).toHaveFocus();
 });
@@ -91,27 +164,41 @@ test("shows complete monthly event details and supports keyboard pinning and dis
     />,
   );
 
-  const chart = result.getByRole("img", { name: "Gigs by month and year" });
+  const chart = result.getByRole("img", { name: copy.heatmapChart.title });
   await expect.element(chart).toBeVisible();
   chart.element().focus();
   await userEvent.keyboard("{Home}");
-  await expect.element(result.getByText("No gigs recorded this month.")).toBeInTheDocument();
+  await expect.element(result.getByText(copy.heatmapChart.empty.month)).toBeInTheDocument();
   await userEvent.keyboard("{End}{Enter}");
-  await expect.element(result.getByRole("heading", { name: "Dec 2024" })).toBeVisible();
+  await expect
+    .element(
+      result.getByRole("heading", {
+        name: copy.heatmapChart.monthTitle(copy.heatmapChart.months[11], "2024"),
+      }),
+    )
+    .toBeVisible();
   await expect.element(result.getByText("Vulfpeck, Cory Wong")).toBeVisible();
-  await expect.element(result.getByText(/Support: Joey Dosik, Phoebe Katis/)).toBeVisible();
+  await expect
+    .element(result.getByText(copy.heatmapChart.support(["Joey Dosik", "Phoebe Katis"])))
+    .toBeVisible();
   await expect.element(result.getByText(/29 Dec 2024/)).toBeVisible();
-  await expect.element(result.getByText(/O2 Academy Brixton, London/)).toBeVisible();
+  await expect
+    .element(
+      result.getByText(copy.formatVenue({ venue: "O2 Academy Brixton", city: "London" }), {
+        exact: false,
+      }),
+    )
+    .toBeVisible();
   await expect.element(result.getByText(/1 Dec 2024/)).toBeVisible();
   await expect.element(result.getByText(/Royal Albert Hall/)).toBeVisible();
-  await result.getByRole("button", { name: "Close details" }).click();
+  await result.getByRole("button", { name: copy.heatmapChart.actions.close }).click();
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByRole("button", { name: copy.heatmapChart.actions.close }))
     .not.toBeInTheDocument();
   chart.element().focus();
   await userEvent.keyboard("{End}{Enter}{Escape}");
   await expect
-    .element(result.getByRole("button", { name: "Close details" }))
+    .element(result.getByRole("button", { name: copy.heatmapChart.actions.close }))
     .not.toBeInTheDocument();
 });
 
@@ -125,8 +212,8 @@ test("renders exact monthly counts and a screen-reader-accessible table", async 
     />,
   );
 
-  await expect.element(result.getByRole("img", { name: "Gigs by month and year" })).toBeVisible();
-  const table = result.getByRole("table", { name: "Recorded gigs per month and year" });
+  await expect.element(result.getByRole("img", { name: copy.heatmapChart.title })).toBeVisible();
+  const table = result.getByRole("table", { name: copy.heatmapChart.table.title });
   await expect.element(table).toBeInTheDocument();
   expect(table.getByRole("columnheader").all()).toHaveLength(13);
   const cells = table.getByRole("cell").all();
@@ -140,6 +227,6 @@ test("renders exact monthly counts and a screen-reader-accessible table", async 
 test("renders an explicit empty state without a chart", async () => {
   const result = await page.renderWithProviders(<GigsHeatmap events={[]} />);
 
-  await expect.element(result.getByText("No gigs recorded yet.")).toBeVisible();
+  await expect.element(result.getByText(copy.heatmapChart.empty.title)).toBeVisible();
   await expect.element(result.getByRole("img")).not.toBeInTheDocument();
 });
