@@ -1,3 +1,4 @@
+// oxlint-disable landmines/no-fixed-sleep
 import { passthrough } from "msw";
 
 import { HomePage } from "#/routes/_home/-index.e2e.model";

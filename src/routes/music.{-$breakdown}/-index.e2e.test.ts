@@ -161,6 +161,7 @@ test.beforeEach(async ({ network, page, home }) => {
   network.use(...lastfm(), musicArtwork());
   // Music data requests only reach the browser network fixture during client-side
   // navigation, so let the home page finish loading before following links.
+  // oxlint-disable-next-line landmines/no-fixed-sleep
   await home.goto({ waitUntil: "networkidle" });
   await page.clock.install();
 });
