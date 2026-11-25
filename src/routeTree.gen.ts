@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DiscordRouteImport } from './routes/discord'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as MusicTopRouteImport } from './routes/music.top'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
@@ -16,6 +17,11 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as GigsChar123BreakdownChar125IndexRouteImport } from './routes/gigs.{-$breakdown}/index'
 import { Route as MusicChar123BreakdownChar125Char123TypeChar125RouteImport } from './routes/music.{-$breakdown}.{-$type}'
 
+const DiscordRoute = DiscordRouteImport.update({
+  id: '/discord',
+  path: '/discord',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/_home/',
   path: '/',
@@ -50,6 +56,7 @@ const MusicChar123BreakdownChar125Char123TypeChar125Route =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/discord': typeof DiscordRoute
   '/music/top': typeof MusicTopRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/': typeof HomeIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/gigs/{-$breakdown}/': typeof GigsChar123BreakdownChar125IndexRoute
 }
 export interface FileRoutesByTo {
+  '/discord': typeof DiscordRoute
   '/music/top': typeof MusicTopRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/': typeof HomeIndexRoute
@@ -67,6 +75,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/discord': typeof DiscordRoute
   '/music/top': typeof MusicTopRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/_home/': typeof HomeIndexRoute
@@ -77,6 +86,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/discord'
     | '/music/top'
     | '/projects/$slug'
     | '/'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
     | '/gigs/{-$breakdown}/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/discord'
     | '/music/top'
     | '/projects/$slug'
     | '/'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '/gigs/{-$breakdown}'
   id:
     | '__root__'
+    | '/discord'
     | '/music/top'
     | '/projects/$slug'
     | '/_home/'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  DiscordRoute: typeof DiscordRoute
   MusicTopRoute: typeof MusicTopRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   HomeIndexRoute: typeof HomeIndexRoute
@@ -112,6 +125,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/discord': {
+      id: '/discord'
+      path: '/discord'
+      fullPath: '/discord'
+      preLoaderRoute: typeof DiscordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_home/': {
       id: '/_home/'
       path: '/'
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  DiscordRoute: DiscordRoute,
   MusicTopRoute: MusicTopRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   HomeIndexRoute: HomeIndexRoute,

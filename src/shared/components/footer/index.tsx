@@ -14,6 +14,14 @@ export function Footer() {
         >
           GitHub
         </a>
+        <a
+          {...siteFooterBem({ element: "link" })}
+          href="https://discord.eskimojo.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Discord
+        </a>
       </nav>
       <p {...siteFooterBem({ element: "credit" })}>
         Artwork by{" "}

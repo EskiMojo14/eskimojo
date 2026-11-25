@@ -1,0 +1,5 @@
+[[redirects]]
+from = "https://discord.eskimojo.dev/*"
+to = "https://discord.gg/a78TNYhndn"
+status = 302
+force = true
