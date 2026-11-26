@@ -24,14 +24,13 @@ export const contrastLabels: Record<Contrast, { label: string; icon: string }> =
   system: { label: "System", icon: "brightness_auto" },
 };
 
-export const paletteSchema = v.fallback(v.picklist(["goat", "arctic", "peach"]), "goat");
+export const paletteSchema = v.fallback(v.picklist(["goat", "arctic"]), "goat");
 
 export type Palette = v.InferOutput<typeof paletteSchema>;
 
 export const paletteLabels: Record<Palette, { label: string; icon: string }> = {
   goat: { label: "Goat", icon: "pets" },
   arctic: { label: "Arctic", icon: "ac_unit" },
-  peach: { label: "Peach", icon: "nutrition" },
 };
 
 export const hapticsSchema = v.fallback(v.picklist(["on", "off"]), "on");

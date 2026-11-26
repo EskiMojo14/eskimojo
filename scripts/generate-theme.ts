@@ -9,8 +9,7 @@
  *   Storybook's own UI, plus an accent for its colorSecondary that meets WCAG AA.
  *
  * Syntax colours combine Goat and Arctic standard accents, adjusting their
- * light-mode tones only as far as each contrast target requires. Peach is a
- * separately selectable palette and does not contribute to syntax accents.
+ * light-mode tones only as far as each contrast target requires.
  */
 import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 

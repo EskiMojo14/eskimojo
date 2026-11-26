@@ -108,14 +108,8 @@ test("preloads the Christmas Goat artwork when the Arctic palette is active", ()
   });
 });
 
-test("uses the Christmas favicon for Goat and Peach but keeps the Arctic favicon", () => {
+test("uses the Christmas favicon for Goat but keeps the Arctic favicon", () => {
   expect(getDocumentHead("goat", true).links).toContainEqual({
-    rel: "icon",
-    href: "/favicon-christmas.png",
-    type: "image/png",
-    sizes: "64x64",
-  });
-  expect(getDocumentHead("peach", true).links).toContainEqual({
     rel: "icon",
     href: "/favicon-christmas.png",
     type: "image/png",

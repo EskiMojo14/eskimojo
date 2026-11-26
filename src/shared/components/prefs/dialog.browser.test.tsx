@@ -103,7 +103,7 @@ test("mobile dropdowns save preferences", async () => {
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
   await expect.element(theme).toHaveAccessibleDescription("Dark");
   await expect.element(contrast).toHaveAccessibleDescription("High");
-  await expect.element(palette).toHaveAccessibleDescription("Peach");
+  await expect.element(palette).toHaveAccessibleDescription("Arctic");
 
   await theme.click();
   await page.viewport(600, 800);
@@ -117,7 +117,7 @@ test("mobile dropdowns save preferences", async () => {
   await expect.element(syntax).toBeVisible();
   await dialog.getByRole("tab", { name: "Theme", exact: true }).click();
 
-  for (const name of ["Dark", "High", "Peach"]) {
+  for (const name of ["Dark", "High", "Arctic"]) {
     await expect
       .element(dialog.getByRole("button", { name }))
       .toHaveAttribute("aria-pressed", "true");

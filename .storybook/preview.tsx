@@ -79,7 +79,6 @@ export default definePreview({
         items: [
           { value: "goat", title: "Goat" },
           { value: "arctic", title: "Arctic" },
-          { value: "peach", title: "Peach" },
         ],
         dynamicTitle: true,
       },

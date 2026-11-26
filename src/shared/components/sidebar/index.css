@@ -66,11 +66,6 @@
     mask-image: linear-gradient(to bottom, transparent, black 20%);
   }
 
-  [data-palette="peach"] &::before,
-  [data-palette="peach"] &::after {
-    content: none;
-  }
-
   &--desktop {
     display: block;
     position: sticky;

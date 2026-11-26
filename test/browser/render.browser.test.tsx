@@ -31,7 +31,6 @@ function PreferenceProbe() {
       <button onClick={() => setTheme("dark")}>Set dark theme</button>
       <button onClick={() => setContrast("high")}>Set high contrast</button>
       <button onClick={() => setPalette("arctic")}>Set arctic palette</button>
-      <button onClick={() => setPalette("peach")}>Set peach palette</button>
     </>
   );
 }
@@ -44,10 +43,8 @@ test("provides schema defaults and stateful preference setters", async () => {
   await result.getByRole("button", { name: "Set high contrast" }).click();
   await result.getByRole("button", { name: "Set arctic palette" }).click();
   await expect.element(result.getByText("dark/high/arctic")).toBeVisible();
-  await result.getByRole("button", { name: "Set peach palette" }).click();
-  await expect.element(result.getByText("dark/high/peach")).toBeVisible();
   await result.rerender(<PreferenceProbe />);
-  await expect.element(result.getByText("dark/high/peach")).toBeVisible();
+  await expect.element(result.getByText("dark/high/arctic")).toBeVisible();
 });
 
 test("supports initial preferences and isolates separate renders", async () => {
@@ -102,8 +99,6 @@ test("optionally syncs document preferences and restores attributes on unmount",
   expect(root.dataset.theme).toBe("dark");
   expect(root.dataset.contrast).toBe("high");
   expect(root.dataset.palette).toBe("arctic");
-  await result.getByRole("button", { name: "Set peach palette" }).click();
-  expect(root.dataset.palette).toBe("peach");
   await result.unmount();
   expect(root.dataset.theme).toBe("light");
   expect(root.hasAttribute("data-contrast")).toBe(false);

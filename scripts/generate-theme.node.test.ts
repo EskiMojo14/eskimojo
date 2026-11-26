@@ -42,12 +42,12 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   });
   await generate();
   expect(new Set(await readdir(join(dir, themePath, "palettes")))).toEqual(
-    new Set(["arctic.gen.css", "goat.gen.css", "peach.gen.css", "new-theme.gen.css"]),
+    new Set(["arctic.gen.css", "goat.gen.css", "new-theme.gen.css"]),
   );
 
   const outputs = new Map<string, string>();
 
-  for (const theme of ["arctic", "goat", "peach", "new-theme"]) {
+  for (const theme of ["arctic", "goat", "new-theme"]) {
     const css = await readFile(join(dir, themePath, `palettes/${theme}.gen.css`), "utf8");
     outputs.set(theme, css);
 
@@ -87,8 +87,6 @@ test("generates a separate palette for every theme and preserves the goat Storyb
   }
 
   expect(outputs.get("arctic")).not.toBe(outputs.get("goat"));
-  expect(outputs.get("peach")).not.toBe(outputs.get("goat"));
-  expect(outputs.get("peach")).not.toBe(outputs.get("arctic"));
   expect(await readFile(join(dir, ".storybook/palette.gen.ts"), "utf8")).toBe(
     await readFile(new URL(".storybook/palette.gen.ts", root), "utf8"),
   );

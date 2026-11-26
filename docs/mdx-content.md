@@ -25,9 +25,9 @@ highlighted at compile time with `rehype-prism-plus` in both the app and
 Storybook MDX. The existing Prism token styles follow the site's theme and
 contrast settings; no browser-side highlighting script is needed. Untagged
 blocks stay plain, and unsupported language tags fail compilation.
-The Goat, Arctic, and Peach palettes are available throughout the site. Syntax
+The Goat and Arctic palettes are available throughout the site. Syntax
 combines Goat's purple/indigo and Arctic's blue/rose standard accents, plus
-Goat's error red; Peach does not contribute to syntax accents. These are
+Goat's error red. These are
 generated from the existing theme exports by
 `vp run theme:generate`: keywords use Goat's primary, strings use Arctic's
 tertiary, functions and types use Arctic's primary, numbers use Goat's tertiary,

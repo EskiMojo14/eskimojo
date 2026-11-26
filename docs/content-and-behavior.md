@@ -240,8 +240,7 @@ square-image summary card.
 During December (UTC), the Goat sidebar artwork, palette-switcher avatar and
 favicon, and the Mitzi home hero use their Christmas versions. Adding
 `?christmas=true` enables them at other times too; the Arctic palette continues
-to use its usual sidebar artwork, avatar and favicon. Peach has no dedicated
-sidebar artwork and uses the shared favicon (or the Christmas favicon when enabled).
+to use its usual sidebar artwork, avatar and favicon.
 
 The sidebar retains the site
 identity. On desktop it stays anchored to the top of the viewport while the page
@@ -320,7 +319,7 @@ compiler invocation does not enable `--runExternalCode`. The normal
 
 The app bar's Preferences button opens a modal dialog with connected button
 groups for Theme (System, Light, Dark), Contrast (System, Standard, Medium,
-High), and Palette (Goat, Arctic, Peach). Each group permits one selection.
+High), and Palette (Goat, Arctic). Each group permits one selection.
 Changes use the existing cookie-backed
 preference providers and apply optimistically to the controls and page without
 waiting for the cookie save or loader refresh. Rapid changes to each preference

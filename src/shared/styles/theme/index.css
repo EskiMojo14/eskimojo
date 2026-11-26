@@ -6,7 +6,6 @@
  */
 @import "./palettes/goat.gen.css";
 @import "./palettes/arctic.gen.css";
-@import "./palettes/peach.gen.css";
 
 /* Theme: absent or system data-theme follows the system. */
 :root {
@@ -58,21 +57,6 @@
   @extend %arctic-high;
 }
 
-:root:where([data-palette="peach"]),
-:root:where([data-palette="peach"]) [data-contrast="standard"] {
-  @extend %peach-standard;
-}
-
-:root:where([data-palette="peach"])[data-contrast="medium"],
-:root:where([data-palette="peach"]) [data-contrast="medium"] {
-  @extend %peach-medium;
-}
-
-:root:where([data-palette="peach"])[data-contrast="high"],
-:root:where([data-palette="peach"]) [data-contrast="high"] {
-  @extend %peach-high;
-}
-
 @media (prefers-contrast: more) {
   :root:is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %goat-high;
@@ -80,9 +64,5 @@
 
   :root:where([data-palette="arctic"]):is(:not([data-contrast]), [data-contrast="system"]) {
     @extend %arctic-high;
-  }
-
-  :root:where([data-palette="peach"]):is(:not([data-contrast]), [data-contrast="system"]) {
-    @extend %peach-high;
   }
 }
